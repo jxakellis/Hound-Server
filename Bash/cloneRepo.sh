@@ -58,8 +58,8 @@ pm2 stop all
 echo "DELETING ALL PROCESSES"
 pm2 delete all
 
-echo "STARTING '/PARENT_DIR/Node/pm2.config.js'"
-pm2 start "${PARENT_DIR}/Node/pm2.config.js"
+echo "STARTING '/HOUND_SERVER_DIR/Node/pm2.config.js'"
+pm2 start "${HOUND_SERVER_DIR}/Node/pm2.config.js"
 
 echo "SAVING PROCESSES"
 pm2 save --force
