@@ -20,6 +20,7 @@ echo "DELETING"
 echo
 
 echo "MOVING '/HOUND_SERVER_DIR/Node/main/secrets/' INTO '/PARENT_DIR/'"
+rm -rf "${PARENT_DIR}/secrets/"
 mv -f "${HOUND_SERVER_DIR}/Node/main/secrets/" "${PARENT_DIR}"
 
 echo "DELETING '/HOUND_SERVER_DIR/'"
@@ -43,6 +44,7 @@ echo "GRANTING R & W PRIVILEGES ON '/HOUND_SERVER_DIR/' (again)"
 chmod -R a+rwx "${HOUND_SERVER_DIR}/"
 
 echo "MOVING '/PARENT_DIR/secrets/' INTO '/HOUND_SERVER_DIR/Node/main/'"
+rm -rf "${HOUND_SERVER_DIR}/Node/main/secrets/"
 mv -f "${PARENT_DIR}/secrets/" "${HOUND_SERVER_DIR}/Node/main/"
 
 echo "MOVING '/HOUND_SERVER_DIR/Bash/cloneRepo.sh' INTO '/PARENT_DIR/' "
