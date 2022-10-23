@@ -4,7 +4,7 @@
   "description": "Hound Server",
   "main": "./main/server/createServer.js",
   "scripts": {
-    "houndServer": "node main/server/createServer.js | pino-pretty -c -t"
+    "houndServer": "node ./main/server/createServer.js | pino-pretty -c -t"
   },
   "author": "",
   "license": "ISC",
