@@ -5,9 +5,8 @@ const IS_PRODUCTION_DATABASE = require('fs').existsSync('../../../../productionI
 const server = {
   // True if we are using the production database that houses real users, false if we are launching a development server for testing
   IS_PRODUCTION_DATABASE,
-  // If we are on the production server, then we use HTTPS. The productionDatabase uses port 443 and developmentDatabse uses port 443.
-  // If we are on a development server, then we use HTTP. This is always on port 80
-  SERVER_PORT: IS_PRODUCTION_DATABASE ? 443 : 8443,
+  // HTTPS uses port 443
+  SERVER_PORT: 443,
   // True if we are using a development database, false if we are using a production database as we don't want lots of console logs from users (note: serverLogger logs regardless of this settings)
   CONSOLE_LOGGING_ENABLED: !IS_PRODUCTION_DATABASE,
   // App versions of the iOS Hound app that work properly with the server.
