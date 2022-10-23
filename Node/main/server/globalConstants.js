@@ -1,4 +1,6 @@
-const IS_PRODUCTION_DATABASE = process.env.DATABASE_ENVIRONMENT === 'production';
+// Steps out of GitHub repo directory until in parent directory, then looks for file that indicates the server should be production
+// /server/ -> ../ -> /main/ -> ../ -> /Node/ -> ../ -> /Hound-Server/ -> ../ -> /PARENT_DIR/
+const IS_PRODUCTION_DATABASE = require('fs').existsSync('../../../../productionIndicator.txt');
 
 const server = {
   // True if we are using the production database that houses real users, false if we are launching a development server for testing

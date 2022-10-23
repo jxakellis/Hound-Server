@@ -9,10 +9,9 @@ const { appStoreServerNotificationsRouter } = require('../../routes/appStoreServ
 const { userRouter } = require('../../routes/user');
 const { GeneralError } = require('../tools/general/errors');
 
-const databasePath = global.constant.server.IS_PRODUCTION_DATABASE ? 'prod' : 'dev';
-const serverToServerPath = `/${databasePath}/appStoreServerNotifications`;
-const watchdogPath = `/${databasePath}/watchdog`;
-const userPath = `/${databasePath}/app/:appVersion`;
+const serverToServerPath = '/appStoreServerNotifications';
+const watchdogPath = '/watchdog';
+const userPath = '/app/:appVersion';
 
 function configureAppForRequests(app) {
   // Setup defaults and custom res.status method

@@ -32,7 +32,7 @@ echo "CLONING"
 echo
 
 echo "CLONING UPDATED 'Hound' FROM GitHub"
-git -C "${PARENT_DIR}" clone git@github.com:jxakellis/Hound.git
+git -C "${PARENT_DIR}" clone git@github.com:jxakellis/Hound-Server.git
 
 echo "GRANTING R & W PRIVILEGES ON '/PARENT_DIR/Hound/'"
 chmod -R a+rwx "${PARENT_DIR}/Hound/"
