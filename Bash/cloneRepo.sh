@@ -7,7 +7,7 @@ cd
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 PARENT_DIR="${SCRIPT_DIR}/../../"
-NODE_DIR="${PARENT_DIR}/Hound/Node/"
+NODE_DIR="${PARENT_DIR}/Hound-Server/Node/"
 
 echo
 echo "DIRECTORIES"
@@ -24,25 +24,25 @@ echo
 echo "MOVING '/NODE_DIR/main/secrets' INTO '/PARENT_DIR/'"
 mv -f "${NODE_DIR}/main/secrets/" "${PARENT_DIR}"
 
-echo "DELETING '/PARENT_DIR/Hound/'"
-rm -rf "${PARENT_DIR}/Hound/"
+echo "DELETING '/PARENT_DIR/Hound-Server/'"
+rm -rf "${PARENT_DIR}/Hound-Server/"
 
 echo
 echo "CLONING"
 echo
 
-echo "CLONING UPDATED 'Hound' FROM GitHub"
+echo "CLONING UPDATED 'Hound-Server' FROM GitHub"
 git -C "${PARENT_DIR}" clone git@github.com:jxakellis/Hound-Server.git
 
-echo "GRANTING R & W PRIVILEGES ON '/PARENT_DIR/Hound/'"
-chmod -R a+rwx "${PARENT_DIR}/Hound/"
+echo "GRANTING R & W PRIVILEGES ON '/PARENT_DIR/Hound-Server/'"
+chmod -R a+rwx "${PARENT_DIR}/Hound-Server/"
 
 echo "INSTALLING node_modules IN /NODE_DIR/"
 npm --prefix "${NODE_DIR}" i
 
-echo "GRANTING R & W PRIVILEGES ON '/PARENT_DIR/Hound/' (again)"
+echo "GRANTING R & W PRIVILEGES ON '/PARENT_DIR/Hound-Server/' (again)"
 # Grant privileges AGAIN so that jxakellis has read/write privileges on node_modules folder
-chmod -R a+rwx "${PARENT_DIR}/Hound/"
+chmod -R a+rwx "${PARENT_DIR}/Hound-Server/"
 
 echo "MOVING '/PARENT_DIR/secrets/' INTO '/NODE_DIR/main/'"
 cp -rf "${PARENT_DIR}/secrets/" "${NODE_DIR}/main/"
