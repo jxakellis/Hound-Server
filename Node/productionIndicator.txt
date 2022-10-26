@@ -1,0 +1,3 @@
+Indicates to Node that this is a production server, changing database connection from developmentHound to productionHound.
+
+Move this file's path from /parent_dir/Hound-Server/Node/productionIndicator.txt into /parent_dir/productionIndicator.txt to trigger indication to Hound node server.

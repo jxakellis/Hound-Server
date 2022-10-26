@@ -1,12 +1,6 @@
 // Steps out of GitHub repo directory until in parent directory, then looks for file that indicates the server should be production
 // /server/ -> ../ -> /main/ -> ../ -> /Node/ -> ../ -> /Hound-Server/ -> ../ -> /PARENT_DIR/
-const { exec } = require('child_process');
-
-const path = `${__dirname}/../../../../`;
-console.log(path);
-
-exec((`ls ${path}`));
-const IS_PRODUCTION_DATABASE = require('fs').existsSync(`${path}/productionIndicator.txt`);
+const IS_PRODUCTION_DATABASE = require('fs').existsSync(`${__dirname}/../../../../productionIndicator.txt`);
 
 const server = {
   // True if we are using the production database that houses real users, false if we are launching a development server for testing
