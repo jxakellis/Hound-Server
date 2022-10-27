@@ -19,7 +19,6 @@ async function updateUserForUserId(
   userConfigurationNotificationSound,
   userConfigurationLogsInterfaceScale,
   userConfigurationRemindersInterfaceScale,
-  forUserConfigurationMaximumNumberOfLogsDisplayed,
   forUserConfigurationSilentModeIsEnabled,
   forUserConfigurationSilentModeStartUTCHour,
   forUserConfigurationSilentModeEndUTCHour,
@@ -36,7 +35,6 @@ async function updateUserForUserId(
   // userConfigurationNotificationSound
   // userConfigurationLogsInterfaceScale
   // userConfigurationRemindersInterfaceScale
-  const userConfigurationMaximumNumberOfLogsDisplayed = formatNumber(forUserConfigurationMaximumNumberOfLogsDisplayed);
   const userConfigurationSilentModeIsEnabled = formatBoolean(forUserConfigurationSilentModeIsEnabled);
   const userConfigurationSilentModeStartUTCHour = formatNumber(forUserConfigurationSilentModeStartUTCHour);
   const userConfigurationSilentModeEndUTCHour = formatNumber(forUserConfigurationSilentModeEndUTCHour);
@@ -53,14 +51,13 @@ async function updateUserForUserId(
     userConfigurationNotificationSound,
     userConfigurationLogsInterfaceScale,
     userConfigurationRemindersInterfaceScale,
-    userConfigurationMaximumNumberOfLogsDisplayed,
     userConfigurationSilentModeIsEnabled,
     userConfigurationSilentModeStartUTCHour,
     userConfigurationSilentModeEndUTCHour,
     userConfigurationSilentModeStartUTCMinute,
     userConfigurationSilentModeEndUTCMinute,
   ) === false) {
-    throw new ValidationError('No userNotificationToken, userConfigurationIsNotificationEnabled, userConfigurationIsLoudNotification, userConfigurationInterfaceStyle, userConfigurationSnoozeLength, userConfigurationNotificationSound, userConfigurationLogsInterfaceScale, userConfigurationRemindersInterfaceScale, userConfigurationMaximumNumberOfLogsDisplayed, userConfigurationSilentModeIsEnabled, userConfigurationSilentModeStartUTCHour, userConfigurationSilentModeEndUTCHour, userConfigurationSilentModeStartUTCMinute, or userConfigurationSilentModeEndUTCMinute, provided', global.constant.error.value.MISSING);
+    throw new ValidationError('No userNotificationToken, userConfigurationIsNotificationEnabled, userConfigurationIsLoudNotification, userConfigurationInterfaceStyle, userConfigurationSnoozeLength, userConfigurationNotificationSound, userConfigurationLogsInterfaceScale, userConfigurationRemindersInterfaceScale, userConfigurationSilentModeIsEnabled, userConfigurationSilentModeStartUTCHour, userConfigurationSilentModeEndUTCHour, userConfigurationSilentModeStartUTCMinute, or userConfigurationSilentModeEndUTCMinute, provided', global.constant.error.value.MISSING);
   }
 
   const promises = [];
@@ -118,13 +115,6 @@ async function updateUserForUserId(
       databaseConnection,
       'UPDATE userConfiguration SET userConfigurationRemindersInterfaceScale = ? WHERE userId = ?',
       [userConfigurationRemindersInterfaceScale, userId],
-    ));
-  }
-  if (areAllDefined(userConfigurationMaximumNumberOfLogsDisplayed)) {
-    promises.push(databaseQuery(
-      databaseConnection,
-      'UPDATE userConfiguration SET userConfigurationMaximumNumberOfLogsDisplayed = ? WHERE userId = ?',
-      [userConfigurationMaximumNumberOfLogsDisplayed, userId],
     ));
   }
   if (areAllDefined(userConfigurationSilentModeIsEnabled)) {

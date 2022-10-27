@@ -28,7 +28,6 @@ async function createUserForUserIdentifier(
   userConfigurationNotificationSound,
   userConfigurationLogsInterfaceScale,
   userConfigurationRemindersInterfaceScale,
-  forUserConfigurationMaximumNumberOfLogsDisplayed,
   // userConfigurationPreviousDogManagerSynchronization,
   forUserConfigurationSilentModeIsEnabled,
   forUserConfigurationSilentModeStartUTCHour,
@@ -55,7 +54,6 @@ async function createUserForUserIdentifier(
   // userConfigurationNotificationSound
   // userConfigurationLogsInterfaceScale
   // userConfigurationRemindersInterfaceScale
-  const userConfigurationMaximumNumberOfLogsDisplayed = formatNumber(forUserConfigurationMaximumNumberOfLogsDisplayed);
   const userConfigurationSilentModeIsEnabled = formatBoolean(forUserConfigurationSilentModeIsEnabled);
   const userConfigurationSilentModeStartUTCHour = formatNumber(forUserConfigurationSilentModeStartUTCHour);
   const userConfigurationSilentModeEndUTCHour = formatNumber(forUserConfigurationSilentModeEndUTCHour);
@@ -77,14 +75,13 @@ async function createUserForUserIdentifier(
     userConfigurationNotificationSound,
     userConfigurationLogsInterfaceScale,
     userConfigurationRemindersInterfaceScale,
-    userConfigurationMaximumNumberOfLogsDisplayed,
     userConfigurationSilentModeIsEnabled,
     userConfigurationSilentModeStartUTCHour,
     userConfigurationSilentModeEndUTCHour,
     userConfigurationSilentModeStartUTCMinute,
     userConfigurationSilentModeEndUTCMinute,
   ) === false) {
-    throw new ValidationError('userId, userIdentifier, userEmail, userAccountCreationDate, userConfigurationIsNotificationEnabled, userConfigurationIsLoudNotification, userConfigurationInterfaceStyle, userConfigurationSnoozeLength, userConfigurationNotificationSound, userConfigurationLogsInterfaceScale, userConfigurationRemindersInterfaceScale, userConfigurationMaximumNumberOfLogsDisplayed, userConfigurationSilentModeIsEnabled, userConfigurationSilentModeStartUTCHour, userConfigurationSilentModeEndUTCHour, userConfigurationSilentModeStartUTCMinute, or userConfigurationSilentModeEndUTCMinute, missing', global.constant.error.value.MISSING);
+    throw new ValidationError('userId, userIdentifier, userEmail, userAccountCreationDate, userConfigurationIsNotificationEnabled, userConfigurationIsLoudNotification, userConfigurationInterfaceStyle, userConfigurationSnoozeLength, userConfigurationNotificationSound, userConfigurationLogsInterfaceScale, userConfigurationRemindersInterfaceScale, userConfigurationSilentModeIsEnabled, userConfigurationSilentModeStartUTCHour, userConfigurationSilentModeEndUTCHour, userConfigurationSilentModeStartUTCMinute, or userConfigurationSilentModeEndUTCMinute, missing', global.constant.error.value.MISSING);
   }
 
   const promises = [
@@ -95,7 +92,7 @@ async function createUserForUserIdentifier(
     ),
     databaseQuery(
       databaseConnection,
-      'INSERT INTO userConfiguration(userId, userConfigurationIsNotificationEnabled, userConfigurationIsLoudNotification, userConfigurationSnoozeLength, userConfigurationNotificationSound, userConfigurationLogsInterfaceScale, userConfigurationRemindersInterfaceScale, userConfigurationInterfaceStyle, userConfigurationMaximumNumberOfLogsDisplayed, userConfigurationSilentModeIsEnabled, userConfigurationSilentModeStartUTCHour, userConfigurationSilentModeEndUTCHour, userConfigurationSilentModeStartUTCMinute, userConfigurationSilentModeEndUTCMinute) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+      'INSERT INTO userConfiguration(userId, userConfigurationIsNotificationEnabled, userConfigurationIsLoudNotification, userConfigurationSnoozeLength, userConfigurationNotificationSound, userConfigurationLogsInterfaceScale, userConfigurationRemindersInterfaceScale, userConfigurationInterfaceStyle, userConfigurationSilentModeIsEnabled, userConfigurationSilentModeStartUTCHour, userConfigurationSilentModeEndUTCHour, userConfigurationSilentModeStartUTCMinute, userConfigurationSilentModeEndUTCMinute) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
       [userId,
         userConfigurationIsNotificationEnabled,
         userConfigurationIsLoudNotification,
@@ -104,7 +101,6 @@ async function createUserForUserIdentifier(
         userConfigurationLogsInterfaceScale,
         userConfigurationRemindersInterfaceScale,
         userConfigurationInterfaceStyle,
-        userConfigurationMaximumNumberOfLogsDisplayed,
         userConfigurationSilentModeIsEnabled,
         userConfigurationSilentModeStartUTCHour,
         userConfigurationSilentModeEndUTCHour,
