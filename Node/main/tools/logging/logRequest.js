@@ -15,7 +15,7 @@ async function logRequest(req, res, next) {
 
   const originalUrl = formatString(req.originalUrl, 500);
 
-  requestLogger.info(`Request for ${method} ${originalUrl}`);
+  requestLogger.debug(`Request for ${method} ${originalUrl}`);
 
   // Inserts request information into the previousRequests table.
   if (areAllDefined(req.requestId) === false) {

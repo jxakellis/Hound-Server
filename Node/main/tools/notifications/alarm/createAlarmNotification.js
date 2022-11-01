@@ -45,7 +45,7 @@ async function createAlarmNotificationForFamily(familyId, reminderId, reminderEx
     }
     // reminderExecutionDate is in the future
     else {
-      alarmLogger.info(`Scheduling a new job; count will be ${Object.keys(schedule.scheduledJobs).length + 1}`);
+      alarmLogger.debug(`Scheduling a new job; count will be ${Object.keys(schedule.scheduledJobs).length + 1}`);
       schedule.scheduleJob(`Family${familyId}Reminder${reminderId}`, formattedReminderExecutionDate, async () => {
         // do these async, no need to await
         sendAPNNotificationForFamily(familyId, reminderId);

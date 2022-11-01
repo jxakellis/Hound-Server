@@ -72,18 +72,18 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
     throw new ValidationError(`Current database environment is ${currentDatabaseEnvironment}. You submitted data: ${dataEnvironment}, renewalInfo: ${renewalInfoEnvironment}, transactionInfo: ${transactionInfoEnvironment}`, global.constant.error.general.ENVIRONMENT_INVALID);
   }
 
-  requestLogger.info(`App Store Server Notification ${notificationUUID} of type ${notificationType} with subtype ${subtype} for transaction ${transactionInfo.transactionId}`);
+  requestLogger.debug(`App Store Server Notification ${notificationUUID} of type ${notificationType} with subtype ${subtype} for transaction ${transactionInfo.transactionId}`);
 
   const storedNotification = await getAppStoreServerNotificationForNotificationUUID(databaseConnection, notificationUUID);
 
   // Check if we have logged this notification before
   if (areAllDefined(storedNotification)) {
     // Notification has been logged into database, return
-    requestLogger.info('App Store Server Notification has been logged before');
+    requestLogger.debug('App Store Server Notification has been logged before');
     return;
   }
 
-  requestLogger.info("App Store Server Notification hasn't been logged before");
+  requestLogger.debug("App Store Server Notification hasn't been logged before");
 
   await createAppStoreServerNotificationForNotification(databaseConnection, notification, data, renewalInfo, transactionInfo);
 

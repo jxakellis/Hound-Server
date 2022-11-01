@@ -145,12 +145,12 @@ function sendProductionAPN(notification, token) {
     .then((response) => {
       // response.sent: Array of device tokens to which the notification was sent succesfully
       if (response.sent.length !== 0) {
-        apnLogger.info(`sendProductionAPN Response Successful: ${JSON.stringify(response.sent)}`);
+        apnLogger.debug(`sendProductionAPN Response Successful: ${JSON.stringify(response.sent)}`);
         return;
       }
       // response.failed: Array of objects containing the device token (`device`) and either an `error`, or a `status` and `response` from the API
       if (response.failed.length !== 0) {
-        apnLogger.info(`sendProductionAPN Response Rejected: ${JSON.stringify(response.failed)}`);
+        apnLogger.debug(`sendProductionAPN Response Rejected: ${JSON.stringify(response.failed)}`);
         sendDevelopmentAPN(notification, token);
       }
     })
@@ -168,11 +168,11 @@ function sendDevelopmentAPN(notification, token) {
     .then((response) => {
       // response.sent: Array of device tokens to which the notification was sent succesfully
       if (response.sent.length !== 0) {
-        apnLogger.info(`sendDevelopmentAPN Response Successful: ${JSON.stringify(response.sent)}`);
+        apnLogger.debug(`sendDevelopmentAPN Response Successful: ${JSON.stringify(response.sent)}`);
       }
       // response.failed: Array of objects containing the device token (`device`) and either an `error`, or a `status` and `response` from the API
       if (response.failed.length !== 0) {
-        apnLogger.info(`sendDevelopmentAPN Response Rejected: ${JSON.stringify(response.failed)}`);
+        apnLogger.debug(`sendDevelopmentAPN Response Rejected: ${JSON.stringify(response.failed)}`);
       }
     })
     .catch((error) => {

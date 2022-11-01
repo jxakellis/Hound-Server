@@ -16,7 +16,7 @@ async function cancelJobForFamilyForReminder(familyId, reminderId) {
   const job = schedule.scheduledJobs[`Family${familyId}Reminder${reminderId}`];
   if (areAllDefined(job)) {
     alarmLogger.debug(`Cancelling job: ${job.name}`);
-    alarmLogger.info(`Cancelled job; count is now ${Object.keys(schedule.scheduledJobs).length - 1}`);
+    alarmLogger.debug(`Cancelled job; count is now ${Object.keys(schedule.scheduledJobs).length - 1}`);
     job.cancel();
   }
 }

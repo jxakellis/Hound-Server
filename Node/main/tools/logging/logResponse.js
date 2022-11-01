@@ -13,7 +13,7 @@ async function logResponse(req, res, body) {
 
   const responseBody = formatString(JSON.stringify(body), 500);
 
-  responseLogger.info(`Response for ${req.method} ${originalUrl}\n With body: ${JSON.stringify(responseBody)}`);
+  responseLogger.debug(`Response for ${req.method} ${originalUrl}\n With body: ${JSON.stringify(responseBody)}`);
 
   if (areAllDefined(res.responseId) === false) {
     try {
