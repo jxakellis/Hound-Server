@@ -31,6 +31,8 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
   const {
     // The in-app purchase event for which the App Store sent this version 2 notification.
     notificationType,
+    // Additional information that identifies the notification event, or an empty string. The subtype applies only to select version 2 notifications.
+    subtype,
     // A unique identifier for the notification. Use this value to identify a duplicate notification.
     notificationUUID,
     // The object that contains the app metadata and signed renewal and transaction information.
@@ -70,6 +72,8 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
     throw new ValidationError(`Current database environment is ${currentDatabaseEnvironment}. You submitted data: ${dataEnvironment}, renewalInfo: ${renewalInfoEnvironment}, transactionInfo: ${transactionInfoEnvironment}`, global.constant.error.general.ENVIRONMENT_INVALID);
   }
 
+  requestLogger.info(`App Store Server Notification ${notificationUUID} of type ${notificationType} with subtype ${subtype} for transaction ${transactionInfo.transactionId}`);
+
   const storedNotification = await getAppStoreServerNotificationForNotificationUUID(databaseConnection, notificationUUID);
 
   // Check if we have logged this notification before
@@ -78,6 +82,8 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
     requestLogger.info('App Store Server Notification has been logged before');
     return;
   }
+
+  requestLogger.info("App Store Server Notification hasn't been logged before");
 
   await createAppStoreServerNotificationForNotification(databaseConnection, notification, data, renewalInfo, transactionInfo);
 
