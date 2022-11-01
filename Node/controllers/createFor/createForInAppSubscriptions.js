@@ -138,7 +138,10 @@ async function updateReceiptRecords(databaseConnection, userId, familyId, forEnv
         formatNumber(receipt.expires_date_ms)
         + (environment === 'Sandbox' ? global.constant.server.SANDBOX_EXPIRATION_DATE_EXTENSION : 0),
       );
-      console.log(formatDate(formatNumber(receipt.expires_date_ms)));
+      console.log(formatNumber(receipt.expires_date_ms));
+      console.log((environment === 'Sandbox' ? global.constant.server.SANDBOX_EXPIRATION_DATE_EXTENSION : 0));
+      console.log(formatNumber(receipt.expires_date_ms)
+      + (environment === 'Sandbox' ? global.constant.server.SANDBOX_EXPIRATION_DATE_EXTENSION : 0));
       console.log(expirationDate);
       const numberOfFamilyMembers = formatNumber(receipt.numberOfFamilyMembers);
       const numberOfDogs = formatNumber(receipt.numberOfDogs);
