@@ -94,8 +94,8 @@ const subscription = {
   DEFAULT_SUBSCRIPTION_PRODUCT_ID,
   DEFAULT_SUBSCRIPTION_NUMBER_OF_FAMILY_MEMBERS,
   DEFAULT_SUBSCRIPTION_NUMBER_OF_DOGS,
-  // how many milliseconds the expiration date of the subscription should be extended
-  EXPIRATION_DATE_EXTENSION: IS_PRODUCTION_DATABASE ? 0 : 1000 * 60 * 60 * 24 * 365,
+  // How many milliseconds the expiration date of a sandbox subscription should be extended
+  SANDBOX_EXPIRATION_DATE_EXTENSION: 1000 * 60 * 60 * 24 * 365,
   // The in app purchase offerings for subscriptions (default indicates free / no payment)
   SUBSCRIPTIONS: [
     {

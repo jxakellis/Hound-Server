@@ -151,7 +151,7 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
     // The transaction already exists, so no need to create
       return;
     }
-    await createInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseConnection, transactionId, originalTransactionId, userId, familyId, productId, subscriptionGroupIdentifier, purchaseDate, expirationDate, quantity, webOrderLineItemId, inAppOwnershipType);
+    await createInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseConnection, transactionId, originalTransactionId, userId, familyId, transactionInfoEnvironment, productId, subscriptionGroupIdentifier, purchaseDate, expirationDate, quantity, webOrderLineItemId, inAppOwnershipType);
   }
   // Check if a transaction was invalidated, warrenting an update to the transactions table
   else if (notificationType === 'REFUND' || notificationType === 'REVOKE') {

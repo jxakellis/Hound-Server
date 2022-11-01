@@ -63,14 +63,15 @@ async function createInAppSubscriptionForUserIdFamilyIdRecieptId(databaseConnect
   }
 
   // check to see .latest_receipt_info array exists
+  const environment = formatString(resultBody.environment, 10);
   const receipts = formatArray(resultBody.latest_receipt_info);
-  if (areAllDefined(receipts) === false) {
+  if (areAllDefined(receipts, environment) === false) {
     throw new ValidationError("Unable to parse the responseBody from Apple's iTunes servers", global.constant.error.value.MISSING);
   }
 
   // CANT PROMISE.ALL BECAUSE updateReceiptRecords CHANGES RESULT OF getActiveInAppSubscriptionForFamilyId
   // update the records stored for all receipts returned
-  await updateReceiptRecords(databaseConnection, userId, familyId, receipts);
+  await updateReceiptRecords(databaseConnection, userId, familyId, environment, receipts);
 
   // Can't user .familyActiveSubscription property as subscription was updated. Therefore, get the most recent subscription to return to the user
   return getActiveInAppSubscriptionForFamilyId(databaseConnection, familyId);
@@ -81,11 +82,12 @@ async function createInAppSubscriptionForUserIdFamilyIdRecieptId(databaseConnect
  * Filters the receipts against productIds that are known
  * Compare receipts to stored transactions, inserting receipts into the database that aren't stored
  */
-async function updateReceiptRecords(databaseConnection, userId, familyId, forReceipts) {
+async function updateReceiptRecords(databaseConnection, userId, familyId, forEnvironment, forReceipts) {
+  const environment = formatString(forEnvironment, 10);
   const receipts = formatArray(forReceipts);
 
-  if (areAllDefined(databaseConnection, userId, familyId, receipts) === false) {
-    throw new ValidationError('databaseConnection, userId, familyId, or receipts missing', global.constant.error.value.MISSING);
+  if (areAllDefined(databaseConnection, userId, familyId, environment, receipts) === false) {
+    throw new ValidationError('databaseConnection, userId, familyId, environment, or receipts missing', global.constant.error.value.MISSING);
   }
 
   // Filter the receipts. Only include one which their productIds are known, and assign values if receipt is valid
@@ -132,7 +134,12 @@ async function updateReceiptRecords(databaseConnection, userId, familyId, forRec
       const productId = formatString(receipt.product_id, 60);
       const subscriptionGroupIdentifier = formatNumber(receipt.subscription_group_identifier);
       const purchaseDate = formatDate(formatNumber(receipt.purchase_date_ms));
-      const expirationDate = formatDate(formatNumber(receipt.expires_date_ms));
+      const expirationDate = formatDate(
+        formatNumber(receipt.expires_date_ms)
+        + (environment === 'Sandbox' ? global.constant.server.SANDBOX_EXPIRATION_DATE_EXTENSION : 0),
+      );
+      console.log(formatDate(formatNumber(receipt.expires_date_ms)));
+      console.log(expirationDate);
       const numberOfFamilyMembers = formatNumber(receipt.numberOfFamilyMembers);
       const numberOfDogs = formatNumber(receipt.numberOfDogs);
       const quantity = formatNumber(receipt.quantity);
@@ -140,16 +147,17 @@ async function updateReceiptRecords(databaseConnection, userId, familyId, forRec
       const inAppOwnershipType = formatString(receipt.in_app_ownership_type, 13);
       promises.push(databaseQuery(
         databaseConnection,
-        'INSERT INTO transactions(transactionId, originalTransactionId, userId, familyId, productId, subscriptionGroupIdentifier, purchaseDate, expirationDate, numberOfFamilyMembers, numberOfDogs, quantity, webOrderLineItemId, inAppOwnershipType) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        'INSERT INTO transactions(transactionId, originalTransactionId, userId, familyId, environment, productId, subscriptionGroupIdentifier, purchaseDate, expirationDate, numberOfFamilyMembers, numberOfDogs, quantity, webOrderLineItemId, inAppOwnershipType) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
         [
           transactionId,
           originalTransactionid,
           userId,
           familyId,
+          environment,
           productId,
           subscriptionGroupIdentifier,
           purchaseDate,
-          new Date(expirationDate.getTime() + global.constant.subscription.EXPIRATION_DATE_EXTENSION),
+          expirationDate,
           numberOfFamilyMembers,
           numberOfDogs,
           quantity,
@@ -169,9 +177,9 @@ async function updateReceiptRecords(databaseConnection, userId, familyId, forRec
  *  If the query is successful, then returns
  *  If a problem is encountered, creates and throws custom error
  */
-async function createInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseConnection, transactionId, originalTransactionId, userId, familyId, productId, subscriptionGroupIdentifier, purchaseDate, expirationDate, quantity, webOrderLineItemId, inAppOwnershipType) {
-  if (areAllDefined(databaseConnection, transactionId, userId, familyId, productId, purchaseDate, expirationDate) === false) {
-    throw new ValidationError('databaseConnection, transactionId, userId, familyId, productId, purchaseDate, or expirationDate missing', global.constant.error.value.MISSING);
+async function createInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseConnection, transactionId, originalTransactionId, userId, familyId, environment, productId, subscriptionGroupIdentifier, purchaseDate, expirationDate, quantity, webOrderLineItemId, inAppOwnershipType) {
+  if (areAllDefined(databaseConnection, transactionId, userId, familyId, environment, productId, purchaseDate, expirationDate) === false) {
+    throw new ValidationError('databaseConnection, transactionId, userId, familyId, environment, productId, purchaseDate, or expirationDate missing', global.constant.error.value.MISSING);
   }
 
   const familyHeadUserId = await getFamilyHeadUserIdForFamilyId(databaseConnection, familyId);
@@ -183,18 +191,21 @@ async function createInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseC
   const correspondingProduct = global.constant.subscription.SUBSCRIPTIONS.find((subscription) => subscription.productId === productId);
   const { numberOfFamilyMembers, numberOfDogs } = correspondingProduct;
 
+  console.log(expirationDate);
+  console.log(new Date(expirationDate.getTime() + (environment === 'Sandbox' ? global.constant.server.SANDBOX_EXPIRATION_DATE_EXTENSION : 0)));
   await databaseQuery(
     databaseConnection,
-    'INSERT INTO transactions(transactionId, originalTransactionId, userId, familyId, productId, subscriptionGroupIdentifier, purchaseDate, expirationDate, numberOfFamilyMembers, numberOfDogs, quantity, webOrderLineItemId, inAppOwnershipType) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    'INSERT INTO transactions(transactionId, originalTransactionId, userId, familyId, environment, productId, subscriptionGroupIdentifier, purchaseDate, expirationDate, numberOfFamilyMembers, numberOfDogs, quantity, webOrderLineItemId, inAppOwnershipType) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
     [
       transactionId,
       originalTransactionId,
       userId,
       familyId,
+      environment,
       productId,
       subscriptionGroupIdentifier,
       purchaseDate,
-      new Date(expirationDate.getTime() + global.constant.subscription.EXPIRATION_DATE_EXTENSION),
+      new Date(expirationDate.getTime() + (environment === 'Sandbox' ? global.constant.server.SANDBOX_EXPIRATION_DATE_EXTENSION : 0)),
       numberOfFamilyMembers,
       numberOfDogs,
       quantity,
