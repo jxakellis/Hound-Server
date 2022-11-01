@@ -136,12 +136,12 @@ async function updateReceiptRecords(databaseConnection, userId, familyId, forEnv
       const purchaseDate = formatDate(formatNumber(receipt.purchase_date_ms));
       const expirationDate = formatDate(
         formatNumber(receipt.expires_date_ms)
-        + (environment === 'Sandbox' ? global.constant.server.SANDBOX_EXPIRATION_DATE_EXTENSION : 0),
+        + (environment === 'Sandbox' ? global.constant.subscription.SANDBOX_EXPIRATION_DATE_EXTENSION : 0),
       );
       console.log(formatNumber(receipt.expires_date_ms));
-      console.log((environment === 'Sandbox' ? global.constant.server.SANDBOX_EXPIRATION_DATE_EXTENSION : 0));
+      console.log((environment === 'Sandbox' ? global.constant.subscription.SANDBOX_EXPIRATION_DATE_EXTENSION : 0));
       console.log(formatNumber(receipt.expires_date_ms)
-      + (environment === 'Sandbox' ? global.constant.server.SANDBOX_EXPIRATION_DATE_EXTENSION : 0));
+      + (environment === 'Sandbox' ? global.constant.subscription.SANDBOX_EXPIRATION_DATE_EXTENSION : 0));
       console.log(expirationDate);
       const numberOfFamilyMembers = formatNumber(receipt.numberOfFamilyMembers);
       const numberOfDogs = formatNumber(receipt.numberOfDogs);
@@ -195,7 +195,7 @@ async function createInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseC
   const { numberOfFamilyMembers, numberOfDogs } = correspondingProduct;
 
   console.log(expirationDate);
-  console.log(new Date(expirationDate.getTime() + (environment === 'Sandbox' ? global.constant.server.SANDBOX_EXPIRATION_DATE_EXTENSION : 0)));
+  console.log(new Date(expirationDate.getTime() + (environment === 'Sandbox' ? global.constant.subscription.SANDBOX_EXPIRATION_DATE_EXTENSION : 0)));
   await databaseQuery(
     databaseConnection,
     'INSERT INTO transactions(transactionId, originalTransactionId, userId, familyId, environment, productId, subscriptionGroupIdentifier, purchaseDate, expirationDate, numberOfFamilyMembers, numberOfDogs, quantity, webOrderLineItemId, inAppOwnershipType) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
@@ -208,7 +208,7 @@ async function createInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseC
       productId,
       subscriptionGroupIdentifier,
       purchaseDate,
-      new Date(expirationDate.getTime() + (environment === 'Sandbox' ? global.constant.server.SANDBOX_EXPIRATION_DATE_EXTENSION : 0)),
+      new Date(expirationDate.getTime() + (environment === 'Sandbox' ? global.constant.subscription.SANDBOX_EXPIRATION_DATE_EXTENSION : 0)),
       numberOfFamilyMembers,
       numberOfDogs,
       quantity,
