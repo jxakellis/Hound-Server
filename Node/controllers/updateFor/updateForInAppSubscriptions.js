@@ -48,6 +48,7 @@ async function updateInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseC
   MUTABLE isRevoked
   */
 
+  console.log(transactionId);
   console.log(isAutoRenewing);
   console.log(isRevoked);
 
