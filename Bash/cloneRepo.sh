@@ -66,12 +66,5 @@ pm2 start "${HOUND_SERVER_DIR}/Node/pm2.config.js"
 echo "SAVING PROCESSES"
 pm2 save --force
 
-echo "WAITING THREE SECONDS"
-sleep 3
-
 echo "LISTING PROCESSES"
-pm2 list
-
-echo
-echo "END SCRIPT"
-echo
+pm2 logs
