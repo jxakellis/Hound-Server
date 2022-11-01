@@ -149,8 +149,6 @@ async function getAllDogsForUserIdFamilyId(databaseConnection, userId, familyId,
     );
   }
 
-  console.log(dogs);
-
   return dogs;
 }
 

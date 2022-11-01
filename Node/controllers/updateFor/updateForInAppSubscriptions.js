@@ -7,6 +7,9 @@ const {
 const { getFamilyHeadUserIdForFamilyId } = require('../getFor/getForFamily');
 
 async function updateInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseConnection, transactionId, userId, familyId, autoRenewStatus, revocationReason) {
+  console.log('updateInAppSubscriptionForUserIdFamilyIdTransactionInfo');
+  console.log(autoRenewStatus);
+  console.log(revocationReason);
   if (areAllDefined(databaseConnection, transactionId, userId, familyId) === false) {
     throw new ValidationError('databaseConnection, transactionId, userId, or familyId missing', global.constant.error.value.MISSING);
   }
@@ -44,6 +47,9 @@ async function updateInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseC
   MUTABLE isAutoRenewing
   MUTABLE isRevoked
   */
+
+  console.log(isAutoRenewing);
+  console.log(isRevoked);
 
   const promises = [];
 
