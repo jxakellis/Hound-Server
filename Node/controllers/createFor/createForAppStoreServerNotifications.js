@@ -28,16 +28,14 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
     throw new ValidationError('notification missing', global.constant.error.value.MISSING);
   }
 
-  const {
-    // The in-app purchase event for which the App Store sent this version 2 notification.
-    notificationType,
-    // Additional information that identifies the notification event, or an empty string. The subtype applies only to select version 2 notifications.
-    subtype,
-    // A unique identifier for the notification. Use this value to identify a duplicate notification.
-    notificationUUID,
-    // The object that contains the app metadata and signed renewal and transaction information.
-    data,
-  } = notification;
+  // The in-app purchase event for which the App Store sent this version 2 notification.
+  const notificationType = formatString(notification.notificationType, 25);
+  // Additional information that identifies the notification event, or an empty string. The subtype applies only to select version 2 notifications.
+  const subtype = formatString(notification.subtype, 19);
+  // A unique identifier for the notification. Use this value to identify a duplicate notification.
+  const notificationUUID = formatString(notification.notificationUUID, 36);
+  // The object that contains the app metadata and signed renewal and transaction information.
+  const { data } = notification;
 
   if (areAllDefined(notificationUUID, data) === false) {
     throw new ValidationError('notificationUUID or data missing', global.constant.error.value.MISSING);

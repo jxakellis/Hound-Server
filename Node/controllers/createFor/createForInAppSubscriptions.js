@@ -84,6 +84,7 @@ async function createInAppSubscriptionForUserIdFamilyIdRecieptId(databaseConnect
  */
 async function updateReceiptRecords(databaseConnection, userId, familyId, forEnvironment, forReceipts) {
   const environment = formatString(forEnvironment, 10);
+  console.log(environment);
   const receipts = formatArray(forReceipts);
 
   if (areAllDefined(databaseConnection, userId, familyId, environment, receipts) === false) {
