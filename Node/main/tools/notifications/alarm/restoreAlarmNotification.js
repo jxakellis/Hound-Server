@@ -16,8 +16,9 @@ async function restoreAlarmNotificationsForAllFamilies() {
     serverLogger.debug('restoreAlarmNotificationsForAll');
 
     // remove any pending jobs (there shouldn't be any)
-    for (const key of Object.keys(schedule.scheduledJobs)) {
-      schedule.scheduledJobs[key].cancel();
+    const jobs = Object.values(schedule.scheduledJobs);
+    for (let i = 0; i < jobs.length; i += 1) {
+      jobs[i].cancel();
     }
 
     // for ALL reminders get: familyId, reminderId, dogName, reminderExecutionDate, reminderAction, and reminderCustomActionName

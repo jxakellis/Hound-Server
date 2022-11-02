@@ -15,6 +15,5 @@ module.exports = {
     'brace-style': ['error', 'stroustrup', { allowSingleLine: false }],
     'no-console': 'off',
     'no-use-before-define': ['error', { functions: false, classes: true, variables: true }],
-    'no-restricted-syntax': 'off',
   },
 };

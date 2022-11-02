@@ -60,16 +60,6 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
   const signedTransactionInfoBuffer = Buffer.from(signedTransactionInfo.split('.')[1], 'base64');
   const transactionInfo = JSON.parse(signedTransactionInfoBuffer.toString());
 
-  const dataEnvironment = formatString(data.environment, 10);
-  const renewalInfoEnvironment = formatString(renewalInfo.environment, 10);
-  const transactionInfoEnvironment = formatString(transactionInfo.environment, 10);
-
-  const currentDatabaseEnvironment = global.constant.server.IS_PRODUCTION_DATABASE ? 'Production' : 'Sandbox';
-
-  if (dataEnvironment !== currentDatabaseEnvironment || renewalInfoEnvironment !== currentDatabaseEnvironment || transactionInfoEnvironment !== currentDatabaseEnvironment) {
-    throw new ValidationError(`Current database environment is ${currentDatabaseEnvironment}. You submitted data: ${dataEnvironment}, renewalInfo: ${renewalInfoEnvironment}, transactionInfo: ${transactionInfoEnvironment}`, global.constant.error.general.ENVIRONMENT_INVALID);
-  }
-
   requestLogger.debug(`App Store Server Notification ${notificationUUID} of type ${notificationType} with subtype ${subtype} for transaction ${transactionInfo.transactionId}`);
 
   const storedNotification = await getAppStoreServerNotificationForNotificationUUID(databaseConnection, notificationUUID);
@@ -84,6 +74,16 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
   requestLogger.debug("App Store Server Notification hasn't been logged before");
 
   await createAppStoreServerNotificationForNotification(databaseConnection, notification, data, renewalInfo, transactionInfo);
+
+  const dataEnvironment = formatString(data.environment, 10);
+  const renewalInfoEnvironment = formatString(renewalInfo.environment, 10);
+  const transactionInfoEnvironment = formatString(transactionInfo.environment, 10);
+  const currentDatabaseEnvironment = global.constant.server.IS_PRODUCTION_DATABASE ? 'Production' : 'Sandbox';
+
+  if (dataEnvironment !== currentDatabaseEnvironment || renewalInfoEnvironment !== currentDatabaseEnvironment || transactionInfoEnvironment !== currentDatabaseEnvironment) {
+    // Always log the App Store Server Notification. However, if the environments don't match, then don't do anything with that information.
+    return;
+  }
 
   // Check if the notification type indicates we need to create or update an entry for transactions table
   if (notificationType === 'CONSUMPTION_REQUEST' || notificationType === 'DID_FAIL_TO_RENEW' || notificationType === 'GRACE_PERIOD_EXPIRED' || notificationType === 'PRICE_INCREASE' || notificationType === 'REFUND_DECLINED' || notificationType === 'RENEWAL_EXTENDED' || notificationType === 'TEST') {
