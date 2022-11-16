@@ -1,6 +1,8 @@
 /* eslint-disable max-classes-per-file */
 const { areAllDefined } = require('../format/validateDefined');
 
+// TO DO FUTURE add status codes to each error. When throwing an error, user will also specify status code.
+
 class GeneralError extends Error {
   constructor(message, code) {
     super(message);

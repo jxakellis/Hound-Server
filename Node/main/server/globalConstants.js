@@ -12,7 +12,7 @@ const server = {
   // App versions of the iOS Hound app that work properly with the server.
   // A version would be depreciated if an endpoint path is changed or endpoint data return format is changed
   // Allows for testing of new versions in development but leave production alone
-  COMPATIBLE_IOS_APP_VERSIONS: IS_PRODUCTION_DATABASE ? ['2.0.0'] : ['2.0.0'],
+  COMPATIBLE_IOS_APP_VERSIONS: IS_PRODUCTION_DATABASE ? ['2.0.0', '2.0.1'] : ['2.0.0', '2.0.1'],
   // How often the database connections are tested as being connected and excess previousRequests/previousResponses are deleted (in milliseconds)
   DATABASE_MAINTENANCE_INTERVAL: IS_PRODUCTION_DATABASE ? (1000 * 60 * 15) : (1000 * 60 * 5),
   // How long the database connection can stay idle before being killed (in seconds)
