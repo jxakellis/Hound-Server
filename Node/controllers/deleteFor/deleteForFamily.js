@@ -107,7 +107,7 @@ async function deleteFamily(databaseConnection, userId, familyId, familyActiveSu
         'DELETE FROM familyMembers WHERE familyId = ?',
         [familyId],
       ),
-      // keep record of user leaving
+      // deletes records of user leaving
       databaseQuery(
         databaseConnection,
         'DELETE FROM previousFamilyMembers WHERE familyId = ?',
