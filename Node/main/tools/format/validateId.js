@@ -135,7 +135,7 @@ async function validateDogId(req, res, next) {
 
     if (formatBoolean(dog.dogIsDeleted) !== false) {
       // the dog has been found but its been deleted
-      return res.sendResponseForStatusJSONError(404, undefined, new ValidationError('Dog has been deleted', global.CONSTANT.FAMILY.DELETED.DOG));
+      return res.sendResponseForStatusJSONError(404, undefined, new ValidationError('Dog has been deleted', global.CONSTANT.ERROR.FAMILY.DELETED.DOG));
     }
 
     // the dogId exists and it is linked to the familyId, valid!
@@ -183,7 +183,7 @@ async function validateLogId(req, res, next) {
 
     if (formatBoolean(log.logIsDeleted) !== false) {
       // the log has been found but its been deleted
-      return res.sendResponseForStatusJSONError(404, undefined, new ValidationError('Log has been deleted', global.CONSTANT.FAMILY.DELETED.LOG));
+      return res.sendResponseForStatusJSONError(404, undefined, new ValidationError('Log has been deleted', global.CONSTANT.ERROR.FAMILY.DELETED.LOG));
     }
 
     // the logId exists and it is linked to the dogId, valid!
@@ -231,7 +231,7 @@ async function validateParamsReminderId(req, res, next) {
 
     if (formatBoolean(reminder.reminderIsDeleted) !== false) {
       // the reminder has been found but its been deleted
-      return res.sendResponseForStatusJSONError(404, undefined, new ValidationError('Reminder has been deleted', global.CONSTANT.FAMILY.DELETED.REMINDER));
+      return res.sendResponseForStatusJSONError(404, undefined, new ValidationError('Reminder has been deleted', global.CONSTANT.ERROR.FAMILY.DELETED.REMINDER));
     }
 
     // the reminderId exists and it is linked to the dogId, valid!
@@ -299,7 +299,7 @@ async function validateBodyReminderId(req, res, next) {
 
     if (formatBoolean(reminder.reminderIsDeleted) !== false) {
       // the reminder has been found but its been deleted
-      return res.sendResponseForStatusJSONError(404, undefined, new ValidationError('Reminder has been deleted', global.CONSTANT.FAMILY.DELETED.REMINDER));
+      return res.sendResponseForStatusJSONError(404, undefined, new ValidationError('Reminder has been deleted', global.CONSTANT.ERROR.FAMILY.DELETED.REMINDER));
     }
     // The reminderId exists and it is linked to the dogId! Reassign reminderId to guarantee integer and not a string
     reminders[i].reminderId = formatNumber(reminders[i].reminderId);
