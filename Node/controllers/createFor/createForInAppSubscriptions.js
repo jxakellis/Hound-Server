@@ -20,13 +20,13 @@ async function createInAppSubscriptionForUserIdFamilyIdRecieptId(databaseConnect
   const appStoreReceiptURL = formatBase64EncodedString(forBase64EncodedAppStoreReceiptURL);
 
   if (areAllDefined(databaseConnection, userId, familyId, appStoreReceiptURL) === false) {
-    throw new ValidationError('databaseConnection, userId, familyId, or appStoreReceiptURL missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection, userId, familyId, or appStoreReceiptURL missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   const familyHeadUserId = await getFamilyHeadUserIdForFamilyId(databaseConnection, familyId);
 
   if (familyHeadUserId !== userId) {
-    throw new ValidationError('You are not the family head. Only the family head can modify the family subscription', global.constant.error.family.permission.INVALID);
+    throw new ValidationError('You are not the family head. Only the family head can modify the family subscription', global.CONSTANT.ERROR.FAMILY.PERMISSION.INVALID);
   }
 
   const requestBody = {
@@ -48,25 +48,25 @@ async function createInAppSubscriptionForUserIdFamilyIdRecieptId(databaseConnect
     }
   }
   catch (error) {
-    throw new GeneralError("There was an error querying Apple's iTunes server to verify the receipt", global.constant.error.general.APPLE_SERVER_FAILED);
+    throw new GeneralError("There was an error querying Apple's iTunes server to verify the receipt", global.CONSTANT.ERROR.GENERAL.APPLE_SERVER_FAILED);
   }
 
   // verify that the status is successful
   if (formatNumber(result.data.status) !== 0) {
-    throw new GeneralError("There was an error querying Apple's iTunes server to verify the receipt", global.constant.error.general.APPLE_SERVER_FAILED);
+    throw new GeneralError("There was an error querying Apple's iTunes server to verify the receipt", global.CONSTANT.ERROR.GENERAL.APPLE_SERVER_FAILED);
   }
 
   // check to see the result has a body
   const resultBody = result.data;
   if (areAllDefined(resultBody) === false) {
-    throw new ValidationError("Unable to parse the responseBody from Apple's iTunes servers", global.constant.error.value.MISSING);
+    throw new ValidationError("Unable to parse the responseBody from Apple's iTunes servers", global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   // check to see .latest_receipt_info array exists
   const environment = formatString(resultBody.environment, 10);
   const receipts = formatArray(resultBody.latest_receipt_info);
   if (areAllDefined(receipts, environment) === false) {
-    throw new ValidationError("Unable to parse the responseBody from Apple's iTunes servers", global.constant.error.value.MISSING);
+    throw new ValidationError("Unable to parse the responseBody from Apple's iTunes servers", global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   // CANT PROMISE.ALL BECAUSE updateReceiptRecords CHANGES RESULT OF getActiveInAppSubscriptionForFamilyId
@@ -87,13 +87,13 @@ async function updateReceiptRecords(databaseConnection, userId, familyId, forEnv
   const receipts = formatArray(forReceipts);
 
   if (areAllDefined(databaseConnection, userId, familyId, environment, receipts) === false) {
-    throw new ValidationError('databaseConnection, userId, familyId, environment, or receipts missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection, userId, familyId, environment, or receipts missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   // Filter the receipts. Only include one which their productIds are known, and assign values if receipt is valid
   for (let i = 0; i < receipts.length; i += 1) {
     const receipt = receipts[i];
-    const correspondingSubscription = global.constant.subscription.SUBSCRIPTIONS.find((subscription) => subscription.productId === receipt.product_id);
+    const correspondingSubscription = global.CONSTANT.SUBSCRIPTION.SUBSCRIPTIONS.find((subscription) => subscription.productId === receipt.product_id);
 
     // check to see if we found an item
     if (areAllDefined(correspondingSubscription) === false) {
@@ -136,7 +136,7 @@ async function updateReceiptRecords(databaseConnection, userId, familyId, forEnv
       const purchaseDate = formatDate(formatNumber(receipt.purchase_date_ms));
       const expirationDate = formatDate(
         formatNumber(receipt.expires_date_ms)
-        + (environment === 'Sandbox' ? global.constant.subscription.SANDBOX_EXPIRATION_DATE_EXTENSION : 0),
+        + (environment === 'Sandbox' ? global.CONSTANT.SUBSCRIPTION.SANDBOX_EXPIRATION_DATE_EXTENSION : 0),
       );
       const numberOfFamilyMembers = formatNumber(receipt.numberOfFamilyMembers);
       const numberOfDogs = formatNumber(receipt.numberOfDogs);
@@ -177,16 +177,16 @@ async function updateReceiptRecords(databaseConnection, userId, familyId, forEnv
  */
 async function createInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseConnection, transactionId, originalTransactionId, userId, familyId, environment, productId, subscriptionGroupIdentifier, purchaseDate, expirationDate, quantity, webOrderLineItemId, inAppOwnershipType) {
   if (areAllDefined(databaseConnection, transactionId, userId, familyId, environment, productId, purchaseDate, expirationDate) === false) {
-    throw new ValidationError('databaseConnection, transactionId, userId, familyId, environment, productId, purchaseDate, or expirationDate missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection, transactionId, userId, familyId, environment, productId, purchaseDate, or expirationDate missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   const familyHeadUserId = await getFamilyHeadUserIdForFamilyId(databaseConnection, familyId);
 
   if (familyHeadUserId !== userId) {
-    throw new ValidationError('You are not the family head. Only the family head can modify the family subscription', global.constant.error.family.permission.INVALID);
+    throw new ValidationError('You are not the family head. Only the family head can modify the family subscription', global.CONSTANT.ERROR.FAMILY.PERMISSION.INVALID);
   }
 
-  const correspondingProduct = global.constant.subscription.SUBSCRIPTIONS.find((subscription) => subscription.productId === productId);
+  const correspondingProduct = global.CONSTANT.SUBSCRIPTION.SUBSCRIPTIONS.find((subscription) => subscription.productId === productId);
   const { numberOfFamilyMembers, numberOfDogs } = correspondingProduct;
 
   await databaseQuery(
@@ -201,7 +201,7 @@ async function createInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseC
       productId,
       subscriptionGroupIdentifier,
       purchaseDate,
-      new Date(expirationDate.getTime() + (environment === 'Sandbox' ? global.constant.subscription.SANDBOX_EXPIRATION_DATE_EXTENSION : 0)),
+      new Date(expirationDate.getTime() + (environment === 'Sandbox' ? global.CONSTANT.SUBSCRIPTION.SANDBOX_EXPIRATION_DATE_EXTENSION : 0)),
       numberOfFamilyMembers,
       numberOfDogs,
       quantity,

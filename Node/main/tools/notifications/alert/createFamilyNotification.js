@@ -34,7 +34,7 @@ async function createFamilyMemberJoinNotification(userId, familyId) {
     const alertBody = `Welcome ${abreviatedFullName} into your Hound family`;
 
     // we now have the messages and can send our APN
-    sendNotificationForFamilyExcludingUser(userId, familyId, global.constant.notification.category.family.JOIN, alertTitle, alertBody, {});
+    sendNotificationForFamilyExcludingUser(userId, familyId, global.CONSTANT.NOTIFICATION.CATEGORY.FAMILY.JOIN, alertTitle, alertBody, {});
   }
   catch (error) {
     logServerError('createFamilyMemberJoinNotification', error);
@@ -67,7 +67,7 @@ async function createFamilyMemberLeaveNotification(userId, familyId) {
     const alertBody = `${abreviatedFullName} has parted ways with your Hound family`;
 
     // we now have the messages and can send our APN
-    sendNotificationForFamilyExcludingUser(userId, familyId, global.constant.notification.category.family.LEAVE, alertTitle, alertBody, {});
+    sendNotificationForFamilyExcludingUser(userId, familyId, global.CONSTANT.NOTIFICATION.CATEGORY.FAMILY.LEAVE, alertTitle, alertBody, {});
   }
   catch (error) {
     logServerError('createFamilyMemberLeaveNotification', error);
@@ -105,7 +105,7 @@ async function createFamilyLockedNotification(userId, familyId, newIsLocked) {
       : `${abreviatedFullName}'s updated your family settings to allow new users to join`;
 
     // we now have the messages and can send our APN
-    sendNotificationForFamilyExcludingUser(userId, familyId, global.constant.notification.category.family.LOCK, alertTitle, alertBody, {});
+    sendNotificationForFamilyExcludingUser(userId, familyId, global.CONSTANT.NOTIFICATION.CATEGORY.FAMILY.LOCK, alertTitle, alertBody, {});
   }
   catch (error) {
     logServerError('createFamilyLockedNotification', error);

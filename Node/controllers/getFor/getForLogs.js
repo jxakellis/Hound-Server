@@ -14,7 +14,7 @@ const dogLogsColumns = 'logId, userId, logDate, logNote, logAction, logCustomAct
 */
 async function getLogForLogId(databaseConnection, logId, forUserConfigurationPreviousDogManagerSynchronization) {
   if (areAllDefined(databaseConnection, logId) === false) {
-    throw new ValidationError('databaseConnection or logId missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection or logId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
   const userConfigurationPreviousDogManagerSynchronization = formatDate(forUserConfigurationPreviousDogManagerSynchronization);
 
@@ -40,7 +40,7 @@ async function getLogForLogId(databaseConnection, logId, forUserConfigurationPre
  */
 async function getAllLogsForDogId(databaseConnection, dogId, forUserConfigurationPreviousDogManagerSynchronization) {
   if (areAllDefined(databaseConnection, dogId) === false) {
-    throw new ValidationError('databaseConnection or dogId missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection or dogId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   const userConfigurationPreviousDogManagerSynchronization = formatDate(forUserConfigurationPreviousDogManagerSynchronization);

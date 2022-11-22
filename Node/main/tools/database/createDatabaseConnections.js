@@ -10,10 +10,10 @@ const {
   productionHoundDatabase,
 } = require('../../secrets/databaseCredentials');
 
-const user = global.constant.server.IS_PRODUCTION_DATABASE ? productionHoundUser : developmentHoundUser;
-const host = global.constant.server.IS_PRODUCTION_DATABASE ? productionHoundHost : developmentHoundHost;
-const password = global.constant.server.IS_PRODUCTION_DATABASE ? productionHoundPassword : developmentHoundPassword;
-const database = global.constant.server.IS_PRODUCTION_DATABASE ? productionHoundDatabase : developmentHoundDatabase;
+const user = global.CONSTANT.SERVER.IS_PRODUCTION_DATABASE ? productionHoundUser : developmentHoundUser;
+const host = global.CONSTANT.SERVER.IS_PRODUCTION_DATABASE ? productionHoundHost : developmentHoundHost;
+const password = global.CONSTANT.SERVER.IS_PRODUCTION_DATABASE ? productionHoundPassword : developmentHoundPassword;
+const database = global.CONSTANT.SERVER.IS_PRODUCTION_DATABASE ? productionHoundDatabase : developmentHoundDatabase;
 const connectTimeout = 30000;
 const databaseConnectionConfiguration = {
   user,

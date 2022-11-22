@@ -10,8 +10,8 @@ const { restoreAlarmNotificationsForAllFamilies } = require('../tools/notificati
 
 const configureServerForRequests = (server) => new Promise((resolve) => {
 // We can only create an HTTPS server on the AWS instance. Otherwise we create a HTTP server.
-  server.listen(global.constant.server.SERVER_PORT, async () => {
-    serverLogger.info(`Running HTTPS server on port ${global.constant.server.SERVER_PORT}; ${global.constant.server.IS_PRODUCTION_DATABASE ? 'production' : 'development'} database`);
+  server.listen(global.CONSTANT.SERVER.SERVER_PORT, async () => {
+    serverLogger.info(`Running HTTPS server on port ${global.CONSTANT.SERVER.SERVER_PORT}; ${global.CONSTANT.SERVER.IS_PRODUCTION_DATABASE ? 'production' : 'development'} database`);
 
     await configureDatabaseConnections();
 
@@ -19,13 +19,13 @@ const configureServerForRequests = (server) => new Promise((resolve) => {
 
     // Invoke this interval every DATABASE_MAINTENANCE_INTERVAL, tests database connections and delete certain things
     const databaseMaintenanceIntervalObject = setInterval(() => {
-      serverLogger.info(`Performing ${global.constant.server.DATABASE_MAINTENANCE_INTERVAL / 1000} second maintenance`);
+      serverLogger.info(`Performing ${global.CONSTANT.SERVER.DATABASE_MAINTENANCE_INTERVAL / 1000} second maintenance`);
 
       // Keep the latest DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES previousRequests, then delete any entries that are older
       databaseQuery(
         databaseConnectionForGeneral,
         'DELETE pReq FROM previousRequests AS pReq JOIN (SELECT requestId FROM previousRequests ORDER BY requestDate DESC LIMIT 1 OFFSET ?) as pReqLimit ON pReq.requestId < pReqLimit.requestId',
-        [global.constant.server.DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES],
+        [global.CONSTANT.SERVER.DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES],
       )
         .catch((error) => {
           logServerError(error);
@@ -35,7 +35,7 @@ const configureServerForRequests = (server) => new Promise((resolve) => {
       databaseQuery(
         databaseConnectionForGeneral,
         'DELETE pRes FROM previousResponses AS pRes JOIN (SELECT requestId FROM previousRequests ORDER BY requestDate DESC LIMIT 1 OFFSET ?) as pReqLimit ON pRes.requestId < pReqLimit.requestId',
-        [global.constant.server.DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES],
+        [global.CONSTANT.SERVER.DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES],
       )
         .catch((error) => {
           logServerError(error);
@@ -46,7 +46,7 @@ const configureServerForRequests = (server) => new Promise((resolve) => {
         .catch((error) => {
           logServerError(error);
         });
-    }, global.constant.server.DATABASE_MAINTENANCE_INTERVAL);
+    }, global.CONSTANT.SERVER.DATABASE_MAINTENANCE_INTERVAL);
 
     resolve(databaseMaintenanceIntervalObject);
   });

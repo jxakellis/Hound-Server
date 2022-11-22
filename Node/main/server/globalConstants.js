@@ -2,7 +2,7 @@
 // /server/ -> ../ -> /main/ -> ../ -> /Node/ -> ../ -> /Hound-Server/ -> ../ -> /PARENT_DIR/
 const IS_PRODUCTION_DATABASE = require('fs').existsSync(`${__dirname}/../../../../productionIndicator.txt`);
 
-const server = {
+const SERVER = {
   // True if we are using the production database that houses real users, false if we are launching a development server for testing
   IS_PRODUCTION_DATABASE,
   // HTTPS uses port 443
@@ -21,7 +21,7 @@ const server = {
   DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES: IS_PRODUCTION_DATABASE ? 10000000 : 10000,
 };
 
-const limit = {
+const LIMIT = {
   /// If we have too many jobs scheduled at once, it could slow performance.
   // Additionally, there could be uncaught jobs getting duplicated that won't get noticed with a high limit
   NUMBER_OF_SCHEDULED_JOBS_ALLOWED: 1000000,
@@ -31,8 +31,8 @@ const limit = {
   NUMBER_OF_REMINDERS_PER_DOG: 10,
 };
 
-const notification = {
-  length: {
+const NOTIFICATION = {
+  LENGTH: {
     /*
       Tested different title & body length APN to see how much of the notification was displayed
 
@@ -52,18 +52,18 @@ const notification = {
     ALERT_TITLE_LIMIT: 32,
     ALERT_BODY_LIMIT: 128,
   },
-  category: {
+  CATEGORY: {
     // for notifications about reminder's alarms
-    reminder: {
+    REMINDER: {
       PRIMARY: 'NOTIFICATION_CATEGORY_REMINDER_PRIMARY',
     },
     // for notifications about logs
-    log: {
+    LOG: {
       // Family member created a log of care
       CREATED: 'NOTIFICATION_CATEGORY_LOG_CREATED',
     },
     // for notifications about a family's status
-    family: {
+    FAMILY: {
       // Family member joined the family
       JOIN: 'NOTIFICATION_CATEGORY_FAMILY_JOIN',
       // Family member left the family
@@ -73,13 +73,13 @@ const notification = {
       // Family member locked the family
       LOCK: 'NOTIFICATION_CATEGORY_FAMILY_LOCK',
     },
-    user: {
+    USER: {
       // user terminated the Hound app (disabling their loud notifications)
       TERMINATE: 'NOTIFICATION_CATEGORY_USER_TERMINATE',
       // user was kicked from their family
       KICKED: 'NOTIFICATION_CATEGORY_USER_KICKED',
     },
-    general: {
+    GENERAL: {
       // unknown future notifications
       GENERAL: 'NOTIFICATION_CATEGORY_GENERAL_GENERAL',
     },
@@ -90,7 +90,7 @@ const DEFAULT_SUBSCRIPTION_PRODUCT_ID = 'com.jonathanxakellis.hound.default';
 const DEFAULT_SUBSCRIPTION_NUMBER_OF_FAMILY_MEMBERS = 1;
 const DEFAULT_SUBSCRIPTION_NUMBER_OF_DOGS = 2;
 
-const subscription = {
+const SUBSCRIPTION = {
   DEFAULT_SUBSCRIPTION_PRODUCT_ID,
   DEFAULT_SUBSCRIPTION_NUMBER_OF_FAMILY_MEMBERS,
   DEFAULT_SUBSCRIPTION_NUMBER_OF_DOGS,
@@ -126,7 +126,7 @@ const subscription = {
   ],
 };
 
-const error = {
+const ERROR = {
 /*
 Category: ER_GENERAL                        PREVIOUS NAME (pre 7/9/2022)
 ER_GENERAL_APP_VERSION_OUTDATED               (ER_APP_VERSION_OUTDATED)
@@ -158,7 +158,7 @@ Sub-Category: PERMISSION
 ER_FAMILY_PERMISSION_INVALID                (ER_FAMILY_PERMISSION_INVALID)
 */
 
-  general: {
+  GENERAL: {
     APP_VERSION_OUTDATED: 'ER_GENERAL_APP_VERSION_OUTDATED',
     ENVIRONMENT_INVALID: 'ER_GENERAL_ENVIRONMENT_INVALID',
     PARSE_FORM_DATA_FAILED: 'ER_GENERAL_PARSE_FORM_DATA_FAILED',
@@ -167,13 +167,12 @@ ER_FAMILY_PERMISSION_INVALID                (ER_FAMILY_PERMISSION_INVALID)
     POOL_TRANSACTION_FAILED: 'ER_GENERAL_POOL_TRANSACTION_FAILED',
     APPLE_SERVER_FAILED: 'ER_GENERAL_APPLE_SERVER_FAILED',
   },
-  value: {
+  VALUE: {
     MISSING: 'ER_VALUE_MISSING',
     INVALID: 'ER_VALUE_INVALID',
-    NOT_UPDATE: 'ER_VALUE_NOT_UPDATED',
   },
-  family: {
-    limit: {
+  FAMILY: {
+    LIMIT: {
       FAMILY_MEMBER_TOO_LOW: 'ER_FAMILY_LIMIT_FAMILY_MEMBER_TOO_LOW',
       DOG_TOO_LOW: 'ER_FAMILY_LIMIT_DOG_TOO_LOW',
       LOG_TOO_LOW: 'ER_FAMILY_LIMIT_LOG_TOO_LOW',
@@ -181,28 +180,33 @@ ER_FAMILY_PERMISSION_INVALID                (ER_FAMILY_PERMISSION_INVALID)
       FAMILY_MEMBER_EXCEEDED: 'ER_FAMILY_LIMIT_FAMILY_MEMBER_EXCEEDED',
       DOG_EXCEEDED: 'ER_FAMILY_LIMIT_DOG_EXCEEDED',
     },
-    join: {
+    DELETED: {
+      DOG: 'ER_FAMILY_DELETED_DOG',
+      LOG: 'ER_FAMILY_DELETED_LOG',
+      REMINDER: 'ER_FAMILY_DELETED_REMINDER',
+    },
+    JOIN: {
       FAMILY_CODE_INVALID: 'ER_FAMILY_JOIN_FAMILY_CODE_INVALID',
       FAMILY_LOCKED: 'ER_FAMILY_JOIN_FAMILY_LOCKED',
       IN_FAMILY_ALREADY: 'ER_FAMILY_JOIN_IN_FAMILY_ALREADY',
     },
-    leave: {
+    LEAVE: {
       SUBSCRIPTION_ACTIVE: 'ER_FAMILY_LEAVE_SUBSCRIPTION_ACTIVE',
       INVALID: 'ER_FAMILY_LEAVE_INVALID',
     },
-    permission: {
+    PERMISSION: {
       INVALID: 'ER_FAMILY_PERMISSION_INVALID',
     },
   },
 };
 
-global.constant = {
-  server,
-  limit,
-  notification,
-  subscription,
-  error,
+global.CONSTANT = {
+  SERVER,
+  LIMIT,
+  NOTIFICATION,
+  SUBSCRIPTION,
+  ERROR,
 };
 
 // Freeze every object so nothing can be mutated as constants are final
-Object.freeze(global.constant);
+Object.freeze(global.CONSTANT);

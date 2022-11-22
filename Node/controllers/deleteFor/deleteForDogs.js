@@ -12,7 +12,7 @@ async function deleteDogForFamilyIdDogId(databaseConnection, familyId, dogId) {
   const dogLastModified = new Date();
 
   if (areAllDefined(databaseConnection, familyId, dogId) === false) {
-    throw new ValidationError('databaseConnection, familyId, or dogId missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection, familyId, or dogId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   const promises = [
@@ -37,7 +37,7 @@ async function deleteDogForFamilyIdDogId(databaseConnection, familyId, dogId) {
  */
 async function deleteAllDogsForFamilyId(databaseConnection, familyId) {
   if (areAllDefined(databaseConnection, familyId) === false) {
-    throw new ValidationError('databaseConnection or familyId missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection or familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   // attempt to find all dogIds

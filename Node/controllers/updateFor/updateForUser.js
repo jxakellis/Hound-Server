@@ -26,7 +26,7 @@ async function updateUserForUserId(
   forUserConfigurationSilentModeEndUTCMinute,
 ) {
   if (areAllDefined(databaseConnection, userId) === false) {
-    throw new ValidationError('databaseConnection or userId missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection or userId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
   const userConfigurationIsNotificationEnabled = formatBoolean(forUserConfigurationIsNotificationEnabled);
   const userConfigurationIsLoudNotification = formatBoolean(forUserConfigurationIsLoudNotification);
@@ -57,7 +57,7 @@ async function updateUserForUserId(
     userConfigurationSilentModeStartUTCMinute,
     userConfigurationSilentModeEndUTCMinute,
   ) === false) {
-    throw new ValidationError('No userNotificationToken, userConfigurationIsNotificationEnabled, userConfigurationIsLoudNotification, userConfigurationInterfaceStyle, userConfigurationSnoozeLength, userConfigurationNotificationSound, userConfigurationLogsInterfaceScale, userConfigurationRemindersInterfaceScale, userConfigurationSilentModeIsEnabled, userConfigurationSilentModeStartUTCHour, userConfigurationSilentModeEndUTCHour, userConfigurationSilentModeStartUTCMinute, or userConfigurationSilentModeEndUTCMinute, provided', global.constant.error.value.MISSING);
+    throw new ValidationError('No userNotificationToken, userConfigurationIsNotificationEnabled, userConfigurationIsLoudNotification, userConfigurationInterfaceStyle, userConfigurationSnoozeLength, userConfigurationNotificationSound, userConfigurationLogsInterfaceScale, userConfigurationRemindersInterfaceScale, userConfigurationSilentModeIsEnabled, userConfigurationSilentModeStartUTCHour, userConfigurationSilentModeEndUTCHour, userConfigurationSilentModeStartUTCMinute, or userConfigurationSilentModeEndUTCMinute, provided', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   const promises = [];

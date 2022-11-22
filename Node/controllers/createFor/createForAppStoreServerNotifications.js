@@ -18,14 +18,14 @@ const { requestLogger } = require('../../main/tools/logging/loggers');
 
 async function createAppStoreServerNotificationForSignedPayload(databaseConnection, signedPayload) {
   if (areAllDefined(databaseConnection, signedPayload) === false) {
-    throw new ValidationError('databaseConnection or signedPayload missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection or signedPayload missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
   // TO DO NOW verify Apple signature
   const signedPayloadBuffer = Buffer.from(signedPayload.split('.')[1], 'base64');
   const notification = JSON.parse(signedPayloadBuffer.toString());
 
   if (areAllDefined(notification) === false) {
-    throw new ValidationError('notification missing', global.constant.error.value.MISSING);
+    throw new ValidationError('notification missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   // The in-app purchase event for which the App Store sent this version 2 notification.
@@ -38,7 +38,7 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
   const { data } = notification;
 
   if (areAllDefined(notificationUUID, data) === false) {
-    throw new ValidationError('notificationUUID or data missing', global.constant.error.value.MISSING);
+    throw new ValidationError('notificationUUID or data missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   const {
@@ -49,7 +49,7 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
   } = data;
 
   if (areAllDefined(signedRenewalInfo, signedTransactionInfo) === false) {
-    throw new ValidationError('signedRenewalInfo or signedTransactionInfo missing', global.constant.error.value.MISSING);
+    throw new ValidationError('signedRenewalInfo or signedTransactionInfo missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   // TO DO NOW verify Apple signature
@@ -78,7 +78,7 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
   const dataEnvironment = formatString(data.environment, 10);
   const renewalInfoEnvironment = formatString(renewalInfo.environment, 10);
   const transactionInfoEnvironment = formatString(transactionInfo.environment, 10);
-  const currentDatabaseEnvironment = global.constant.server.IS_PRODUCTION_DATABASE ? 'Production' : 'Sandbox';
+  const currentDatabaseEnvironment = global.CONSTANT.SERVER.IS_PRODUCTION_DATABASE ? 'Production' : 'Sandbox';
 
   if (dataEnvironment !== currentDatabaseEnvironment || renewalInfoEnvironment !== currentDatabaseEnvironment || transactionInfoEnvironment !== currentDatabaseEnvironment) {
     // Always log the App Store Server Notification. However, if the environments don't match, then don't do anything with that information.
@@ -101,7 +101,7 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
 
   // Check to see if the notification provided a transactionId
   if (areAllDefined(transactionId) === false) {
-    throw new ValidationError('transactionId missing', global.constant.error.value.MISSING);
+    throw new ValidationError('transactionId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   // Attempt to find a corresponding userId
@@ -128,7 +128,7 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
 
   if (areAllDefined(userId) === false) {
     // Unable to locate userId through applicationUsername nor through previous transactions
-    throw new ValidationError('userId missing', global.constant.error.value.MISSING);
+    throw new ValidationError('userId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   const originalTransactionId = formatNumber(transactionInfo.originalTransactionId);
@@ -183,7 +183,7 @@ const appStoreServerNotificationsValues = '?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
  */
 async function createAppStoreServerNotificationForNotification(databaseConnection, notification, data, renewalInfo, transactionInfo) {
   if (areAllDefined(databaseConnection, notification, data, renewalInfo, transactionInfo) === false) {
-    throw new ValidationError('databaseConnection or notification missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection or notification missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   // https://developer.apple.com/documentation/appstoreservernotifications/responsebodyv2decodedpayload

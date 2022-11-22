@@ -15,7 +15,7 @@ async function attachActiveSubscription(req, res, next) {
 
     // validate that a familyId was passed, assume that its in the correct format
     if (areAllDefined(familyId) === false) {
-      throw new ValidationError('familyId missing', global.constant.error.value.MISSING);
+      throw new ValidationError('familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
     }
 
     const familyActiveSubscription = await getActiveInAppSubscriptionForFamilyId(req.databaseConnection, familyId);
@@ -39,7 +39,7 @@ async function validateSubscription(req, res, next) {
     const { numberOfFamilyMembers, numberOfDogs } = req.familyActiveSubscription;
 
     if (areAllDefined(userId, familyId, numberOfFamilyMembers, numberOfDogs) === false) {
-      throw new ValidationError('userId, familyId, numberOfFamilyMembers, or numberOfDogs missing', global.constant.error.value.MISSING);
+      throw new ValidationError('userId, familyId, numberOfFamilyMembers, or numberOfDogs missing', global.CONSTANT.ERROR.VALUE.MISSING);
     }
 
     // a subscription doesn't matter for GET or DELETE requests. We can allow retrieving/deleting of information even if expired
@@ -51,7 +51,7 @@ async function validateSubscription(req, res, next) {
     const familyMembers = await getAllFamilyMembersForFamilyId(req.databaseConnection, familyId);
 
     if (familyMembers.length > numberOfFamilyMembers) {
-      throw new ValidationError(`Family member limit of ${numberOfFamilyMembers} exceeded`, global.constant.error.family.limit.FAMILY_MEMBER_EXCEEDED);
+      throw new ValidationError(`Family member limit of ${numberOfFamilyMembers} exceeded`, global.CONSTANT.ERROR.FAMILY.LIMIT.FAMILY_MEMBER_EXCEEDED);
     }
 
     // only retrieve enough not deleted dogs that would exceed the limit
@@ -62,7 +62,7 @@ async function validateSubscription(req, res, next) {
     );
 
     if (dogs.length > numberOfDogs) {
-      throw new ValidationError(`Dog limit of ${numberOfDogs} exceeded`, global.constant.error.family.limit.DOG_EXCEEDED);
+      throw new ValidationError(`Dog limit of ${numberOfDogs} exceeded`, global.CONSTANT.ERROR.FAMILY.LIMIT.DOG_EXCEEDED);
     }
 
     return next();

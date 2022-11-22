@@ -10,7 +10,7 @@ function createTerminateNotification(userId) {
   const alertTitle = '⚠️ Oops, you terminated Hound!';
   // Maximum possible length of message: 63 (raw) + 0 (variable) = 63 (<= ALERT_BODY_LIMIT)
   const alertBody = "Your upcoming alarms won't ring properly if Hound isn't running";
-  sendNotificationForUser(userId, global.constant.notification.category.user.TERMINATE, alertTitle, alertBody, {});
+  sendNotificationForUser(userId, global.CONSTANT.NOTIFICATION.CATEGORY.USER.TERMINATE, alertTitle, alertBody, {});
 }
 
 module.exports = { createTerminateNotification };

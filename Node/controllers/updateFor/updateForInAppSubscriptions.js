@@ -8,7 +8,7 @@ const { getFamilyHeadUserIdForFamilyId } = require('../getFor/getForFamily');
 
 async function updateInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseConnection, transactionId, userId, familyId, autoRenewStatus, revocationReason) {
   if (areAllDefined(databaseConnection, transactionId, userId, familyId) === false) {
-    throw new ValidationError('databaseConnection, transactionId, userId, or familyId missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection, transactionId, userId, or familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   const isAutoRenewing = formatBoolean(autoRenewStatus);
@@ -17,13 +17,13 @@ async function updateInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseC
   const isRevoked = areAllDefined(revocationReason) ? true : undefined;
 
   if (atLeastOneDefined(isAutoRenewing, isRevoked) === false) {
-    throw new ValidationError('isAutoRenewing or isRevoked missing', global.constant.error.value.MISSING);
+    throw new ValidationError('isAutoRenewing or isRevoked missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   const familyHeadUserId = await getFamilyHeadUserIdForFamilyId(databaseConnection, familyId);
 
   if (familyHeadUserId !== userId) {
-    throw new ValidationError('You are not the family head. Only the family head can modify the family subscription', global.constant.error.family.permission.INVALID);
+    throw new ValidationError('You are not the family head. Only the family head can modify the family subscription', global.CONSTANT.ERROR.FAMILY.PERMISSION.INVALID);
   }
 
   /*

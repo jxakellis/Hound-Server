@@ -14,7 +14,7 @@ async function updateDogForDogId(databaseConnection, dogId, forDogName) {
 
   // if dogName undefined, then there is nothing to update
   if (areAllDefined(databaseConnection, dogId, dogName) === false) {
-    throw new ValidationError('databaseConnection, dogId, or dogName missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection, dogId, or dogName missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   // updates the dogName for the dogId provided

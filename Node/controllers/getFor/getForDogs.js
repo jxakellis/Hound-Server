@@ -19,7 +19,7 @@ const dogsColumns = 'dogs.dogId, dogs.dogName, dogs.dogIsDeleted';
  */
 async function getDogForDogId(databaseConnection, dogId, forUserConfigurationPreviousDogManagerSynchronization, forIsRetrievingReminders, forIsRetrievingLogs) {
   if (areAllDefined(databaseConnection, dogId) === false) {
-    throw new ValidationError('databaseConnection or dogId missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection or dogId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   const userConfigurationPreviousDogManagerSynchronization = formatDate(forUserConfigurationPreviousDogManagerSynchronization);
@@ -73,7 +73,7 @@ async function getDogForDogId(databaseConnection, dogId, forUserConfigurationPre
 async function getAllDogsForUserIdFamilyId(databaseConnection, userId, familyId, forUserConfigurationPreviousDogManagerSynchronization, forIsRetrievingReminders, forIsRetrievingLogs) {
   // userId part is optional until later
   if (areAllDefined(databaseConnection, familyId) === false) {
-    throw new ValidationError('databaseConnection or familyId missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection or familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   const userConfigurationPreviousDogManagerSynchronization = formatDate(forUserConfigurationPreviousDogManagerSynchronization);

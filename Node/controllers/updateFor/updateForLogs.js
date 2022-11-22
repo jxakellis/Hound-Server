@@ -15,7 +15,7 @@ async function updateLogForDogIdLogId(databaseConnection, dogId, logId, forLogDa
   const logNote = formatString(forLogNote, 500);
 
   if (areAllDefined(databaseConnection, dogId, logId, logDate, logAction, logCustomActionName, logNote) === false) {
-    throw new ValidationError('databaseConnection, dogId, logId, logDate, logAction, logCustomActionName, or logNote missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection, dogId, logId, logDate, logAction, logCustomActionName, or logNote missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   await databaseQuery(

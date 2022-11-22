@@ -12,7 +12,7 @@ const transactionsColumns = 'transactionId, productId, purchaseDate, expirationD
  */
 async function getActiveInAppSubscriptionForFamilyId(databaseConnection, familyId) {
   if (areAllDefined(databaseConnection, familyId) === false) {
-    throw new ValidationError('databaseConnection or familyId missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection or familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   // find the family's most recent subscription
@@ -27,7 +27,7 @@ async function getActiveInAppSubscriptionForFamilyId(databaseConnection, familyI
 
   // since we found no family subscription, assign the family to the default subscription
   if (familySubscription.length === 0) {
-    familySubscription = global.constant.subscription.SUBSCRIPTIONS.find((subscription) => subscription.productId === global.constant.subscription.DEFAULT_SUBSCRIPTION_PRODUCT_ID);
+    familySubscription = global.CONSTANT.SUBSCRIPTION.SUBSCRIPTIONS.find((subscription) => subscription.productId === global.CONSTANT.SUBSCRIPTION.DEFAULT_SUBSCRIPTION_PRODUCT_ID);
     familySubscription.userId = undefined;
     familySubscription.purchaseDate = undefined;
     familySubscription.expirationDate = undefined;
@@ -53,7 +53,7 @@ async function getActiveInAppSubscriptionForFamilyId(databaseConnection, familyI
 async function getAllInAppSubscriptionsForFamilyId(databaseConnection, familyId) {
   // validate that a familyId was passed, assume that its in the correct format
   if (areAllDefined(databaseConnection, familyId) === false) {
-    throw new ValidationError('databaseConnection or familyId missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection or familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   // find all of the family's subscriptions
@@ -81,7 +81,7 @@ async function getAllInAppSubscriptionsForFamilyId(databaseConnection, familyId)
 async function getInAppSubscriptionForTransactionId(databaseConnection, forTransactionId) {
   const transactionId = formatNumber(forTransactionId);
   if (areAllDefined(databaseConnection, transactionId) === false) {
-    throw new ValidationError('databaseConnection or transactionId missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection or transactionId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   let transactionsHistory = await databaseQuery(

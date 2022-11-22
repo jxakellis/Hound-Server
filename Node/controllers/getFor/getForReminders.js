@@ -14,7 +14,7 @@ const dogRemindersColumns = 'reminderId, reminderAction, reminderCustomActionNam
  */
 async function getReminderForReminderId(databaseConnection, reminderId, forUserConfigurationPreviousDogManagerSynchronization) {
   if (areAllDefined(databaseConnection, reminderId) === false) {
-    throw new ValidationError('databaseConnection or reminderId missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection or reminderId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   const userConfigurationPreviousDogManagerSynchronization = formatDate(forUserConfigurationPreviousDogManagerSynchronization);
@@ -43,7 +43,7 @@ async function getReminderForReminderId(databaseConnection, reminderId, forUserC
  */
 async function getAllRemindersForDogId(databaseConnection, dogId, forUserConfigurationPreviousDogManagerSynchronization) {
   if (areAllDefined(databaseConnection, dogId) === false) {
-    throw new ValidationError('databaseConnection or dogId missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection or dogId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   const userConfigurationPreviousDogManagerSynchronization = formatDate(forUserConfigurationPreviousDogManagerSynchronization);

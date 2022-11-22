@@ -58,7 +58,7 @@ async function updateDatabaseConnectionsWaitTimeouts(...forDatabaseConnections) 
       databaseQuery(
         databaseConnection,
         'SET session wait_timeout = ?',
-        [(global.constant.server.DATABASE_CONNECTION_WAIT_TIMEOUT)],
+        [(global.CONSTANT.SERVER.DATABASE_CONNECTION_WAIT_TIMEOUT)],
       ),
     );
   }

@@ -7,7 +7,7 @@ serverLogger.level = 'trace';
 
 // trace: 10, debug: 20, info: 30, warn: 40, error: 50, fatal: 60, silent: infinity
 // The silent logging level is a specialized level which will disable all logging, the silent log method is a noop function.
-const level = global.constant.server.CONSOLE_LOGGING_ENABLED === true ? 'debug' : 'silent';
+const level = global.CONSTANT.SERVER.CONSOLE_LOGGING_ENABLED === true ? 'debug' : 'silent';
 
 // API Requests from users
 const requestLogger = parentLogger.child({ name: 'Request', level });

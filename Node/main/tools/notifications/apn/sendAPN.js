@@ -26,8 +26,8 @@ function sendAPN(userNotificationConfiguration, category, forAlertTitle, forAler
   const userConfigurationSilentModeEndUTCHour = formatNumber(userNotificationConfiguration.userConfigurationSilentModeEndUTCHour);
   const userConfigurationSilentModeStartUTCMinute = formatNumber(userNotificationConfiguration.userConfigurationSilentModeStartUTCMinute);
   const userConfigurationSilentModeEndUTCMinute = formatNumber(userNotificationConfiguration.userConfigurationSilentModeEndUTCMinute);
-  const alertTitle = formatString(forAlertTitle, global.constant.notification.length.ALERT_TITLE_LIMIT);
-  const alertBody = formatString(forAlertBody, global.constant.notification.length.ALERT_BODY_LIMIT);
+  const alertTitle = formatString(forAlertTitle, global.CONSTANT.NOTIFICATION.LENGTH.ALERT_TITLE_LIMIT);
+  const alertBody = formatString(forAlertBody, global.CONSTANT.NOTIFICATION.LENGTH.ALERT_BODY_LIMIT);
 
   apnLogger.debug(`sendAPN ${userNotificationConfiguration}, ${category}, ${alertTitle}, ${alertBody}`);
 
@@ -109,7 +109,7 @@ function sendAPN(userNotificationConfiguration, category, forAlertTitle, forAler
 
   // if there is a sound for the reminder alarm alert, then we add it to the rawPayload
   if (
-    (category === global.constant.notification.category.reminder.PRIMARY)
+    (category === global.CONSTANT.NOTIFICATION.CATEGORY.REMINDER.PRIMARY)
   && areAllDefined(userConfigurationNotificationSound, notification, notification.rawPayload, notification.rawPayload.aps)) {
     notification.rawPayload.aps.sound = `${userConfigurationNotificationSound}30.wav`;
   }

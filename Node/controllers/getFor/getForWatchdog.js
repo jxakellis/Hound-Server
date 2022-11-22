@@ -9,7 +9,7 @@ const { areAllDefined } = require('../../main/tools/format/validateDefined');
  */
 async function getDatabaseStatusForWatchdog(databaseConnection) {
   if (areAllDefined(databaseConnection) === false) {
-    throw new ValidationError('databaseConnection missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   const tablesToCheck = [

@@ -10,7 +10,7 @@ function createUserKickedNotification(userId) {
   const alertTitle = '⚠️ You have been kicked';
   // Maximum possible length of message: 99 (raw) + 0 (variable) = 99 (<= ALERT_TITLE_LIMIT)
   const alertBody = 'You are no longer a part of your Hound family. However, you can still create or join another family';
-  sendNotificationForUser(userId, global.constant.notification.category.user.KICKED, alertTitle, alertBody, {});
+  sendNotificationForUser(userId, global.CONSTANT.NOTIFICATION.CATEGORY.USER.KICKED, alertTitle, alertBody, {});
 }
 
 module.exports = { createUserKickedNotification };

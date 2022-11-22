@@ -15,7 +15,7 @@ async function deleteReminderForFamilyIdDogIdReminderId(databaseConnection, fami
   const reminderLastModified = new Date();
 
   if (areAllDefined(databaseConnection, familyId, dogId, reminderId) === false) {
-    throw new ValidationError('databaseConnection, familyId, dogId, or reminderId missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection, familyId, dogId, or reminderId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   await databaseQuery(
@@ -35,7 +35,7 @@ async function deleteRemindersForFamilyIdDogIdReminderIds(databaseConnection, fa
   const reminders = formatArray(forReminders);
 
   if (areAllDefined(databaseConnection, dogId, reminders) === false) {
-    throw new ValidationError('databaseConnection, dogId, or reminders missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection, dogId, or reminders missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   const promises = [];
@@ -55,7 +55,7 @@ async function deleteAllRemindersForFamilyIdDogId(databaseConnection, familyId, 
   const reminderLastModified = new Date();
 
   if (areAllDefined(databaseConnection, familyId, dogId) === false) {
-    throw new ValidationError('databaseConnection, familyId, or dogId missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection, familyId, or dogId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   const promises = [

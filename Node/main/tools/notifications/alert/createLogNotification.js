@@ -43,7 +43,7 @@ async function createLogNotification(userId, familyId, dogId, logAction, logCust
     const alertBody = `${abreviatedFullName} logged '${formattedLogAction}'`;
 
     // we now have the messages and can send our APN
-    sendNotificationForFamilyExcludingUser(userId, familyId, global.constant.notification.category.log.CREATED, alertTitle, alertBody, {});
+    sendNotificationForFamilyExcludingUser(userId, familyId, global.CONSTANT.NOTIFICATION.CATEGORY.LOG.CREATED, alertTitle, alertBody, {});
   }
   catch (error) {
     logServerError('createLogNotification', error);

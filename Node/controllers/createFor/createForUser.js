@@ -36,7 +36,7 @@ async function createUserForUserIdentifier(
   forUserConfigurationSilentModeEndUTCMinte,
 ) {
   if (areAllDefined(databaseConnection, userIdentifier) === false) {
-    throw new ValidationError('databaseConnection or userIdentifier missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection or userIdentifier missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
   const userAccountCreationDate = new Date();
   const userId = hash(userIdentifier, userAccountCreationDate.toISOString());
@@ -81,7 +81,7 @@ async function createUserForUserIdentifier(
     userConfigurationSilentModeStartUTCMinute,
     userConfigurationSilentModeEndUTCMinute,
   ) === false) {
-    throw new ValidationError('userId, userIdentifier, userEmail, userAccountCreationDate, userConfigurationIsNotificationEnabled, userConfigurationIsLoudNotification, userConfigurationInterfaceStyle, userConfigurationSnoozeLength, userConfigurationNotificationSound, userConfigurationLogsInterfaceScale, userConfigurationRemindersInterfaceScale, userConfigurationSilentModeIsEnabled, userConfigurationSilentModeStartUTCHour, userConfigurationSilentModeEndUTCHour, userConfigurationSilentModeStartUTCMinute, or userConfigurationSilentModeEndUTCMinute, missing', global.constant.error.value.MISSING);
+    throw new ValidationError('userId, userIdentifier, userEmail, userAccountCreationDate, userConfigurationIsNotificationEnabled, userConfigurationIsLoudNotification, userConfigurationInterfaceStyle, userConfigurationSnoozeLength, userConfigurationNotificationSound, userConfigurationLogsInterfaceScale, userConfigurationRemindersInterfaceScale, userConfigurationSilentModeIsEnabled, userConfigurationSilentModeStartUTCHour, userConfigurationSilentModeEndUTCHour, userConfigurationSilentModeStartUTCMinute, or userConfigurationSilentModeEndUTCMinute, missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   const promises = [

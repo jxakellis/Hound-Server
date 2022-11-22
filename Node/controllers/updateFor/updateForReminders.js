@@ -13,7 +13,7 @@ const { areAllDefined } = require('../../main/tools/format/validateDefined');
 async function updateReminderForDogIdReminder(databaseConnection, dogId, reminder) {
   // check that we have a reminder to update in the first place
   if (areAllDefined(databaseConnection, dogId, reminder) === false) {
-    throw new ValidationError('databaseConnection, dogId, or reminder missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection, dogId, or reminder missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   // general reminder components
@@ -55,27 +55,27 @@ async function updateReminderForDogIdReminder(databaseConnection, dogId, reminde
 
   // check to see that necessary generic reminder components are present
   if (areAllDefined(reminderId, reminderAction, reminderCustomActionName, reminderType, reminderIsEnabled, reminderExecutionBasis) === false) {
-    throw new ValidationError('reminderId, reminderAction, reminderCustomActionName, reminderType, reminderIsEnabled, or reminderExecutionBasis missing', global.constant.error.value.MISSING);
+    throw new ValidationError('reminderId, reminderAction, reminderCustomActionName, reminderType, reminderIsEnabled, or reminderExecutionBasis missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
   else if (reminderType !== 'countdown' && reminderType !== 'weekly' && reminderType !== 'monthly' && reminderType !== 'oneTime') {
-    throw new ValidationError('reminderType invalid', global.constant.error.value.INVALID);
+    throw new ValidationError('reminderType invalid', global.CONSTANT.ERROR.VALUE.INVALID);
   }
   // snoozeExecutionInterval optional
   // countdown
   else if (areAllDefined(countdownExecutionInterval) === false) {
-    throw new ValidationError('countdownExecutionInterval missing', global.constant.error.value.MISSING);
+    throw new ValidationError('countdownExecutionInterval missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
   // weekly
   else if (areAllDefined(weeklyUTCHour, weeklyUTCMinute, weeklySunday, weeklyMonday, weeklyTuesday, weeklyWednesday, weeklyThursday, weeklyFriday, weeklySaturday) === false) {
-    throw new ValidationError('weeklyUTCHour, weeklyUTCMinute, weeklySunday, weeklyMonday, weeklyTuesday, weeklyWednesday, weeklyThursday, weeklyFriday, or weeklySaturday missing', global.constant.error.value.MISSING);
+    throw new ValidationError('weeklyUTCHour, weeklyUTCMinute, weeklySunday, weeklyMonday, weeklyTuesday, weeklyWednesday, weeklyThursday, weeklyFriday, or weeklySaturday missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
   // monthly
   else if (areAllDefined(monthlyUTCDay, monthlyUTCHour, monthlyUTCMinute) === false) {
-    throw new ValidationError('monthlyUTCDay, monthlyUTCHour, or monthlyUTCMinute missing', global.constant.error.value.MISSING);
+    throw new ValidationError('monthlyUTCDay, monthlyUTCHour, or monthlyUTCMinute missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
   // oneTime
   else if (areAllDefined(oneTimeDate) === false) {
-    throw new ValidationError('oneTimeDate missing', global.constant.error.value.MISSING);
+    throw new ValidationError('oneTimeDate missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   await databaseQuery(
@@ -103,7 +103,7 @@ async function updateRemindersForDogIdReminders(databaseConnection, dogId, forRe
   const reminders = formatArray(forReminders);
 
   if (areAllDefined(databaseConnection, dogId, reminders) === false) {
-    throw new ValidationError('databaseConnection, dogId, or reminders missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection, dogId, or reminders missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   const promises = [];

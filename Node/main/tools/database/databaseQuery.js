@@ -9,13 +9,13 @@ const { databaseConnectionForGeneral } = require('./createDatabaseConnections');
 const databaseQuery = (forDatabaseConnection, forSQLString, forSQLVariables) => new Promise((resolve, reject) => {
   const databaseConnection = areAllDefined(forDatabaseConnection) ? forDatabaseConnection : databaseConnectionForGeneral;
   if (areAllDefined(databaseConnection) === false) {
-    reject(new ValidationError('databaseConnection missing for databaseQuery', global.constant.error.value.MISSING));
+    reject(new ValidationError('databaseConnection missing for databaseQuery', global.CONSTANT.ERROR.VALUE.MISSING));
   }
 
   const SQLString = formatString(forSQLString);
 
   if (areAllDefined(SQLString) === false) {
-    reject(new ValidationError('SQLString missing for databaseQuery', global.constant.error.value.MISSING));
+    reject(new ValidationError('SQLString missing for databaseQuery', global.CONSTANT.ERROR.VALUE.MISSING));
   }
 
   const SQLVariables = areAllDefined(forSQLVariables) ? formatArray(forSQLVariables) : [];

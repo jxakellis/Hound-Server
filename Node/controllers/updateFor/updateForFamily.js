@@ -20,7 +20,7 @@ async function updateFamilyForUserIdFamilyId(databaseConnection, userId, familyI
   const familyCode = formatString(forFamilyCode);
   const familyIsLocked = formatBoolean(forIsLocked);
   if (areAllDefined(databaseConnection, userId) === false) {
-    throw new ValidationError('databaseConnection or userId missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection or userId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   // familyId doesn't exist, so user must want to join a family
@@ -31,7 +31,7 @@ async function updateFamilyForUserIdFamilyId(databaseConnection, userId, familyI
     await updateIsLocked(databaseConnection, userId, familyId, familyIsLocked);
   }
   else {
-    throw new ValidationError('No value provided', global.constant.error.value.MISSING);
+    throw new ValidationError('No value provided', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 }
 
@@ -43,7 +43,7 @@ async function addFamilyMember(databaseConnection, userId, forFamilyCode) {
   let familyCode = formatString(forFamilyCode);
 
   if (areAllDefined(databaseConnection, userId, familyCode) === false) {
-    throw new ValidationError('databaseConnection, userId, or familyCode missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection, userId, or familyCode missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
   familyCode = familyCode.toUpperCase();
 
@@ -57,14 +57,14 @@ async function addFamilyMember(databaseConnection, userId, forFamilyCode) {
   // make sure the familyCode was valid by checking if it matched a family
   if (family.length === 0) {
     // result length is zero so there are no families with that familyCode
-    throw new ValidationError('familyCode invalid, not found', global.constant.error.family.join.FAMILY_CODE_INVALID);
+    throw new ValidationError('familyCode invalid, not found', global.CONSTANT.ERROR.FAMILY.JOIN.FAMILY_CODE_INVALID);
   }
   [family] = family;
   const familyId = formatSHA256Hash(family.familyId);
   const familyIsLocked = formatBoolean(family.familyIsLocked);
   // familyCode exists and is linked to a family, now check if family is locked against new members
   if (familyIsLocked) {
-    throw new ValidationError('Family is locked', global.constant.error.family.join.FAMILY_LOCKED);
+    throw new ValidationError('Family is locked', global.CONSTANT.ERROR.FAMILY.JOIN.FAMILY_LOCKED);
   }
 
   // the familyCode is valid and linked to an UNLOCKED family
@@ -73,7 +73,7 @@ async function addFamilyMember(databaseConnection, userId, forFamilyCode) {
 
   if (isFamilyMember.length !== 0) {
     // user is already in a family
-    throw new ValidationError('You are already in a family', global.constant.error.family.join.IN_FAMILY_ALREADY);
+    throw new ValidationError('You are already in a family', global.CONSTANT.ERROR.FAMILY.JOIN.IN_FAMILY_ALREADY);
   }
 
   // Don't use .familyActiveSubscription property: the property wasn't assigned to the request due to the user not being in a family (only assigned with familyId is path param)
@@ -82,7 +82,7 @@ async function addFamilyMember(databaseConnection, userId, forFamilyCode) {
 
   // the family is either at the limit of family members is exceeds the limit, therefore no new users can join
   if (familyMembers.length >= familyActiveSubscription.numberOfFamilyMembers) {
-    throw new ValidationError(`Family member limit of ${familyActiveSubscription.numberOfFamilyMembers} exceeded`, global.constant.error.family.limit.FAMILY_MEMBER_TOO_LOW);
+    throw new ValidationError(`Family member limit of ${familyActiveSubscription.numberOfFamilyMembers} exceeded`, global.CONSTANT.ERROR.FAMILY.LIMIT.FAMILY_MEMBER_TOO_LOW);
   }
 
   // familyCode validated and user is not a family member in any family
@@ -103,7 +103,7 @@ async function updateIsLocked(databaseConnection, userId, familyId, forIsLocked)
   const familyIsLocked = formatBoolean(forIsLocked);
 
   if (areAllDefined(databaseConnection, userId, familyId, familyIsLocked) === false) {
-    throw new ValidationError('databaseConnection, userId, familyId, or familyIsLocked missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection, userId, familyId, or familyIsLocked missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   await databaseQuery(

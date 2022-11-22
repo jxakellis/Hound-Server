@@ -31,12 +31,12 @@ async function configureRequestForResponse(req, res, next) {
       req.hasActiveDatabaseTransaction = true;
     }
     catch (transactionError) {
-      res.sendResponseForStatusJSONError(500, undefined, new DatabaseError("Couldn't begin a transaction with databaseConnection", global.constant.error.general.POOL_TRANSACTION_FAILED));
+      res.sendResponseForStatusJSONError(500, undefined, new DatabaseError("Couldn't begin a transaction with databaseConnection", global.CONSTANT.ERROR.GENERAL.POOL_TRANSACTION_FAILED));
       return;
     }
   }
   catch (databaseConnectionError) {
-    res.sendResponseForStatusJSONError(500, undefined, new DatabaseError("Couldn't get a connection from databaseConnectionPoolForRequests", global.constant.error.general.POOL_CONNECTION_FAILED));
+    res.sendResponseForStatusJSONError(500, undefined, new DatabaseError("Couldn't get a connection from databaseConnectionPoolForRequests", global.CONSTANT.ERROR.GENERAL.POOL_CONNECTION_FAILED));
     return;
   }
 

@@ -181,8 +181,8 @@ process.on('uncaughtException', async (error, origin) => {
    * The previous Node Application did not shut down properly
    * process.on('exit', ...) isn't called when the process crashes or is killed.
    */
-    exec(`npx kill-port ${global.constant.server.SERVER_PORT}`, () => {
-      serverLogger.info(`EADDRINUSE; Process(es) on port ${global.constant.server.SERVER_PORT} killed`);
+    exec(`npx kill-port ${global.CONSTANT.SERVER.SERVER_PORT}`, () => {
+      serverLogger.info(`EADDRINUSE; Process(es) on port ${global.CONSTANT.SERVER.SERVER_PORT} killed`);
       process.exit(1);
     });
     return;

@@ -10,7 +10,7 @@ async function deleteLogForLogId(databaseConnection, dogId, logId) {
   const logLastModified = new Date();
 
   if (areAllDefined(databaseConnection, dogId, logId) === false) {
-    throw new ValidationError('databaseConnection, dogId, or logId missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection, dogId, or logId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   await databaseQuery(
@@ -28,7 +28,7 @@ async function deleteAllLogsForDogId(databaseConnection, dogId) {
   const logLastModified = new Date();
 
   if (areAllDefined(databaseConnection, dogId) === false) {
-    throw new ValidationError('databaseConnection or dogId missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection or dogId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   await databaseQuery(

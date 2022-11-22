@@ -20,7 +20,7 @@ async function deleteFamilyForUserIdFamilyId(databaseConnection, userId, familyI
 
   // familyKickUserId is optional
   if (areAllDefined(databaseConnection, userId, familyId) === false) {
-    throw new ValidationError('databaseConnection, userId, or familyId missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection, userId, or familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   // This will only store the userId, familyId, userFirstName, and userLastName of any one in the family that has left / been kicked
@@ -39,7 +39,7 @@ async function deleteFamilyForUserIdFamilyId(databaseConnection, userId, familyI
  */
 async function deleteFamily(databaseConnection, userId, familyId, familyActiveSubscription) {
   if (areAllDefined(databaseConnection, userId, familyId, familyActiveSubscription) === false) {
-    throw new ValidationError('databaseConnection, userId, familyId, or familyActiveSubscription missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection, userId, familyId, or familyActiveSubscription missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   let promises = [
@@ -63,7 +63,7 @@ async function deleteFamily(databaseConnection, userId, familyId, familyActiveSu
   if (family.length === 1) {
     if (familyMembers.length !== 1) {
       // Cannot destroy family until other members are gone
-      throw new ValidationError('Family still contains multiple members', global.constant.error.family.leave.INVALID);
+      throw new ValidationError('Family still contains multiple members', global.CONSTANT.ERROR.FAMILY.LEAVE.INVALID);
     }
 
     /*
@@ -74,9 +74,9 @@ async function deleteFamily(databaseConnection, userId, familyId, familyActiveSu
 
       Only accept if there is no active subscription or the active subscription isn't auto-renewing
     */
-    if (familyActiveSubscription.productId !== global.constant.subscription.DEFAULT_SUBSCRIPTION_PRODUCT_ID
+    if (familyActiveSubscription.productId !== global.CONSTANT.SUBSCRIPTION.DEFAULT_SUBSCRIPTION_PRODUCT_ID
       && (areAllDefined(familyActiveSubscription.isAutoRenewing) === false || familyActiveSubscription.isAutoRenewing === true)) {
-      throw new ValidationError('Family still has an auto-renewing, active subscription', global.constant.error.family.leave.SUBSCRIPTION_ACTIVE);
+      throw new ValidationError('Family still has an auto-renewing, active subscription', global.CONSTANT.ERROR.FAMILY.LEAVE.SUBSCRIPTION_ACTIVE);
     }
 
     //  The user has no active subscription or manually stopped their subscription from renewing
@@ -91,7 +91,7 @@ async function deleteFamily(databaseConnection, userId, familyId, familyActiveSu
     );
 
     if (areAllDefined(familyAccountCreationDate) === false) {
-      throw new ValidationError('familyAccountCreationDate missing', global.constant.error.value.MISSING);
+      throw new ValidationError('familyAccountCreationDate missing', global.CONSTANT.ERROR.VALUE.MISSING);
     }
 
     // Destroy the family now that it is ok to do so
@@ -168,17 +168,17 @@ async function kickFamilyMember(databaseConnection, userId, familyId, forKickUse
 
   // have to specify who to kick from the family
   if (areAllDefined(databaseConnection, userId, familyId, familyKickUserId) === false) {
-    throw new ValidationError('databaseConnection, userId, familyId, or familyKickUserId missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection, userId, familyId, or familyKickUserId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
   // a user cannot kick themselves
   if (userId === familyKickUserId) {
-    throw new ValidationError("You can't kick yourself from your family", global.constant.error.value.INVALID);
+    throw new ValidationError("You can't kick yourself from your family", global.CONSTANT.ERROR.VALUE.INVALID);
   }
   const familyHeadUserId = await getFamilyHeadUserIdForFamilyId(databaseConnection, familyId);
 
   // check to see if the user is the family head, as only the family head has permissions to kick
   if (familyHeadUserId !== userId) {
-    throw new ValidationError('You are not the family head. Only the family head can kick family members', global.constant.error.family.permission.INVALID);
+    throw new ValidationError('You are not the family head. Only the family head can kick family members', global.CONSTANT.ERROR.FAMILY.PERMISSION.INVALID);
   }
 
   let promises = [

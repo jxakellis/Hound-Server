@@ -12,14 +12,14 @@ const { getFamilyMemberUserIdForUserId } = require('../getFor/getForFamily');
  */
 async function createFamilyForUserId(databaseConnection, userId) {
   if (areAllDefined(databaseConnection, userId) === false) {
-    throw new ValidationError('databaseConnection or userId missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection or userId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   const familyAccountCreationDate = new Date();
   const familyId = hash(userId, familyAccountCreationDate.toISOString());
 
   if (areAllDefined(familyAccountCreationDate, familyId) === false) {
-    throw new ValidationError('familyAccountCreationDate or familyId missing', global.constant.error.value.MISSING);
+    throw new ValidationError('familyAccountCreationDate or familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   // check if the user is already in a family
@@ -27,7 +27,7 @@ async function createFamilyForUserId(databaseConnection, userId) {
 
   // validate that the user is not in a family
   if (existingFamilyResult.length !== 0) {
-    throw new ValidationError('User is already in a family', global.constant.error.family.join.IN_FAMILY_ALREADY);
+    throw new ValidationError('User is already in a family', global.CONSTANT.ERROR.FAMILY.JOIN.IN_FAMILY_ALREADY);
   }
 
   // create a family code for the new family

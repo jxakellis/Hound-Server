@@ -12,7 +12,7 @@ const userConfigurationColumns = 'userConfiguration.userConfigurationIsNotificat
  */
 async function getUserForUserId(databaseConnection, userId) {
   if (areAllDefined(databaseConnection, userId) === false) {
-    throw new ValidationError('databaseConnection or userId missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection or userId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   // have to specifically reference the columns, otherwise familyMembers.userId will override users.userId.
@@ -33,7 +33,7 @@ async function getUserForUserId(databaseConnection, userId) {
  */
 async function getUserForUserIdentifier(databaseConnection, userIdentifier) {
   if (areAllDefined(databaseConnection, userIdentifier) === false) {
-    throw new ValidationError('databaseConnection or userIdentifier missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection or userIdentifier missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   // userIdentifier method of finding corresponding user(s)
@@ -56,7 +56,7 @@ async function getUserForUserIdentifier(databaseConnection, userIdentifier) {
  */
 async function getUserForUserApplicationUsername(databaseConnection, userApplicationUsername) {
   if (areAllDefined(databaseConnection, userApplicationUsername) === false) {
-    throw new ValidationError('databaseConnection or userApplicationUsername missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection or userApplicationUsername missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   // have to specifically reference the columns, otherwise familyMembers.userId will override users.userId.
@@ -73,7 +73,7 @@ async function getUserForUserApplicationUsername(databaseConnection, userApplica
 
 async function getUserFirstNameLastNameForUserId(databaseConnection, userId) {
   if (areAllDefined(databaseConnection, userId) === false) {
-    throw new ValidationError('databaseConnection or userId missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection or userId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   let userInformation = await databaseQuery(

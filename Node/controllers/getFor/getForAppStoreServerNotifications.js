@@ -6,7 +6,7 @@ const appStoreServerNotificationsColumns = 'notificationType, subtype, notificat
 
 async function getAppStoreServerNotificationForNotificationUUID(databaseConnection, notificationUUID) {
   if (areAllDefined(databaseConnection, notificationUUID) === false) {
-    throw new ValidationError('databaseConnection or notificationUUID missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection or notificationUUID missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   let notification = await databaseQuery(

@@ -14,7 +14,7 @@ const familiesColumns = 'userId, familyCode, familyIsLocked';
 async function getAllFamilyInformationForFamilyId(databaseConnection, familyId, familyActiveSubscription) {
   // validate that a familyId was passed, assume that its in the correct format
   if (areAllDefined(databaseConnection, familyId) === false) {
-    throw new ValidationError('databaseConnection or familyId missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection or familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
   // family id is validated, therefore we know familyMembers is >= 1 for familyId
   // find which family member is the head
@@ -44,7 +44,7 @@ async function getAllFamilyInformationForFamilyId(databaseConnection, familyId, 
 async function getAllFamilyMembersForFamilyId(databaseConnection, familyId) {
   // validate that a familyId was passed, assume that its in the correct format
   if (areAllDefined(databaseConnection, familyId) === false) {
-    throw new ValidationError('databaseConnection or familyId missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection or familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   // get family members
@@ -60,7 +60,7 @@ async function getAllFamilyMembersForFamilyId(databaseConnection, familyId) {
 async function getAllPreviousFamilyMembersForFamilyId(databaseConnection, familyId) {
   // validate that a familyId was passed, assume that its in the correct format
   if (areAllDefined(databaseConnection, familyId) === false) {
-    throw new ValidationError('databaseConnection or familyId missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection or familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   // get family members
@@ -95,7 +95,7 @@ async function getAllPreviousFamilyMembersForFamilyId(databaseConnection, family
 async function getFamilyMemberUserIdForUserId(databaseConnection, userId) {
   // validate that a userId was passed, assume that its in the correct format
   if (areAllDefined(databaseConnection, userId) === false) {
-    throw new ValidationError('databaseConnection or userId missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection or userId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   const result = await databaseQuery(
@@ -113,7 +113,7 @@ async function getFamilyMemberUserIdForUserId(databaseConnection, userId) {
  */
 async function getFamilyHeadUserIdForFamilyId(databaseConnection, familyId) {
   if (areAllDefined(databaseConnection, familyId) === false) {
-    throw new ValidationError('databaseConnection or familyId missing', global.constant.error.value.MISSING);
+    throw new ValidationError('databaseConnection or familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   let result = await databaseQuery(

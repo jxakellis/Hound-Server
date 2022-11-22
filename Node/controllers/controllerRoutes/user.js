@@ -18,7 +18,7 @@ async function getUser(req, res) {
     const { userIdentifier } = req.query;
 
     if (atLeastOneDefined(userId, userIdentifier) === false) {
-      throw new ValidationError('userId or userIdentifier missing', global.constant.error.value.MISSING);
+      throw new ValidationError('userId or userIdentifier missing', global.CONSTANT.ERROR.VALUE.MISSING);
     }
 
     const result = areAllDefined(userId)
@@ -28,7 +28,7 @@ async function getUser(req, res) {
       : await getUserForUserIdentifier(req.databaseConnection, userIdentifier);
 
     if (areAllDefined(result) === false) {
-      throw new ValidationError('No user found or invalid permissions', global.constant.error.value.INVALID);
+      throw new ValidationError('No user found or invalid permissions', global.CONSTANT.ERROR.VALUE.INVALID);
     }
 
     return res.sendResponseForStatusJSONError(200, { result: areAllDefined(result) ? result : '' }, undefined);
