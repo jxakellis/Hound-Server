@@ -248,14 +248,8 @@ async function validateBodyReminderId(req, res, next) {
   // dogId should be validated already
 
   const { dogId } = req.params;
-  let reminders;
   // to simplify process, whether user provides one reminder or an array of reminders, we just throw in the same array
-  if (areAllDefined(formatArray(req.body.reminders)) === true) {
-    reminders = formatArray(req.body.reminders);
-  }
-  else {
-    reminders = [req.body];
-  }
+  const reminders = areAllDefined(formatArray(req.body.reminders)) === true ? formatArray(req.body.reminders) : [req.body];
 
   if (areAllDefined(reminders) === false) {
     // reminderId was not provided or is invalid
