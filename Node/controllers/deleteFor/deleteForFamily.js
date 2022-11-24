@@ -204,7 +204,7 @@ async function kickFamilyMember(databaseConnection, userId, familyId, forKickUse
     databaseQuery(
       databaseConnection,
       'INSERT INTO previousFamilyMembers(familyId, userId, familyMemberJoinDate, userFirstName, userLastName, familyMemberLeaveDate, familyMemberLeaveReason) VALUES (?,?,?,?,?,?,?)',
-      [familyId, userId, familyMemberJoinDate.familyMemberJoinDate, userFirstName, userLastName, new Date(), 'userKicked'],
+      [familyId, familyKickUserId, familyMemberJoinDate.familyMemberJoinDate, userFirstName, userLastName, new Date(), 'userKicked'],
     ),
   ];
 
