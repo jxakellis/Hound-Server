@@ -182,11 +182,11 @@ async function kickFamilyMember(databaseConnection, userId, familyId, forKickUse
   }
 
   let promises = [
-    getUserFirstNameLastNameForUserId(databaseConnection, userId),
+    getUserFirstNameLastNameForUserId(databaseConnection, familyKickUserId),
     databaseQuery(
       databaseConnection,
       'SELECT familyMemberJoinDate FROM familyMembers WHERE userId = ? LIMIT 1',
-      [userId],
+      [familyKickUserId],
     ),
   ];
   const [userFullName, [familyMemberJoinDate]] = await Promise.all(promises);
