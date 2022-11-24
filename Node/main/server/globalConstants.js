@@ -53,14 +53,11 @@ const NOTIFICATION = {
     ALERT_BODY_LIMIT: 128,
   },
   CATEGORY: {
-    // for notifications about reminder's alarms
-    REMINDER: {
-      PRIMARY: 'NOTIFICATION_CATEGORY_REMINDER_PRIMARY',
-    },
-    // for notifications about logs
-    LOG: {
-      // Family member created a log of care
-      CREATED: 'NOTIFICATION_CATEGORY_LOG_CREATED',
+    USER: {
+      // user terminated the Hound app (disabling their loud notifications)
+      TERMINATE: 'NOTIFICATION_CATEGORY_USER_TERMINATE',
+      // user was kicked from their family
+      KICKED: 'NOTIFICATION_CATEGORY_USER_KICKED',
     },
     // for notifications about a family's status
     FAMILY: {
@@ -73,15 +70,14 @@ const NOTIFICATION = {
       // Family member locked the family
       LOCK: 'NOTIFICATION_CATEGORY_FAMILY_LOCK',
     },
-    USER: {
-      // user terminated the Hound app (disabling their loud notifications)
-      TERMINATE: 'NOTIFICATION_CATEGORY_USER_TERMINATE',
-      // user was kicked from their family
-      KICKED: 'NOTIFICATION_CATEGORY_USER_KICKED',
+    // for notifications about logs
+    LOG: {
+      // Family member created a log of care
+      CREATED: 'NOTIFICATION_CATEGORY_LOG_CREATED',
     },
-    GENERAL: {
-      // unknown future notifications
-      GENERAL: 'NOTIFICATION_CATEGORY_GENERAL_GENERAL',
+    // for notifications about reminder's alarms
+    REMINDER: {
+      ALARM: 'NOTIFICATION_CATEGORY_REMINDER_ALARM',
     },
   },
 };

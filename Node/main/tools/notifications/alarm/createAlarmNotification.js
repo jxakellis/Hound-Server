@@ -92,7 +92,7 @@ async function sendAPNNotificationForFamily(familyId, reminderId) {
 
     // send immediate APN notification for family
     const customPayload = { reminderId, reminderLastModified: reminder.reminderLastModified };
-    sendNotificationForFamily(familyId, global.CONSTANT.NOTIFICATION.CATEGORY.REMINDER.PRIMARY, alertTitle, alertBody, customPayload);
+    sendNotificationForFamily(familyId, global.CONSTANT.NOTIFICATION.CATEGORY.REMINDER.ALARM, alertTitle, alertBody, customPayload);
   }
   catch (error) {
     logServerError('sendAPNNotificationForFamily', error);

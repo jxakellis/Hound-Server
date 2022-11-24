@@ -109,7 +109,7 @@ function sendAPN(userNotificationConfiguration, category, forAlertTitle, forAler
 
   // if there is a sound for the reminder alarm alert, then we add it to the rawPayload
   if (
-    (category === global.CONSTANT.NOTIFICATION.CATEGORY.REMINDER.PRIMARY)
+    (category === global.CONSTANT.NOTIFICATION.CATEGORY.REMINDER.ALARM)
   && areAllDefined(userConfigurationNotificationSound, notification, notification.rawPayload, notification.rawPayload.aps)) {
     notification.rawPayload.aps.sound = `${userConfigurationNotificationSound}30.wav`;
   }
