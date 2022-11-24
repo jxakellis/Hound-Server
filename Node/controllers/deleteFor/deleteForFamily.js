@@ -63,7 +63,7 @@ async function deleteFamily(databaseConnection, userId, familyId, familyActiveSu
   if (family.length === 1) {
     if (familyMembers.length !== 1) {
       // Cannot destroy family until other members are gone
-      throw new ValidationError('Family still contains multiple members', global.CONSTANT.ERROR.FAMILY.LEAVE.INVALID);
+      throw new ValidationError('Family still contains multiple members', global.CONSTANT.ERROR.FAMILY.LEAVE.STILL_FAMILY_MEMBERS);
     }
 
     /*
@@ -178,7 +178,7 @@ async function kickFamilyMember(databaseConnection, userId, familyId, forKickUse
 
   // check to see if the user is the family head, as only the family head has permissions to kick
   if (familyHeadUserId !== userId) {
-    throw new ValidationError('You are not the family head. Only the family head can kick family members', global.CONSTANT.ERROR.FAMILY.PERMISSION.INVALID);
+    throw new ValidationError('You are not the family head. Only the family head can kick family members', global.CONSTANT.ERROR.PERMISSION.INVALID.FAMILY);
   }
 
   let promises = [

@@ -26,7 +26,7 @@ async function createInAppSubscriptionForUserIdFamilyIdRecieptId(databaseConnect
   const familyHeadUserId = await getFamilyHeadUserIdForFamilyId(databaseConnection, familyId);
 
   if (familyHeadUserId !== userId) {
-    throw new ValidationError('You are not the family head. Only the family head can modify the family subscription', global.CONSTANT.ERROR.FAMILY.PERMISSION.INVALID);
+    throw new ValidationError('You are not the family head. Only the family head can modify the family subscription', global.CONSTANT.ERROR.PERMISSION.INVALID.FAMILY);
   }
 
   const requestBody = {
@@ -183,7 +183,7 @@ async function createInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseC
   const familyHeadUserId = await getFamilyHeadUserIdForFamilyId(databaseConnection, familyId);
 
   if (familyHeadUserId !== userId) {
-    throw new ValidationError('You are not the family head. Only the family head can modify the family subscription', global.CONSTANT.ERROR.FAMILY.PERMISSION.INVALID);
+    throw new ValidationError('You are not the family head. Only the family head can modify the family subscription', global.CONSTANT.ERROR.PERMISSION.INVALID.FAMILY);
   }
 
   const correspondingProduct = global.CONSTANT.SUBSCRIPTION.SUBSCRIPTIONS.find((subscription) => subscription.productId === productId);

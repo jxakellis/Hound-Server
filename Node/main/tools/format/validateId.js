@@ -47,7 +47,7 @@ async function validateUserId(req, res, next) {
 
     if (result.length === 0) {
       // userId does not exist in the table
-      return res.sendResponseForStatusJSONError(404, undefined, new ValidationError('No user found or invalid permissions', global.CONSTANT.ERROR.VALUE.INVALID));
+      return res.sendResponseForStatusJSONError(404, undefined, new ValidationError('No user found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.USER));
     }
 
     // userId exists in the table for given userId and identifier, so all valid
@@ -84,9 +84,11 @@ async function validateFamilyId(req, res, next) {
       [userId, familyId],
     );
 
+    // TO DO NOW create a custom error message for this. if the Hound app recieves this error message, have it back out to the create / join family page.
+
     if (result.length === 0) {
       // familyId does not exist in the table
-      return res.sendResponseForStatusJSONError(404, undefined, new ValidationError('No family found or invalid permissions', global.CONSTANT.ERROR.VALUE.INVALID));
+      return res.sendResponseForStatusJSONError(404, undefined, new ValidationError('No family found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.FAMILY));
     }
 
     // familyId exists in the table, therefore userId is  part of the family
@@ -130,7 +132,7 @@ async function validateDogId(req, res, next) {
 
     if (areAllDefined(dog) === false) {
       // the dogId does not exist and/or the user does not have access to that dogId
-      return res.sendResponseForStatusJSONError(404, undefined, new ValidationError('No dog found or invalid permissions', global.CONSTANT.ERROR.VALUE.INVALID));
+      return res.sendResponseForStatusJSONError(404, undefined, new ValidationError('No dog found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.DOG));
     }
 
     if (formatBoolean(dog.dogIsDeleted) !== false) {
@@ -178,7 +180,7 @@ async function validateLogId(req, res, next) {
 
     if (areAllDefined(log) === false) {
       // the logId does not exist and/or the dog does not have access to that logId
-      return res.sendResponseForStatusJSONError(404, undefined, new ValidationError('No logs found or invalid permissions', global.CONSTANT.ERROR.VALUE.INVALID));
+      return res.sendResponseForStatusJSONError(404, undefined, new ValidationError('No logs found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.LOG));
     }
 
     if (formatBoolean(log.logIsDeleted) !== false) {
@@ -226,7 +228,7 @@ async function validateParamsReminderId(req, res, next) {
 
     if (areAllDefined(reminder) === false) {
       // the reminderId does not exist and/or the dog does not have access to that reminderId
-      return res.sendResponseForStatusJSONError(404, undefined, new ValidationError('No reminders found or invalid permissions', global.CONSTANT.ERROR.VALUE.INVALID));
+      return res.sendResponseForStatusJSONError(404, undefined, new ValidationError('No reminders found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.REMINDER));
     }
 
     if (formatBoolean(reminder.reminderIsDeleted) !== false) {
@@ -288,7 +290,7 @@ async function validateBodyReminderId(req, res, next) {
     if (areAllDefined(reminder) === false) {
       // the reminderId does not exist and/or the dog does not have access to that reminderId
       // eslint-disable-next-line no-await-in-loop
-      return res.sendResponseForStatusJSONError(404, undefined, new ValidationError('No reminders found or invalid permissions', global.CONSTANT.ERROR.VALUE.INVALID));
+      return res.sendResponseForStatusJSONError(404, undefined, new ValidationError('No reminders found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.REMINDER));
     }
 
     if (formatBoolean(reminder.reminderIsDeleted) !== false) {

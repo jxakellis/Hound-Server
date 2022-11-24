@@ -28,7 +28,7 @@ async function getUser(req, res) {
       : await getUserForUserIdentifier(req.databaseConnection, userIdentifier);
 
     if (areAllDefined(result) === false) {
-      throw new ValidationError('No user found or invalid permissions', global.CONSTANT.ERROR.VALUE.INVALID);
+      throw new ValidationError('No user found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.USER);
     }
 
     return res.sendResponseForStatusJSONError(200, { result: areAllDefined(result) ? result : '' }, undefined);
