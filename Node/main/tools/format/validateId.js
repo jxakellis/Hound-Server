@@ -84,8 +84,6 @@ async function validateFamilyId(req, res, next) {
       [userId, familyId],
     );
 
-    // TO DO NOW create a custom error message for this. if the Hound app recieves this error message, have it back out to the create / join family page.
-
     if (result.length === 0) {
       // familyId does not exist in the table
       return res.sendResponseForStatusJSONError(404, undefined, new ValidationError('No family found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.FAMILY));
