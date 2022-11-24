@@ -146,7 +146,7 @@ async function deleteFamily(databaseConnection, userId, familyId, familyActiveSu
       // keep record of user leaving
       databaseQuery(
         databaseConnection,
-        'INSERT INTO previousFamilyMembers(familyId, userId, familyMemberJoinDate, userFirstName, userLastName, familyMemberLeaveDate, familyMemberLeaveReasonn) VALUES (?,?,?,?,?,?,?)',
+        'INSERT INTO previousFamilyMembers(familyId, userId, familyMemberJoinDate, userFirstName, userLastName, familyMemberLeaveDate, familyMemberLeaveReason) VALUES (?,?,?,?,?,?,?)',
         [familyId, userId, familyMemberJoinDate.familyMemberJoinDate, userFirstName, userLastName, new Date(), 'userLeft'],
       ),
     ];
@@ -203,7 +203,7 @@ async function kickFamilyMember(databaseConnection, userId, familyId, forKickUse
     // keep a record of user kicked
     databaseQuery(
       databaseConnection,
-      'INSERT INTO previousFamilyMembers(familyId, userId, familyMemberJoinDate, userFirstName, userLastName, familyMemberLeaveDate, familyMemberLeaveReasonn) VALUES (?,?,?,?,?,?,?)',
+      'INSERT INTO previousFamilyMembers(familyId, userId, familyMemberJoinDate, userFirstName, userLastName, familyMemberLeaveDate, familyMemberLeaveReason) VALUES (?,?,?,?,?,?,?)',
       [familyId, userId, familyMemberJoinDate.familyMemberJoinDate, userFirstName, userLastName, new Date(), 'userKicked'],
     ),
   ];
