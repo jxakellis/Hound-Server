@@ -73,6 +73,8 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
 
   requestLogger.debug("App Store Server Notification hasn't been logged before");
 
+  // TO DO NOW log to server errors if anything goes wrong with this function. it could be logging the notification itself or something else
+  // if anything fails here then everything reverrs, then the notification isn't logged and the transactions arent updated
   await createAppStoreServerNotificationForNotification(databaseConnection, notification, data, renewalInfo, transactionInfo);
 
   const dataEnvironment = formatString(data.environment, 10);

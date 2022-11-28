@@ -65,8 +65,6 @@ const NOTIFICATION = {
       JOIN: 'NOTIFICATION_CATEGORY_FAMILY_JOIN',
       // Family member left the family
       LEAVE: 'NOTIFICATION_CATEGORY_FAMILY_LEAVE',
-      // Family member paused reminders for the family
-      PAUSE: 'NOTIFICATION_CATEGORY_FAMILY_PAUSE',
       // Family member locked the family
       LOCK: 'NOTIFICATION_CATEGORY_FAMILY_LOCK',
     },
