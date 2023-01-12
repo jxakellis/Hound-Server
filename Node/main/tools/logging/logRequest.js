@@ -4,6 +4,7 @@ const { databaseConnectionForLogging } = require('../database/createDatabaseConn
 const { databaseQuery } = require('../database/databaseQuery');
 const { areAllDefined } = require('../format/validateDefined');
 const { formatString, formatNumber } = require('../format/formatObject');
+const { ValidationError } = require('../general/errors');
 
 // Outputs request to the console and logs to database
 async function logRequest(req, res, next) {
@@ -16,6 +17,14 @@ async function logRequest(req, res, next) {
   const originalUrl = formatString(req.originalUrl, 500);
 
   requestLogger.debug(`Request for ${method} ${originalUrl}`);
+
+  if (areAllDefined(method) === false) {
+    return res.sendResponseForStatusJSONError(400, undefined, new ValidationError('method missing', global.CONSTANT.ERROR.VALUE.MISSING));
+  }
+
+  if (method !== 'GET' && method !== 'POST' && method !== 'PUT' && method !== 'DELETE') {
+    return res.sendResponseForStatusJSONError(400, undefined, new ValidationError('method invalid', global.CONSTANT.ERROR.VALUE.INVALID));
+  }
 
   // Inserts request information into the previousRequests table.
   if (areAllDefined(req.requestId) === false) {
@@ -33,7 +42,7 @@ async function logRequest(req, res, next) {
     }
   }
 
-  next();
+  return next();
 }
 
 module.exports = { logRequest };

@@ -19,7 +19,7 @@ async function configureRequestForResponse(req, res, next) {
   const hasActiveDatabaseTransaction = formatBoolean(req.hasActiveDatabaseTransaction);
 
   if (hasActiveDatabaseConnection === true || hasActiveDatabaseTransaction === true) {
-    return;
+    return next();
   }
 
   try {
@@ -31,16 +31,14 @@ async function configureRequestForResponse(req, res, next) {
       req.hasActiveDatabaseTransaction = true;
     }
     catch (transactionError) {
-      res.sendResponseForStatusJSONError(500, undefined, new DatabaseError("Couldn't begin a transaction with databaseConnection", global.CONSTANT.ERROR.GENERAL.POOL_TRANSACTION_FAILED));
-      return;
+      return res.sendResponseForStatusJSONError(500, undefined, new DatabaseError("Couldn't begin a transaction with databaseConnection", global.CONSTANT.ERROR.GENERAL.POOL_TRANSACTION_FAILED));
     }
   }
   catch (databaseConnectionError) {
-    res.sendResponseForStatusJSONError(500, undefined, new DatabaseError("Couldn't get a connection from databaseConnectionPoolForRequests", global.CONSTANT.ERROR.GENERAL.POOL_CONNECTION_FAILED));
-    return;
+    return res.sendResponseForStatusJSONError(500, undefined, new DatabaseError("Couldn't get a connection from databaseConnectionPoolForRequests", global.CONSTANT.ERROR.GENERAL.POOL_CONNECTION_FAILED));
   }
 
-  next();
+  return next();
 }
 
 function configureResponse(req, res) {

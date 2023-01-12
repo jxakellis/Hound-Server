@@ -15,7 +15,7 @@ async function logResponse(req, res, body) {
 
   responseLogger.debug(`Response for ${req.method} ${originalUrl}\n With body: ${JSON.stringify(responseBody)}`);
 
-  if (areAllDefined(res.responseId) === false) {
+  if (areAllDefined(req.requestId) === true && areAllDefined(res.responseId) === false) {
     try {
       const result = await databaseQuery(
         databaseConnectionForLogging,
