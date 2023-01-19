@@ -4,7 +4,7 @@
 function areAllDefined(...args) {
   // make sure ...args is an array, which it should be
   if (Array.isArray(args) === false) {
-    return undefined;
+    return false;
   }
   // checks to see all objects in array are defined
   for (let i = 0; i < args.length; i += 1) {
@@ -23,7 +23,7 @@ function areAllDefined(...args) {
 function atLeastOneDefined(...args) {
   // make sure ...args is an array, which it should be
   if (Array.isArray(args) === false) {
-    return undefined;
+    return false;
   }
 
   // checks to see if at least one object in array is defined

@@ -82,7 +82,11 @@ LIMIT 18446744073709551615',
     [reminder] = reminder;
 
     // Check to make sure the required information of the reminder exists
-    if (areAllDefined(reminder, reminder.dogName, reminder.reminderAction) === false) {
+    if (areAllDefined(reminder) === false) {
+      return;
+    }
+
+    if (areAllDefined(reminder.dogName, reminder.reminderAction) === false) {
       return;
     }
 

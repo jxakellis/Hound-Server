@@ -4,8 +4,6 @@ const { databaseQuery } = require('../../main/tools/database/databaseQuery');
 const { formatNumber, formatBoolean } = require('../../main/tools/format/formatObject');
 const { atLeastOneDefined, areAllDefined } = require('../../main/tools/format/validateDefined');
 
-// TO DO NOW add cross compatibility for both old and new naming schemes (e.g. isLoudNotification and isLoudNotificationEnabled). First search for new value then, if not found, attempt to search for value under old key.
-
 /**
  *  Queries the database to update a user. If the query is successful, then returns
  *  If a problem is encountered, creates and throws custom error

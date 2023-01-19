@@ -5,6 +5,8 @@ const { areAllDefined } = require('../../format/validateDefined');
 
 const userConfigurationColumns = 'userConfiguration.userConfigurationNotificationSound, \
 userConfiguration.userConfigurationIsLoudNotification, \
+userConfiguration.userConfigurationIsLogNotificationEnabled, \
+userConfiguration.userConfigurationIsReminderNotificationEnabled, \
 userConfiguration.userConfigurationSilentModeIsEnabled, \
 userConfiguration.userConfigurationSilentModeStartUTCHour, \
 userConfiguration.userConfigurationSilentModeEndUTCHour, \

@@ -11,8 +11,12 @@ async function createDogForFamilyId(databaseConnection, familyId, familyActiveSu
   const dogLastModified = new Date();
   const dogName = formatString(forDogName, 32);
 
-  if (areAllDefined(databaseConnection, familyId, familyActiveSubscription, familyActiveSubscription.numberOfDogs, dogName) === false) {
+  if (areAllDefined(databaseConnection, familyId, familyActiveSubscription, dogName) === false) {
     throw new ValidationError('databaseConnection, familyId, familyActiveSubscription, or dogName missing', global.CONSTANT.ERROR.VALUE.MISSING);
+  }
+
+  if (areAllDefined(familyActiveSubscription.numberOfDogs) === false) {
+    throw new ValidationError('familyActiveSubscription.numberOfDogs missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   // only retrieve enough not deleted dogs that would exceed the limit

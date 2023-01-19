@@ -15,13 +15,14 @@ const { apn, productionAPNProvider, developmentAPNProvider } = require('./apnPro
  */
 // (token, category, sound, alertTitle, alertBody)
 function sendAPN(userNotificationConfiguration, category, forAlertTitle, forAlertBody, customPayload) {
-  // TO DO NOW compare category against the user's isLog/ReminderNotificationEnabled setting.
-  /// If those two match, e.g. its category reminder and isReminderNotificationEnabled == false, then don't send the notification
+  // TO DO NOW TEST that notification category selection works
   if (areAllDefined(userNotificationConfiguration) === false) {
     return;
   }
 
   const userNotificationToken = formatString(userNotificationConfiguration.userNotificationToken);
+  const userConfigurationIsLogNotificationEnabled = formatBoolean(userNotificationConfiguration.userConfigurationIsLogNotificationEnabled);
+  const userConfigurationIsReminderNotificationEnabled = formatBoolean(userNotificationConfiguration.userConfigurationIsReminderNotificationEnabled);
   const userConfigurationNotificationSound = formatString(userNotificationConfiguration.userConfigurationNotificationSound);
   const userConfigurationSilentModeIsEnabled = formatBoolean(userNotificationConfiguration.userConfigurationSilentModeIsEnabled);
   const userConfigurationSilentModeStartUTCHour = formatNumber(userNotificationConfiguration.userConfigurationSilentModeStartUTCHour);
@@ -33,10 +34,14 @@ function sendAPN(userNotificationConfiguration, category, forAlertTitle, forAler
 
   apnLogger.debug(`sendAPN ${userNotificationConfiguration}, ${category}, ${alertTitle}, ${alertBody}`);
 
+  // TO DO NOW BUG make sure that notifications are sent to a user whether isloudnotfiication is true or false and with the correct sound
+
   // userConfigurationNotificationSound optional, depends on userConfigurationIsLoudNotification
   if (areAllDefined(
     userNotificationToken,
-    userConfigurationNotificationSound,
+    userConfigurationIsLogNotificationEnabled,
+    userConfigurationIsReminderNotificationEnabled,
+    // userConfigurationNotificationSound,
     userConfigurationSilentModeIsEnabled,
     userConfigurationSilentModeStartUTCHour,
     userConfigurationSilentModeEndUTCHour,
@@ -47,6 +52,14 @@ function sendAPN(userNotificationConfiguration, category, forAlertTitle, forAler
     alertBody,
     customPayload,
   ) === false) {
+    return;
+  }
+
+  if (category === global.CONSTANT.NOTIFICATION.CATEGORY.LOG.CREATED && userConfigurationIsLogNotificationEnabled === false) {
+    return;
+  }
+
+  if (category === global.CONSTANT.NOTIFICATION.CATEGORY.REMINDER.ALARM && userConfigurationIsReminderNotificationEnabled === false) {
     return;
   }
 
@@ -124,7 +137,9 @@ function sendAPN(userNotificationConfiguration, category, forAlertTitle, forAler
   // if there is a sound for the reminder alarm alert, then we add it to the rawPayload
   if (
     (category === global.CONSTANT.NOTIFICATION.CATEGORY.REMINDER.ALARM)
-  && areAllDefined(userConfigurationNotificationSound, notification, notification.rawPayload, notification.rawPayload.aps)) {
+  && areAllDefined(userConfigurationNotificationSound, notification)
+  && areAllDefined(notification.rawPayload)
+  && areAllDefined(notification.rawPayload.aps)) {
     notification.rawPayload.aps.sound = `${userConfigurationNotificationSound}30.wav`;
   }
 

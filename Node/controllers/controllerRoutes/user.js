@@ -47,7 +47,7 @@ async function createUser(req, res) {
       userLastName,
       userNotificationToken,
       userConfigurationIsNotificationEnabled,
-      userConfigurationIsLoudNotification,
+      // userConfigurationIsLoudNotification,
       userConfigurationIsLogNotificationEnabled,
       userConfigurationIsReminderNotificationEnabled,
       userConfigurationInterfaceStyle,
@@ -55,12 +55,21 @@ async function createUser(req, res) {
       userConfigurationNotificationSound,
       userConfigurationLogsInterfaceScale,
       userConfigurationRemindersInterfaceScale,
-      userConfigurationSilentModeIsEnabled,
+      // userConfigurationSilentModeIsEnabled,
       userConfigurationSilentModeStartUTCHour,
       userConfigurationSilentModeEndUTCHour,
       userConfigurationSilentModeStartUTCMinute,
       userConfigurationSilentModeEndUTCMinute,
     } = req.body;
+    // TO DO NOW TEST null coalescing
+    // Once 2.1.0 is published for a few weeks and most people are updated,
+    // change supported versions to >= 2.1.0 (forcing stragglers to update)
+    // then replace all instances of old names in server/database to new names
+
+    // < 2.1.0 userConfigurationIsLoudNotification
+    const userConfigurationIsLoudNotification = req.body.userConfigurationIsLoudNotificationEnabled ?? req.body.userConfigurationIsLoudNotification;
+    // < 2.1.0 userConfigurationSilentModeIsEnabled
+    const userConfigurationSilentModeIsEnabled = req.body.userConfigurationIsSilentModeEnabled ?? req.body.userConfigurationSilentModeIsEnabled;
     const result = await createUserForUserIdentifier(
       req.databaseConnection,
       // userId,
@@ -101,7 +110,7 @@ async function updateUser(req, res) {
     const {
       userNotificationToken,
       userConfigurationIsNotificationEnabled,
-      userConfigurationIsLoudNotification,
+      // userConfigurationIsLoudNotification,
       userConfigurationIsLogNotificationEnabled,
       userConfigurationIsReminderNotificationEnabled,
       userConfigurationInterfaceStyle,
@@ -109,12 +118,21 @@ async function updateUser(req, res) {
       userConfigurationNotificationSound,
       userConfigurationLogsInterfaceScale,
       userConfigurationRemindersInterfaceScale,
-      userConfigurationSilentModeIsEnabled,
+      // userConfigurationSilentModeIsEnabled,
       userConfigurationSilentModeStartUTCHour,
       userConfigurationSilentModeEndUTCHour,
       userConfigurationSilentModeStartUTCMinute,
       userConfigurationSilentModeEndUTCMinute,
     } = req.body;
+    // TO DO NOW TEST null coalescing
+    // Once 2.1.0 is published for a few weeks and most people are updated,
+    // change supported versions to >= 2.1.0 (forcing stragglers to update)
+    // then replace all instances of old names in server/database to new names
+
+    // < 2.1.0 userConfigurationIsLoudNotification
+    const userConfigurationIsLoudNotification = req.body.userConfigurationIsLoudNotificationEnabled ?? req.body.userConfigurationIsLoudNotification;
+    // < 2.1.0 userConfigurationSilentModeIsEnabled
+    const userConfigurationSilentModeIsEnabled = req.body.userConfigurationIsSilentModeEnabled ?? req.body.userConfigurationSilentModeIsEnabled;
     await updateUserForUserId(
       req.databaseConnection,
       userId,

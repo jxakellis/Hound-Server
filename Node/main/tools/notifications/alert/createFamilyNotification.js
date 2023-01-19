@@ -124,7 +124,11 @@ async function abreviatedFullNameForUserId(userId) {
 
   const result = await getUserFirstNameLastNameForUserId(databaseConnectionForGeneral, userId);
 
-  if (areAllDefined(result, result.userFirstName, result.userLastName) === false) {
+  if (areAllDefined(result) === false) {
+    return undefined;
+  }
+
+  if (areAllDefined(result.userFirstName, result.userLastName) === false) {
     return undefined;
   }
 
