@@ -7,6 +7,9 @@ const {
 const { areAllDefined } = require('../../main/tools/format/validateDefined');
 const { hash } = require('../../main/tools/format/hash');
 
+// TO DO NOW only when creating an account, if a predictable value isn't specified (e.g. isNotificationEnabled), assign it the default value used within the Hound app. Decreases chances of sign-up failing
+// TO DO NOW add cross compatibility for both old and new naming schemes (e.g. isLoudNotification and isLoudNotificationEnabled). First search for new value then, if not found, attempt to search for value under old key.
+
 /**
  *  Queries the database to create a user. If the query is successful, then returns the userId.
  *  If a problem is encountered, creates and throws custom error
@@ -23,6 +26,8 @@ async function createUserForUserIdentifier(
   // userAccountCreationDate,
   forUserConfigurationIsNotificationEnabled,
   forUserConfigurationIsLoudNotification,
+  forUserConfigurationIsLogNotificationEnabled,
+  forUserConfigurationIsReminderNotificationEnabled,
   forUserConfigurationInterfaceStyle,
   forUserConfigurationSnoozeLength,
   userConfigurationNotificationSound,
@@ -49,6 +54,8 @@ async function createUserForUserIdentifier(
 
   const userConfigurationIsNotificationEnabled = formatBoolean(forUserConfigurationIsNotificationEnabled);
   const userConfigurationIsLoudNotification = formatBoolean(forUserConfigurationIsLoudNotification);
+  const userConfigurationIsLogNotificationEnabled = formatBoolean(forUserConfigurationIsLogNotificationEnabled);
+  const userConfigurationIsReminderNotificationEnabled = formatBoolean(forUserConfigurationIsReminderNotificationEnabled);
   const userConfigurationInterfaceStyle = formatNumber(forUserConfigurationInterfaceStyle);
   const userConfigurationSnoozeLength = formatNumber(forUserConfigurationSnoozeLength);
   // userConfigurationNotificationSound
@@ -70,6 +77,8 @@ async function createUserForUserIdentifier(
     userAccountCreationDate,
     userConfigurationIsNotificationEnabled,
     userConfigurationIsLoudNotification,
+    userConfigurationIsLogNotificationEnabled,
+    userConfigurationIsReminderNotificationEnabled,
     userConfigurationInterfaceStyle,
     userConfigurationSnoozeLength,
     userConfigurationNotificationSound,
@@ -81,7 +90,24 @@ async function createUserForUserIdentifier(
     userConfigurationSilentModeStartUTCMinute,
     userConfigurationSilentModeEndUTCMinute,
   ) === false) {
-    throw new ValidationError('userId, userIdentifier, userEmail, userAccountCreationDate, userConfigurationIsNotificationEnabled, userConfigurationIsLoudNotification, userConfigurationInterfaceStyle, userConfigurationSnoozeLength, userConfigurationNotificationSound, userConfigurationLogsInterfaceScale, userConfigurationRemindersInterfaceScale, userConfigurationSilentModeIsEnabled, userConfigurationSilentModeStartUTCHour, userConfigurationSilentModeEndUTCHour, userConfigurationSilentModeStartUTCMinute, or userConfigurationSilentModeEndUTCMinute, missing', global.CONSTANT.ERROR.VALUE.MISSING);
+    throw new ValidationError('userId, \
+userIdentifier, \
+userEmail, \
+userAccountCreationDate, \
+userConfigurationIsNotificationEnabled, \
+userConfigurationIsLoudNotification, \
+userConfigurationIsLogNotificationEnabled, \
+userConfigurationIsReminderNotificationEnabled, \
+userConfigurationInterfaceStyle, \
+userConfigurationSnoozeLength, \
+userConfigurationNotificationSound, \
+userConfigurationLogsInterfaceScale, \
+userConfigurationRemindersInterfaceScale, \
+userConfigurationSilentModeIsEnabled, \
+userConfigurationSilentModeStartUTCHour, \
+userConfigurationSilentModeEndUTCHour, \
+userConfigurationSilentModeStartUTCMinute, \
+or userConfigurationSilentModeEndUTCMinute missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   const promises = [
@@ -92,10 +118,28 @@ async function createUserForUserIdentifier(
     ),
     databaseQuery(
       databaseConnection,
-      'INSERT INTO userConfiguration(userId, userConfigurationIsNotificationEnabled, userConfigurationIsLoudNotification, userConfigurationSnoozeLength, userConfigurationNotificationSound, userConfigurationLogsInterfaceScale, userConfigurationRemindersInterfaceScale, userConfigurationInterfaceStyle, userConfigurationSilentModeIsEnabled, userConfigurationSilentModeStartUTCHour, userConfigurationSilentModeEndUTCHour, userConfigurationSilentModeStartUTCMinute, userConfigurationSilentModeEndUTCMinute) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
+      'INSERT INTO userConfiguration(\
+userId, \
+userConfigurationIsNotificationEnabled, \
+userConfigurationIsLoudNotification, \
+userConfigurationIsLogNotificationEnabled, \
+userConfigurationIsReminderNotificationEnabled, \
+userConfigurationSnoozeLength, \
+userConfigurationNotificationSound, \
+userConfigurationLogsInterfaceScale, \
+userConfigurationRemindersInterfaceScale, \
+userConfigurationInterfaceStyle, \
+userConfigurationSilentModeIsEnabled, \
+userConfigurationSilentModeStartUTCHour, \
+userConfigurationSilentModeEndUTCHour, \
+userConfigurationSilentModeStartUTCMinute, \
+userConfigurationSilentModeEndUTCMinute\
+) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?, ?, ?)',
       [userId,
         userConfigurationIsNotificationEnabled,
         userConfigurationIsLoudNotification,
+        userConfigurationIsLogNotificationEnabled,
+        userConfigurationIsReminderNotificationEnabled,
         userConfigurationSnoozeLength,
         userConfigurationNotificationSound,
         userConfigurationLogsInterfaceScale,

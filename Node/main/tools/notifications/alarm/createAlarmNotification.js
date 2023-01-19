@@ -67,7 +67,16 @@ async function sendAPNNotificationForFamily(familyId, reminderId) {
     // the reminderId has to exist to search and we check to make sure the dogId isn't null (to make sure the dog still exists too)
     let reminder = await databaseQuery(
       databaseConnectionForAlarms,
-      'SELECT dogs.dogName, dogReminders.reminderExecutionDate, dogReminders.reminderAction, dogReminders.reminderCustomActionName, dogReminders.reminderLastModified, dogReminders.snoozeExecutionInterval FROM dogReminders JOIN dogs ON dogReminders.dogId = dogs.dogId WHERE dogs.dogIsDeleted = 0 AND dogReminders.reminderIsDeleted = 0 AND dogReminders.reminderId = ? AND dogReminders.reminderExecutionDate IS NOT NULL AND dogs.dogId IS NOT NULL LIMIT 18446744073709551615',
+      'SELECT dogs.dogName, \
+dogReminders.reminderExecutionDate, \
+dogReminders.reminderAction, \
+dogReminders.reminderCustomActionName, \
+dogReminders.reminderLastModified, \
+dogReminders.snoozeExecutionInterval \
+FROM dogReminders \
+JOIN dogs ON dogReminders.dogId = dogs.dogId \
+WHERE dogs.dogIsDeleted = 0 AND dogReminders.reminderIsDeleted = 0 AND dogReminders.reminderId = ? AND dogReminders.reminderExecutionDate IS NOT NULL AND dogs.dogId IS NOT NULL \
+LIMIT 18446744073709551615',
       [reminderId],
     );
     [reminder] = reminder;

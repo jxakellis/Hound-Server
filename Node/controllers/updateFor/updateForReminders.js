@@ -67,7 +67,15 @@ async function updateReminderForDogIdReminder(databaseConnection, dogId, reminde
   }
   // weekly
   else if (areAllDefined(weeklyUTCHour, weeklyUTCMinute, weeklySunday, weeklyMonday, weeklyTuesday, weeklyWednesday, weeklyThursday, weeklyFriday, weeklySaturday) === false) {
-    throw new ValidationError('weeklyUTCHour, weeklyUTCMinute, weeklySunday, weeklyMonday, weeklyTuesday, weeklyWednesday, weeklyThursday, weeklyFriday, or weeklySaturday missing', global.CONSTANT.ERROR.VALUE.MISSING);
+    throw new ValidationError('weeklyUTCHour, \
+weeklyUTCMinute, \
+weeklySunday, \
+weeklyMonday, \
+weeklyTuesday, \
+weeklyWednesday, \
+weeklyThursday, \
+weeklyFriday, \
+or weeklySaturday missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
   // monthly
   else if (areAllDefined(monthlyUTCDay, monthlyUTCHour, monthlyUTCMinute) === false) {
@@ -80,13 +88,55 @@ async function updateReminderForDogIdReminder(databaseConnection, dogId, reminde
 
   await databaseQuery(
     databaseConnection,
-    'UPDATE dogReminders SET reminderAction = ?, reminderCustomActionName = ?, reminderType = ?, reminderIsEnabled = ?, reminderExecutionBasis = ?, reminderExecutionDate = ?, reminderLastModified = ?, snoozeExecutionInterval = ?, countdownExecutionInterval = ?, weeklyUTCHour = ?, weeklyUTCMinute = ?, weeklySunday = ?, weeklyMonday = ?, weeklyTuesday = ?, weeklyWednesday = ?, weeklyThursday = ?, weeklyFriday = ?, weeklySaturday = ?, weeklySkippedDate = ?, monthlyUTCDay = ?, monthlyUTCHour = ?, monthlyUTCMinute = ?, monthlySkippedDate = ?, oneTimeDate = ? WHERE reminderId = ?',
+    'UPDATE dogReminders SET reminderAction = ?, \
+reminderCustomActionName = ?, \
+reminderType = ?, \
+reminderIsEnabled = ?, \
+reminderExecutionBasis = ?, \
+reminderExecutionDate = ?, \
+reminderLastModified = ?, \
+snoozeExecutionInterval = ?, \
+countdownExecutionInterval = ?, \
+weeklyUTCHour = ?, \
+weeklyUTCMinute = ?, \
+weeklySunday = ?, \
+weeklyMonday = ?, \
+weeklyTuesday = ?, \
+weeklyWednesday = ?, \
+weeklyThursday = ?, \
+weeklyFriday = ?, \
+weeklySaturday = ?, \
+weeklySkippedDate = ?, \
+monthlyUTCDay = ?, \
+monthlyUTCHour = ?, \
+monthlyUTCMinute = ?, \
+monthlySkippedDate = ?, \
+oneTimeDate = ? \
+WHERE reminderId = ?',
     [
-      reminderAction, reminderCustomActionName, reminderType, reminderIsEnabled, reminderExecutionBasis, reminderExecutionDate, reminderLastModified,
+      reminderAction,
+      reminderCustomActionName,
+      reminderType,
+      reminderIsEnabled,
+      reminderExecutionBasis,
+      reminderExecutionDate,
+      reminderLastModified,
       snoozeExecutionInterval,
       countdownExecutionInterval,
-      weeklyUTCHour, weeklyUTCMinute, weeklySunday, weeklyMonday, weeklyTuesday, weeklyWednesday, weeklyThursday, weeklyFriday, weeklySaturday, weeklySkippedDate,
-      monthlyUTCDay, monthlyUTCHour, monthlyUTCMinute, monthlySkippedDate,
+      weeklyUTCHour,
+      weeklyUTCMinute,
+      weeklySunday,
+      weeklyMonday,
+      weeklyTuesday,
+      weeklyWednesday,
+      weeklyThursday,
+      weeklyFriday,
+      weeklySaturday,
+      weeklySkippedDate,
+      monthlyUTCDay,
+      monthlyUTCHour,
+      monthlyUTCMinute,
+      monthlySkippedDate,
       oneTimeDate,
       reminderId,
     ],

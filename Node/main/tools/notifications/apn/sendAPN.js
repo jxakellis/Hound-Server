@@ -15,6 +15,8 @@ const { apn, productionAPNProvider, developmentAPNProvider } = require('./apnPro
  */
 // (token, category, sound, alertTitle, alertBody)
 function sendAPN(userNotificationConfiguration, category, forAlertTitle, forAlertBody, customPayload) {
+  // TO DO NOW compare category against the user's isLog/ReminderNotificationEnabled setting.
+  /// If those two match, e.g. its category reminder and isReminderNotificationEnabled == false, then don't send the notification
   if (areAllDefined(userNotificationConfiguration) === false) {
     return;
   }
@@ -32,7 +34,19 @@ function sendAPN(userNotificationConfiguration, category, forAlertTitle, forAler
   apnLogger.debug(`sendAPN ${userNotificationConfiguration}, ${category}, ${alertTitle}, ${alertBody}`);
 
   // userConfigurationNotificationSound optional, depends on userConfigurationIsLoudNotification
-  if (areAllDefined(userNotificationToken, userConfigurationNotificationSound, userConfigurationSilentModeIsEnabled, userConfigurationSilentModeStartUTCHour, userConfigurationSilentModeEndUTCHour, userConfigurationSilentModeStartUTCMinute, userConfigurationSilentModeEndUTCMinute, category, alertTitle, alertBody, customPayload) === false) {
+  if (areAllDefined(
+    userNotificationToken,
+    userConfigurationNotificationSound,
+    userConfigurationSilentModeIsEnabled,
+    userConfigurationSilentModeStartUTCHour,
+    userConfigurationSilentModeEndUTCHour,
+    userConfigurationSilentModeStartUTCMinute,
+    userConfigurationSilentModeEndUTCMinute,
+    category,
+    alertTitle,
+    alertBody,
+    customPayload,
+  ) === false) {
     return;
   }
 

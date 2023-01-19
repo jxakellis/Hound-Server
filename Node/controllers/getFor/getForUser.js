@@ -4,7 +4,20 @@ const { areAllDefined } = require('../../main/tools/format/validateDefined');
 
 const userColumns = 'users.userId, users.userApplicationUsername, users.userNotificationToken, users.userFirstName, users.userLastName, users.userEmail';
 const userNameColumns = 'users.userFirstName, users.userLastName';
-const userConfigurationColumns = 'userConfiguration.userConfigurationIsNotificationEnabled, userConfiguration.userConfigurationIsLoudNotification, userConfiguration.userConfigurationSnoozeLength, userConfiguration.userConfigurationNotificationSound, userConfiguration.userConfigurationLogsInterfaceScale, userConfiguration.userConfigurationRemindersInterfaceScale, userConfiguration.userConfigurationInterfaceStyle, userConfiguration.userConfigurationSilentModeIsEnabled, userConfiguration.userConfigurationSilentModeStartUTCHour, userConfiguration.userConfigurationSilentModeEndUTCHour, userConfiguration.userConfigurationSilentModeStartUTCMinute, userConfiguration.userConfigurationSilentModeEndUTCMinute';
+const userConfigurationColumns = 'userConfiguration.userConfigurationIsNotificationEnabled, \
+userConfiguration.userConfigurationIsLoudNotification, \
+userConfiguration.userConfigurationIsLogNotificationEnabled, \
+userConfiguration.userConfigurationIsReminderNotificationEnabled, \
+userConfiguration.userConfigurationSnoozeLength, \
+userConfiguration.userConfigurationNotificationSound, \
+userConfiguration.userConfigurationLogsInterfaceScale, \
+userConfiguration.userConfigurationRemindersInterfaceScale, \
+userConfiguration.userConfigurationInterfaceStyle, \
+userConfiguration.userConfigurationSilentModeIsEnabled, \
+userConfiguration.userConfigurationSilentModeStartUTCHour, \
+userConfiguration.userConfigurationSilentModeEndUTCHour, \
+userConfiguration.userConfigurationSilentModeStartUTCMinute, \
+userConfiguration.userConfigurationSilentModeEndUTCMinute';
 
 /**
  * If the query is successful, returns the user for the userId.
@@ -19,7 +32,10 @@ async function getUserForUserId(databaseConnection, userId) {
   // Therefore setting userId to null (if there is no family member) even though the userId isn't null.
   let userInformation = await databaseQuery(
     databaseConnection,
-    `SELECT ${userColumns}, familyMembers.familyId, ${userConfigurationColumns} FROM users JOIN userConfiguration ON users.userId = userConfiguration.userId LEFT JOIN familyMembers ON users.userId = familyMembers.userId WHERE users.userId = ? LIMIT 1`,
+    `SELECT ${userColumns}, familyMembers.familyId, ${userConfigurationColumns} \
+FROM users JOIN userConfiguration ON users.userId = userConfiguration.userId \
+LEFT JOIN familyMembers ON users.userId = familyMembers.userId \
+WHERE users.userId = ? LIMIT 1`,
     [userId],
   );
   [userInformation] = userInformation;
@@ -41,7 +57,10 @@ async function getUserForUserIdentifier(databaseConnection, userIdentifier) {
   // Therefore setting userId to null (if there is no family member) even though the userId isn't null.
   let userInformation = await databaseQuery(
     databaseConnection,
-    `SELECT ${userColumns}, familyMembers.familyId, ${userConfigurationColumns} FROM users JOIN userConfiguration ON users.userId = userConfiguration.userId LEFT JOIN familyMembers ON users.userId = familyMembers.userId WHERE users.userIdentifier = ? LIMIT 1`,
+    `SELECT ${userColumns}, familyMembers.familyId, ${userConfigurationColumns} \
+FROM users JOIN userConfiguration ON users.userId = userConfiguration.userId \
+LEFT JOIN familyMembers ON users.userId = familyMembers.userId \
+WHERE users.userIdentifier = ? LIMIT 1`,
     [userIdentifier],
   );
   [userInformation] = userInformation;
@@ -63,7 +82,10 @@ async function getUserForUserApplicationUsername(databaseConnection, userApplica
   // Therefore setting userId to null (if there is no family member) even though the userId isn't null.
   let userInformation = await databaseQuery(
     databaseConnection,
-    `SELECT ${userColumns}, familyMembers.familyId, ${userConfigurationColumns} FROM users JOIN userConfiguration ON users.userId = userConfiguration.userId LEFT JOIN familyMembers ON users.userId = familyMembers.userId WHERE users.userApplicationUsername = ? LIMIT 1`,
+    `SELECT ${userColumns}, familyMembers.familyId, ${userConfigurationColumns} \
+FROM users JOIN userConfiguration ON users.userId = userConfiguration.userId \
+LEFT JOIN familyMembers ON users.userId = familyMembers.userId \
+WHERE users.userApplicationUsername = ? LIMIT 1`,
     [userApplicationUsername],
   );
   [userInformation] = userInformation;

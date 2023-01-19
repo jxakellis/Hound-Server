@@ -29,7 +29,12 @@ async function getDogForDogId(databaseConnection, dogId, forUserConfigurationPre
   let dog = areAllDefined(userConfigurationPreviousDogManagerSynchronization)
     ? await databaseQuery(
       databaseConnection,
-      `SELECT ${dogsColumns} FROM dogs LEFT JOIN dogReminders ON dogs.dogId = dogReminders.dogId LEFT JOIN dogLogs ON dogs.dogId = dogLogs.dogId WHERE (dogLastModified >= ? OR reminderLastModified >= ? OR logLastModified >= ?) AND dogs.dogId = ? GROUP BY dogs.dogId LIMIT 1`,
+      `SELECT ${dogsColumns} \
+FROM dogs LEFT JOIN dogReminders ON dogs.dogId = dogReminders.dogId \
+LEFT JOIN dogLogs ON dogs.dogId = dogLogs.dogId \
+WHERE (dogLastModified >= ? OR reminderLastModified >= ? OR logLastModified >= ?) AND dogs.dogId = ? \
+GROUP BY dogs.dogId \
+LIMIT 1`,
       [userConfigurationPreviousDogManagerSynchronization, userConfigurationPreviousDogManagerSynchronization, userConfigurationPreviousDogManagerSynchronization, dogId],
     )
     // User is requesting a complete copy of dogs, therefore we can assume they have a blank copy
@@ -82,7 +87,12 @@ async function getAllDogsForUserIdFamilyId(databaseConnection, userId, familyId,
   const dogs = areAllDefined(userConfigurationPreviousDogManagerSynchronization)
     ? await databaseQuery(
       databaseConnection,
-      `SELECT ${dogsColumns} FROM dogs LEFT JOIN dogReminders ON dogs.dogId = dogReminders.dogId LEFT JOIN dogLogs ON dogs.dogId = dogLogs.dogId WHERE (dogLastModified >= ? OR reminderLastModified >= ? OR logLastModified >= ?) AND dogs.familyId = ? GROUP BY dogs.dogId LIMIT 18446744073709551615`,
+      `SELECT ${dogsColumns} \
+FROM dogs LEFT JOIN dogReminders ON dogs.dogId = dogReminders.dogId \
+LEFT JOIN dogLogs ON dogs.dogId = dogLogs.dogId \
+WHERE (dogLastModified >= ? OR reminderLastModified >= ? OR logLastModified >= ?) AND dogs.familyId = ? \
+GROUP BY dogs.dogId \
+LIMIT 18446744073709551615`,
       [userConfigurationPreviousDogManagerSynchronization, userConfigurationPreviousDogManagerSynchronization, userConfigurationPreviousDogManagerSynchronization, familyId],
     )
     // User is requesting a complete copy of dogs, therefore we can assume they have a blank copy

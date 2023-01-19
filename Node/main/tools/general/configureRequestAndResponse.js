@@ -35,7 +35,11 @@ async function configureRequestForResponse(req, res, next) {
     }
   }
   catch (databaseConnectionError) {
-    return res.sendResponseForStatusJSONError(500, undefined, new DatabaseError("Couldn't get a connection from databaseConnectionPoolForRequests", global.CONSTANT.ERROR.GENERAL.POOL_CONNECTION_FAILED));
+    return res.sendResponseForStatusJSONError(
+      500,
+      undefined,
+      new DatabaseError("Couldn't get a connection from databaseConnectionPoolForRequests", global.CONSTANT.ERROR.GENERAL.POOL_CONNECTION_FAILED),
+    );
   }
 
   return next();

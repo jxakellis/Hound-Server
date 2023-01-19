@@ -59,7 +59,7 @@ async function createFamilyMemberLeaveNotification(userId, familyId) {
       return;
     }
 
-    // TO DO BUG duplicate notifications for me when dad left family.
+    // TO DO NOW BUG duplicate notifications for me when dad left family.
 
     // now we can construct the messages
     // Maximum possible length of message: 28 (raw) + 0 (variable) = 28 ( <= ALERT_TITLE_LIMIT )

@@ -2,7 +2,48 @@ const { ValidationError } = require('../../main/tools/general/errors');
 const { databaseQuery } = require('../../main/tools/database/databaseQuery');
 const { areAllDefined } = require('../../main/tools/format/validateDefined');
 
-const appStoreServerNotificationsColumns = 'notificationType, subtype, notificationUUID, version, signedDate, dataAppAppleId, dataBundleId, dataBundleVersion, dataEnvironment, renewalInfoAutoRenewProductId, renewalInfoAutoRenewStatus, renewalInfoExpirationIntent, renewalInfoGracePeriodExpiresDate, renewalInfoIsInBillingRetryPeriod, renewalInfoOfferIdentifier, renewalInfoOfferType, renewalInfoOriginalTransactionId, renewalInfoPriceIncreaseStatus, renewalInfoProductId, renewalInfoRecentSubscriptionStartDate, renewalInfoSignedDate, renewalInfoEnvironment, transactionInfoAppAccountToken, transactionInfoBundleId, transactionInfoEnvironment, transactionInfoExpiresDate, transactionInfoInAppOwnershipType, transactionInfoIsUpgraded, transactionInfoOfferIdentifier, transactionInfoOfferType, transactionInfoOriginalPurchaseDate, transactionInfoOriginalTransactionId, transactionInfoProductId, transactionInfoPurchaseDate, transactionInfoQuantity, transactionInfoRevocationDate, transactionInfoRevocationReason, transactionInfoSignedDate, transactionInfoSubscriptionGroupIdentifier, transactionInfoTransactionId, transactionInfoType, transactionInfoWebOrderLineItemId';
+const appStoreServerNotificationsColumns = 'notificationType, \
+subtype, \
+notificationUUID, \
+version, \
+signedDate, \
+dataAppAppleId, \
+dataBundleId, \
+dataBundleVersion, \
+dataEnvironment, \
+renewalInfoAutoRenewProductId, \
+renewalInfoAutoRenewStatus, \
+renewalInfoExpirationIntent, \
+renewalInfoGracePeriodExpiresDate, \
+renewalInfoIsInBillingRetryPeriod, \
+renewalInfoOfferIdentifier, \
+renewalInfoOfferType, \
+renewalInfoOriginalTransactionId, \
+renewalInfoPriceIncreaseStatus, \
+renewalInfoProductId, \
+renewalInfoRecentSubscriptionStartDate, \
+renewalInfoSignedDate, \
+renewalInfoEnvironment, \
+transactionInfoAppAccountToken, \
+transactionInfoBundleId, \
+transactionInfoEnvironment, \
+transactionInfoExpiresDate, \
+transactionInfoInAppOwnershipType, \
+transactionInfoIsUpgraded, \
+transactionInfoOfferIdentifier, \
+transactionInfoOfferType, \
+transactionInfoOriginalPurchaseDate, \
+transactionInfoOriginalTransactionId, \
+transactionInfoProductId, \
+transactionInfoPurchaseDate, \
+transactionInfoQuantity, \
+transactionInfoRevocationDate, \
+transactionInfoRevocationReason, \
+transactionInfoSignedDate, \
+transactionInfoSubscriptionGroupIdentifier, \
+transactionInfoTransactionId, \
+transactionInfoType, \
+transactionInfoWebOrderLineItemId';
 
 async function getAppStoreServerNotificationForNotificationUUID(databaseConnection, notificationUUID) {
   if (areAllDefined(databaseConnection, notificationUUID) === false) {

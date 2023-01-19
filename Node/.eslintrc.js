@@ -1,8 +1,6 @@
 module.exports = {
   env: {
-    browser: true,
-    commonjs: true,
-    es2021: true,
+    node: true,
   },
   extends: [
     'airbnb-base',
@@ -11,9 +9,10 @@ module.exports = {
     ecmaVersion: 'latest',
   },
   rules: {
-    'max-len': ['error', { code: 9999, ignoreComments: true }],
+    'max-len': ['error', { code: 200, ignoreComments: true }],
     'brace-style': ['error', 'stroustrup', { allowSingleLine: false }],
     'no-console': 'off',
+    'no-multi-str': 'off',
     'no-use-before-define': ['error', { functions: false, classes: true, variables: true }],
   },
 };

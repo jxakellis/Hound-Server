@@ -65,7 +65,9 @@ async function updateReminder(req, res) {
     const reminder = req.body;
     const reminders = formatArray(req.body.reminders);
 
-    const result = areAllDefined(reminders) ? await updateRemindersForDogIdReminders(req.databaseConnection, dogId, reminders) : await updateReminderForDogIdReminder(req.databaseConnection, dogId, reminder);
+    const result = areAllDefined(reminders)
+      ? await updateRemindersForDogIdReminders(req.databaseConnection, dogId, reminders)
+      : await updateReminderForDogIdReminder(req.databaseConnection, dogId, reminder);
 
     // update was successful, so we can create all new alarm notifications
     for (let i = 0; i < result.length; i += 1) {

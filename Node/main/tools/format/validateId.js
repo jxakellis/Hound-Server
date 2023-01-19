@@ -16,7 +16,14 @@ async function validateAppVersion(req, res, next) {
   }
   // the user isn't on the previous or current app version
   if (global.CONSTANT.SERVER.COMPATIBLE_IOS_APP_VERSIONS.includes(appVersion) === false) {
-    return res.sendResponseForStatusJSONError(400, undefined, new ValidationError(`App version of ${appVersion} is incompatible. Compatible version(s): ${global.CONSTANT.SERVER.COMPATIBLE_IOS_APP_VERSIONS}`, global.CONSTANT.ERROR.GENERAL.APP_VERSION_OUTDATED));
+    return res.sendResponseForStatusJSONError(
+      400,
+      undefined,
+      new ValidationError(
+        `App version of ${appVersion} is incompatible. Compatible version(s): ${global.CONSTANT.SERVER.COMPATIBLE_IOS_APP_VERSIONS}`,
+        global.CONSTANT.ERROR.GENERAL.APP_VERSION_OUTDATED,
+      ),
+    );
   }
 
   return next();

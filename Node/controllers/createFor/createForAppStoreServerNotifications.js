@@ -20,7 +20,7 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
   if (areAllDefined(databaseConnection, signedPayload) === false) {
     throw new ValidationError('databaseConnection or signedPayload missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
-  // TO DO NOW verify Apple signature
+  // TO DO FUTURE verify Apple signature
   const signedPayloadBuffer = Buffer.from(signedPayload.split('.')[1], 'base64');
   const notification = JSON.parse(signedPayloadBuffer.toString());
 
@@ -52,11 +52,11 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
     throw new ValidationError('signedRenewalInfo or signedTransactionInfo missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
-  // TO DO NOW verify Apple signature
+  // TO DO FUTURE verify Apple signature
   const signedRenewalInfoBuffer = Buffer.from(signedRenewalInfo.split('.')[1], 'base64');
   const renewalInfo = JSON.parse(signedRenewalInfoBuffer.toString());
 
-  // TO DO NOW verify Apple signature
+  // TO DO FUTURE verify Apple signature
   const signedTransactionInfoBuffer = Buffer.from(signedTransactionInfo.split('.')[1], 'base64');
   const transactionInfo = JSON.parse(signedTransactionInfoBuffer.toString());
 
@@ -88,7 +88,13 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
   }
 
   // Check if the notification type indicates we need to create or update an entry for transactions table
-  if (notificationType === 'CONSUMPTION_REQUEST' || notificationType === 'DID_FAIL_TO_RENEW' || notificationType === 'GRACE_PERIOD_EXPIRED' || notificationType === 'PRICE_INCREASE' || notificationType === 'REFUND_DECLINED' || notificationType === 'RENEWAL_EXTENDED' || notificationType === 'TEST') {
+  if (notificationType === 'CONSUMPTION_REQUEST'
+  || notificationType === 'DID_FAIL_TO_RENEW'
+  || notificationType === 'GRACE_PERIOD_EXPIRED'
+  || notificationType === 'PRICE_INCREASE'
+  || notificationType === 'REFUND_DECLINED'
+  || notificationType === 'RENEWAL_EXTENDED'
+  || notificationType === 'TEST') {
     // CONSUMPTION_REQUEST: Indicates that the customer initiated a refund request for a consumable in-app purchase, and the App Store is requesting that you provide consumption data.
     // DID_FAIL_TO_RENEW: A notification type that along with its subtype indicates that the subscription failed to renew due to a billing issue.
     // GRACE_PERIOD_EXPIRED: Indicates that the billing grace period has ended without renewing the subscription, so you can turn off access to service or content.
@@ -157,7 +163,21 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
     // The transaction already exists, so no need to create
       return;
     }
-    await createInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseConnection, transactionId, originalTransactionId, userId, familyId, transactionInfoEnvironment, productId, subscriptionGroupIdentifier, purchaseDate, expirationDate, quantity, webOrderLineItemId, inAppOwnershipType);
+    await createInAppSubscriptionForUserIdFamilyIdTransactionInfo(
+      databaseConnection,
+      transactionId,
+      originalTransactionId,
+      userId,
+      familyId,
+      transactionInfoEnvironment,
+      productId,
+      subscriptionGroupIdentifier,
+      purchaseDate,
+      expirationDate,
+      quantity,
+      webOrderLineItemId,
+      inAppOwnershipType,
+    );
   }
   // Check if a transaction was invalidated, warrenting an update to the transactions table
   else if (notificationType === 'REFUND' || notificationType === 'REVOKE') {
@@ -173,7 +193,48 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
   }
 }
 
-const appStoreServerNotificationsColumns = 'notificationType, subtype, notificationUUID, version, signedDate, dataAppAppleId, dataBundleId, dataBundleVersion, dataEnvironment, renewalInfoAutoRenewProductId, renewalInfoAutoRenewStatus, renewalInfoEnvironment, renewalInfoExpirationIntent, renewalInfoGracePeriodExpiresDate, renewalInfoIsInBillingRetryPeriod, renewalInfoOfferIdentifier, renewalInfoOfferType, renewalInfoOriginalTransactionId, renewalInfoPriceIncreaseStatus, renewalInfoProductId, renewalInfoRecentSubscriptionStartDate, renewalInfoSignedDate, transactionInfoAppAccountToken, transactionInfoBundleId, transactionInfoEnvironment, transactionInfoExpiresDate, transactionInfoInAppOwnershipType, transactionInfoIsUpgraded, transactionInfoOfferIdentifier, transactionInfoOfferType, transactionInfoOriginalPurchaseDate, transactionInfoOriginalTransactionId, transactionInfoProductId, transactionInfoPurchaseDate, transactionInfoQuantity, transactionInfoRevocationDate, transactionInfoRevocationReason, transactionInfoSignedDate, transactionInfoSubscriptionGroupIdentifier, transactionInfoTransactionId, transactionInfoType, transactionInfoWebOrderLineItemId';
+const appStoreServerNotificationsColumns = 'notificationType, \
+subtype, \
+notificationUUID, \
+version, \
+signedDate, \
+dataAppAppleId, \
+dataBundleId, \
+dataBundleVersion, \
+dataEnvironment, \
+renewalInfoAutoRenewProductId, \
+renewalInfoAutoRenewStatus, \
+renewalInfoEnvironment, \
+renewalInfoExpirationIntent, \
+renewalInfoGracePeriodExpiresDate, \
+renewalInfoIsInBillingRetryPeriod, \
+renewalInfoOfferIdentifier, \
+renewalInfoOfferType, \
+renewalInfoOriginalTransactionId, \
+renewalInfoPriceIncreaseStatus, \
+renewalInfoProductId, \
+renewalInfoRecentSubscriptionStartDate, \
+renewalInfoSignedDate, \
+transactionInfoAppAccountToken, \
+transactionInfoBundleId, \
+transactionInfoEnvironment, \
+transactionInfoExpiresDate, \
+transactionInfoInAppOwnershipType, \
+transactionInfoIsUpgraded, \
+transactionInfoOfferIdentifier, \
+transactionInfoOfferType, \
+transactionInfoOriginalPurchaseDate, \
+transactionInfoOriginalTransactionId, \
+transactionInfoProductId, \
+transactionInfoPurchaseDate, \
+transactionInfoQuantity, \
+transactionInfoRevocationDate, \
+transactionInfoRevocationReason, \
+transactionInfoSignedDate, \
+transactionInfoSubscriptionGroupIdentifier, \
+transactionInfoTransactionId, \
+transactionInfoType, \
+transactionInfoWebOrderLineItemId';
 const appStoreServerNotificationsValues = '?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?';
 
 /**

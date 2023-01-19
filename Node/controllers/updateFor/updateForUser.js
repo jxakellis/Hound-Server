@@ -4,6 +4,8 @@ const { databaseQuery } = require('../../main/tools/database/databaseQuery');
 const { formatNumber, formatBoolean } = require('../../main/tools/format/formatObject');
 const { atLeastOneDefined, areAllDefined } = require('../../main/tools/format/validateDefined');
 
+// TO DO NOW add cross compatibility for both old and new naming schemes (e.g. isLoudNotification and isLoudNotificationEnabled). First search for new value then, if not found, attempt to search for value under old key.
+
 /**
  *  Queries the database to update a user. If the query is successful, then returns
  *  If a problem is encountered, creates and throws custom error
@@ -14,6 +16,8 @@ async function updateUserForUserId(
   userNotificationToken,
   forUserConfigurationIsNotificationEnabled,
   forUserConfigurationIsLoudNotification,
+  forUserConfigurationIsLogNotificationEnabled,
+  forUserConfigurationIsReminderNotificationEnabled,
   forUserConfigurationInterfaceStyle,
   forUserConfigurationSnoozeLength,
   userConfigurationNotificationSound,
@@ -30,6 +34,8 @@ async function updateUserForUserId(
   }
   const userConfigurationIsNotificationEnabled = formatBoolean(forUserConfigurationIsNotificationEnabled);
   const userConfigurationIsLoudNotification = formatBoolean(forUserConfigurationIsLoudNotification);
+  const userConfigurationIsLogNotificationEnabled = formatBoolean(forUserConfigurationIsLogNotificationEnabled);
+  const userConfigurationIsReminderNotificationEnabled = formatBoolean(forUserConfigurationIsReminderNotificationEnabled);
   const userConfigurationInterfaceStyle = formatNumber(forUserConfigurationInterfaceStyle);
   const userConfigurationSnoozeLength = formatNumber(forUserConfigurationSnoozeLength);
   // userConfigurationNotificationSound
@@ -46,6 +52,8 @@ async function updateUserForUserId(
     userNotificationToken,
     userConfigurationIsNotificationEnabled,
     userConfigurationIsLoudNotification,
+    userConfigurationIsLogNotificationEnabled,
+    userConfigurationIsReminderNotificationEnabled,
     userConfigurationInterfaceStyle,
     userConfigurationSnoozeLength,
     userConfigurationNotificationSound,
@@ -57,7 +65,21 @@ async function updateUserForUserId(
     userConfigurationSilentModeStartUTCMinute,
     userConfigurationSilentModeEndUTCMinute,
   ) === false) {
-    throw new ValidationError('No userNotificationToken, userConfigurationIsNotificationEnabled, userConfigurationIsLoudNotification, userConfigurationInterfaceStyle, userConfigurationSnoozeLength, userConfigurationNotificationSound, userConfigurationLogsInterfaceScale, userConfigurationRemindersInterfaceScale, userConfigurationSilentModeIsEnabled, userConfigurationSilentModeStartUTCHour, userConfigurationSilentModeEndUTCHour, userConfigurationSilentModeStartUTCMinute, or userConfigurationSilentModeEndUTCMinute, provided', global.CONSTANT.ERROR.VALUE.MISSING);
+    throw new ValidationError('No userNotificationToken, \
+userConfigurationIsNotificationEnabled, \
+userConfigurationIsLoudNotification, \
+userConfigurationIsLogNotificationEnabled, \
+userConfigurationIsReminderNotificationEnabled, \
+userConfigurationInterfaceStyle, \
+userConfigurationSnoozeLength, \
+userConfigurationNotificationSound, \
+userConfigurationLogsInterfaceScale, \
+userConfigurationRemindersInterfaceScale, \
+userConfigurationSilentModeIsEnabled, \
+userConfigurationSilentModeStartUTCHour, \
+userConfigurationSilentModeEndUTCHour, \
+userConfigurationSilentModeStartUTCMinute, \
+or userConfigurationSilentModeEndUTCMinute, provided', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   const promises = [];
@@ -80,6 +102,20 @@ async function updateUserForUserId(
       databaseConnection,
       'UPDATE userConfiguration SET userConfigurationIsLoudNotification = ? WHERE userId = ?',
       [userConfigurationIsLoudNotification, userId],
+    ));
+  }
+  if (areAllDefined(userConfigurationIsLogNotificationEnabled)) {
+    promises.push(databaseQuery(
+      databaseConnection,
+      'UPDATE userConfiguration SET userConfigurationIsLogNotificationEnabled = ? WHERE userId = ?',
+      [userConfigurationIsLogNotificationEnabled, userId],
+    ));
+  }
+  if (areAllDefined(userConfigurationIsReminderNotificationEnabled)) {
+    promises.push(databaseQuery(
+      databaseConnection,
+      'UPDATE userConfiguration SET userConfigurationIsReminderNotificationEnabled = ? WHERE userId = ?',
+      [userConfigurationIsReminderNotificationEnabled, userId],
     ));
   }
   if (areAllDefined(userConfigurationInterfaceStyle)) {

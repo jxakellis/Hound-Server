@@ -123,6 +123,10 @@ async function updateReceiptRecords(databaseConnection, userId, familyId, forEnv
     const receipt = receipts[i];
     const transactionId = formatNumber(receipt.transaction_id);
 
+    // TO DO NOW allow reassignment of subscriptions that haven't expired.
+    // The user must be the head of their current family, the subscription mustn't have expired, and the subscription must be assigned to that user but under a different family.
+    // If these conditions are met, then update the familyId of the transaction to the user's current family
+
     // check to see if we have that receipt stored in the database
     if (storedTransactions.some((storedTransaction) => formatNumber(storedTransaction.transactionId) === transactionId) === false) {
       // we don't have that receipt stored, insert it into the database
@@ -145,7 +149,20 @@ async function updateReceiptRecords(databaseConnection, userId, familyId, forEnv
       const inAppOwnershipType = formatString(receipt.in_app_ownership_type, 13);
       promises.push(databaseQuery(
         databaseConnection,
-        'INSERT INTO transactions(transactionId, originalTransactionId, userId, familyId, environment, productId, subscriptionGroupIdentifier, purchaseDate, expirationDate, numberOfFamilyMembers, numberOfDogs, quantity, webOrderLineItemId, inAppOwnershipType) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        'INSERT INTO transactions(transactionId, \
+originalTransactionId, \
+userId, \
+familyId, \
+environment, \
+productId, \
+subscriptionGroupIdentifier, \
+purchaseDate, \
+expirationDate, \
+numberOfFamilyMembers, \
+numberOfDogs, \
+quantity, \
+webOrderLineItemId, \
+inAppOwnershipType) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
         [
           transactionId,
           originalTransactionid,
@@ -175,7 +192,21 @@ async function updateReceiptRecords(databaseConnection, userId, familyId, forEnv
  *  If the query is successful, then returns
  *  If a problem is encountered, creates and throws custom error
  */
-async function createInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseConnection, transactionId, originalTransactionId, userId, familyId, environment, productId, subscriptionGroupIdentifier, purchaseDate, expirationDate, quantity, webOrderLineItemId, inAppOwnershipType) {
+async function createInAppSubscriptionForUserIdFamilyIdTransactionInfo(
+  databaseConnection,
+  transactionId,
+  originalTransactionId,
+  userId,
+  familyId,
+  environment,
+  productId,
+  subscriptionGroupIdentifier,
+  purchaseDate,
+  expirationDate,
+  quantity,
+  webOrderLineItemId,
+  inAppOwnershipType,
+) {
   if (areAllDefined(databaseConnection, transactionId, userId, familyId, environment, productId, purchaseDate, expirationDate) === false) {
     throw new ValidationError('databaseConnection, transactionId, userId, familyId, environment, productId, purchaseDate, or expirationDate missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
@@ -191,7 +222,20 @@ async function createInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseC
 
   await databaseQuery(
     databaseConnection,
-    'INSERT INTO transactions(transactionId, originalTransactionId, userId, familyId, environment, productId, subscriptionGroupIdentifier, purchaseDate, expirationDate, numberOfFamilyMembers, numberOfDogs, quantity, webOrderLineItemId, inAppOwnershipType) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    'INSERT INTO transactions(transactionId, \
+originalTransactionId, \
+userId, \
+familyId, \
+environment, \
+productId, \
+subscriptionGroupIdentifier, \
+purchaseDate, \
+expirationDate, \
+numberOfFamilyMembers, \
+numberOfDogs, \
+quantity, \
+webOrderLineItemId, \
+inAppOwnershipType) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
     [
       transactionId,
       originalTransactionId,
