@@ -40,7 +40,7 @@ async function validateUserId(req, res, next) {
 
   if (areAllDefined(userIdentifier, userId) === false) {
     // userId was not provided or is invalid format OR userIdentifier was not provided or is invalid format
-    return res.sendResponseForStatusJSONError(400, undefined, new ValidationError('userId or userIdentifier Invalid', global.CONSTANT.ERROR.VALUE.INVALID));
+    return res.sendResponseForStatusJSONError(400, undefined, new ValidationError('userId or userIdentifier invalid', global.CONSTANT.ERROR.VALUE.INVALID));
   }
 
   // if userId is defined and it is a number then continue

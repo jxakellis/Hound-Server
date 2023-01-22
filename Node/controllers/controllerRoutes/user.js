@@ -42,6 +42,8 @@ async function createUser(req, res) {
   try {
     const {
       userIdentifier,
+    } = req.query;
+    const {
       userEmail,
       userFirstName,
       userLastName,
