@@ -52,14 +52,32 @@ function sendAPN(userNotificationConfiguration, category, forAlertTitle, forAler
     alertBody,
     customPayload,
   ) === false) {
+    console.log('sendAPN', 1);
+    console.log(
+      userNotificationToken,
+      userConfigurationIsLogNotificationEnabled,
+      userConfigurationIsReminderNotificationEnabled,
+      // userConfigurationNotificationSound,
+      userConfigurationSilentModeIsEnabled,
+      userConfigurationSilentModeStartUTCHour,
+      userConfigurationSilentModeEndUTCHour,
+      userConfigurationSilentModeStartUTCMinute,
+      userConfigurationSilentModeEndUTCMinute,
+      category,
+      alertTitle,
+      alertBody,
+      customPayload,
+    );
     return;
   }
 
   if (category === global.CONSTANT.NOTIFICATION.CATEGORY.LOG.CREATED && userConfigurationIsLogNotificationEnabled === false) {
+    console.log('sendAPN', 2);
     return;
   }
 
   if (category === global.CONSTANT.NOTIFICATION.CATEGORY.REMINDER.ALARM && userConfigurationIsReminderNotificationEnabled === false) {
+    console.log('sendAPN', 3);
     return;
   }
 
@@ -157,7 +175,7 @@ function sendAPN(userNotificationConfiguration, category, forAlertTitle, forAler
 
   // sound Dictionary Keys
   // https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification#2990112
-
+  console.log('sendProductionAPN');
   sendProductionAPN(notification, userNotificationToken);
 }
 
