@@ -1,7 +1,7 @@
 const { getAllFamilyInformationForFamilyId } = require('../getFor/getForFamily');
 const { createFamilyForUserId } = require('../createFor/createForFamily');
 const { updateFamilyForUserIdFamilyId } = require('../updateFor/updateForFamily');
-const { deleteFamilyForUserIdFamilyId } = require('../deleteFor/deleteForFamily');
+const { deleteFamilyLeaveFamilyForUserIdFamilyId, kickFamilyMemberForUserIdFamilyId } = require('../deleteFor/deleteForFamily');
 const { areAllDefined } = require('../../main/tools/format/validateDefined');
 /*
 Known:
@@ -48,7 +48,12 @@ async function deleteFamily(req, res) {
   try {
     const { userId, familyId } = req.params;
     const { familyKickUserId } = req.body;
-    await deleteFamilyForUserIdFamilyId(req.databaseConnection, userId, familyId, familyKickUserId, req.familyActiveSubscription);
+    if (areAllDefined(familyKickUserId) === true) {
+      await kickFamilyMemberForUserIdFamilyId(req.databaseConnection, userId, familyId, familyKickUserId);
+    }
+    else {
+      await deleteFamilyLeaveFamilyForUserIdFamilyId(req.databaseConnection, userId, familyId, req.familyActiveSubscription);
+    }
     return res.sendResponseForStatusJSONError(200, { result: '' }, undefined);
   }
   catch (error) {
