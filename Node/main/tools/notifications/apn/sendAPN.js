@@ -15,7 +15,6 @@ const { apn, productionAPNProvider, developmentAPNProvider } = require('./apnPro
  */
 // (token, category, sound, alertTitle, alertBody)
 function sendAPN(userNotificationConfiguration, category, forAlertTitle, forAlertBody, customPayload) {
-  // TO DO NOW TEST that notification category selection works
   if (areAllDefined(userNotificationConfiguration) === false) {
     return;
   }
@@ -50,32 +49,14 @@ function sendAPN(userNotificationConfiguration, category, forAlertTitle, forAler
     alertBody,
     customPayload,
   ) === false) {
-    apnLogger.debug('1');
-    console.log(
-      userNotificationToken,
-      userConfigurationIsLogNotificationEnabled,
-      userConfigurationIsReminderNotificationEnabled,
-      // userConfigurationNotificationSound,
-      userConfigurationSilentModeIsEnabled,
-      userConfigurationSilentModeStartUTCHour,
-      userConfigurationSilentModeEndUTCHour,
-      userConfigurationSilentModeStartUTCMinute,
-      userConfigurationSilentModeEndUTCMinute,
-      category,
-      alertTitle,
-      alertBody,
-      customPayload,
-    );
     return;
   }
 
   if (category === global.CONSTANT.NOTIFICATION.CATEGORY.LOG.CREATED && userConfigurationIsLogNotificationEnabled === false) {
-    apnLogger.debug('2');
     return;
   }
 
   if (category === global.CONSTANT.NOTIFICATION.CATEGORY.REMINDER.ALARM && userConfigurationIsReminderNotificationEnabled === false) {
-    apnLogger.debug('3');
     return;
   }
 
@@ -173,7 +154,6 @@ function sendAPN(userNotificationConfiguration, category, forAlertTitle, forAler
 
   // sound Dictionary Keys
   // https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification#2990112
-  console.log('sendProductionAPN');
   sendProductionAPN(notification, userNotificationToken);
 }
 
