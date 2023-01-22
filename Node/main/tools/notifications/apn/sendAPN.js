@@ -34,8 +34,6 @@ function sendAPN(userNotificationConfiguration, category, forAlertTitle, forAler
 
   apnLogger.debug(`sendAPN ${userNotificationConfiguration}, ${category}, ${alertTitle}, ${alertBody}`);
 
-  // TO DO NOW TEST make sure that notifications are sent to a user whether isloudnotfiication is true or false and with the correct sound
-
   // userConfigurationNotificationSound optional, depends on userConfigurationIsLoudNotification
   if (areAllDefined(
     userNotificationToken,
@@ -52,7 +50,7 @@ function sendAPN(userNotificationConfiguration, category, forAlertTitle, forAler
     alertBody,
     customPayload,
   ) === false) {
-    console.log('sendAPN', 1);
+    apnLogger.debug('1');
     console.log(
       userNotificationToken,
       userConfigurationIsLogNotificationEnabled,
@@ -72,12 +70,12 @@ function sendAPN(userNotificationConfiguration, category, forAlertTitle, forAler
   }
 
   if (category === global.CONSTANT.NOTIFICATION.CATEGORY.LOG.CREATED && userConfigurationIsLogNotificationEnabled === false) {
-    console.log('sendAPN', 2);
+    apnLogger.debug('2');
     return;
   }
 
   if (category === global.CONSTANT.NOTIFICATION.CATEGORY.REMINDER.ALARM && userConfigurationIsReminderNotificationEnabled === false) {
-    console.log('sendAPN', 3);
+    apnLogger.debug('3');
     return;
   }
 

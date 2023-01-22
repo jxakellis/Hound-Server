@@ -70,11 +70,19 @@ const NOTIFICATION = {
     },
     // for notifications about logs
     LOG: {
+      /*
+       NOTE: If you add more categories for this section, you will have to update the rest of the Hound code to recognize this.
+       Components specific rely upon checking for LOG.CREATED exactly instead of checking for LOG.*
+      */
       // Family member created a log of care
       CREATED: 'NOTIFICATION_CATEGORY_LOG_CREATED',
     },
     // for notifications about reminder's alarms
     REMINDER: {
+      /*
+       NOTE: If you add more categories for this section, you will have to update the rest of the Hound code to recognize this.
+       Components specific rely upon checking for REMINDER.ALARM exactly instead of checking for REMINDER.*
+      */
       ALARM: 'NOTIFICATION_CATEGORY_REMINDER_ALARM',
     },
   },
