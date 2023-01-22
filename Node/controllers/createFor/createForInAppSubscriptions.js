@@ -69,20 +69,21 @@ async function createInAppSubscriptionForUserIdFamilyIdRecieptId(databaseConnect
     throw new ValidationError("Unable to parse the responseBody from Apple's iTunes servers", global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
-  // CANT PROMISE.ALL BECAUSE updateReceiptRecords CHANGES RESULT OF getActiveInAppSubscriptionForFamilyId
+  // CANT PROMISE.ALL BECAUSE createTransactionsForUserIdFamilyIdEnvironmentReceipts CHANGES RESULT OF getActiveInAppSubscriptionForFamilyId
   // update the records stored for all receipts returned
-  await updateReceiptRecords(databaseConnection, userId, familyId, environment, receipts);
+  await createTransactionsForUserIdFamilyIdEnvironmentReceipts(databaseConnection, userId, familyId, environment, receipts);
 
   // Can't user .familyActiveSubscription property as subscription was updated. Therefore, get the most recent subscription to return to the user
   return getActiveInAppSubscriptionForFamilyId(databaseConnection, familyId);
 }
 
 /**
+ * Helper function for createInAppSubscriptionForUserIdFamilyIdRecieptId
  * Takes array of latest_receipt_info from the Apple /verifyReceipt API endpoint
  * Filters the receipts against productIds that are known
  * Compare receipts to stored transactions, inserting receipts into the database that aren't stored
  */
-async function updateReceiptRecords(databaseConnection, userId, familyId, forEnvironment, forReceipts) {
+async function createTransactionsForUserIdFamilyIdEnvironmentReceipts(databaseConnection, userId, familyId, forEnvironment, forReceipts) {
   const environment = formatString(forEnvironment, 10);
   const receipts = formatArray(forReceipts);
 
@@ -122,10 +123,6 @@ async function updateReceiptRecords(databaseConnection, userId, familyId, forEnv
   for (let i = 0; i < receipts.length; i += 1) {
     const receipt = receipts[i];
     const transactionId = formatNumber(receipt.transaction_id);
-
-    // TO DO NOW allow reassignment of subscriptions that haven't expired.
-    // The user must be the head of their current family, the subscription mustn't have expired, and the subscription must be assigned to that user but under a different family.
-    // If these conditions are met, then update the familyId of the transaction to the user's current family
 
     // check to see if we have that receipt stored in the database
     if (storedTransactions.some((storedTransaction) => formatNumber(storedTransaction.transactionId) === transactionId) === false) {

@@ -65,4 +65,20 @@ async function updateInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseC
   await Promise.all(promises);
 }
 
-module.exports = { updateInAppSubscriptionForUserIdFamilyIdTransactionInfo };
+/**
+ * Attempts to reassign any active subscriptions a user has purchased in a previous family to their current family
+ * The user must be the head of their current family, the subscription must not have expired, and the subscription must be assigned to that user but under a different family
+ * If these conditions are met, then update the familyId of the transaction to the user's current family
+ */
+async function reassignActiveInAppSubscriptionForUserIdFamilyId(databaseConnection, userId, familyId) {
+  // TO DO NOW add invocation of this function inside of createTransactionsForUserIdFamilyIdEnvironmentReceipts
+  // TO DO NOW add invocation of this function inside of createFamilyForUserId
+   
+  // Check if user is head of their current family
+
+  // Check if the transaction table for transactions that: 1. transUserId = curUserId 2. transFamilyId != curFamilyId 3. expirationDate > new Date()
+
+  // Update familyId of transactions found to the user's current familyId
+}
+
+module.exports = { updateInAppSubscriptionForUserIdFamilyIdTransactionInfo, reassignActiveInAppSubscriptionForUserIdFamilyId };
