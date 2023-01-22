@@ -133,8 +133,10 @@ async function updateUser(req, res) {
 
     // < 2.1.0 userConfigurationIsLoudNotification
     const userConfigurationIsLoudNotification = req.body.userConfigurationIsLoudNotificationEnabled ?? req.body.userConfigurationIsLoudNotification;
+    console.log(userConfigurationIsLoudNotification, req.body.userConfigurationIsLoudNotificationEnabled, req.body.userConfigurationIsLoudNotification);
     // < 2.1.0 userConfigurationSilentModeIsEnabled
     const userConfigurationSilentModeIsEnabled = req.body.userConfigurationIsSilentModeEnabled ?? req.body.userConfigurationSilentModeIsEnabled;
+    console.log(userConfigurationSilentModeIsEnabled, req.body.userConfigurationIsSilentModeEnabled, req.body.userConfigurationSilentModeIsEnabled);
     await updateUserForUserId(
       req.databaseConnection,
       userId,

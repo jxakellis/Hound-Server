@@ -49,8 +49,6 @@ async function createUserForUserIdentifier(
   const userLastName = formatString(forUserLastName, 32);
   const userNotificationToken = formatString(forUserNotificationToken, 100);
 
-  // TO DO NOW TEST null coalescling, try to sign up with only a userEmail and userIdentifier
-
   const userConfigurationIsNotificationEnabled = formatBoolean(forUserConfigurationIsNotificationEnabled) ?? false;
   const userConfigurationIsLoudNotification = formatBoolean(forUserConfigurationIsLoudNotification) ?? false;
   const userConfigurationIsLogNotificationEnabled = formatBoolean(forUserConfigurationIsLogNotificationEnabled) ?? false;
