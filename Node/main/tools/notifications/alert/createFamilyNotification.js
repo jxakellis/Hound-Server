@@ -59,7 +59,7 @@ async function createFamilyMemberLeaveNotification(userId, familyId) {
       return;
     }
 
-    // TO DO NOW BUG duplicate notifications for me when dad left family.
+    // TO DO NOW TEST duplicate notifications for me when dad left family? verify that notif duplicated for leaving. if it is, check if duplicated for other sendNotificationForFamilyExcludingUser
 
     // now we can construct the messages
     // Maximum possible length of message: 28 (raw) + 0 (variable) = 28 ( <= ALERT_TITLE_LIMIT )

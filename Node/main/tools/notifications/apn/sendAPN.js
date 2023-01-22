@@ -34,7 +34,7 @@ function sendAPN(userNotificationConfiguration, category, forAlertTitle, forAler
 
   apnLogger.debug(`sendAPN ${userNotificationConfiguration}, ${category}, ${alertTitle}, ${alertBody}`);
 
-  // TO DO NOW BUG make sure that notifications are sent to a user whether isloudnotfiication is true or false and with the correct sound
+  // TO DO NOW TEST make sure that notifications are sent to a user whether isloudnotfiication is true or false and with the correct sound
 
   // userConfigurationNotificationSound optional, depends on userConfigurationIsLoudNotification
   if (areAllDefined(

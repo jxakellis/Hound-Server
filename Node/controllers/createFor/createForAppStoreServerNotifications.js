@@ -16,6 +16,15 @@ const { databaseQuery } = require('../../main/tools/database/databaseQuery');
 
 const { requestLogger } = require('../../main/tools/logging/loggers');
 
+/*
+Processes an App Store Server Notification from start to finish. If anything goes wrong, it logs it as a server error.
+1. decodes the payload,
+2. checks to see if the notification has been logged before,
+3. logs the notification,
+4. lhecks to see if the notification is a transaction we can process (e.g. auto renewed subscription),
+5. attempts to link the notification to a user account,
+6. updates the transaction records to reflect the new/updated information (e.g. insert transaction, change auto-renew flag on existing one, revokes refunded transaction)
+*/
 async function createAppStoreServerNotificationForSignedPayload(databaseConnection, signedPayload) {
   if (areAllDefined(databaseConnection, signedPayload) === false) {
     throw new ValidationError('databaseConnection or signedPayload missing', global.CONSTANT.ERROR.VALUE.MISSING);
@@ -65,7 +74,7 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
   const storedNotification = await getAppStoreServerNotificationForNotificationUUID(databaseConnection, notificationUUID);
 
   // Check if we have logged this notification before
-  if (areAllDefined(storedNotification)) {
+  if (areAllDefined(storedNotification) === true) {
     // Notification has been logged into database, return
     requestLogger.debug('App Store Server Notification has been logged before');
     return;
@@ -73,8 +82,6 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
 
   requestLogger.debug("App Store Server Notification hasn't been logged before");
 
-  // TO DO NOW log to server errors if anything goes wrong with this function. it could be logging the notification itself or something else
-  // if anything fails here then everything reverrs, then the notification isn't logged and the transactions arent updated
   await createAppStoreServerNotificationForNotification(databaseConnection, notification, data, renewalInfo, transactionInfo);
 
   const dataEnvironment = formatString(data.environment, 10);
