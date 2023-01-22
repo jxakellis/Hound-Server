@@ -65,6 +65,7 @@ async function createUserForUserIdentifier(
   const userConfigurationSilentModeEndUTCHour = formatNumber(forUserConfigurationSilentModeEndUTCHour) ?? 19;
   const userConfigurationSilentModeStartUTCMinute = formatNumber(forUserConfigurationSilentModeStartUTCMinute) ?? 0;
   const userConfigurationSilentModeEndUTCMinute = formatNumber(forUserConfigurationSilentModeEndUTCMinte) ?? 0;
+
   if (areAllDefined(
     userId,
     userIdentifier,

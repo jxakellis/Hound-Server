@@ -16,6 +16,8 @@ async function logRequest(req, res, next) {
 
   const originalUrl = formatString(req.originalUrl, 500);
 
+  const body = formatString(JSON.stringify(req.body), 500);
+
   requestLogger.debug(`Request for ${method} ${originalUrl}`);
 
   if (areAllDefined(method) === false) {
@@ -31,8 +33,8 @@ async function logRequest(req, res, next) {
     try {
       const result = await databaseQuery(
         databaseConnectionForLogging,
-        'INSERT INTO previousRequests(requestIP, requestDate, requestMethod, requestOriginalURL) VALUES (?,?,?,?)',
-        [ip, date, method, originalUrl],
+        'INSERT INTO previousRequests(requestIP, requestDate, requestMethod, requestOriginalURL, requestBody) VALUES (?,?,?,?,?)',
+        [ip, date, method, originalUrl, body],
       );
       const requestId = formatNumber(result.insertId);
       req.requestId = requestId;
