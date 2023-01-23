@@ -1,0 +1,13 @@
+TRUNCATE developmentHound.appStoreServerNotifications;
+TRUNCATE developmentHound.dogLogs;
+TRUNCATE developmentHound.dogReminders;
+TRUNCATE developmentHound.dogs;
+TRUNCATE developmentHound.families;
+TRUNCATE developmentHound.familyMembers;
+TRUNCATE developmentHound.previousFamilyMembers;
+TRUNCATE developmentHound.previousRequests;
+TRUNCATE developmentHound.previousResponses;
+TRUNCATE developmentHound.previousServerErrors;
+TRUNCATE developmentHound.transactions;
+TRUNCATE developmentHound.userConfiguration;
+TRUNCATE developmentHound.users;

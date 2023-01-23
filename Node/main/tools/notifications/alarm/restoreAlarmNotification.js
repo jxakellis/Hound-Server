@@ -1,4 +1,3 @@
-const { serverLogger } = require('../../logging/loggers');
 const { schedule } = require('./schedule');
 const { createAlarmNotificationForFamily } = require('./createAlarmNotification');
 
