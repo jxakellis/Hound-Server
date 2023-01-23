@@ -16,7 +16,7 @@ async function logRequest(req, res, next) {
 
   const originalUrl = formatString(req.originalUrl, 500);
 
-  const body = formatString(JSON.stringify(req.body), 500);
+  const body = formatString(JSON.stringify(req.body), 2000);
 
   requestLogger.debug(`Request for ${method} ${originalUrl}`);
 
