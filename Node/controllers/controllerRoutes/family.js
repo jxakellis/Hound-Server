@@ -1,8 +1,13 @@
-const { getAllFamilyInformationForFamilyId } = require('../getFor/getForFamily');
-const { createFamilyForUserId } = require('../createFor/createForFamily');
-const { updateFamilyForUserIdFamilyId } = require('../updateFor/updateForFamily');
-const { deleteFamilyLeaveFamilyForUserIdFamilyId, kickFamilyMemberForUserIdFamilyId } = require('../deleteFor/deleteForFamily');
 const { areAllDefined } = require('../../main/tools/format/validateDefined');
+
+const { getAllFamilyInformationForFamilyId } = require('../getFor/getForFamily');
+
+const { createFamilyForUserId } = require('../createFor/createForFamily');
+
+const { updateFamilyForUserIdFamilyId } = require('../updateFor/updateForFamily');
+
+const { deleteFamilyLeaveFamilyForUserIdFamilyId, kickFamilyMemberForUserIdFamilyId } = require('../deleteFor/deleteForFamily');
+
 /*
 Known:
 - userId formatted correctly and request has sufficient permissions to use

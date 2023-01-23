@@ -1,7 +1,11 @@
 const { areAllDefined } = require('../../main/tools/format/validateDefined');
+
 const { getDogForDogId, getAllDogsForUserIdFamilyId } = require('../getFor/getForDogs');
+
 const { createDogForFamilyId } = require('../createFor/createForDogs');
+
 const { updateDogForDogId } = require('../updateFor/updateForDogs');
+
 const { deleteDogForFamilyIdDogId } = require('../deleteFor/deleteForDogs');
 
 /*

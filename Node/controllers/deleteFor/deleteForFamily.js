@@ -1,14 +1,13 @@
 const { ValidationError } = require('../../main/tools/general/errors');
-
 const { databaseQuery } = require('../../main/tools/database/databaseQuery');
 const { formatSHA256Hash } = require('../../main/tools/format/formatObject');
 const { areAllDefined } = require('../../main/tools/format/validateDefined');
 
-const { getUserFirstNameLastNameForUserId } = require('../getFor/getForUser');
 const { getFamilyHeadUserIdForFamilyId } = require('../getFor/getForFamily');
+const { getUserFirstNameLastNameForUserId } = require('../getFor/getForUser');
 
-const { createUserKickedNotification } = require('../../main/tools/notifications/alert/createUserKickedNotification');
 const { createFamilyMemberLeaveNotification } = require('../../main/tools/notifications/alert/createFamilyNotification');
+const { createUserKickedNotification } = require('../../main/tools/notifications/alert/createUserKickedNotification');
 
 // TO DO NOW TEST that user can still delete family (make sure auto-renewing and family member checks work)
 // TO DO NOW TEST that user can still leave family
@@ -24,15 +23,9 @@ async function deleteFamilyLeaveFamilyForUserIdFamilyId(databaseConnection, user
     throw new ValidationError('databaseConnection, userId, or familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
-  // Only family heads have their userId in the families table
-  // A result from this indicates the userId and familyId combo reference a family head
-  const [family] = await databaseQuery(
-    databaseConnection,
-    'SELECT 1 FROM families WHERE userId = ? AND familyId = ? LIMIT 1',
-    [userId, familyId],
-  );
+  const familyHeadUserId = await getFamilyHeadUserIdForFamilyId(databaseConnection, familyId);
 
-  if (areAllDefined(family)) {
+  if (familyHeadUserId === userId) {
     await deleteFamily(databaseConnection, userId, familyId, familyActiveSubscription);
   }
   else {
@@ -82,18 +75,7 @@ async function deleteFamily(databaseConnection, familyId, familyActiveSubscripti
 
   //  The user has no active subscription or manually stopped their subscription from renewing
   //  They will forfit the rest of their active subscription (if it exists) by deleting their family.
-  //   However, they are safe from an accidential renewal
-
-  // There is only one user left in the family, which is the API requester
-  const [familyAccountCreationDate] = await databaseQuery(
-    databaseConnection,
-    'SELECT familyAccountCreationDate FROM families WHERE familyId = ? LIMIT 1',
-    [familyId],
-  );
-
-  if (areAllDefined(familyAccountCreationDate) === false) {
-    throw new ValidationError('familyAccountCreationDate missing', global.CONSTANT.ERROR.VALUE.MISSING);
-  }
+  //  However, they are safe from an accidential renewal
 
   // Destroy the family now that it is ok to do so
   const promises = [

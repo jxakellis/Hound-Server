@@ -1,13 +1,16 @@
 const axios = require('axios').default;
-const { GeneralError, ValidationError } = require('../../main/tools/general/errors');
-const { areAllDefined } = require('../../main/tools/format/validateDefined');
+
 const { databaseQuery } = require('../../main/tools/database/databaseQuery');
-const { houndSharedSecret } = require('../../main/secrets/houndSharedSecret');
 const {
   formatDate, formatBase64EncodedString, formatArray, formatNumber, formatString,
 } = require('../../main/tools/format/formatObject');
-const { getActiveInAppSubscriptionForFamilyId } = require('../getFor/getForInAppSubscriptions');
+const { areAllDefined } = require('../../main/tools/format/validateDefined');
+const { GeneralError, ValidationError } = require('../../main/tools/general/errors');
+const { houndSharedSecret } = require('../../main/secrets/houndSharedSecret');
+
 const { getFamilyHeadUserIdForFamilyId } = require('../getFor/getForFamily');
+const { getActiveInAppSubscriptionForFamilyId } = require('../getFor/getForInAppSubscriptions');
+
 const { reassignActiveInAppSubscriptionForUserIdFamilyId } = require('../updateFor/updateForInAppSubscriptions');
 
 /**

@@ -1,6 +1,7 @@
+const { databaseQuery } = require('../../main/tools/database/databaseQuery');
 const { ValidationError } = require('../../main/tools/general/errors');
 const { areAllDefined } = require('../../main/tools/format/validateDefined');
-const { databaseQuery } = require('../../main/tools/database/databaseQuery');
+
 const { deleteAllLogsForDogId } = require('./deleteForLogs');
 const { deleteAllRemindersForFamilyIdDogId } = require('./deleteForReminders');
 

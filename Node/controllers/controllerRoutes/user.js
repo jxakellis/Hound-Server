@@ -1,8 +1,10 @@
-const { ValidationError } = require('../../main/tools/general/errors');
 const { atLeastOneDefined, areAllDefined } = require('../../main/tools/format/validateDefined');
+const { ValidationError } = require('../../main/tools/general/errors');
 
 const { getUserForUserId, getUserForUserIdentifier } = require('../getFor/getForUser');
+
 const { createUserForUserIdentifier } = require('../createFor/createForUser');
+
 const { updateUserForUserId } = require('../updateFor/updateForUser');
 
 /*

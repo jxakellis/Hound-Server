@@ -1,12 +1,11 @@
-const { ValidationError } = require('../../main/tools/general/errors');
-
 const { databaseQuery } = require('../../main/tools/database/databaseQuery');
 const {
   formatBoolean, formatSHA256Hash, formatString,
 } = require('../../main/tools/format/formatObject');
 const { areAllDefined } = require('../../main/tools/format/validateDefined');
-
+const { ValidationError } = require('../../main/tools/general/errors');
 const { createFamilyMemberJoinNotification } = require('../../main/tools/notifications/alert/createFamilyNotification');
+
 const { getAllFamilyMembersForFamilyId, getFamilyMemberUserIdForUserId } = require('../getFor/getForFamily');
 const { getActiveInAppSubscriptionForFamilyId } = require('../getFor/getForInAppSubscriptions');
 

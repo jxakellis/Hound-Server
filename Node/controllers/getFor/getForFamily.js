@@ -1,7 +1,7 @@
-const { ValidationError } = require('../../main/tools/general/errors');
 const { databaseQuery } = require('../../main/tools/database/databaseQuery');
-const { areAllDefined } = require('../../main/tools/format/validateDefined');
 const { formatSHA256Hash } = require('../../main/tools/format/formatObject');
+const { areAllDefined } = require('../../main/tools/format/validateDefined');
+const { ValidationError } = require('../../main/tools/general/errors');
 
 const usersColumns = 'users.userId, users.userFirstName, users.userLastName';
 const previousFamilyMembersColumns = 'previousFamilyMembers.userId, previousFamilyMembers.userFirstName, previousFamilyMembers.userLastName';
@@ -123,6 +123,7 @@ async function getFamilyHeadUserIdForFamilyId(databaseConnection, familyId) {
   );
 
   [result] = result;
+
   if (areAllDefined(result) === false) {
     return undefined;
   }

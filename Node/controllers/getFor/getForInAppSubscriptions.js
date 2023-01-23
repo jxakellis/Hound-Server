@@ -1,7 +1,7 @@
-const { ValidationError } = require('../../main/tools/general/errors');
 const { databaseQuery } = require('../../main/tools/database/databaseQuery');
-const { areAllDefined } = require('../../main/tools/format/validateDefined');
 const { formatNumber, formatBoolean } = require('../../main/tools/format/formatObject');
+const { areAllDefined } = require('../../main/tools/format/validateDefined');
+const { ValidationError } = require('../../main/tools/general/errors');
 
 // Omitted columns: originalTransactionId, userId, familyId, subscriptionGroupIdentifier, quantity, webOrderLineItemId, inAppOwnershipType
 const transactionsColumns = 'transactionId, productId, purchaseDate, expirationDate, numberOfFamilyMembers, numberOfDogs, isAutoRenewing, isRevoked';

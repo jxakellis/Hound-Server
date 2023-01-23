@@ -1,6 +1,6 @@
-const { ValidationError } = require('../../main/tools/general/errors');
-const { areAllDefined } = require('../../main/tools/format/validateDefined');
 const { databaseQuery } = require('../../main/tools/database/databaseQuery');
+const { areAllDefined } = require('../../main/tools/format/validateDefined');
+const { ValidationError } = require('../../main/tools/general/errors');
 
 /**
  *  Queries the database to delete a log. If the query is successful, then returns

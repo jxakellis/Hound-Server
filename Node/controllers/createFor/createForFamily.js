@@ -1,10 +1,11 @@
-const { ValidationError } = require('../../main/tools/general/errors');
 const { databaseQuery } = require('../../main/tools/database/databaseQuery');
-const { areAllDefined } = require('../../main/tools/format/validateDefined');
-const { hash } = require('../../main/tools/format/hash');
-
 const { generateVerifiedFamilyCode } = require('../../main/tools/general/generateVerifiedFamilyCode');
+const { ValidationError } = require('../../main/tools/general/errors');
+const { hash } = require('../../main/tools/format/hash');
+const { areAllDefined } = require('../../main/tools/format/validateDefined');
+
 const { getFamilyMemberUserIdForUserId } = require('../getFor/getForFamily');
+
 const { reassignActiveInAppSubscriptionForUserIdFamilyId } = require('../updateFor/updateForInAppSubscriptions');
 
 /**

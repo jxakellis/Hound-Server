@@ -1,5 +1,6 @@
-const { createAppStoreServerNotificationForSignedPayload } = require('../createFor/createForAppStoreServerNotifications');
 const { logServerError } = require('../../main/tools/logging/logServerError');
+
+const { createAppStoreServerNotificationForSignedPayload } = require('../createFor/createForAppStoreServerNotifications');
 
 async function createAppStoreServerNotification(req, res) {
   try {

@@ -1,9 +1,10 @@
-const { ValidationError } = require('../../main/tools/general/errors');
-const { areAllDefined, atLeastOneDefined } = require('../../main/tools/format/validateDefined');
 const { databaseQuery } = require('../../main/tools/database/databaseQuery');
 const {
   formatBoolean,
 } = require('../../main/tools/format/formatObject');
+const { areAllDefined, atLeastOneDefined } = require('../../main/tools/format/validateDefined');
+const { ValidationError } = require('../../main/tools/general/errors');
+
 const { getFamilyHeadUserIdForFamilyId } = require('../getFor/getForFamily');
 
 async function updateInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseConnection, transactionId, userId, familyId, autoRenewStatus, revocationReason) {
@@ -76,16 +77,11 @@ async function reassignActiveInAppSubscriptionForUserIdFamilyId(databaseConnecti
     throw new ValidationError('databaseConnection, userId, or familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
-  // Only family heads have their userId in the families table
-  // A result from this indicates the userId and familyId combo reference a family head
-  const [family] = await databaseQuery(
-    databaseConnection,
-    'SELECT 1 FROM families WHERE userId = ? AND familyId = ? LIMIT 1',
-    [userId, familyId],
-  );
+  const familyHeadUserId = await getFamilyHeadUserIdForFamilyId(databaseConnection, familyId);
 
   // Only a user that is the head of their family can have subscriptions reassigned
-  if (areAllDefined(family) === false) {
+  if (familyHeadUserId !== userId) {
+    // Reassigning subscriptions is optional. It is acceptable if this check fails.
     return;
   }
 

@@ -1,9 +1,13 @@
-const { getLogForLogId, getAllLogsForDogId } = require('../getFor/getForLogs');
-const { createLogForUserIdDogId } = require('../createFor/createForLogs');
-const { updateLogForDogIdLogId } = require('../updateFor/updateForLogs');
-const { deleteLogForLogId } = require('../deleteFor/deleteForLogs');
-const { createLogNotification } = require('../../main/tools/notifications/alert/createLogNotification');
 const { areAllDefined } = require('../../main/tools/format/validateDefined');
+const { createLogNotification } = require('../../main/tools/notifications/alert/createLogNotification');
+
+const { getLogForLogId, getAllLogsForDogId } = require('../getFor/getForLogs');
+
+const { createLogForUserIdDogId } = require('../createFor/createForLogs');
+
+const { updateLogForDogIdLogId } = require('../updateFor/updateForLogs');
+
+const { deleteLogForLogId } = require('../deleteFor/deleteForLogs');
 
 /*
 Known:

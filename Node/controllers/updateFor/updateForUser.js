@@ -1,8 +1,7 @@
-const { ValidationError } = require('../../main/tools/general/errors');
-
 const { databaseQuery } = require('../../main/tools/database/databaseQuery');
 const { formatNumber, formatBoolean } = require('../../main/tools/format/formatObject');
 const { atLeastOneDefined, areAllDefined } = require('../../main/tools/format/validateDefined');
+const { ValidationError } = require('../../main/tools/general/errors');
 
 /**
  *  Queries the database to update a user. If the query is successful, then returns

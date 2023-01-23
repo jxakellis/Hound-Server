@@ -1,8 +1,7 @@
-const { ValidationError } = require('../../main/tools/general/errors');
-
 const { databaseQuery } = require('../../main/tools/database/databaseQuery');
-const { areAllDefined } = require('../../main/tools/format/validateDefined');
 const { formatString } = require('../../main/tools/format/formatObject');
+const { areAllDefined } = require('../../main/tools/format/validateDefined');
+const { ValidationError } = require('../../main/tools/general/errors');
 
 /**
  *  Queries the database to update a dog. If the query is successful, then returns

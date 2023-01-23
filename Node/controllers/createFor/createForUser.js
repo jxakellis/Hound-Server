@@ -1,11 +1,12 @@
 const crypto = require('crypto');
-const { ValidationError } = require('../../main/tools/general/errors');
+
 const { databaseQuery } = require('../../main/tools/database/databaseQuery');
+const { ValidationError } = require('../../main/tools/general/errors');
 const {
   formatNumber, formatEmail, formatBoolean, formatString,
 } = require('../../main/tools/format/formatObject');
-const { areAllDefined } = require('../../main/tools/format/validateDefined');
 const { hash } = require('../../main/tools/format/hash');
+const { areAllDefined } = require('../../main/tools/format/validateDefined');
 
 /**
  *  Queries the database to create a user. If the query is successful, then returns the userId.

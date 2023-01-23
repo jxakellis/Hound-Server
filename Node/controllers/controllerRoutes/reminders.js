@@ -1,12 +1,14 @@
 const { formatArray } = require('../../main/tools/format/formatObject');
 const { areAllDefined } = require('../../main/tools/format/validateDefined');
+const { createAlarmNotificationForFamily } = require('../../main/tools/notifications/alarm/createAlarmNotification');
 
 const { getReminderForReminderId, getAllRemindersForDogId } = require('../getFor/getForReminders');
-const { createReminderForDogIdReminder, createRemindersForDogIdReminders } = require('../createFor/createForReminders');
-const { updateReminderForDogIdReminder, updateRemindersForDogIdReminders } = require('../updateFor/updateForReminders');
-const { deleteReminderForFamilyIdDogIdReminderId, deleteRemindersForFamilyIdDogIdReminderIds } = require('../deleteFor/deleteForReminders');
 
-const { createAlarmNotificationForFamily } = require('../../main/tools/notifications/alarm/createAlarmNotification');
+const { createReminderForDogIdReminder, createRemindersForDogIdReminders } = require('../createFor/createForReminders');
+
+const { updateReminderForDogIdReminder, updateRemindersForDogIdReminders } = require('../updateFor/updateForReminders');
+
+const { deleteReminderForFamilyIdDogIdReminderId, deleteRemindersForFamilyIdDogIdReminderIds } = require('../deleteFor/deleteForReminders');
 
 /*
 Known:

@@ -1,8 +1,10 @@
-const { ValidationError } = require('../../main/tools/general/errors');
+const { databaseQuery } = require('../../main/tools/database/databaseQuery');
 const { areAllDefined } = require('../../main/tools/format/validateDefined');
 const {
   formatDate, formatNumber, formatBoolean, formatString,
 } = require('../../main/tools/format/formatObject');
+const { ValidationError } = require('../../main/tools/general/errors');
+const { requestLogger } = require('../../main/tools/logging/loggers');
 
 const { getUserForUserId, getUserForUserApplicationUsername } = require('../getFor/getForUser');
 const { getAppStoreServerNotificationForNotificationUUID } = require('../getFor/getForAppStoreServerNotifications');
@@ -11,10 +13,6 @@ const { getInAppSubscriptionForTransactionId } = require('../getFor/getForInAppS
 const { createInAppSubscriptionForUserIdFamilyIdTransactionInfo } = require('./createForInAppSubscriptions');
 
 const { updateInAppSubscriptionForUserIdFamilyIdTransactionInfo } = require('../updateFor/updateForInAppSubscriptions');
-
-const { databaseQuery } = require('../../main/tools/database/databaseQuery');
-
-const { requestLogger } = require('../../main/tools/logging/loggers');
 
 /*
 Processes an App Store Server Notification from start to finish. If anything goes wrong, it logs it as a server error.

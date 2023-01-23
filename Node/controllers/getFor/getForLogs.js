@@ -1,7 +1,7 @@
-const { ValidationError } = require('../../main/tools/general/errors');
 const { databaseQuery } = require('../../main/tools/database/databaseQuery');
 const { formatDate } = require('../../main/tools/format/formatObject');
 const { areAllDefined } = require('../../main/tools/format/validateDefined');
+const { ValidationError } = require('../../main/tools/general/errors');
 
 // Select every column except for dogId and logLastModified (by not transmitting, increases network efficiency)
 // dogId is already known and dogLastModified has no use client-side
