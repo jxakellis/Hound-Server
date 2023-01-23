@@ -3,7 +3,7 @@ const parentLogger = require('pino')();
 // Important server state information. This should always be logged to the console as it indicates critical functions
 const serverLogger = parentLogger.child({ name: 'Server' });
 // Passing 'level' as an option doesn't configure the logger as it should. Have to set manually
-serverLogger.level = 'trace';
+serverLogger.level = 'debug';
 
 // trace: 10, debug: 20, info: 30, warn: 40, error: 50, fatal: 60, silent: infinity
 // The silent logging level is a specialized level which will disable all logging, the silent log method is a noop function.
