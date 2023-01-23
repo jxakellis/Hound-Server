@@ -2,6 +2,7 @@ const { ValidationError } = require('../../main/tools/general/errors');
 const { databaseQuery } = require('../../main/tools/database/databaseQuery');
 const { formatSHA256Hash } = require('../../main/tools/format/formatObject');
 const { areAllDefined } = require('../../main/tools/format/validateDefined');
+const { serverLogger } = require('../../main/tools/logging/loggers');
 
 const { getFamilyHeadUserIdForFamilyId } = require('../getFor/getForFamily');
 const { getUserFirstNameLastNameForUserId } = require('../getFor/getForUser');
@@ -68,9 +69,9 @@ async function deleteFamily(databaseConnection, familyId, familyActiveSubscripti
 
       Only accept if there is no active subscription or the active subscription isn't auto-renewing
       */
-  console.log(familyActiveSubscription);
+  serverLogger.debug(familyActiveSubscription);
   if (familyActiveSubscription.productId !== global.CONSTANT.SUBSCRIPTION.DEFAULT_SUBSCRIPTION_PRODUCT_ID
-        && (areAllDefined(familyActiveSubscription.isAutoRenewing) === false || familyActiveSubscription.isAutoRenewing === true)) {
+        && familyActiveSubscription.isAutoRenewing !== false) {
     throw new ValidationError('Family still has an auto-renewing, active subscription', global.CONSTANT.ERROR.FAMILY.LEAVE.SUBSCRIPTION_ACTIVE);
   }
 
