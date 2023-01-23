@@ -10,10 +10,6 @@ const { getUserFirstNameLastNameForUserId } = require('../getFor/getForUser');
 const { createFamilyMemberLeaveNotification } = require('../../main/tools/notifications/alert/createFamilyNotification');
 const { createUserKickedNotification } = require('../../main/tools/notifications/alert/createUserKickedNotification');
 
-// TO DO NOW TEST that user can still delete family (make sure auto-renewing and family member checks work)
-// TO DO NOW TEST that user can still leave family
-// TO DO NOW TEST that user can still be kicked from family
-
 /**
 *  Depending on whether the user is a family member or a family head,
 *  queries the database to remove the user from their current family or delete the family.
