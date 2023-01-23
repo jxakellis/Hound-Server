@@ -16,13 +16,10 @@ async function getActiveInAppSubscriptionForFamilyId(databaseConnection, familyI
   }
 
   // find the family's most recent subscription
-
-  const currentDate = new Date();
-
   let familySubscription = await databaseQuery(
     databaseConnection,
     `SELECT ${transactionsColumns} FROM transactions WHERE familyId = ? AND expirationDate >= ? AND isRevoked = 0 ORDER BY expirationDate DESC, purchaseDate DESC, transactionId DESC LIMIT 1`,
-    [familyId, currentDate],
+    [familyId, new Date()],
   );
 
   // since we found no family subscription, assign the family to the default subscription

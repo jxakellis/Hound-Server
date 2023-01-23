@@ -8,6 +8,7 @@ const {
 } = require('../../main/tools/format/formatObject');
 const { getActiveInAppSubscriptionForFamilyId } = require('../getFor/getForInAppSubscriptions');
 const { getFamilyHeadUserIdForFamilyId } = require('../getFor/getForFamily');
+const { reassignActiveInAppSubscriptionForUserIdFamilyId } = require('../updateFor/updateForInAppSubscriptions');
 
 /**
  *  Contacts Apple's server to retrieve records of any transaction, given the appStoreReceiptURL
@@ -183,6 +184,8 @@ inAppOwnershipType) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
   await Promise.all(promises);
 
   // now all of the receipts returned by apple (who's productId's match one that is known to us) are stored in our database
+
+  await reassignActiveInAppSubscriptionForUserIdFamilyId(databaseConnection, userId, familyId);
 }
 
 /**

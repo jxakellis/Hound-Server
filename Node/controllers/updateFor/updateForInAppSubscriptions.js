@@ -71,14 +71,30 @@ async function updateInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseC
  * If these conditions are met, then update the familyId of the transaction to the user's current family
  */
 async function reassignActiveInAppSubscriptionForUserIdFamilyId(databaseConnection, userId, familyId) {
-  // TO DO NOW add invocation of this function inside of createTransactionsForUserIdFamilyIdEnvironmentReceipts
-  // TO DO NOW add invocation of this function inside of createFamilyForUserId
-   
-  // Check if user is head of their current family
+  // TO DO NOW test that subscription reassignment works
+  if (areAllDefined(databaseConnection, userId, familyId) === false) {
+    throw new ValidationError('databaseConnection, userId, or familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
+  }
 
-  // Check if the transaction table for transactions that: 1. transUserId = curUserId 2. transFamilyId != curFamilyId 3. expirationDate > new Date()
+  // Only family heads have their userId in the families table
+  // A result from this indicates the userId and familyId combo reference a family head
+  const [family] = await databaseQuery(
+    databaseConnection,
+    'SELECT 1 FROM families WHERE userId = ? AND familyId = ? LIMIT 1',
+    [userId, familyId],
+  );
 
-  // Update familyId of transactions found to the user's current familyId
+  // Only a user that is the head of their family can have subscriptions reassigned
+  if (areAllDefined(family) === false) {
+    return;
+  }
+
+  // Reassign all non-expired, non-revoked transactions by the user to their current family.
+  await databaseQuery(
+    databaseConnection,
+    'UPDATE transactions SET familyId = ? WHERE userId = ? AND expirationDate >= ? AND isRevoked = 0',
+    [familyId, userId, new Date()],
+  );
 }
 
 module.exports = { updateInAppSubscriptionForUserIdFamilyIdTransactionInfo, reassignActiveInAppSubscriptionForUserIdFamilyId };

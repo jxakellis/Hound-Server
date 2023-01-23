@@ -5,6 +5,7 @@ const { hash } = require('../../main/tools/format/hash');
 
 const { generateVerifiedFamilyCode } = require('../../main/tools/general/generateVerifiedFamilyCode');
 const { getFamilyMemberUserIdForUserId } = require('../getFor/getForFamily');
+const { reassignActiveInAppSubscriptionForUserIdFamilyId } = require('../updateFor/updateForInAppSubscriptions');
 
 /**
  *  Queries the database to create a family. If the query is successful, then returns the familyId.
@@ -47,6 +48,8 @@ async function createFamilyForUserId(databaseConnection, userId) {
   ];
 
   await Promise.all(promises);
+
+  await reassignActiveInAppSubscriptionForUserIdFamilyId(databaseConnection, userId, familyId);
 
   return familyId;
 }
