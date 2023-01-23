@@ -50,6 +50,18 @@ async function createUserForUserIdentifier(
   const userLastName = formatString(forUserLastName, 32);
   const userNotificationToken = formatString(forUserNotificationToken, 100);
 
+  if (areAllDefined(
+    userId,
+    // userApplicationUsername
+    userEmail,
+    // userFirstName
+    // userLastName
+    // userNotificationToken
+    userAccountCreationDate,
+  ) === false) {
+    throw new ValidationError('userId, userEmail, or userAccountCreationDate missing', global.CONSTANT.ERROR.VALUE.MISSING);
+  }
+
   const userConfigurationIsNotificationEnabled = formatBoolean(forUserConfigurationIsNotificationEnabled) ?? false;
   const userConfigurationIsLoudNotification = formatBoolean(forUserConfigurationIsLoudNotification) ?? false;
   const userConfigurationIsLogNotificationEnabled = formatBoolean(forUserConfigurationIsLogNotificationEnabled) ?? false;
@@ -66,14 +78,6 @@ async function createUserForUserIdentifier(
   const userConfigurationSilentModeEndUTCMinute = formatNumber(forUserConfigurationSilentModeEndUTCMinte) ?? 0;
 
   if (areAllDefined(
-    userId,
-    userIdentifier,
-    // userApplicationUsername
-    userEmail,
-    // userFirstName
-    // userLastName
-    // userNotificationToken
-    userAccountCreationDate,
     userConfigurationIsNotificationEnabled,
     userConfigurationIsLoudNotification,
     userConfigurationIsLogNotificationEnabled,
@@ -89,11 +93,7 @@ async function createUserForUserIdentifier(
     userConfigurationSilentModeStartUTCMinute,
     userConfigurationSilentModeEndUTCMinute,
   ) === false) {
-    throw new ValidationError('userId, \
-userIdentifier, \
-userEmail, \
-userAccountCreationDate, \
-userConfigurationIsNotificationEnabled, \
+    throw new ValidationError('userConfigurationIsNotificationEnabled, \
 userConfigurationIsLoudNotification, \
 userConfigurationIsLogNotificationEnabled, \
 userConfigurationIsReminderNotificationEnabled, \

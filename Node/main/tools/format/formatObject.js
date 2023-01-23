@@ -1,18 +1,34 @@
 const { areAllDefined } = require('./validateDefined');
 
+// RFC 5322 compliant regex statement from http://emailregex.com/
+// eslint-disable-next-line max-len, no-control-regex
+const emailRegex = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
+
+// maximum email length of 320/319 is incorrect, format with brackets <long@email.address>
+const maximumEmailLengthWithAngleBrackets = 256;
+// maximum email length of 320/319 is incorrect, format without brackets long@email.address
+const maximumEmailLengthWithoutAngleBrackets = 254;
+// all internet emails should be in the foo@bar.com format (ignoring intranet format), shortest possible email is therefore x@y.zz (6 characters)
+const minimumEmailLength = 6;
+
+const minimumUsernameLength = 1;
+const maximumUsernameLength = 64;
+
 /**
- * Takes a string. If the string provided passes the regex and length checks, it is a valid userEmail and the function returns true. Otherwise, function returns false.
+ * If the string provided passes the regex and length checks, returns true.
+ * Otherwise, function returns false.
  */
 function formatEmail(string) {
-  // eslint-disable-next-line no-useless-escape
-  const emailRegex = /^[-!#$%&'*+\/0-9=?A-Z^_a-z{|}~](\.?[-!#$%&'*+\/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*\.?[a-zA-Z0-9])*\.[a-zA-Z](-?[a-zA-Z0-9])+$/;
-  const userEmail = formatString(string, 320);
+  let userEmail = formatString(string, maximumEmailLengthWithAngleBrackets);
+
   if (areAllDefined(userEmail) === false) {
     return undefined;
   }
-  // for our purposes all emails should be in the foo@bar.com format
-  // shortest possible email is therefore x@y.zz (6 characters)
-  if (userEmail.length < 6 || userEmail.length > 254) {
+
+  userEmail = userEmail.replace('<', '');
+  userEmail = userEmail.replace('>', '');
+
+  if (userEmail.length < minimumEmailLength || userEmail.length > maximumEmailLengthWithoutAngleBrackets) {
     return undefined;
   }
 
@@ -22,14 +38,15 @@ function formatEmail(string) {
   }
 
   // Further checking of some things regex can't handle
-  const parts = userEmail.split('@');
-  if (parts[0].length > 64) {
+  const emailParts = userEmail.split('@');
+
+  const username = emailParts[0];
+  if (username.length < minimumUsernameLength || username.length > maximumUsernameLength) {
     return undefined;
   }
-  const domainParts = parts[1].split('.');
-  if (domainParts.some((part) => part.length > 63)) {
-    return undefined;
-  }
+
+  // requirements for length of the components to domain are vague
+  // const domain = emailParts[1];
 
   return userEmail.toLowerCase();
 }
