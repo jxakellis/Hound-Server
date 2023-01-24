@@ -1,7 +1,7 @@
 const { atLeastOneDefined, areAllDefined } = require('../../main/tools/format/validateDefined');
 const { ValidationError } = require('../../main/tools/general/errors');
 
-const { getUserForUserId, getUserForUserIdentifier } = require('../getFor/getForUser');
+const { getUserForUserIdentifier } = require('../getFor/getForUser');
 
 const { createUserForUserIdentifier } = require('../createFor/createForUser');
 
@@ -14,20 +14,14 @@ Known:
 
 async function getUser(req, res) {
   try {
-    // hound userId
-    const { userId } = req.params;
     // apple userIdentifier
     const { userIdentifier } = req.query;
 
-    if (atLeastOneDefined(userId, userIdentifier) === false) {
-      throw new ValidationError('userId or userIdentifier missing', global.CONSTANT.ERROR.VALUE.MISSING);
+    if (atLeastOneDefined(userIdentifier) === false) {
+      throw new ValidationError('userIdentifier missing', global.CONSTANT.ERROR.VALUE.MISSING);
     }
 
-    const result = areAllDefined(userId)
-    // user provided userId so we go that route
-      ? await getUserForUserId(req.databaseConnection, userId)
-    // user provided userIdentifier so we find them using that way
-      : await getUserForUserIdentifier(req.databaseConnection, userIdentifier);
+    const result = await getUserForUserIdentifier(req.databaseConnection, userIdentifier);
 
     if (areAllDefined(result) === false) {
       throw new ValidationError('No user found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.USER);
