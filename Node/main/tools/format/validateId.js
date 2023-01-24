@@ -39,8 +39,7 @@ async function validateUserId(req, res, next) {
   const userIdentifier = formatSHA256Hash(req.query.userIdentifier);
 
   if (areAllDefined(userIdentifier, userId) === false) {
-    // userId was not provided or is invalid format OR userIdentifier was not provided or is invalid format
-    return res.sendResponseForStatusJSONError(400, undefined, new ValidationError('userId or userIdentifier invalid', global.CONSTANT.ERROR.VALUE.INVALID));
+    return res.sendResponseForStatusJSONError(400, undefined, new ValidationError('userId or userIdentifier missing', global.CONSTANT.ERROR.VALUE.INVALID));
   }
 
   // if userId is defined and it is a number then continue
@@ -79,7 +78,7 @@ async function validateFamilyId(req, res, next) {
 
   if (areAllDefined(familyId) === false) {
     // familyId was not provided or is invalid format
-    return res.sendResponseForStatusJSONError(400, undefined, new ValidationError('familyId Invalid', global.CONSTANT.ERROR.VALUE.INVALID));
+    return res.sendResponseForStatusJSONError(400, undefined, new ValidationError('familyId missing', global.CONSTANT.ERROR.VALUE.INVALID));
   }
 
   // if familyId is defined and it is a number then continue
@@ -118,8 +117,7 @@ async function validateDogId(req, res, next) {
   const dogId = formatNumber(req.params.dogId);
 
   if (areAllDefined(dogId) === false) {
-    // dogId was not provided or is invalid
-    return res.sendResponseForStatusJSONError(400, undefined, new ValidationError('dogId Invalid', global.CONSTANT.ERROR.VALUE.INVALID));
+    return res.sendResponseForStatusJSONError(400, undefined, new ValidationError('dogId missing', global.CONSTANT.ERROR.VALUE.INVALID));
   }
 
   // query database to find out if user has permission for that dogId
@@ -166,8 +164,7 @@ async function validateLogId(req, res, next) {
   const logId = formatNumber(req.params.logId);
 
   if (areAllDefined(logId) === false) {
-    // logId was not provided or is invalid
-    return res.sendResponseForStatusJSONError(400, undefined, new ValidationError('logId Invalid', global.CONSTANT.ERROR.VALUE.INVALID));
+    return res.sendResponseForStatusJSONError(400, undefined, new ValidationError('logId missing', global.CONSTANT.ERROR.VALUE.INVALID));
   }
 
   // query database to find out if user has permission for that logId
@@ -214,8 +211,7 @@ async function validateParamsReminderId(req, res, next) {
   const reminderId = formatNumber(req.params.reminderId);
 
   if (areAllDefined(reminderId) === false) {
-    // reminderId was not provided or is invalid
-    return res.sendResponseForStatusJSONError(400, undefined, new ValidationError('reminderId Invalid', global.CONSTANT.ERROR.VALUE.INVALID));
+    return res.sendResponseForStatusJSONError(400, undefined, new ValidationError('reminderId missing', global.CONSTANT.ERROR.VALUE.INVALID));
   }
 
   // query database to find out if user has permission for that reminderId
@@ -259,8 +255,7 @@ async function validateBodyReminderId(req, res, next) {
   const reminders = areAllDefined(formatArray(req.body.reminders)) === true ? formatArray(req.body.reminders) : [req.body];
 
   if (areAllDefined(reminders) === false) {
-    // reminderId was not provided or is invalid
-    return res.sendResponseForStatusJSONError(400, undefined, new ValidationError('reminders Invalid', global.CONSTANT.ERROR.VALUE.INVALID));
+    return res.sendResponseForStatusJSONError(400, undefined, new ValidationError('reminders missing', global.CONSTANT.ERROR.VALUE.INVALID));
   }
 
   let promises = [];
@@ -269,7 +264,7 @@ async function validateBodyReminderId(req, res, next) {
     const reminderId = formatNumber(reminders[i].reminderId);
 
     if (areAllDefined(reminderId) === false) {
-      return res.sendResponseForStatusJSONError(400, undefined, new ValidationError('reminderId Invalid', global.CONSTANT.ERROR.VALUE.INVALID));
+      return res.sendResponseForStatusJSONError(400, undefined, new ValidationError('reminderId missing', global.CONSTANT.ERROR.VALUE.INVALID));
     }
 
     // Attempt to locate a reminder. It must match the reminderId provided while being attached to a dog that the user has permission to use
