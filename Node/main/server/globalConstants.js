@@ -26,8 +26,10 @@ const LIMIT = {
   // Additionally, there could be uncaught jobs getting duplicated that won't get noticed with a high limit
   NUMBER_OF_SCHEDULED_JOBS_ALLOWED: 1000000,
   // A user can have <= the number listed below of logs for each dog. E.g. if 100,000 then the family can have <= 100,000 logs per dog
+  // IMPORTANT: If you modify this value, change the value on Hound app's DogConstant
   NUMBER_OF_LOGS_PER_DOG: 50000,
   // A user can have <= the number listed below of reminders for each dog. E.g. if 10 then the family can have <= 10 reminders per dog
+  // IMPORTANT: If you modify this value, change the value on Hound app's DogConstant
   NUMBER_OF_REMINDERS_PER_DOG: 10,
 };
 
