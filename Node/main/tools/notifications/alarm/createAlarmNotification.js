@@ -94,13 +94,13 @@ LIMIT 18446744073709551615',
     const alertTitle = `⏱ ${reminder.dogName}`;
     // `Reminder for ${reminder.dogName}`;
 
-    // Maximum possible length of message: 19 (raw) + 32 (variable) = 51 (<= ALERT_BODY_LIMIT)
-    let alertBody = `Lend a hand with '${formatReminderAction(reminder.reminderAction, reminder.reminderCustomActionName)}'`;
+    // Maximum possible length of message: 17 (raw) + 32 (variable) = 49 (<= ALERT_BODY_LIMIT)
+    let alertBody = `Lend a hand with ${formatReminderAction(reminder.reminderAction, reminder.reminderCustomActionName)}`;
 
     const snoozeExecutionInterval = formatDate(reminder.snoozeExecutionInterval);
     if (areAllDefined(snoozeExecutionInterval)) {
-      // Maximum possible length of message: 47 (raw) + 32 (variable) = 79 (<= ALERT_BODY_LIMIT)
-      alertBody = `It's been a bit, remember to lend a hand with '${formatReminderAction(reminder.reminderAction, reminder.reminderCustomActionName)}'`;
+      // Maximum possible length of message: 45 (raw) + 32 (variable) = 77 (<= ALERT_BODY_LIMIT)
+      alertBody = `It's been a bit, remember to lend a hand with ${formatReminderAction(reminder.reminderAction, reminder.reminderCustomActionName)}`;
     }
 
     // send immediate APN notification for family
