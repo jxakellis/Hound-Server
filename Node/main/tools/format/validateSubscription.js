@@ -25,7 +25,7 @@ async function attachActiveSubscription(req, res, next) {
     return next();
   }
   catch (error) {
-    return res.sendResponseForStatusJSONError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, undefined, error);
   }
 }
 
@@ -68,7 +68,7 @@ async function validateSubscription(req, res, next) {
     return next();
   }
   catch (error) {
-    return res.sendResponseForStatusJSONError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, undefined, error);
   }
 }
 

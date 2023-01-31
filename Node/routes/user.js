@@ -22,7 +22,6 @@ userRouter.use('/:userId/family', familyRouter);
 
 // gets user with userIdentifier then return information from users and userConfiguration table
 userRouter.get('/', getUser);
-// gets user with userId && userIdentifier then return information from users and userConfiguration table
 userRouter.get('/:userId', getUser);
 // no body
 

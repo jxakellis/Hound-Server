@@ -116,13 +116,11 @@ async function getFamilyHeadUserIdForFamilyId(databaseConnection, familyId) {
     throw new ValidationError('databaseConnection or familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
-  let result = await databaseQuery(
+  const [result] = await databaseQuery(
     databaseConnection,
     'SELECT userId FROM families WHERE familyId = ? LIMIT 1',
     [familyId],
   );
-
-  [result] = result;
 
   if (areAllDefined(result) === false) {
     return undefined;

@@ -4,6 +4,7 @@ const {
 } = require('./formatObject');
 const { areAllDefined } = require('./validateDefined');
 const { ValidationError } = require('../general/errors');
+const { hash } = require('./hash');
 
 /**
  * Checks to see that the appVersion of the requester is compatible
@@ -12,11 +13,11 @@ async function validateAppVersion(req, res, next) {
   const appVersion = formatString(req.params.appVersion);
 
   if (areAllDefined(appVersion) === false) {
-    return res.sendResponseForStatusJSONError(400, undefined, new ValidationError('appVersion missing', global.CONSTANT.ERROR.VALUE.MISSING));
+    return res.sendResponseForStatusBodyError(400, undefined, new ValidationError('appVersion missing', global.CONSTANT.ERROR.VALUE.MISSING));
   }
   // the user isn't on the previous or current app version
   if (global.CONSTANT.SERVER.COMPATIBLE_IOS_APP_VERSIONS.includes(appVersion) === false) {
-    return res.sendResponseForStatusJSONError(
+    return res.sendResponseForStatusBodyError(
       400,
       undefined,
       new ValidationError(
@@ -39,32 +40,42 @@ async function validateUserId(req, res, next) {
   const userIdentifier = formatSHA256Hash(req.query.userIdentifier);
 
   if (areAllDefined(userIdentifier, userId) === false) {
-    return res.sendResponseForStatusJSONError(400, undefined, new ValidationError('userId or userIdentifier missing', global.CONSTANT.ERROR.VALUE.INVALID));
+    return res.sendResponseForStatusBodyError(400, undefined, new ValidationError('userId or userIdentifier missing', global.CONSTANT.ERROR.VALUE.INVALID));
   }
 
   // if userId is defined and it is a number then continue
   try {
-    // queries the database to find if the users table contains a user with the provided ID
-    const result = await databaseQuery(
+    // we are verifying that a user is able to use the provided userId, and to do so they must know the corresponding secret (the userIdentifier)
+    let [result] = await databaseQuery(
       req.databaseConnection,
       'SELECT 1 FROM users WHERE userId = ? AND userIdentifier = ? LIMIT 1',
       [userId, userIdentifier],
     );
 
-    if (result.length === 0) {
-      // userId does not exist in the table
-      return res.sendResponseForStatusJSONError(404, undefined, new ValidationError('No user found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.USER));
+    const oldUserIdentifier = hash(userIdentifier);
+    if (areAllDefined(result) === false && areAllDefined(oldUserIdentifier) === true) {
+      // If we can't find a user for a userIdentifier, hash that userIdentifier and then try again.
+      // This is because we switched from hashing the Apple provided userIdentifier to directly storing it.
+      // If query is successful, change saved userIdentifier and return result
+      // TO DO NOW update saved userIdentifier if user found
+
+      [result] = await databaseQuery(
+        req.databaseConnection,
+        'SELECT 1 FROM users WHERE userId = ? AND userIdentifier = ? LIMIT 1',
+        [userId, oldUserIdentifier],
+      );
     }
 
-    // userId exists in the table for given userId and identifier, so all valid
-    // reassign req.params so that the id there is guarrenteed to be an int and not a string
-    req.params.userId = userId;
-    req.query.userIdentifier = userIdentifier;
+    if (areAllDefined(result) === false) {
+      // userId does not exist in the table
+      return res.sendResponseForStatusBodyError(404, undefined, new ValidationError('No user found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.USER));
+    }
+
     return next();
   }
   catch (error) {
     // couldn't query database to find userId
-    return res.sendResponseForStatusJSONError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, undefined, error);
   }
 }
 
@@ -78,7 +89,7 @@ async function validateFamilyId(req, res, next) {
 
   if (areAllDefined(familyId) === false) {
     // familyId was not provided or is invalid format
-    return res.sendResponseForStatusJSONError(400, undefined, new ValidationError('familyId missing', global.CONSTANT.ERROR.VALUE.INVALID));
+    return res.sendResponseForStatusBodyError(400, undefined, new ValidationError('familyId missing', global.CONSTANT.ERROR.VALUE.INVALID));
   }
 
   // if familyId is defined and it is a number then continue
@@ -92,7 +103,7 @@ async function validateFamilyId(req, res, next) {
 
     if (result.length === 0) {
       // familyId does not exist in the table
-      return res.sendResponseForStatusJSONError(404, undefined, new ValidationError('No family found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.FAMILY));
+      return res.sendResponseForStatusBodyError(404, undefined, new ValidationError('No family found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.FAMILY));
     }
 
     // familyId exists in the table, therefore userId is  part of the family
@@ -102,7 +113,7 @@ async function validateFamilyId(req, res, next) {
   }
   catch (error) {
     // couldn't query database to find familyId
-    return res.sendResponseForStatusJSONError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, undefined, error);
   }
 }
 
@@ -117,30 +128,29 @@ async function validateDogId(req, res, next) {
   const dogId = formatNumber(req.params.dogId);
 
   if (areAllDefined(dogId) === false) {
-    return res.sendResponseForStatusJSONError(400, undefined, new ValidationError('dogId missing', global.CONSTANT.ERROR.VALUE.INVALID));
+    return res.sendResponseForStatusBodyError(400, undefined, new ValidationError('dogId missing', global.CONSTANT.ERROR.VALUE.INVALID));
   }
 
   // query database to find out if user has permission for that dogId
   try {
     // finds what dogId (s) the user has linked to their familyId
     // JOIN families as dog must have a family attached to it
-    let dog = await databaseQuery(
+    const [dog] = await databaseQuery(
       req.databaseConnection,
       'SELECT dogIsDeleted FROM dogs JOIN families ON dogs.familyId = families.familyId WHERE dogs.familyId = ? AND dogs.dogId = ? LIMIT 1',
       [familyId, dogId],
     );
-    [dog] = dog;
 
     // search query result to find if the dogIds linked to the familyId match the dogId provided, match means the user owns that dogId
 
     if (areAllDefined(dog) === false) {
       // the dogId does not exist and/or the user does not have access to that dogId
-      return res.sendResponseForStatusJSONError(404, undefined, new ValidationError('No dog found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.DOG));
+      return res.sendResponseForStatusBodyError(404, undefined, new ValidationError('No dog found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.DOG));
     }
 
     if (formatBoolean(dog.dogIsDeleted) !== false) {
       // the dog has been found but its been deleted
-      return res.sendResponseForStatusJSONError(404, undefined, new ValidationError('Dog has been deleted', global.CONSTANT.ERROR.FAMILY.DELETED.DOG));
+      return res.sendResponseForStatusBodyError(404, undefined, new ValidationError('Dog has been deleted', global.CONSTANT.ERROR.FAMILY.DELETED.DOG));
     }
 
     // the dogId exists and it is linked to the familyId, valid!
@@ -149,7 +159,7 @@ async function validateDogId(req, res, next) {
     return next();
   }
   catch (error) {
-    return res.sendResponseForStatusJSONError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, undefined, error);
   }
 }
 
@@ -164,30 +174,29 @@ async function validateLogId(req, res, next) {
   const logId = formatNumber(req.params.logId);
 
   if (areAllDefined(logId) === false) {
-    return res.sendResponseForStatusJSONError(400, undefined, new ValidationError('logId missing', global.CONSTANT.ERROR.VALUE.INVALID));
+    return res.sendResponseForStatusBodyError(400, undefined, new ValidationError('logId missing', global.CONSTANT.ERROR.VALUE.INVALID));
   }
 
   // query database to find out if user has permission for that logId
   try {
     // finds what logId (s) the user has linked to their dogId
     // JOIN dogs as log has to have dog still attached to it
-    let log = await databaseQuery(
+    const [log] = await databaseQuery(
       req.databaseConnection,
       'SELECT logIsDeleted FROM dogLogs JOIN dogs ON dogLogs.dogId = dogs.dogId WHERE dogLogs.dogId = ? AND dogLogs.logId = ? LIMIT 1',
       [dogId, logId],
     );
-    [log] = log;
 
     // search query result to find if the logIds linked to the dogIds match the logId provided, match means the user owns that logId
 
     if (areAllDefined(log) === false) {
       // the logId does not exist and/or the dog does not have access to that logId
-      return res.sendResponseForStatusJSONError(404, undefined, new ValidationError('No logs found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.LOG));
+      return res.sendResponseForStatusBodyError(404, undefined, new ValidationError('No logs found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.LOG));
     }
 
     if (formatBoolean(log.logIsDeleted) !== false) {
       // the log has been found but its been deleted
-      return res.sendResponseForStatusJSONError(404, undefined, new ValidationError('Log has been deleted', global.CONSTANT.ERROR.FAMILY.DELETED.LOG));
+      return res.sendResponseForStatusBodyError(404, undefined, new ValidationError('Log has been deleted', global.CONSTANT.ERROR.FAMILY.DELETED.LOG));
     }
 
     // the logId exists and it is linked to the dogId, valid!
@@ -196,7 +205,7 @@ async function validateLogId(req, res, next) {
     return next();
   }
   catch (error) {
-    return res.sendResponseForStatusJSONError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, undefined, error);
   }
 }
 
@@ -211,30 +220,29 @@ async function validateParamsReminderId(req, res, next) {
   const reminderId = formatNumber(req.params.reminderId);
 
   if (areAllDefined(reminderId) === false) {
-    return res.sendResponseForStatusJSONError(400, undefined, new ValidationError('reminderId missing', global.CONSTANT.ERROR.VALUE.INVALID));
+    return res.sendResponseForStatusBodyError(400, undefined, new ValidationError('reminderId missing', global.CONSTANT.ERROR.VALUE.INVALID));
   }
 
   // query database to find out if user has permission for that reminderId
   try {
     // finds what reminderId (s) the user has linked to their dogId
     // JOIN dogs as reminder must have dog attached to it
-    let reminder = await databaseQuery(
+    const [reminder] = await databaseQuery(
       req.databaseConnection,
       'SELECT reminderIsDeleted FROM dogReminders JOIN dogs ON dogReminders.dogId = dogs.dogId WHERE dogReminders.dogId = ? AND dogReminders.reminderId = ? LIMIT 1',
       [dogId, reminderId],
     );
-    [reminder] = reminder;
 
     // search query result to find if the reminderIds linked to the dogIds match the reminderId provided, match means the user owns that reminderId
 
     if (areAllDefined(reminder) === false) {
       // the reminderId does not exist and/or the dog does not have access to that reminderId
-      return res.sendResponseForStatusJSONError(404, undefined, new ValidationError('No reminders found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.REMINDER));
+      return res.sendResponseForStatusBodyError(404, undefined, new ValidationError('No reminders found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.REMINDER));
     }
 
     if (formatBoolean(reminder.reminderIsDeleted) !== false) {
       // the reminder has been found but its been deleted
-      return res.sendResponseForStatusJSONError(404, undefined, new ValidationError('Reminder has been deleted', global.CONSTANT.ERROR.FAMILY.DELETED.REMINDER));
+      return res.sendResponseForStatusBodyError(404, undefined, new ValidationError('Reminder has been deleted', global.CONSTANT.ERROR.FAMILY.DELETED.REMINDER));
     }
 
     // the reminderId exists and it is linked to the dogId, valid!
@@ -243,7 +251,7 @@ async function validateParamsReminderId(req, res, next) {
     return next();
   }
   catch (error) {
-    return res.sendResponseForStatusJSONError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, undefined, error);
   }
 }
 
@@ -255,7 +263,7 @@ async function validateBodyReminderId(req, res, next) {
   const reminders = areAllDefined(formatArray(req.body.reminders)) === true ? formatArray(req.body.reminders) : [req.body];
 
   if (areAllDefined(reminders) === false) {
-    return res.sendResponseForStatusJSONError(400, undefined, new ValidationError('reminders missing', global.CONSTANT.ERROR.VALUE.INVALID));
+    return res.sendResponseForStatusBodyError(400, undefined, new ValidationError('reminders missing', global.CONSTANT.ERROR.VALUE.INVALID));
   }
 
   let promises = [];
@@ -264,7 +272,7 @@ async function validateBodyReminderId(req, res, next) {
     const reminderId = formatNumber(reminders[i].reminderId);
 
     if (areAllDefined(reminderId) === false) {
-      return res.sendResponseForStatusJSONError(400, undefined, new ValidationError('reminderId missing', global.CONSTANT.ERROR.VALUE.INVALID));
+      return res.sendResponseForStatusBodyError(400, undefined, new ValidationError('reminderId missing', global.CONSTANT.ERROR.VALUE.INVALID));
     }
 
     // Attempt to locate a reminder. It must match the reminderId provided while being attached to a dog that the user has permission to use
@@ -280,7 +288,7 @@ async function validateBodyReminderId(req, res, next) {
     promises = await Promise.all(promises);
   }
   catch (error) {
-    return res.sendResponseForStatusJSONError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, undefined, error);
   }
 
   // parse all reminders
@@ -290,12 +298,12 @@ async function validateBodyReminderId(req, res, next) {
     if (areAllDefined(reminder) === false) {
       // the reminderId does not exist and/or the dog does not have access to that reminderId
       // eslint-disable-next-line no-await-in-loop
-      return res.sendResponseForStatusJSONError(404, undefined, new ValidationError('No reminders found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.REMINDER));
+      return res.sendResponseForStatusBodyError(404, undefined, new ValidationError('No reminders found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.REMINDER));
     }
 
     if (formatBoolean(reminder.reminderIsDeleted) !== false) {
       // the reminder has been found but its been deleted
-      return res.sendResponseForStatusJSONError(404, undefined, new ValidationError('Reminder has been deleted', global.CONSTANT.ERROR.FAMILY.DELETED.REMINDER));
+      return res.sendResponseForStatusBodyError(404, undefined, new ValidationError('Reminder has been deleted', global.CONSTANT.ERROR.FAMILY.DELETED.REMINDER));
     }
     // The reminderId exists and it is linked to the dogId! Reassign reminderId to guarantee integer and not a string
     reminders[i].reminderId = formatNumber(reminders[i].reminderId);

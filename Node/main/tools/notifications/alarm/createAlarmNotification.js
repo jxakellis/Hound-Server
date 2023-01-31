@@ -65,7 +65,7 @@ async function sendAPNNotificationForFamily(familyId, reminderId) {
   try {
     // get the dogName, reminderAction, and reminderCustomActionName for the given reminderId
     // the reminderId has to exist to search and we check to make sure the dogId isn't null (to make sure the dog still exists too)
-    let reminder = await databaseQuery(
+    const [reminder] = await databaseQuery(
       databaseConnectionForAlarms,
       'SELECT dogs.dogName, \
 dogReminders.reminderExecutionDate, \
@@ -79,7 +79,6 @@ WHERE dogs.dogIsDeleted = 0 AND dogReminders.reminderIsDeleted = 0 AND dogRemind
 LIMIT 18446744073709551615',
       [reminderId],
     );
-    [reminder] = reminder;
 
     // Check to make sure the required information of the reminder exists
     if (areAllDefined(reminder) === false) {

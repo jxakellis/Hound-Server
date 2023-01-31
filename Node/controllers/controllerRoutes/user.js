@@ -1,4 +1,4 @@
-const { atLeastOneDefined, areAllDefined } = require('../../main/tools/format/validateDefined');
+const { areAllDefined } = require('../../main/tools/format/validateDefined');
 const { ValidationError } = require('../../main/tools/general/errors');
 
 const { getUserForUserIdentifier } = require('../getFor/getForUser');
@@ -17,7 +17,7 @@ async function getUser(req, res) {
     // apple userIdentifier
     const { userIdentifier } = req.query;
 
-    if (atLeastOneDefined(userIdentifier) === false) {
+    if (areAllDefined(userIdentifier) === false) {
       throw new ValidationError('userIdentifier missing', global.CONSTANT.ERROR.VALUE.MISSING);
     }
 
@@ -27,10 +27,10 @@ async function getUser(req, res) {
       throw new ValidationError('No user found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.USER);
     }
 
-    return res.sendResponseForStatusJSONError(200, { result: areAllDefined(result) ? result : '' }, undefined);
+    return res.sendResponseForStatusBodyError(200, result, undefined);
   }
   catch (error) {
-    return res.sendResponseForStatusJSONError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, undefined, error);
   }
 }
 
@@ -45,7 +45,7 @@ async function createUser(req, res) {
       userLastName,
       userNotificationToken,
       userConfigurationIsNotificationEnabled,
-      // userConfigurationIsLoudNotification,
+      userConfigurationIsLoudNotificationEnabled,
       userConfigurationIsLogNotificationEnabled,
       userConfigurationIsReminderNotificationEnabled,
       userConfigurationInterfaceStyle,
@@ -53,17 +53,13 @@ async function createUser(req, res) {
       userConfigurationNotificationSound,
       userConfigurationLogsInterfaceScale,
       userConfigurationRemindersInterfaceScale,
-      // userConfigurationSilentModeIsEnabled,
+      userConfigurationIsSilentModeEnabled,
       userConfigurationSilentModeStartUTCHour,
       userConfigurationSilentModeEndUTCHour,
       userConfigurationSilentModeStartUTCMinute,
       userConfigurationSilentModeEndUTCMinute,
     } = req.body;
 
-    // < 2.1.0 userConfigurationIsLoudNotification
-    const userConfigurationIsLoudNotification = req.body.userConfigurationIsLoudNotificationEnabled ?? req.body.userConfigurationIsLoudNotification;
-    // < 2.1.0 userConfigurationSilentModeIsEnabled
-    const userConfigurationSilentModeIsEnabled = req.body.userConfigurationIsSilentModeEnabled ?? req.body.userConfigurationSilentModeIsEnabled;
     const result = await createUserForUserIdentifier(
       req.databaseConnection,
       // userId,
@@ -75,7 +71,7 @@ async function createUser(req, res) {
       userNotificationToken,
       // userAccountCreationDate,
       userConfigurationIsNotificationEnabled,
-      userConfigurationIsLoudNotification,
+      userConfigurationIsLoudNotificationEnabled,
       userConfigurationIsLogNotificationEnabled,
       userConfigurationIsReminderNotificationEnabled,
       userConfigurationInterfaceStyle,
@@ -84,17 +80,17 @@ async function createUser(req, res) {
       userConfigurationLogsInterfaceScale,
       userConfigurationRemindersInterfaceScale,
       // userConfigurationPreviousDogManagerSynchronization,
-      userConfigurationSilentModeIsEnabled,
+      userConfigurationIsSilentModeEnabled,
       userConfigurationSilentModeStartUTCHour,
       userConfigurationSilentModeEndUTCHour,
       userConfigurationSilentModeStartUTCMinute,
       userConfigurationSilentModeEndUTCMinute,
     );
 
-    return res.sendResponseForStatusJSONError(200, { result: areAllDefined(result) ? result : '' }, undefined);
+    return res.sendResponseForStatusBodyError(200, result, undefined);
   }
   catch (error) {
-    return res.sendResponseForStatusJSONError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, undefined, error);
   }
 }
 
@@ -104,7 +100,7 @@ async function updateUser(req, res) {
     const {
       userNotificationToken,
       userConfigurationIsNotificationEnabled,
-      // userConfigurationIsLoudNotification,
+      // userConfigurationIsLoudNotificationEnabled,
       userConfigurationIsLogNotificationEnabled,
       userConfigurationIsReminderNotificationEnabled,
       userConfigurationInterfaceStyle,
@@ -112,22 +108,22 @@ async function updateUser(req, res) {
       userConfigurationNotificationSound,
       userConfigurationLogsInterfaceScale,
       userConfigurationRemindersInterfaceScale,
-      // userConfigurationSilentModeIsEnabled,
+      // userConfigurationIsSilentModeEnabled,
       userConfigurationSilentModeStartUTCHour,
       userConfigurationSilentModeEndUTCHour,
       userConfigurationSilentModeStartUTCMinute,
       userConfigurationSilentModeEndUTCMinute,
     } = req.body;
-    // < 2.1.0 userConfigurationIsLoudNotification
-    const userConfigurationIsLoudNotification = req.body.userConfigurationIsLoudNotificationEnabled ?? req.body.userConfigurationIsLoudNotification;
-    // < 2.1.0 userConfigurationSilentModeIsEnabled
-    const userConfigurationSilentModeIsEnabled = req.body.userConfigurationIsSilentModeEnabled ?? req.body.userConfigurationSilentModeIsEnabled;
+    // < 2.1.0 userConfigurationIsLoudNotificationEnabled
+    const userConfigurationIsLoudNotificationEnabled = req.body.userConfigurationIsLoudNotificationEnabledEnabled ?? req.body.userConfigurationIsLoudNotificationEnabled;
+    // < 2.1.0 userConfigurationIsSilentModeEnabled
+    const userConfigurationIsSilentModeEnabled = req.body.userConfigurationIsSilentModeEnabled ?? req.body.userConfigurationIsSilentModeEnabled;
     await updateUserForUserId(
       req.databaseConnection,
       userId,
       userNotificationToken,
       userConfigurationIsNotificationEnabled,
-      userConfigurationIsLoudNotification,
+      userConfigurationIsLoudNotificationEnabled,
       userConfigurationIsLogNotificationEnabled,
       userConfigurationIsReminderNotificationEnabled,
       userConfigurationInterfaceStyle,
@@ -135,17 +131,17 @@ async function updateUser(req, res) {
       userConfigurationNotificationSound,
       userConfigurationLogsInterfaceScale,
       userConfigurationRemindersInterfaceScale,
-      userConfigurationSilentModeIsEnabled,
+      userConfigurationIsSilentModeEnabled,
       userConfigurationSilentModeStartUTCHour,
       userConfigurationSilentModeEndUTCHour,
       userConfigurationSilentModeStartUTCMinute,
       userConfigurationSilentModeEndUTCMinute,
     );
 
-    return res.sendResponseForStatusJSONError(200, { result: '' }, undefined);
+    return res.sendResponseForStatusBodyError(200, undefined, undefined);
   }
   catch (error) {
-    return res.sendResponseForStatusJSONError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, undefined, error);
   }
 }
 

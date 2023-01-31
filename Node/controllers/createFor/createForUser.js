@@ -13,6 +13,7 @@ const { areAllDefined } = require('../../main/tools/format/validateDefined');
  *  If a problem is encountered, creates and throws custom error
  */
 async function createUserForUserIdentifier(
+  // TO DO NOW TEST creating user with null email, non-null unique email, and non-null non-unique email
   databaseConnection,
   // userId,
   userIdentifier,
@@ -53,17 +54,17 @@ async function createUserForUserIdentifier(
   if (areAllDefined(
     userId,
     // userApplicationUsername
-    userEmail,
+    // userEmail,
     // userFirstName
     // userLastName
     // userNotificationToken
     userAccountCreationDate,
   ) === false) {
-    throw new ValidationError('userId, userEmail, or userAccountCreationDate missing', global.CONSTANT.ERROR.VALUE.MISSING);
+    throw new ValidationError('userId or userAccountCreationDate missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   const userConfigurationIsNotificationEnabled = formatBoolean(forUserConfigurationIsNotificationEnabled) ?? false;
-  const userConfigurationIsLoudNotification = formatBoolean(forUserConfigurationIsLoudNotification) ?? false;
+  const userConfigurationIsLoudNotificationEnabled = formatBoolean(forUserConfigurationIsLoudNotification) ?? false;
   const userConfigurationIsLogNotificationEnabled = formatBoolean(forUserConfigurationIsLogNotificationEnabled) ?? false;
   const userConfigurationIsReminderNotificationEnabled = formatBoolean(forUserConfigurationIsReminderNotificationEnabled) ?? false;
   const userConfigurationInterfaceStyle = formatNumber(forUserConfigurationInterfaceStyle) ?? 0;
@@ -71,7 +72,7 @@ async function createUserForUserIdentifier(
   const userConfigurationNotificationSound = forUserConfigurationNotificationSound ?? 'Radar';
   const userConfigurationLogsInterfaceScale = forUserConfigurationLogsInterfaceScale ?? 'Medium';
   const userConfigurationRemindersInterfaceScale = forUserConfigurationRemindersInterfaceScale ?? 'Medium';
-  const userConfigurationSilentModeIsEnabled = formatBoolean(forUserConfigurationSilentModeIsEnabled) ?? false;
+  const userConfigurationIsSilentModeEnabled = formatBoolean(forUserConfigurationSilentModeIsEnabled) ?? false;
   const userConfigurationSilentModeStartUTCHour = formatNumber(forUserConfigurationSilentModeStartUTCHour) ?? 7;
   const userConfigurationSilentModeEndUTCHour = formatNumber(forUserConfigurationSilentModeEndUTCHour) ?? 19;
   const userConfigurationSilentModeStartUTCMinute = formatNumber(forUserConfigurationSilentModeStartUTCMinute) ?? 0;
@@ -79,7 +80,7 @@ async function createUserForUserIdentifier(
 
   if (areAllDefined(
     userConfigurationIsNotificationEnabled,
-    userConfigurationIsLoudNotification,
+    userConfigurationIsLoudNotificationEnabled,
     userConfigurationIsLogNotificationEnabled,
     userConfigurationIsReminderNotificationEnabled,
     userConfigurationInterfaceStyle,
@@ -87,14 +88,14 @@ async function createUserForUserIdentifier(
     userConfigurationNotificationSound,
     userConfigurationLogsInterfaceScale,
     userConfigurationRemindersInterfaceScale,
-    userConfigurationSilentModeIsEnabled,
+    userConfigurationIsSilentModeEnabled,
     userConfigurationSilentModeStartUTCHour,
     userConfigurationSilentModeEndUTCHour,
     userConfigurationSilentModeStartUTCMinute,
     userConfigurationSilentModeEndUTCMinute,
   ) === false) {
     throw new ValidationError('userConfigurationIsNotificationEnabled, \
-userConfigurationIsLoudNotification, \
+userConfigurationIsLoudNotificationEnabled, \
 userConfigurationIsLogNotificationEnabled, \
 userConfigurationIsReminderNotificationEnabled, \
 userConfigurationInterfaceStyle, \
@@ -102,7 +103,7 @@ userConfigurationSnoozeLength, \
 userConfigurationNotificationSound, \
 userConfigurationLogsInterfaceScale, \
 userConfigurationRemindersInterfaceScale, \
-userConfigurationSilentModeIsEnabled, \
+userConfigurationIsSilentModeEnabled, \
 userConfigurationSilentModeStartUTCHour, \
 userConfigurationSilentModeEndUTCHour, \
 userConfigurationSilentModeStartUTCMinute, \
@@ -120,7 +121,7 @@ or userConfigurationSilentModeEndUTCMinute missing', global.CONSTANT.ERROR.VALUE
       'INSERT INTO userConfiguration(\
 userId, \
 userConfigurationIsNotificationEnabled, \
-userConfigurationIsLoudNotification, \
+userConfigurationIsLoudNotificationEnabled, \
 userConfigurationIsLogNotificationEnabled, \
 userConfigurationIsReminderNotificationEnabled, \
 userConfigurationSnoozeLength, \
@@ -128,7 +129,7 @@ userConfigurationNotificationSound, \
 userConfigurationLogsInterfaceScale, \
 userConfigurationRemindersInterfaceScale, \
 userConfigurationInterfaceStyle, \
-userConfigurationSilentModeIsEnabled, \
+userConfigurationIsSilentModeEnabled, \
 userConfigurationSilentModeStartUTCHour, \
 userConfigurationSilentModeEndUTCHour, \
 userConfigurationSilentModeStartUTCMinute, \
@@ -136,7 +137,7 @@ userConfigurationSilentModeEndUTCMinute\
 ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?, ?, ?)',
       [userId,
         userConfigurationIsNotificationEnabled,
-        userConfigurationIsLoudNotification,
+        userConfigurationIsLoudNotificationEnabled,
         userConfigurationIsLogNotificationEnabled,
         userConfigurationIsReminderNotificationEnabled,
         userConfigurationSnoozeLength,
@@ -144,7 +145,7 @@ userConfigurationSilentModeEndUTCMinute\
         userConfigurationLogsInterfaceScale,
         userConfigurationRemindersInterfaceScale,
         userConfigurationInterfaceStyle,
-        userConfigurationSilentModeIsEnabled,
+        userConfigurationIsSilentModeEnabled,
         userConfigurationSilentModeStartUTCHour,
         userConfigurationSilentModeEndUTCHour,
         userConfigurationSilentModeStartUTCMinute,

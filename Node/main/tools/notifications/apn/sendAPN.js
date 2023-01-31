@@ -23,7 +23,7 @@ function sendAPN(userNotificationConfiguration, category, forAlertTitle, forAler
   const userConfigurationIsLogNotificationEnabled = formatBoolean(userNotificationConfiguration.userConfigurationIsLogNotificationEnabled);
   const userConfigurationIsReminderNotificationEnabled = formatBoolean(userNotificationConfiguration.userConfigurationIsReminderNotificationEnabled);
   const userConfigurationNotificationSound = formatString(userNotificationConfiguration.userConfigurationNotificationSound);
-  const userConfigurationSilentModeIsEnabled = formatBoolean(userNotificationConfiguration.userConfigurationSilentModeIsEnabled);
+  const userConfigurationIsSilentModeEnabled = formatBoolean(userNotificationConfiguration.userConfigurationIsSilentModeEnabled);
   const userConfigurationSilentModeStartUTCHour = formatNumber(userNotificationConfiguration.userConfigurationSilentModeStartUTCHour);
   const userConfigurationSilentModeEndUTCHour = formatNumber(userNotificationConfiguration.userConfigurationSilentModeEndUTCHour);
   const userConfigurationSilentModeStartUTCMinute = formatNumber(userNotificationConfiguration.userConfigurationSilentModeStartUTCMinute);
@@ -33,13 +33,13 @@ function sendAPN(userNotificationConfiguration, category, forAlertTitle, forAler
 
   apnLogger.debug(`sendAPN ${userNotificationConfiguration}, ${category}, ${alertTitle}, ${alertBody}`);
 
-  // userConfigurationNotificationSound optional, depends on userConfigurationIsLoudNotification
+  // userConfigurationNotificationSound optional, depends on userConfigurationIsLoudNotificationEnabled
   if (areAllDefined(
     userNotificationToken,
     userConfigurationIsLogNotificationEnabled,
     userConfigurationIsReminderNotificationEnabled,
     // userConfigurationNotificationSound,
-    userConfigurationSilentModeIsEnabled,
+    userConfigurationIsSilentModeEnabled,
     userConfigurationSilentModeStartUTCHour,
     userConfigurationSilentModeEndUTCHour,
     userConfigurationSilentModeStartUTCMinute,
@@ -61,7 +61,7 @@ function sendAPN(userNotificationConfiguration, category, forAlertTitle, forAler
   }
 
   // Check that we aren't inside of userConfigurationSilentMode hours. If we are inside the silent mode hours, then return as we don't want to send notifications during silent mode
-  if (userConfigurationSilentModeIsEnabled === true) {
+  if (userConfigurationIsSilentModeEnabled === true) {
     const date = new Date();
     // 2:30:45 PM -> 14.5125
     const currentUTCHour = date.getUTCHours() + (date.getUTCMinutes() / 60) + (date.getUTCSeconds() / 3600);

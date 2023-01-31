@@ -30,7 +30,7 @@ async function updateUserForUserId(
     throw new ValidationError('databaseConnection or userId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
   const userConfigurationIsNotificationEnabled = formatBoolean(forUserConfigurationIsNotificationEnabled);
-  const userConfigurationIsLoudNotification = formatBoolean(forUserConfigurationIsLoudNotification);
+  const userConfigurationIsLoudNotificationEnabled = formatBoolean(forUserConfigurationIsLoudNotification);
   const userConfigurationIsLogNotificationEnabled = formatBoolean(forUserConfigurationIsLogNotificationEnabled);
   const userConfigurationIsReminderNotificationEnabled = formatBoolean(forUserConfigurationIsReminderNotificationEnabled);
   const userConfigurationInterfaceStyle = formatNumber(forUserConfigurationInterfaceStyle);
@@ -38,7 +38,7 @@ async function updateUserForUserId(
   // userConfigurationNotificationSound
   // userConfigurationLogsInterfaceScale
   // userConfigurationRemindersInterfaceScale
-  const userConfigurationSilentModeIsEnabled = formatBoolean(forUserConfigurationSilentModeIsEnabled);
+  const userConfigurationIsSilentModeEnabled = formatBoolean(forUserConfigurationSilentModeIsEnabled);
   const userConfigurationSilentModeStartUTCHour = formatNumber(forUserConfigurationSilentModeStartUTCHour);
   const userConfigurationSilentModeEndUTCHour = formatNumber(forUserConfigurationSilentModeEndUTCHour);
   const userConfigurationSilentModeStartUTCMinute = formatNumber(forUserConfigurationSilentModeStartUTCMinute);
@@ -48,7 +48,7 @@ async function updateUserForUserId(
   if (atLeastOneDefined(
     userNotificationToken,
     userConfigurationIsNotificationEnabled,
-    userConfigurationIsLoudNotification,
+    userConfigurationIsLoudNotificationEnabled,
     userConfigurationIsLogNotificationEnabled,
     userConfigurationIsReminderNotificationEnabled,
     userConfigurationInterfaceStyle,
@@ -56,7 +56,7 @@ async function updateUserForUserId(
     userConfigurationNotificationSound,
     userConfigurationLogsInterfaceScale,
     userConfigurationRemindersInterfaceScale,
-    userConfigurationSilentModeIsEnabled,
+    userConfigurationIsSilentModeEnabled,
     userConfigurationSilentModeStartUTCHour,
     userConfigurationSilentModeEndUTCHour,
     userConfigurationSilentModeStartUTCMinute,
@@ -64,7 +64,7 @@ async function updateUserForUserId(
   ) === false) {
     throw new ValidationError('No userNotificationToken, \
 userConfigurationIsNotificationEnabled, \
-userConfigurationIsLoudNotification, \
+userConfigurationIsLoudNotificationEnabled, \
 userConfigurationIsLogNotificationEnabled, \
 userConfigurationIsReminderNotificationEnabled, \
 userConfigurationInterfaceStyle, \
@@ -72,7 +72,7 @@ userConfigurationSnoozeLength, \
 userConfigurationNotificationSound, \
 userConfigurationLogsInterfaceScale, \
 userConfigurationRemindersInterfaceScale, \
-userConfigurationSilentModeIsEnabled, \
+userConfigurationIsSilentModeEnabled, \
 userConfigurationSilentModeStartUTCHour, \
 userConfigurationSilentModeEndUTCHour, \
 userConfigurationSilentModeStartUTCMinute, \
@@ -94,11 +94,11 @@ or userConfigurationSilentModeEndUTCMinute, provided', global.CONSTANT.ERROR.VAL
       [userConfigurationIsNotificationEnabled, userId],
     ));
   }
-  if (areAllDefined(userConfigurationIsLoudNotification)) {
+  if (areAllDefined(userConfigurationIsLoudNotificationEnabled)) {
     promises.push(databaseQuery(
       databaseConnection,
-      'UPDATE userConfiguration SET userConfigurationIsLoudNotification = ? WHERE userId = ?',
-      [userConfigurationIsLoudNotification, userId],
+      'UPDATE userConfiguration SET userConfigurationIsLoudNotificationEnabled = ? WHERE userId = ?',
+      [userConfigurationIsLoudNotificationEnabled, userId],
     ));
   }
   if (areAllDefined(userConfigurationIsLogNotificationEnabled)) {
@@ -150,11 +150,11 @@ or userConfigurationSilentModeEndUTCMinute, provided', global.CONSTANT.ERROR.VAL
       [userConfigurationRemindersInterfaceScale, userId],
     ));
   }
-  if (areAllDefined(userConfigurationSilentModeIsEnabled)) {
+  if (areAllDefined(userConfigurationIsSilentModeEnabled)) {
     promises.push(databaseQuery(
       databaseConnection,
-      'UPDATE userConfiguration SET userConfigurationSilentModeIsEnabled = ? WHERE userId = ?',
-      [userConfigurationSilentModeIsEnabled, userId],
+      'UPDATE userConfiguration SET userConfigurationIsSilentModeEnabled = ? WHERE userId = ?',
+      [userConfigurationIsSilentModeEnabled, userId],
     ));
   }
   if (areAllDefined(userConfigurationSilentModeStartUTCHour)) {

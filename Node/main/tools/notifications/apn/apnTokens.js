@@ -4,10 +4,10 @@ const { formatBoolean, formatArray } = require('../../format/formatObject');
 const { areAllDefined } = require('../../format/validateDefined');
 
 const userConfigurationColumns = 'userConfiguration.userConfigurationNotificationSound, \
-userConfiguration.userConfigurationIsLoudNotification, \
+userConfiguration.userConfigurationIsLoudNotificationEnabled, \
 userConfiguration.userConfigurationIsLogNotificationEnabled, \
 userConfiguration.userConfigurationIsReminderNotificationEnabled, \
-userConfiguration.userConfigurationSilentModeIsEnabled, \
+userConfiguration.userConfigurationIsSilentModeEnabled, \
 userConfiguration.userConfigurationSilentModeStartUTCHour, \
 userConfiguration.userConfigurationSilentModeEndUTCHour, \
 userConfiguration.userConfigurationSilentModeStartUTCMinute, \
@@ -83,8 +83,8 @@ LIMIT 18446744073709551615`,
 
 /**
  * Helper method for this file
- * Takes the result from a query for userNotificationToken, userConfigurationNotificationSound, and userConfigurationIsLoudNotification
- * Returns an array of JSON with userNotificationToken and (if userConfigurationIsLoudNotification disabled) userConfigurationNotificationSound
+ * Takes the result from a query for userNotificationToken, userConfigurationNotificationSound, and userConfigurationIsLoudNotificationEnabled
+ * Returns an array of JSON with userNotificationToken and (if userConfigurationIsLoudNotificationEnabled disabled) userConfigurationNotificationSound
  */
 function parseNotificatonTokenQuery(forUserNotificationConfigurations) {
   const userNotificationConfigurations = formatArray(forUserNotificationConfigurations);
@@ -94,12 +94,12 @@ function parseNotificatonTokenQuery(forUserNotificationConfigurations) {
 
   const processedUserNotificationConfigurations = [];
 
-  // If the user userConfigurationIsLoudNotification enabled, no need for sound in rawPayload as app plays a sound
-  // If the user userConfigurationIsLoudNotification disabled, the APN itself have a sound (which will play if the ringer is on)
+  // If the user userConfigurationIsLoudNotificationEnabled enabled, no need for sound in rawPayload as app plays a sound
+  // If the user userConfigurationIsLoudNotificationEnabled disabled, the APN itself have a sound (which will play if the ringer is on)
   for (let i = 0; i < userNotificationConfigurations.length; i += 1) {
     const userNotificationConfiguration = userNotificationConfigurations[i];
 
-    if (formatBoolean(userNotificationConfiguration.userConfigurationIsLoudNotification) === false && areAllDefined(userNotificationConfiguration.userConfigurationNotificationSound)) {
+    if (formatBoolean(userNotificationConfiguration.userConfigurationIsLoudNotificationEnabled) === false && areAllDefined(userNotificationConfiguration.userConfigurationNotificationSound)) {
       // loud notification is disabled therefore the notification itself plays a sound (APN needs to specify a notification sound)
       userNotificationConfiguration.userConfigurationNotificationSound = userNotificationConfiguration.userConfigurationNotificationSound.toLowerCase();
     }

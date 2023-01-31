@@ -47,18 +47,17 @@ async function addFamilyMember(databaseConnection, userId, forFamilyCode) {
   familyCode = familyCode.toUpperCase();
 
   // retrieve information about the family linked to the familyCode
-  let family = await databaseQuery(
+  const [family] = await databaseQuery(
     databaseConnection,
     'SELECT familyId, familyIsLocked FROM families WHERE familyCode = ? LIMIT 1',
     [familyCode],
   );
 
   // make sure the familyCode was valid by checking if it matched a family
-  if (family.length === 0) {
+  if (areAllDefined(family) === false) {
     // result length is zero so there are no families with that familyCode
     throw new ValidationError('familyCode invalid, not found', global.CONSTANT.ERROR.FAMILY.JOIN.FAMILY_CODE_INVALID);
   }
-  [family] = family;
   const familyId = formatSHA256Hash(family.familyId);
   const familyIsLocked = formatBoolean(family.familyIsLocked);
   // familyCode exists and is linked to a family, now check if family is locked against new members

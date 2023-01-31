@@ -3,10 +3,10 @@ const { getDatabaseStatusForWatchdog } = require('../getFor/getForWatchdog');
 async function getWatchdog(req, res) {
   try {
     await getDatabaseStatusForWatchdog(req.databaseConnection);
-    return res.sendResponseForStatusJSONError(200, { result: '' }, undefined);
+    return res.sendResponseForStatusBodyError(200, undefined, undefined);
   }
   catch (error) {
-    return res.sendResponseForStatusJSONError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, undefined, error);
   }
 }
 

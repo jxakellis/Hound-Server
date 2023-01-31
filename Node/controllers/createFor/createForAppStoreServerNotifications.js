@@ -130,12 +130,11 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
   if (areAllDefined(userId) === false) {
     const originalTransactionId = formatNumber(transactionInfo.originalTransactionId);
     // attempt to find userId with most recent transaction. Use originalTransactionId to link to potential transactions
-    let transaction = await databaseQuery(
+    const [transaction] = await databaseQuery(
       databaseConnection,
       'SELECT userId FROM transactions WHERE transactionId = ? OR originalTransactionId = ? ORDER BY purchaseDate DESC LIMIT 1',
       [transactionId, originalTransactionId],
     );
-    [transaction] = transaction;
     userId = areAllDefined(transaction) ? transaction.userId : undefined;
   }
 

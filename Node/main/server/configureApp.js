@@ -41,7 +41,7 @@ function configureAppForRequests(app) {
   app.use(`${userPath}/user`, userRouter);
 
   // Throw back the request if an unknown path is used
-  app.use('*', async (req, res) => res.sendResponseForStatusJSONError(404, undefined, new GeneralError('Path not found', global.CONSTANT.ERROR.VALUE.INVALID)));
+  app.use('*', async (req, res) => res.sendResponseForStatusBodyError(404, undefined, new GeneralError('Path not found', global.CONSTANT.ERROR.VALUE.INVALID)));
 }
 
 module.exports = { configureAppForRequests };

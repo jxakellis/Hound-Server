@@ -4,13 +4,15 @@ const { areAllDefined } = require('./validateDefined');
 
 function hash(forString, forSalt) {
   const string = formatSHA256Hash(forString);
-  const salt = formatString(forSalt);
-
-  if (areAllDefined(string, salt) === false) {
+  if (areAllDefined(string) === false) {
     return undefined;
   }
-  const hashHex = crypto.createHash('sha256').update(string + salt).digest('hex');
-  return hashHex;
+
+  const salt = formatString(forSalt);
+
+  return areAllDefined(salt)
+    ? crypto.createHash('sha256').update(string + salt).digest('hex')
+    : crypto.createHash('sha256').update(string).digest('hex');
 }
 
 module.exports = { hash };

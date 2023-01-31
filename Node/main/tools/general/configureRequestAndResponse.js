@@ -31,11 +31,11 @@ async function configureRequestForResponse(req, res, next) {
       req.hasActiveDatabaseTransaction = true;
     }
     catch (transactionError) {
-      return res.sendResponseForStatusJSONError(500, undefined, new DatabaseError("Couldn't begin a transaction with databaseConnection", global.CONSTANT.ERROR.GENERAL.POOL_TRANSACTION_FAILED));
+      return res.sendResponseForStatusBodyError(500, undefined, new DatabaseError("Couldn't begin a transaction with databaseConnection", global.CONSTANT.ERROR.GENERAL.POOL_TRANSACTION_FAILED));
     }
   }
   catch (databaseConnectionError) {
-    return res.sendResponseForStatusJSONError(
+    return res.sendResponseForStatusBodyError(
       500,
       undefined,
       new DatabaseError("Couldn't get a connection from databaseConnectionPoolForRequests", global.CONSTANT.ERROR.GENERAL.POOL_CONNECTION_FAILED),
@@ -46,7 +46,7 @@ async function configureRequestForResponse(req, res, next) {
 }
 
 function configureResponse(req, res) {
-  res.sendResponseForStatusJSONError = async function sendResponseForStatusJSONError(forStatus, json, error) {
+  res.sendResponseForStatusBodyError = async function sendResponseForStatusBodyError(forStatus, body, error) {
     const hasSentResponse = formatBoolean(res.hasSentResponse);
     const hasActiveDatabaseConnection = formatBoolean(req.hasActiveDatabaseConnection);
     const hasActiveDatabaseTransaction = formatBoolean(req.hasActiveDatabaseTransaction);
@@ -81,14 +81,16 @@ function configureResponse(req, res) {
     }
 
     // If we user provided an error, then we convert that error to JSON and use it as the body
-    const body = areAllDefined(error)
+    const response = areAllDefined(error)
       ? convertErrorToJSON(error)
-      : json;
+      : { result: body ?? '' };
 
-    await logResponse(req, res, body);
+    await logResponse(req, res, response);
+    response.requestId = req.requestId;
+    response.responseId = res.responseId;
 
     res.hasSentResponse = true;
-    res.status(status).json(body);
+    res.status(status).json(response);
   };
 }
 

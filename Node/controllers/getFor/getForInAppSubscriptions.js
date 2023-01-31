@@ -16,24 +16,20 @@ async function getActiveInAppSubscriptionForFamilyId(databaseConnection, familyI
   }
 
   // find the family's most recent subscription
-  let familySubscription = await databaseQuery(
+  let [familySubscription] = await databaseQuery(
     databaseConnection,
     `SELECT ${transactionsColumns} FROM transactions WHERE familyId = ? AND expirationDate >= ? AND isRevoked = 0 ORDER BY expirationDate DESC, purchaseDate DESC, transactionId DESC LIMIT 1`,
     [familyId, new Date()],
   );
 
   // since we found no family subscription, assign the family to the default subscription
-  if (familySubscription.length === 0) {
+  if (areAllDefined(familySubscription) === false) {
     familySubscription = global.CONSTANT.SUBSCRIPTION.SUBSCRIPTIONS.find((subscription) => subscription.productId === global.CONSTANT.SUBSCRIPTION.DEFAULT_SUBSCRIPTION_PRODUCT_ID);
     familySubscription.userId = undefined;
     familySubscription.purchaseDate = undefined;
     familySubscription.expirationDate = undefined;
     familySubscription.isAutoRenewing = true;
     familySubscription.isRevoked = false;
-  }
-  else {
-    // we found a subscription, so get rid of the one entry array
-    [familySubscription] = familySubscription;
   }
 
   familySubscription.isActive = true;
@@ -81,14 +77,13 @@ async function getInAppSubscriptionForTransactionId(databaseConnection, forTrans
     throw new ValidationError('databaseConnection or transactionId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
-  let transactionsHistory = await databaseQuery(
+  const [result] = await databaseQuery(
     databaseConnection,
     `SELECT ${transactionsColumns} FROM transactions WHERE transactionId = ? LIMIT 1`,
     [transactionId],
   );
-  [transactionsHistory] = transactionsHistory;
 
-  return transactionsHistory;
+  return result;
 }
 
 module.exports = {

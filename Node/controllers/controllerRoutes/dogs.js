@@ -22,10 +22,10 @@ async function getDogs(req, res) {
       ? await getDogForDogId(req.databaseConnection, dogId, userConfigurationPreviousDogManagerSynchronization, isRetrievingReminders, isRetrievingLogs)
       : await getAllDogsForUserIdFamilyId(req.databaseConnection, userId, familyId, userConfigurationPreviousDogManagerSynchronization, isRetrievingReminders, isRetrievingLogs);
 
-    return res.sendResponseForStatusJSONError(200, { result: areAllDefined(result) ? result : '' }, undefined);
+    return res.sendResponseForStatusBodyError(200, result, undefined);
   }
   catch (error) {
-    return res.sendResponseForStatusJSONError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, undefined, error);
   }
 }
 
@@ -36,10 +36,10 @@ async function createDog(req, res) {
     const { familyActiveSubscription } = req;
     const result = await createDogForFamilyId(req.databaseConnection, familyId, familyActiveSubscription, dogName);
 
-    return res.sendResponseForStatusJSONError(200, { result: areAllDefined(result) ? result : '' }, undefined);
+    return res.sendResponseForStatusBodyError(200, result, undefined);
   }
   catch (error) {
-    return res.sendResponseForStatusJSONError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, undefined, error);
   }
 }
 
@@ -48,10 +48,10 @@ async function updateDog(req, res) {
     const { dogId } = req.params;
     const { dogName } = req.body;
     await updateDogForDogId(req.databaseConnection, dogId, dogName);
-    return res.sendResponseForStatusJSONError(200, { result: '' }, undefined);
+    return res.sendResponseForStatusBodyError(200, undefined, undefined);
   }
   catch (error) {
-    return res.sendResponseForStatusJSONError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, undefined, error);
   }
 }
 
@@ -59,10 +59,10 @@ async function deleteDog(req, res) {
   try {
     const { familyId, dogId } = req.params;
     await deleteDogForFamilyIdDogId(req.databaseConnection, familyId, dogId);
-    return res.sendResponseForStatusJSONError(200, { result: '' }, undefined);
+    return res.sendResponseForStatusBodyError(200, undefined, undefined);
   }
   catch (error) {
-    return res.sendResponseForStatusJSONError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, undefined, error);
   }
 }
 

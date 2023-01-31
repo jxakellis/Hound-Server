@@ -32,14 +32,17 @@ async function findNumberOfThreadsConnectedToDatabase(databaseConnection) {
     return -1;
   }
 
-  let threadsConnected = await databaseQuery(
+  const [threadsConnected] = await databaseQuery(
     databaseConnection,
     'SHOW STATUS WHERE variable_name = ?',
     ['Threads_connected'],
   );
-  [threadsConnected] = threadsConnected;
-  threadsConnected = threadsConnected.Value;
-  return threadsConnected;
+
+  if (areAllDefined(threadsConnected) === false) {
+    return -1;
+  }
+
+  return threadsConnected.Value;
 }
 
 /// Takes an array of database databaseConnections and updates their wait_timeout so the databaseConnections can idle for that number of seconds (before being disconnected)

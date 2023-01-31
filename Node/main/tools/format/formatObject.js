@@ -25,6 +25,7 @@ function formatEmail(string) {
     return undefined;
   }
 
+  userEmail = userEmail.replace('mailto:', '');
   userEmail = userEmail.replace('<', '');
   userEmail = userEmail.replace('>', '');
 

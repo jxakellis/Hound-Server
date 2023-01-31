@@ -27,7 +27,7 @@ async function getDogForDogId(databaseConnection, dogId, forUserConfigurationPre
 
   // if the user provides a last sync, then we look for dogs that were modified after this last sync.
   // Therefore, only providing dogs that were modified and the local client is outdated on
-  let dog = areAllDefined(userConfigurationPreviousDogManagerSynchronization)
+  const [dog] = areAllDefined(userConfigurationPreviousDogManagerSynchronization)
     ? await databaseQuery(
       databaseConnection,
       `SELECT ${dogsColumns} \
@@ -45,8 +45,6 @@ LIMIT 1`,
       `SELECT ${dogsColumns} FROM dogs WHERE dogIsDeleted = 0 AND dogId = ? GROUP BY dogs.dogId LIMIT 1`,
       [dogId],
     );
-
-  [dog] = dog;
 
   // no need to do anything else as there are no dogs
   if (areAllDefined(dog) === false) {

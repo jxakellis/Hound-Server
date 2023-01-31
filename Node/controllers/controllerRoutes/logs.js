@@ -25,10 +25,10 @@ async function getLogs(req, res) {
     // query for multiple logs
       : await getAllLogsForDogId(req.databaseConnection, dogId, userConfigurationPreviousDogManagerSynchronization);
 
-    return res.sendResponseForStatusJSONError(200, { result: areAllDefined(result) ? result : '' }, undefined);
+    return res.sendResponseForStatusBodyError(200, result, undefined);
   }
   catch (error) {
-    return res.sendResponseForStatusJSONError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, undefined, error);
   }
 }
 
@@ -47,10 +47,10 @@ async function createLog(req, res) {
       logCustomActionName,
     );
 
-    return res.sendResponseForStatusJSONError(200, { result: areAllDefined(result) ? result : '' }, undefined);
+    return res.sendResponseForStatusBodyError(200, result, undefined);
   }
   catch (error) {
-    return res.sendResponseForStatusJSONError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, undefined, error);
   }
 }
 
@@ -61,10 +61,10 @@ async function updateLog(req, res) {
       logDate, logAction, logCustomActionName, logNote,
     } = req.body;
     await updateLogForDogIdLogId(req.databaseConnection, dogId, logId, logDate, logAction, logCustomActionName, logNote);
-    return res.sendResponseForStatusJSONError(200, { result: '' }, undefined);
+    return res.sendResponseForStatusBodyError(200, undefined, undefined);
   }
   catch (error) {
-    return res.sendResponseForStatusJSONError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, undefined, error);
   }
 }
 
@@ -72,10 +72,10 @@ async function deleteLog(req, res) {
   try {
     const { dogId, logId } = req.params;
     await deleteLogForLogId(req.databaseConnection, dogId, logId);
-    return res.sendResponseForStatusJSONError(200, { result: '' }, undefined);
+    return res.sendResponseForStatusBodyError(200, undefined, undefined);
   }
   catch (error) {
-    return res.sendResponseForStatusJSONError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, undefined, error);
   }
 }
 
