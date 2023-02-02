@@ -3,6 +3,8 @@ const { areAllDefined } = require('../../main/tools/format/validateDefined');
 const { ValidationError } = require('../../main/tools/general/errors');
 const { hash } = require('../../main/tools/format/hash');
 
+const { updateUserForUserIdentifierHashedUserIdentifier } = require('../updateFor/updateForUser');
+
 const userColumns = 'users.userId, users.userApplicationUsername, users.userNotificationToken, users.userFirstName, users.userLastName, users.userEmail';
 const userConfigurationColumns = 'userConfiguration.userConfigurationIsNotificationEnabled, \
 userConfiguration.userConfigurationIsLoudNotificationEnabled, \
@@ -65,13 +67,12 @@ WHERE users.userIdentifier = ? LIMIT 1`,
     [userIdentifier],
   );
 
-  const oldUserIdentifier = hash(userIdentifier);
-  console.log(`get user for user identifier, ${userInformation}, ${oldUserIdentifier}`);
-  if (areAllDefined(userInformation) === false && areAllDefined(oldUserIdentifier) === true) {
+  const hashedUserIdentifier = hash(userIdentifier);
+  console.log(`get user for user identifier, ${userInformation}, ${hashedUserIdentifier}`);
+  if (areAllDefined(userInformation) === false && areAllDefined(hashedUserIdentifier) === true) {
     // If we can't find a user for a userIdentifier, hash that userIdentifier and then try again.
     // This is because we switched from hashing the Apple provided userIdentifier to directly storing it.
     // If query is successful, change saved userIdentifier and return result
-    // TO DO NOW update saved userIdentifier if user found
 
     [userInformation] = await databaseQuery(
       databaseConnection,
@@ -79,9 +80,17 @@ WHERE users.userIdentifier = ? LIMIT 1`,
   FROM users JOIN userConfiguration ON users.userId = userConfiguration.userId \
   LEFT JOIN familyMembers ON users.userId = familyMembers.userId \
   WHERE users.userIdentifier = ? LIMIT 1`,
-      [oldUserIdentifier],
+      [hashedUserIdentifier],
     );
     console.log(`got user for old user identifier, ${userInformation}`);
+
+    if (areAllDefined(userInformation) === true) {
+      await updateUserForUserIdentifierHashedUserIdentifier(
+        databaseConnection,
+        userIdentifier,
+        hashedUserIdentifier,
+      );
+    }
   }
 
   // array has item(s), meaning there was a user found, successful!

@@ -6,6 +6,8 @@ const { areAllDefined } = require('./validateDefined');
 const { ValidationError } = require('../general/errors');
 const { hash } = require('./hash');
 
+const { updateUserForUserIdentifierHashedUserIdentifier } = require('../../../controllers/updateFor/updateForUser');
+
 /**
  * Checks to see that the appVersion of the requester is compatible
  */
@@ -52,20 +54,27 @@ async function validateUserId(req, res, next) {
       [userId, userIdentifier],
     );
 
-    const oldUserIdentifier = hash(userIdentifier);
-    console.log(`validate user for user identifier, ${result}, ${oldUserIdentifier}`);
-    if (areAllDefined(result) === false && areAllDefined(oldUserIdentifier) === true) {
+    const hashedUserIdentifier = hash(userIdentifier);
+    console.log(`validate user for user identifier, ${result}, ${hashedUserIdentifier}`);
+    if (areAllDefined(result) === false && areAllDefined(hashedUserIdentifier) === true) {
       // If we can't find a user for a userIdentifier, hash that userIdentifier and then try again.
       // This is because we switched from hashing the Apple provided userIdentifier to directly storing it.
       // If query is successful, change saved userIdentifier and return result
-      // TO DO NOW update saved userIdentifier if user found
 
       [result] = await databaseQuery(
         req.databaseConnection,
         'SELECT 1 FROM users WHERE userId = ? AND userIdentifier = ? LIMIT 1',
-        [userId, oldUserIdentifier],
+        [userId, hashedUserIdentifier],
       );
       console.log(`validate user for old user identifier, ${result}`);
+
+      if (areAllDefined(result) === true) {
+        await updateUserForUserIdentifierHashedUserIdentifier(
+          req.databaseConnection,
+          userIdentifier,
+          hashedUserIdentifier,
+        );
+      }
     }
 
     if (areAllDefined(result) === false) {

@@ -1,5 +1,6 @@
 const { databaseQuery } = require('../../main/tools/database/databaseQuery');
-const { formatNumber, formatBoolean } = require('../../main/tools/format/formatObject');
+const { formatNumber, formatBoolean, formatSHA256Hash } = require('../../main/tools/format/formatObject');
+const { hash } = require('../../main/tools/format/hash');
 const { atLeastOneDefined, areAllDefined } = require('../../main/tools/format/validateDefined');
 const { ValidationError } = require('../../main/tools/general/errors');
 
@@ -189,4 +190,36 @@ or userConfigurationSilentModeEndUTCMinute, provided', global.CONSTANT.ERROR.VAL
   await Promise.all(promises);
 }
 
-module.exports = { updateUserForUserId };
+/**
+ * When users first made accounts, we hashed their userIdentifier then stored it.
+ * However, this is unnecessary and prevents us from knowning their true Apple userIdentifier
+ * If we receive a userIdentifier that is unhashed, we update our records.
+ */
+async function updateUserForUserIdentifierHashedUserIdentifier(
+  databaseConnection,
+  forUnhashedUserIdentifier,
+  forHashedUserIdentifier,
+) {
+  const unhashedUserIdentifier = formatSHA256Hash(forUnhashedUserIdentifier);
+  const hashedUserIdentifier = formatSHA256Hash(forHashedUserIdentifier);
+
+  console.log(`${unhashedUserIdentifier}, ${hashedUserIdentifier}`);
+  if (areAllDefined(databaseConnection, unhashedUserIdentifier, hashedUserIdentifier) === false) {
+    throw new ValidationError('databaseConnection, unhashedUserIdentifier, or hashedUserIdentifier missing', global.CONSTANT.ERROR.VALUE.MISSING);
+  }
+
+  console.log('try');
+  if (hash(unhashedUserIdentifier) !== hashedUserIdentifier) {
+    console.log('fail');
+    return;
+  }
+
+  console.log('pass');
+  await databaseQuery(
+    databaseConnection,
+    'UPDATE users SET userIdentifier = ? WHERE userIdentifier = ?',
+    [unhashedUserIdentifier, hashedUserIdentifier],
+  );
+}
+
+module.exports = { updateUserForUserId, updateUserForUserIdentifierHashedUserIdentifier };

@@ -8,6 +8,8 @@ const {
 const { hash } = require('../../main/tools/format/hash');
 const { areAllDefined } = require('../../main/tools/format/validateDefined');
 
+const { getUserForUserIdentifier } = require('../getFor/getForUser');
+
 /**
  *  Queries the database to create a user. If the query is successful, then returns the userId.
  *  If a problem is encountered, creates and throws custom error
@@ -41,6 +43,11 @@ async function createUserForUserIdentifier(
   if (areAllDefined(databaseConnection, userIdentifier) === false) {
     throw new ValidationError('databaseConnection or userIdentifier missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
+
+  if (areAllDefined(await getUserForUserIdentifier(databaseConnection, userIdentifier)) === true) {
+    throw new ValidationError('userIdentifier already belongs to an account', global.CONSTANT.ERROR.VALUE.INVALID);
+  }
+
   const userAccountCreationDate = new Date();
   const userId = hash(userIdentifier, userAccountCreationDate.toISOString());
   // userIdentifier
