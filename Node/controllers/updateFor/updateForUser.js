@@ -1,5 +1,7 @@
 const { databaseQuery } = require('../../main/tools/database/databaseQuery');
-const { formatNumber, formatBoolean, formatSHA256Hash } = require('../../main/tools/format/formatObject');
+const {
+  formatNumber, formatBoolean, formatSHA256Hash, formatString,
+} = require('../../main/tools/format/formatObject');
 const { hash } = require('../../main/tools/format/hash');
 const { atLeastOneDefined, areAllDefined } = require('../../main/tools/format/validateDefined');
 const { ValidationError } = require('../../main/tools/general/errors');
@@ -200,21 +202,18 @@ async function updateUserForUserIdentifierHashedUserIdentifier(
   forUnhashedUserIdentifier,
   forHashedUserIdentifier,
 ) {
-  const unhashedUserIdentifier = formatSHA256Hash(forUnhashedUserIdentifier);
+  // unhashedUserIdentifier: unhashed, 44-length apple identifier or 64-length sha-256 hash of apple identifier
+  const unhashedUserIdentifier = formatString(forUnhashedUserIdentifier);
   const hashedUserIdentifier = formatSHA256Hash(forHashedUserIdentifier);
 
-  console.log(`${unhashedUserIdentifier}, ${hashedUserIdentifier}`);
   if (areAllDefined(databaseConnection, unhashedUserIdentifier, hashedUserIdentifier) === false) {
     throw new ValidationError('databaseConnection, unhashedUserIdentifier, or hashedUserIdentifier missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
-  console.log('try');
   if (hash(unhashedUserIdentifier) !== hashedUserIdentifier) {
-    console.log('fail');
     return;
   }
 
-  console.log('pass');
   await databaseQuery(
     databaseConnection,
     'UPDATE users SET userIdentifier = ? WHERE userIdentifier = ?',

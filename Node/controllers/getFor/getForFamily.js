@@ -1,5 +1,4 @@
 const { databaseQuery } = require('../../main/tools/database/databaseQuery');
-const { formatSHA256Hash } = require('../../main/tools/format/formatObject');
 const { areAllDefined } = require('../../main/tools/format/validateDefined');
 const { ValidationError } = require('../../main/tools/general/errors');
 
@@ -126,7 +125,7 @@ async function getFamilyHeadUserIdForFamilyId(databaseConnection, familyId) {
     return undefined;
   }
 
-  return formatSHA256Hash(result.userId);
+  return result.userId;
 }
 
 module.exports = {

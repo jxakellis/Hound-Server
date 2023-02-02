@@ -39,7 +39,8 @@ async function validateUserId(req, res, next) {
   // later on use a token here to validate that they have permission to use the userId
 
   const userId = formatSHA256Hash(req.params.userId);
-  const userIdentifier = formatSHA256Hash(req.query.userIdentifier);
+  // unhashedUserIdentifier: unhashed, 44-length apple identifier or 64-length sha-256 hash of apple identifier
+  const userIdentifier = formatString(req.query.userIdentifier);
 
   if (areAllDefined(userIdentifier, userId) === false) {
     return res.sendResponseForStatusBodyError(400, undefined, new ValidationError('userId or userIdentifier missing', global.CONSTANT.ERROR.VALUE.INVALID));
@@ -55,7 +56,6 @@ async function validateUserId(req, res, next) {
     );
 
     const hashedUserIdentifier = hash(userIdentifier);
-    console.log(`validate user for user identifier, ${result}, ${hashedUserIdentifier}`);
     if (areAllDefined(result) === false && areAllDefined(hashedUserIdentifier) === true) {
       // If we can't find a user for a userIdentifier, hash that userIdentifier and then try again.
       // This is because we switched from hashing the Apple provided userIdentifier to directly storing it.
@@ -66,7 +66,6 @@ async function validateUserId(req, res, next) {
         'SELECT 1 FROM users WHERE userId = ? AND userIdentifier = ? LIMIT 1',
         [userId, hashedUserIdentifier],
       );
-      console.log(`validate user for old user identifier, ${result}`);
 
       if (areAllDefined(result) === true) {
         await updateUserForUserIdentifierHashedUserIdentifier(

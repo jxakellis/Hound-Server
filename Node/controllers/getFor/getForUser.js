@@ -68,7 +68,6 @@ WHERE users.userIdentifier = ? LIMIT 1`,
   );
 
   const hashedUserIdentifier = hash(userIdentifier);
-  console.log(`get user for user identifier, ${userInformation}, ${hashedUserIdentifier}`);
   if (areAllDefined(userInformation) === false && areAllDefined(hashedUserIdentifier) === true) {
     // If we can't find a user for a userIdentifier, hash that userIdentifier and then try again.
     // This is because we switched from hashing the Apple provided userIdentifier to directly storing it.
@@ -82,7 +81,6 @@ WHERE users.userIdentifier = ? LIMIT 1`,
   WHERE users.userIdentifier = ? LIMIT 1`,
       [hashedUserIdentifier],
     );
-    console.log(`got user for old user identifier, ${userInformation}`);
 
     if (areAllDefined(userInformation) === true) {
       await updateUserForUserIdentifierHashedUserIdentifier(
