@@ -53,6 +53,7 @@ async function validateUserId(req, res, next) {
     );
 
     const oldUserIdentifier = hash(userIdentifier);
+    console.log(`validate user for user identifier, ${result}, ${oldUserIdentifier}`);
     if (areAllDefined(result) === false && areAllDefined(oldUserIdentifier) === true) {
       // If we can't find a user for a userIdentifier, hash that userIdentifier and then try again.
       // This is because we switched from hashing the Apple provided userIdentifier to directly storing it.
@@ -64,6 +65,7 @@ async function validateUserId(req, res, next) {
         'SELECT 1 FROM users WHERE userId = ? AND userIdentifier = ? LIMIT 1',
         [userId, oldUserIdentifier],
       );
+      console.log(`validate user for old user identifier, ${result}`);
     }
 
     if (areAllDefined(result) === false) {

@@ -13,7 +13,6 @@ const { areAllDefined } = require('../../main/tools/format/validateDefined');
  *  If a problem is encountered, creates and throws custom error
  */
 async function createUserForUserIdentifier(
-  // TO DO NOW TEST creating user with null email, non-null unique email, and non-null non-unique email
   databaseConnection,
   // userId,
   userIdentifier,
