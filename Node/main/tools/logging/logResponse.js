@@ -15,15 +15,15 @@ async function logResponse(req, res, body) {
 
   responseLogger.debug(`Response for ${req.method} ${originalUrl}\n With body: ${JSON.stringify(responseBody)}`);
 
-  if (areAllDefined(req.requestID) === true && areAllDefined(res.responseID) === false) {
+  if (areAllDefined(req.requestId) === true && areAllDefined(res.responseId) === false) {
     try {
       const result = await databaseQuery(
         databaseConnectionForLogging,
-        'INSERT INTO previousResponses(requestID, responseDate, responseBody) VALUES (?,?,?)',
-        [req.requestID, date, responseBody],
+        'INSERT INTO previousResponses(requestId, responseDate, responseBody) VALUES (?,?,?)',
+        [req.requestId, date, responseBody],
       );
-      const responseID = formatNumber(result.insertId);
-      res.responseID = responseID;
+      const responseId = formatNumber(result.insertId);
+      res.responseId = responseId;
     }
     catch (error) {
       logServerError('logResponse', error);

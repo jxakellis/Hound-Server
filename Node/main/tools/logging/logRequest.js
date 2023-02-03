@@ -29,15 +29,15 @@ async function logRequest(req, res, next) {
   }
 
   // Inserts request information into the previousRequests table.
-  if (areAllDefined(req.requestID) === false) {
+  if (areAllDefined(req.requestId) === false) {
     try {
       const result = await databaseQuery(
         databaseConnectionForLogging,
         'INSERT INTO previousRequests(requestIP, requestDate, requestMethod, requestOriginalURL, requestBody) VALUES (?,?,?,?,?)',
         [ip, date, method, originalUrl, body],
       );
-      const requestID = formatNumber(result.insertId);
-      req.requestID = requestID;
+      const requestId = formatNumber(result.insertId);
+      req.requestId = requestId;
     }
     catch (error) {
       logServerError('logRequest', error);

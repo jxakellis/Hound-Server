@@ -11,8 +11,8 @@ async function configureRequestForResponse(req, res, next) {
   res.hasSentResponse = false;
   req.hasActiveDatabaseConnection = false;
   req.hasActiveDatabaseTransaction = false;
-  req.requestID = undefined;
-  res.responseID = undefined;
+  req.requestId = undefined;
+  res.responseId = undefined;
   configureResponse(req, res);
 
   const hasActiveDatabaseConnection = formatBoolean(req.hasActiveDatabaseConnection);
@@ -88,9 +88,9 @@ function configureResponse(req, res) {
     await logResponse(req, res, response);
 
     if (req.originalUrl !== '/watchdog') {
-      // need to update watchdog so it recognizes pattern of requestID and responseID. currently can only recognize {"result":""} as success
-      response.requestID = req.requestID ?? -1;
-      response.responseID = res.responseID ?? -1;
+      // need to update watchdog so it recognizes pattern of requestId and responseId. currently can only recognize {"result":""} as success
+      response.requestId = req.requestId ?? -1;
+      response.responseId = res.responseId ?? -1;
     }
 
     res.hasSentResponse = true;
