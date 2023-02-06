@@ -91,26 +91,8 @@ async function createTransactionsForUserIdFamilyIdEnvironmentReceipts(databaseCo
   const environment = formatString(forEnvironment, 10);
   const receipts = formatArray(forReceipts);
 
-  if (areAllDefined(databaseConnection, userId, familyId, environment, receipts) === false) {
-    throw new ValidationError('databaseConnection, userId, familyId, environment, or receipts missing', global.CONSTANT.ERROR.VALUE.MISSING);
-  }
-
-  // Filter the receipts. Only include one which their productIds are known, and assign values if receipt is valid
-  for (let i = 0; i < receipts.length; i += 1) {
-    const receipt = receipts[i];
-    const correspondingSubscription = global.CONSTANT.SUBSCRIPTION.SUBSCRIPTIONS.find((subscription) => subscription.productId === receipt.product_id);
-
-    // check to see if we found an item
-    if (areAllDefined(correspondingSubscription) === false) {
-      // a correspondingSubscription doesn't exist, remove the receipt from the array as incompatible
-      receipts.splice(i, 1);
-      // de-iterate i so we don't skip an item
-      i -= 1;
-    }
-
-    // we found a corresponding subscription, assign the correst values to the receipt
-    receipt.numberOfFamilyMembers = correspondingSubscription.numberOfFamilyMembers;
-    receipt.numberOfDogs = correspondingSubscription.numberOfDogs;
+  if (areAllDefined(databaseConnection, userId, familyId, receipts) === false) {
+    throw new ValidationError('databaseConnection, userId, familyId, or receipts missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   // find all of our currently stored transactions for the user
@@ -128,90 +110,143 @@ async function createTransactionsForUserIdFamilyIdEnvironmentReceipts(databaseCo
     const receipt = receipts[i];
     const transactionId = formatNumber(receipt.transaction_id);
 
-    // check to see if we have that receipt stored in the database
-    if (storedTransactions.some((storedTransaction) => formatNumber(storedTransaction.transactionId) === transactionId) === false) {
-      // we don't have that receipt stored, insert it into the database
+    // Verify that the transaction isn't already stored in the database
+    if (storedTransactions.some((storedTransaction) => formatNumber(storedTransaction.transactionId) === transactionId) === true) {
+      continue;
+    }
 
-      // transactionid
-      const originalTransactionid = formatNumber(receipt.original_transaction_id);
-      // familyId
-      // userId
-      const productId = formatString(receipt.product_id, 60);
-      const subscriptionGroupIdentifier = formatNumber(receipt.subscription_group_identifier);
-      const purchaseDate = formatDate(formatNumber(receipt.purchase_date_ms));
-      const expirationDate = formatDate(
-        formatNumber(receipt.expires_date_ms)
-        + (environment === 'Sandbox' ? global.CONSTANT.SUBSCRIPTION.SANDBOX_EXPIRATION_DATE_EXTENSION : 0),
-      );
-      const numberOfFamilyMembers = formatNumber(receipt.numberOfFamilyMembers);
-      const numberOfDogs = formatNumber(receipt.numberOfDogs);
-      const quantity = formatNumber(receipt.quantity);
-      const webOrderLineItemId = formatNumber(receipt.web_order_line_item_id);
-      const inAppOwnershipType = formatString(receipt.in_app_ownership_type, 13);
-      promises.push(databaseQuery(
-        databaseConnection,
-        'INSERT INTO transactions(transactionId, \
-originalTransactionId, \
+    promises.push(createInAppSubscriptionForUserIdFamilyIdTransactionInfo(
+      databaseConnection,
+      userId,
+      familyId,
+      transactionId,
+      receipt.originalTransactionId,
+      environment,
+      receipt.product_id,
+      receipt.subscription_group_identifier,
+      receipt.purchase_date_ms,
+      receipt.expires_date_ms,
+      receipt.quantity,
+      receipt.web_order_line_item_id,
+      receipt.in_app_ownership_type,
+    ));
+  }
+
+  // Resolves all promises in the array. Even if one fails, does not return error. Returns array of JSON with promise status and value/error
+  await Promise.allSettled(promises);
+
+  // now all of the receipts returned by apple (who's productId's match one that is known to us) are stored in our database
+  await reassignActiveInAppSubscriptionForUserIdFamilyId(databaseConnection, userId, familyId);
+}
+
+/**
+  Verifies the information for the subscription is valid, then inserts it into the database
+  https://developer.apple.com/documentation/appstorereceipts/responsebody/latest_receipt_info
+
+  app_account_token: The appAccountToken associated with this transaction. This field is only present if your app supplied an appAccountToken(_:) or provided a UUID for the applicationUsername property when the user made the purchase.
+  cancellation_date: The time the App Store refunded a transaction or revoked it from Family Sharing, in a date-time format similar to the ISO 8601. This field is present only for refunded or revoked transactions.
+  cancellation_date_ms: The time the App Store refunded a transaction or revoked it from Family Sharing, in UNIX epoch time format, in milliseconds. This field is present only for refunded or revoked transactions. Use this time format for processing dates.
+  cancellation_date_pst: The time the App Store refunded a transaction or revoked it from Family Sharing, in Pacific Standard Time. This field is present only for refunded or revoked transactions.
+  cancellation_reason: The reason for a refunded or revoked transaction. A value of 1 indicates that the customer canceled their transaction due to an actual or perceived issue within your app. A value of 0 indicates that the transaction was canceled for another reason; for example, if the customer made the purchase accidentally.
+  expires_date: The time an auto-renewable subscription expires or when it will renew, in a date-time format similar to the ISO 8601.
+  expires_date_ms:The time an auto-renewable subscription expires or when it will renew, in UNIX epoch time format, in milliseconds. Use this time format for processing dates.
+  expires_date_pst:The time an auto-renewable subscription expires or when it will renew, in Pacific Standard Time.
+  in_app_ownership_type: A value that indicates whether the user is the purchaser of the product or is a family member with access to the product through Family Sharing.
+  is_in_intro_offer_period: An indicator of whether an auto-renewable subscription is in the introductory price period. See is_in_intro_offer_period for more information.
+  is_trial_period: An indicator of whether an auto-renewable subscription is in the free trial period.
+  is_upgraded: An indicator that an auto-renewable subscription has been canceled due to an upgrade. This field is only present for upgrade transactions.
+  offer_code_ref_name: The reference name of a subscription offer that you configured in App Store Connect. This field is present when a customer redeems a subscription offer code. For more information about offer codes, see Set Up Offer Codes, and Implementing Offer Codes in Your App.
+  original_purchase_date: The time of the original app purchase, in a date-time format similar to ISO 8601.
+  original_purchase_date_ms: The time of the original app purchase, in UNIX epoch time format, in milliseconds. Use this time format for processing dates. For an auto-renewable subscription, this value indicates the date of the subscription’s initial purchase. The original purchase date applies to all product types and remains the same in all transactions for the same product ID. This value corresponds to the original transaction’s transactionDate property in StoreKit.
+  original_purchase_date_pst: The time of the original app purchase, in Pacific Standard Time.
+  original_transaction_id: The transaction identifier of the original purchase.
+  product_id: The unique identifier of the product purchased. You provide this value when creating the product in App Store Connect, and it corresponds to the productIdentifier property of the SKPayment object stored in the transaction’s payment property.
+  promotional_offer_id: The identifier of the subscription offer redeemed by the user.
+  purchase_date: The time the App Store charged the user’s account for a purchased or restored product, or the time the App Store charged the user’s account for a subscription purchase or renewal after a lapse, in a date-time format similar to ISO 8601.
+  purchase_date_ms: For consumable, non-consumable, and non-renewing subscription products, the time the App Store charged the user’s account for a purchased or restored product, in the UNIX epoch time format, in milliseconds. For auto-renewable subscriptions, the time the App Store charged the user’s account for a subscription purchase or renewal after a lapse, in the UNIX epoch time format, in milliseconds. Use this time format for processing dates.
+  purchase_date_pst: The time the App Store charged the user’s account for a purchased or restored product, or the time the App Store charged the user’s account for a subscription purchase or renewal after a lapse, in Pacific Standard Time.
+  quantity: The number of consumable products purchased. This value corresponds to the quantity property of the SKPayment object stored in the transaction’s payment property. The value is usually 1 unless modified with a mutable payment. The maximum value is 10.
+  subscription_group_identifier: The identifier of the subscription group to which the subscription belongs. The value for this field is identical to the subscriptionGroupIdentifier property in SKProduct.
+  web_order_line_item_id: A unique identifier for purchase events across devices, including subscription-renewal events. This value is the primary key for identifying subscription purchases.
+  transaction_id: A unique identifier for a transaction such as a purchase, restore, or renewal.
+ */
+async function createInAppSubscriptionForUserIdFamilyIdTransactionInfo(
+  databaseConnection,
+  userId,
+  familyId,
+  forTransactionId,
+  forOriginalTransactionId,
+  forEnvironment,
+  forProductId,
+  forSubscriptionGroupIdentifier,
+  forPurchaseDateMS,
+  forExpirationDateMS,
+  forQuantity,
+  forWebOrderLineItemId,
+  forInAppOwnershipType,
+) {
+  // userId
+  // familyId
+  const transactionId = formatNumber(forTransactionId);
+  const originalTransactionId = formatNumber(forOriginalTransactionId);
+  const environment = formatString(forEnvironment, 10);
+  const productId = formatString(forProductId, 60);
+  const subscriptionGroupIdentifier = formatNumber(forSubscriptionGroupIdentifier);
+  const purchaseDate = formatDate(formatNumber(forPurchaseDateMS));
+  const expirationDate = formatDate(
+    formatNumber(forExpirationDateMS)
+         + (environment === 'Sandbox' ? global.CONSTANT.SUBSCRIPTION.SANDBOX_EXPIRATION_DATE_EXTENSION : 0),
+  );
+  const quantity = formatNumber(forQuantity);
+  const webOrderLineItemId = formatNumber(forWebOrderLineItemId);
+  const inAppOwnershipType = formatString(forInAppOwnershipType, 13);
+  // TO DO NOW track the following as well
+  // app_account_token
+  // is_trial_period
+  // is_in_intro_offer_period
+  // offer_code_ref_name
+  // promotional_offer_id
+
+  if (areAllDefined(
+    databaseConnection,
+    userId,
+    familyId,
+    transactionId,
+    originalTransactionId,
+    environment,
+    productId,
+    subscriptionGroupIdentifier,
+    purchaseDate,
+    expirationDate,
+    quantity,
+    webOrderLineItemId,
+    inAppOwnershipType,
+  ) === false) {
+    throw new ValidationError('databaseConnection, \
 userId, \
 familyId, \
+transactionId, \
+originalTransactionId, \
 environment, \
 productId, \
 subscriptionGroupIdentifier, \
 purchaseDate, \
 expirationDate, \
-numberOfFamilyMembers, \
-numberOfDogs, \
 quantity, \
 webOrderLineItemId, \
-inAppOwnershipType) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [
-          transactionId,
-          originalTransactionid,
-          userId,
-          familyId,
-          environment,
-          productId,
-          subscriptionGroupIdentifier,
-          purchaseDate,
-          expirationDate,
-          numberOfFamilyMembers,
-          numberOfDogs,
-          quantity,
-          webOrderLineItemId,
-          inAppOwnershipType,
-        ],
-      ));
-    }
+or inAppOwnershipType missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
-  await Promise.all(promises);
+  const correspondingProduct = global.CONSTANT.SUBSCRIPTION.SUBSCRIPTIONS.find((subscription) => subscription.productId === productId);
 
-  // now all of the receipts returned by apple (who's productId's match one that is known to us) are stored in our database
+  if (areAllDefined(correspondingProduct) === false) {
+    throw new ValidationError('correspondingProduct missing', global.CONSTANT.ERROR.VALUE.MISSING);
+  }
 
-  await reassignActiveInAppSubscriptionForUserIdFamilyId(databaseConnection, userId, familyId);
-}
+  const { numberOfFamilyMembers, numberOfDogs } = correspondingProduct;
 
-/**
- *  If the query is successful, then returns
- *  If a problem is encountered, creates and throws custom error
- */
-async function createInAppSubscriptionForUserIdFamilyIdTransactionInfo(
-  databaseConnection,
-  transactionId,
-  originalTransactionId,
-  userId,
-  familyId,
-  environment,
-  productId,
-  subscriptionGroupIdentifier,
-  purchaseDate,
-  expirationDate,
-  quantity,
-  webOrderLineItemId,
-  inAppOwnershipType,
-) {
-  if (areAllDefined(databaseConnection, transactionId, userId, familyId, environment, productId, purchaseDate, expirationDate) === false) {
-    throw new ValidationError('databaseConnection, transactionId, userId, familyId, environment, productId, purchaseDate, or expirationDate missing', global.CONSTANT.ERROR.VALUE.MISSING);
+  if (areAllDefined(numberOfFamilyMembers, numberOfDogs) === false) {
+    throw new ValidationError('numberOfFamilyMembers or numberOfDogs missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   const familyHeadUserId = await getFamilyHeadUserIdForFamilyId(databaseConnection, familyId);
@@ -220,9 +255,28 @@ async function createInAppSubscriptionForUserIdFamilyIdTransactionInfo(
     throw new ValidationError('You are not the family head. Only the family head can modify the family subscription', global.CONSTANT.ERROR.PERMISSION.INVALID.FAMILY);
   }
 
-  const correspondingProduct = global.CONSTANT.SUBSCRIPTION.SUBSCRIPTIONS.find((subscription) => subscription.productId === productId);
-  const { numberOfFamilyMembers, numberOfDogs } = correspondingProduct;
+  if (inAppOwnershipType !== 'PURCHASED') {
+    throw new ValidationError(`inAppOwnershipType must be PURCHASED, not ${inAppOwnershipType}`, global.CONSTANT.ERROR.VALUE.INVALID);
+  }
 
+  /*
+  transactionId
+  originalTransactionId
+  userId
+  familyId
+  environment
+  productId
+  subscriptionGroupIdentifier
+  purchaseDate
+  expirationDate
+  numberOfFamilyMembers
+  numberOfDogs
+  quantity
+  webOrderLineItemId
+  inAppOwnershipType
+  NOT INCLUDED AT THIS STAGE isAutoRenewing
+  NOT INCLUDED AT THIS STAGE isRevoked
+  */
   await databaseQuery(
     databaseConnection,
     'INSERT INTO transactions(transactionId, \

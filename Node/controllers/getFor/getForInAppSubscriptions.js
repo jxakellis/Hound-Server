@@ -25,16 +25,11 @@ async function getActiveInAppSubscriptionForFamilyId(databaseConnection, familyI
   // since we found no family subscription, assign the family to the default subscription
   if (areAllDefined(familySubscription) === false) {
     familySubscription = global.CONSTANT.SUBSCRIPTION.SUBSCRIPTIONS.find((subscription) => subscription.productId === global.CONSTANT.SUBSCRIPTION.DEFAULT_SUBSCRIPTION_PRODUCT_ID);
-    familySubscription.userId = undefined;
-    familySubscription.purchaseDate = undefined;
-    familySubscription.expirationDate = undefined;
-    familySubscription.isAutoRenewing = true;
-    familySubscription.isRevoked = false;
   }
 
   familySubscription.isActive = true;
-  familySubscription.isAutoRenewing = formatBoolean(familySubscription.isAutoRenewing);
-  familySubscription.isRevoked = formatBoolean(familySubscription.isRevoked);
+  familySubscription.isAutoRenewing = formatBoolean(familySubscription.isAutoRenewing) ?? true;
+  familySubscription.isRevoked = formatBoolean(familySubscription.isRevoked) ?? false;
 
   return familySubscription;
 }

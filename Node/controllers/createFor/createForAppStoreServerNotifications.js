@@ -143,16 +143,7 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
     throw new ValidationError('userId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
-  const originalTransactionId = formatNumber(transactionInfo.originalTransactionId);
-  const user = await getUserForUserId(databaseConnection, userId);
-  const { familyId } = user;
-  const productId = formatString(transactionInfo.productId, 60);
-  const subscriptionGroupIdentifier = formatNumber(transactionInfo.subscriptionGroupIdentifier);
-  const purchaseDate = formatDate(formatNumber(transactionInfo.purchaseDate));
-  const expirationDate = formatDate(formatNumber(transactionInfo.expiresDate));
-  const quantity = formatNumber(transactionInfo.quantity);
-  const webOrderLineItemId = formatNumber(transactionInfo.webOrderLineItemId);
-  const inAppOwnershipType = formatString(transactionInfo.inAppOwnershipType, 13);
+  const { familyId } = await getUserForUserId(databaseConnection, userId);
 
   // Check if a new transaction was created, warrenting an insert into the transactions table
   if (notificationType === 'DID_CHANGE_RENEWAL_PREF' || notificationType === 'DID_RENEW' || notificationType === 'OFFER_REDEEMED' || notificationType === 'SUBSCRIBED') {
@@ -167,20 +158,21 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
     // The transaction already exists, so no need to create
       return;
     }
+
     await createInAppSubscriptionForUserIdFamilyIdTransactionInfo(
       databaseConnection,
-      transactionId,
-      originalTransactionId,
       userId,
       familyId,
-      transactionInfoEnvironment,
-      productId,
-      subscriptionGroupIdentifier,
-      purchaseDate,
-      expirationDate,
-      quantity,
-      webOrderLineItemId,
-      inAppOwnershipType,
+      transactionId,
+      transactionInfo.originalTransactionId,
+      transactionInfo.environment,
+      transactionInfo.productId,
+      transactionInfo.subscriptionGroupIdentifier,
+      transactionInfo.purchaseDate,
+      transactionInfo.expiresDate,
+      transactionInfo.quantity,
+      transactionInfo.webOrderLineItemId,
+      transactionInfo.inAppOwnershipType,
     );
   }
   // Check if a transaction was invalidated, warrenting an update to the transactions table
