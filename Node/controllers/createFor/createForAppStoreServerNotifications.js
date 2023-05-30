@@ -154,11 +154,17 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
     // If notification provided a transactionId, then attempt to see if we have a transaction stored for that transactionId
     const storedTransaction = await getInAppSubscriptionForTransactionId(databaseConnection, transactionId);
 
+    console.log(`createAppStoreServerNotificationForSignedPayload storedTransaction: ${storedTransaction}`);
+    console.log(`createAppStoreServerNotificationForSignedPayload transactionInfo: ${transactionInfo}`);
+
     if (areAllDefined(storedTransaction)) {
     // The transaction already exists, so no need to create
+
+      // TO DO NOW potentially this transaction could contain more information than the transaction created through reciepts.
+      // investigate and if it does, then invoke function to provide that additonal information (e.g. offer referral code)
+
       return;
     }
-
     await createInAppSubscriptionForUserIdFamilyIdTransactionInfo(
       databaseConnection,
       userId,

@@ -92,6 +92,9 @@ async function addFamilyMember(databaseConnection, userId, forFamilyCode) {
   );
 
   createFamilyMemberJoinNotification(userId, family.familyId);
+
+  // TO DO NOW since a new family member joined a family, check the family subscription.
+  // if the family's subscription has an offer referral code attached, add a record to affiliate program database (as a user joined a family thats subscription is from using someones affiliate referral code)
 }
 
 /**
