@@ -118,6 +118,11 @@ async function createTransactionsForUserIdFamilyIdEnvironmentReceipts(databaseCo
     console.log('createTransactionsForUserIdFamilyIdEnvironmentReceipts reciept');
     console.log(receipt);
 
+    // app_account_token            UUID 'ecfd14c7-f728-44a5-b78c-3894e2314149'
+    // is_trial_period              BOOL 'false'
+    // is_in_intro_offer_period     BOOL 'false'
+    // offer_code_ref_name          VARCHAR(64)
+
     promises.push(createInAppSubscriptionForUserIdFamilyIdTransactionInfo(
       databaseConnection,
       userId,

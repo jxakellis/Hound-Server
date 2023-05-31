@@ -67,6 +67,11 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
   const signedTransactionInfoBuffer = Buffer.from(signedTransactionInfo.split('.')[1], 'base64');
   const transactionInfo = JSON.parse(signedTransactionInfoBuffer.toString());
 
+  console.log('createAppStoreServerNotificationForSignedPayload');
+  console.log(renewalInfo);
+  console.log(typeof renewalInfo);
+  console.log(transactionInfo);
+
   requestLogger.debug(`App Store Server Notification ${notificationUUID} of type ${notificationType} with subtype ${subtype} for transaction ${transactionInfo.transactionId}`);
 
   const storedNotification = await getAppStoreServerNotificationForNotificationUUID(databaseConnection, notificationUUID);
