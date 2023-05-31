@@ -141,8 +141,7 @@ async function createTransactionsForUserIdFamilyIdEnvironmentReceipts(databaseCo
   }
 
   // Resolves all promises in the array. Even if one fails, does not return error. Returns array of JSON with promise status and value/error
-  const result = await Promise.allSettled(promises);
-  console.log('allsettled', result);
+  await Promise.all(promises);
 
   // now all of the receipts returned by apple (who's productId's match one that is known to us) are stored in our database
   await reassignActiveInAppSubscriptionForUserIdFamilyId(databaseConnection, userId, familyId);
