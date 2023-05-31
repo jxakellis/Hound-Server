@@ -55,8 +55,8 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
     signedTransactionInfo,
   } = data;
 
-  console.log(signedRenewalInfo);
-  console.log(signedTransactionInfo);
+  console.log('notification', notification);
+  console.log('data', data);
 
   if (areAllDefined(signedRenewalInfo, signedTransactionInfo) === false) {
     throw new ValidationError('signedRenewalInfo or signedTransactionInfo missing', global.CONSTANT.ERROR.VALUE.MISSING);
