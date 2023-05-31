@@ -56,7 +56,6 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
   } = data;
 
   console.log('notification', notification);
-  console.log('data', data);
 
   if (areAllDefined(signedRenewalInfo, signedTransactionInfo) === false) {
     throw new ValidationError('signedRenewalInfo or signedTransactionInfo missing', global.CONSTANT.ERROR.VALUE.MISSING);
@@ -64,17 +63,16 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
 
   // TO DO FUTURE verify Apple signature
   const signedRenewalInfoBuffer = Buffer.from(signedRenewalInfo.split('.')[1], 'base64');
-  console.log(signedRenewalInfoBuffer);
+  console.log('signedRenewalInfoBuffer', signedRenewalInfoBuffer);
   const renewalInfo = JSON.parse(signedRenewalInfoBuffer.toString());
 
   // TO DO FUTURE verify Apple signature
   const signedTransactionInfoBuffer = Buffer.from(signedTransactionInfo.split('.')[1], 'base64');
-  console.log(signedTransactionInfoBuffer);
+  console.log('signedTransactionInfoBuffer', signedTransactionInfoBuffer);
   const transactionInfo = JSON.parse(signedTransactionInfoBuffer.toString());
 
-  console.log('createAppStoreServerNotificationForSignedPayload');
-  console.log(renewalInfo);
-  console.log(transactionInfo);
+  console.log('renewalInfo', renewalInfo);
+  console.log('transactionInfo', transactionInfo);
 
   if (areAllDefined(renewalInfo, transactionInfo) === false) {
     throw new ValidationError('renewalInfo or transactionInfo missing', global.CONSTANT.ERROR.VALUE.MISSING);
@@ -167,10 +165,8 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
     // If notification provided a transactionId, then attempt to see if we have a transaction stored for that transactionId
     const storedTransaction = await getInAppSubscriptionForTransactionId(databaseConnection, transactionId);
 
-    console.log('createAppStoreServerNotificationForSignedPayload storedTransaction');
-    console.log(storedTransaction);
-    console.log('createAppStoreServerNotificationForSignedPayload transactionInfo');
-    console.log(transactionInfo);
+    console.log('storedTransaction', storedTransaction);
+    console.log('transactionInfo', transactionInfo);
 
     if (areAllDefined(storedTransaction)) {
     // The transaction already exists, so no need to create
@@ -266,8 +262,7 @@ async function createAppStoreServerNotificationForNotification(databaseConnectio
     throw new ValidationError('databaseConnection or notification missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
-  console.log('createAppStoreServerNotificationForNotification');
-  console.log(renewalInfo);
+  console.log('createAppStoreServerNotificationForNotification renewalInfo', renewalInfo);
 
   // https://developer.apple.com/documentation/appstoreservernotifications/responsebodyv2decodedpayload
   // The in-app purchase event for which the App Store sent this version 2 notification.
