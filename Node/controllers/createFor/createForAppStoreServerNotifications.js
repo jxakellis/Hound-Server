@@ -55,16 +55,21 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
     signedTransactionInfo,
   } = data;
 
+  console.log(signedRenewalInfo);
+  console.log(signedTransactionInfo);
+
   if (areAllDefined(signedRenewalInfo, signedTransactionInfo) === false) {
     throw new ValidationError('signedRenewalInfo or signedTransactionInfo missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   // TO DO FUTURE verify Apple signature
   const signedRenewalInfoBuffer = Buffer.from(signedRenewalInfo.split('.')[1], 'base64');
+  console.log(signedRenewalInfoBuffer);
   const renewalInfo = JSON.parse(signedRenewalInfoBuffer.toString());
 
   // TO DO FUTURE verify Apple signature
   const signedTransactionInfoBuffer = Buffer.from(signedTransactionInfo.split('.')[1], 'base64');
+  console.log(signedTransactionInfoBuffer);
   const transactionInfo = JSON.parse(signedTransactionInfoBuffer.toString());
 
   console.log('createAppStoreServerNotificationForSignedPayload');
