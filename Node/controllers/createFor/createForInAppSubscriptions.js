@@ -216,6 +216,23 @@ async function createInAppSubscriptionForUserIdFamilyIdTransactionInfo(
   // offer_code_ref_name
   // promotional_offer_id
 
+  console.log(
+    'createInAppSubscriptionForUserIdFamilyIdTransactionInfo',
+    databaseConnection,
+    userId,
+    familyId,
+    transactionId,
+    originalTransactionId,
+    environment,
+    productId,
+    subscriptionGroupIdentifier,
+    purchaseDate,
+    expirationDate,
+    quantity,
+    webOrderLineItemId,
+    inAppOwnershipType,
+  );
+
   if (areAllDefined(
     databaseConnection,
     userId,
