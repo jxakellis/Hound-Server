@@ -7,10 +7,6 @@ const { createUserForUserIdentifier } = require('../createFor/createForUser');
 
 const { updateUserForUserId } = require('../updateFor/updateForUser');
 
-// TO DO NOW TEST using account with hashed user identifier, start app fresh, navigate, create dog
-// TO DO NOW TEST deleting hound and redownloading. clear keychain so relogin using S.I.W.A, test to make sure userIdentifier is converted to unhashed version
-// TO DO NOW TEST fresh hound. delete account from database and clear keychain. login and make sure can make account, make family, make dogs. and that can delete/redownload hound to relogin
-
 /*
 Known:
 - (if appliciable to controller) userId formatted correctly and request has sufficient permissions to use
