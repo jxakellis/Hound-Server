@@ -128,7 +128,7 @@ async function createTransactionsForUserIdFamilyIdEnvironmentReceipts(databaseCo
       userId,
       familyId,
       transactionId,
-      receipt.originalTransactionId,
+      receipt.original_transaction_id,
       environment,
       receipt.product_id,
       receipt.subscription_group_identifier,
@@ -208,29 +208,12 @@ async function createInAppSubscriptionForUserIdFamilyIdTransactionInfo(
   const quantity = formatNumber(forQuantity);
   const webOrderLineItemId = formatNumber(forWebOrderLineItemId);
   const inAppOwnershipType = formatString(forInAppOwnershipType, 13);
+
   // TO DO NOW track the following as well
   // app_account_token
   // is_trial_period
   // is_in_intro_offer_period
   // offer_code_ref_name
-  // promotional_offer_id
-
-  console.log(
-    'createInAppSubscriptionForUserIdFamilyIdTransactionInfo',
-    databaseConnection,
-    userId,
-    familyId,
-    transactionId,
-    originalTransactionId,
-    environment,
-    productId,
-    subscriptionGroupIdentifier,
-    purchaseDate,
-    expirationDate,
-    quantity,
-    webOrderLineItemId,
-    inAppOwnershipType,
-  );
 
   if (areAllDefined(
     databaseConnection,
