@@ -69,8 +69,11 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
 
   console.log('createAppStoreServerNotificationForSignedPayload');
   console.log(renewalInfo);
-  console.log(typeof renewalInfo);
   console.log(transactionInfo);
+
+  if (areAllDefined(renewalInfo, transactionInfo) === false) {
+    throw new ValidationError('renewalInfo or transactionInfo missing', global.CONSTANT.ERROR.VALUE.MISSING);
+  }
 
   requestLogger.debug(`App Store Server Notification ${notificationUUID} of type ${notificationType} with subtype ${subtype} for transaction ${transactionInfo.transactionId}`);
 
