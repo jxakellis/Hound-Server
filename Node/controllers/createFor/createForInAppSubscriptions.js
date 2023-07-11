@@ -118,11 +118,6 @@ async function createTransactionsForUserIdFamilyIdEnvironmentReceipts(databaseCo
     console.log('createTransactionsForUserIdFamilyIdEnvironmentReceipts reciept');
     console.log(receipt);
 
-    // app_account_token            UUID 'ecfd14c7-f728-44a5-b78c-3894e2314149'
-    // is_trial_period              BOOL 'false'
-    // is_in_intro_offer_period     BOOL 'false'
-    // offer_code_ref_name          VARCHAR(64)
-
     promises.push(createInAppSubscriptionForUserIdFamilyIdTransactionInfo(
       databaseConnection,
       userId,
@@ -137,6 +132,7 @@ async function createTransactionsForUserIdFamilyIdEnvironmentReceipts(databaseCo
       receipt.quantity,
       receipt.web_order_line_item_id,
       receipt.in_app_ownership_type,
+      receipt.offer_code_ref_name,
     ));
   }
 
@@ -192,7 +188,10 @@ async function createInAppSubscriptionForUserIdFamilyIdTransactionInfo(
   forQuantity,
   forWebOrderLineItemId,
   forInAppOwnershipType,
+  forOfferCode,
 ) {
+  // TO DO NOW TEST that the offer code is recieve from both server and reciept
+  console.log(`createInAppSubscriptionForUserIdFamilyIdTransactionInfo did recieve ${forOfferCode}`);
   // userId
   // familyId
   const transactionId = formatNumber(forTransactionId);
@@ -208,12 +207,7 @@ async function createInAppSubscriptionForUserIdFamilyIdTransactionInfo(
   const quantity = formatNumber(forQuantity);
   const webOrderLineItemId = formatNumber(forWebOrderLineItemId);
   const inAppOwnershipType = formatString(forInAppOwnershipType, 13);
-
-  // TO DO NOW track the following as well
-  // app_account_token
-  // is_trial_period
-  // is_in_intro_offer_period
-  // offer_code_ref_name
+  const offerCode = formatString(forOfferCode, 64);
 
   if (areAllDefined(
     databaseConnection,
@@ -229,6 +223,7 @@ async function createInAppSubscriptionForUserIdFamilyIdTransactionInfo(
     quantity,
     webOrderLineItemId,
     inAppOwnershipType,
+    // offerCode doesn't have to be defined
   ) === false) {
     throw new ValidationError('databaseConnection, \
 userId, \
@@ -284,6 +279,7 @@ or inAppOwnershipType missing', global.CONSTANT.ERROR.VALUE.MISSING);
   inAppOwnershipType
   NOT INCLUDED AT THIS STAGE isAutoRenewing
   NOT INCLUDED AT THIS STAGE isRevoked
+  CAN BE NULL offerCode
   */
   await databaseQuery(
     databaseConnection,
@@ -300,7 +296,8 @@ numberOfFamilyMembers, \
 numberOfDogs, \
 quantity, \
 webOrderLineItemId, \
-inAppOwnershipType) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+inAppOwnershipType, \
+offerCode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
     [
       transactionId,
       originalTransactionId,
@@ -316,6 +313,7 @@ inAppOwnershipType) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
       quantity,
       webOrderLineItemId,
       inAppOwnershipType,
+      offerCode,
     ],
   );
 }

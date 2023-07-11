@@ -7,6 +7,8 @@ const { createUserForUserIdentifier } = require('../createFor/createForUser');
 
 const { updateUserForUserId } = require('../updateFor/updateForUser');
 
+const { deleteUserForUserId } = require('../deleteFor/deleteForUser');
+
 /*
 Known:
 - (if appliciable to controller) userId formatted correctly and request has sufficient permissions to use
@@ -145,6 +147,22 @@ async function updateUser(req, res) {
   }
 }
 
+async function deleteUser(req, res) {
+  try {
+    const { userId } = req.params;
+
+    await deleteUserForUserId(
+      req.databaseConnection,
+      userId,
+    );
+
+    return res.sendResponseForStatusBodyError(200, undefined, undefined);
+  }
+  catch (error) {
+    return res.sendResponseForStatusBodyError(400, undefined, error);
+  }
+}
+
 module.exports = {
-  getUser, createUser, updateUser,
+  getUser, createUser, updateUser, deleteUser,
 };

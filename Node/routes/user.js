@@ -3,7 +3,7 @@ const express = require('express');
 const userRouter = express.Router({ mergeParams: true });
 
 const {
-  getUser, createUser, updateUser,
+  getUser, createUser, updateUser, deleteUser,
 } = require('../controllers/controllerRoutes/user');
 
 const { validateUserId } = require('../main/tools/format/validateId');
@@ -36,5 +36,8 @@ userRouter.put('/:userId', updateUser);
 /* BODY:
 Single: { userInfo }
 */
+
+// deletes a user
+userRouter.delete('/:userId', deleteUser);
 
 module.exports = { userRouter };

@@ -91,10 +91,16 @@ async function addFamilyMember(databaseConnection, userId, forFamilyCode) {
     [userId, familyId, new Date()],
   );
 
-  createFamilyMemberJoinNotification(userId, family.familyId);
+  console.log('addFamilyMember', familyActiveSubscription);
+  const { offerCode } = familyActiveSubscription;
 
-  // TO DO NOW since a new family member joined a family, check the family subscription.
-  // if the family's subscription has an offer referral code attached, add a record to affiliate program database (as a user joined a family thats subscription is from using someones affiliate referral code)
+  if (areAllDefined(offerCode) === true) {
+    console.log('offerCode defined', offerCode);
+    // TO DO NOW since a new family member joined a family, check the family subscription.
+    // if the family's subscription has an offer referral code attached, add a record to affiliate program database (as a user joined a family thats subscription is from using someones affiliate referral code)
+  }
+
+  createFamilyMemberJoinNotification(userId, family.familyId);
 }
 
 /**
