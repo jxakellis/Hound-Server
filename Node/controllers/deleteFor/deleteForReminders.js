@@ -23,6 +23,7 @@ async function deleteReminderForFamilyIdDogIdReminderId(databaseConnection, fami
     'UPDATE dogReminders SET reminderIsDeleted = 1, reminderLastModified = ? WHERE reminderId = ?',
     [reminderLastModified, reminderId],
   );
+
   // everything here succeeded so we shoot off a request to delete the alarm notification for the reminder
   deleteAlarmNotificationsForReminder(familyId, reminderId);
 }

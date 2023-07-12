@@ -25,7 +25,12 @@ async function deleteUserForUserId(databaseConnection, userId) {
     throw new ValidationError('No user found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.USER);
   }
 
-  console.log('deleteUserForUserId', userInformation);
+  // We first delete the user from the database first, as this is easily reversible
+  await databaseQuery(
+    databaseConnection,
+    'DELETE FROM users WHERE userId = ?',
+    [userId],
+  );
 
   const familyId = formatSHA256Hash(userInformation.familyId);
 
@@ -34,14 +39,9 @@ async function deleteUserForUserId(databaseConnection, userId) {
     // Since the path for delete user doesn't have familyId attached (as it predicates the family path), no active subscription is attached
     const familyActiveSubscription = await getActiveInAppSubscriptionForFamilyId(databaseConnection, familyId);
 
+    // This step is reversible but sends a non-reversible notification at the end, so we save it for the very end so the notif is only sent if everything else is successful
     await deleteFamilyLeaveFamilyForUserIdFamilyId(databaseConnection, userId, familyId, familyActiveSubscription);
   }
-
-  await databaseQuery(
-    databaseConnection,
-    'DELETE FROM users WHERE userId = ?',
-    [userId],
-  );
 }
 
 module.exports = { deleteUserForUserId };

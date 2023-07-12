@@ -64,7 +64,6 @@ async function deleteFamily(databaseConnection, familyId, familyActiveSubscripti
 
       Only accept if there is no active subscription or the active subscription isn't auto-renewing
       */
-  console.log(familyActiveSubscription);
 
   if (familyActiveSubscription.productId !== global.CONSTANT.SUBSCRIPTION.DEFAULT_SUBSCRIPTION_PRODUCT_ID
         && familyActiveSubscription.isAutoRenewing !== false) {

@@ -277,7 +277,7 @@ or inAppOwnershipType missing', global.CONSTANT.ERROR.VALUE.MISSING);
   inAppOwnershipType
   NOT INCLUDED AT THIS STAGE isAutoRenewing
   NOT INCLUDED AT THIS STAGE isRevoked
-  CAN BE NULL offerCode
+  offerCode
   */
   await databaseQuery(
     databaseConnection,
