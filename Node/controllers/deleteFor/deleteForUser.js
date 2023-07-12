@@ -42,12 +42,6 @@ async function deleteUserForUserId(databaseConnection, userId) {
     'DELETE FROM users WHERE userId = ?',
     [userId],
   );
-
-  // TO DO NOW TEST that this works properly
-  // try with a user that is
-  // 1. part of another family
-  // 2. has their own family with other users
-  // 3. has their own family with no other users
 }
 
 module.exports = { deleteUserForUserId };

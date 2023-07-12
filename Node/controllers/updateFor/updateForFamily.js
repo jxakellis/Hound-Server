@@ -38,6 +38,7 @@ async function updateFamilyForUserIdFamilyId(databaseConnection, userId, familyI
  * Helper method for createFamilyForUserId, goes through checks to attempt to add user to desired family
  */
 async function addFamilyMember(databaseConnection, userId, forFamilyCode) {
+  console.log('addFamilyMember');
   // make sure familyCode was provided
   let familyCode = formatString(forFamilyCode);
 

@@ -110,16 +110,10 @@ async function createTransactionsForUserIdFamilyIdEnvironmentReceipts(databaseCo
     const receipt = receipts[i];
     const transactionId = formatNumber(receipt.transaction_id);
 
-    console.log('comparing transactionId ', transactionId);
-
-    // Verify that the transaction isn't already stored in the database
+    // Verify that the transaction isn't already stored in the database, if it is then we skip it
     if (storedTransactions.some((storedTransaction) => formatNumber(storedTransaction.transactionId) === transactionId) === true) {
-      console.log(transactionId, ' already contained');
       continue;
     }
-
-    console.log(transactionId, ' not contained');
-
     promises.push(createInAppSubscriptionForUserIdFamilyIdTransactionInfo(
       databaseConnection,
       userId,
@@ -139,7 +133,7 @@ async function createTransactionsForUserIdFamilyIdEnvironmentReceipts(databaseCo
   }
 
   // Resolves all promises in the array.
-  // Even if one fails, does not return error (this can occur if a user has purchased a subscription, deleted their account, created a new account, then purchased a new subscription).
+  // Evein if one fails, does not return error (this can occur if a user has purchased a subscription, deleted their account, created a new account, then purchased a new subscription).
   // Returns array of JSON with promise status and value/error
   await Promise.allSettled(promises);
 
