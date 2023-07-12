@@ -2,6 +2,8 @@ const express = require('express');
 
 const userRouter = express.Router({ mergeParams: true });
 
+const { addUserIdToLogRequest } = require('../main/tools/logging/logRequest');
+
 const {
   getUser, createUser, updateUser, deleteUser,
 } = require('../controllers/controllerRoutes/user');
@@ -9,6 +11,8 @@ const {
 const { validateUserId } = require('../main/tools/format/validateId');
 
 userRouter.param('userId', validateUserId);
+// If userId is successfully validated, then we add it to the request
+userRouter.param('userId', addUserIdToLogRequest);
 
 // Route for an alert to send to the suer
 const { alertRouter } = require('./alert');

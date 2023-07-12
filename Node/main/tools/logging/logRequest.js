@@ -3,7 +3,7 @@ const { logServerError } = require('./logServerError');
 const { databaseConnectionForLogging } = require('../database/createDatabaseConnections');
 const { databaseQuery } = require('../database/databaseQuery');
 const { areAllDefined } = require('../format/validateDefined');
-const { formatString, formatNumber } = require('../format/formatObject');
+const { formatString, formatNumber, formatSHA256Hash } = require('../format/formatObject');
 const { ValidationError } = require('../general/errors');
 
 // Outputs request to the console and logs to database
@@ -47,4 +47,28 @@ async function logRequest(req, res, next) {
   return next();
 }
 
-module.exports = { logRequest };
+async function addUserIdToLogRequest(req, res, next) {
+  const requestId = formatNumber(req.requestId);
+  const userId = formatSHA256Hash(req.params.userId);
+
+  // We are going to be modifying a pre-existing requestId and the userId should exist if this function is invoked
+  if (areAllDefined(requestId, userId) === false) {
+    return next();
+  }
+
+  try {
+    await databaseQuery(
+      databaseConnectionForLogging,
+      'UPDATE previousRequests SET requestUserId = ? WHERE requestId = ?',
+      [userId, requestId],
+    );
+  }
+  catch (error) {
+    console.log('addUserIdToLogRequest failed', error);
+    logServerError('logRequest', error);
+  }
+
+  return next();
+}
+
+module.exports = { logRequest, addUserIdToLogRequest };
