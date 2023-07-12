@@ -158,9 +158,6 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
     // If notification provided a transactionId, then attempt to see if we have a transaction stored for that transactionId
     const storedTransaction = await getInAppSubscriptionForTransactionId(databaseConnection, transactionId);
 
-    console.log('storedTransaction', storedTransaction);
-    console.log('transactionInfo', transactionInfo);
-
     if (areAllDefined(storedTransaction)) {
     // The transaction already exists, so no need to create
 
@@ -256,8 +253,6 @@ async function createAppStoreServerNotificationForNotification(databaseConnectio
   if (areAllDefined(databaseConnection, notification, data, renewalInfo, transactionInfo) === false) {
     throw new ValidationError('databaseConnection or notification missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
-
-  console.log('createAppStoreServerNotificationForNotification renewalInfo', renewalInfo);
 
   // https://developer.apple.com/documentation/appstoreservernotifications/responsebodyv2decodedpayload
   // The in-app purchase event for which the App Store sent this version 2 notification.

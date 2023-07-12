@@ -83,7 +83,7 @@ async function addFamilyIdToLogRequest(req, res, next) {
     await databaseQuery(
       databaseConnectionForLogging,
       'UPDATE previousRequests SET requestFamilyId = ? WHERE requestId = ?',
-      [usefamilyIdrId, requestId],
+      [familyId, requestId],
     );
   }
   catch (error) {

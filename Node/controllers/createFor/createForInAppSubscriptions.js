@@ -115,9 +115,6 @@ async function createTransactionsForUserIdFamilyIdEnvironmentReceipts(databaseCo
       continue;
     }
 
-    console.log('createTransactionsForUserIdFamilyIdEnvironmentReceipts reciept');
-    console.log(receipt);
-
     promises.push(createInAppSubscriptionForUserIdFamilyIdTransactionInfo(
       databaseConnection,
       userId,
