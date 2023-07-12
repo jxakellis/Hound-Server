@@ -110,10 +110,15 @@ async function createTransactionsForUserIdFamilyIdEnvironmentReceipts(databaseCo
     const receipt = receipts[i];
     const transactionId = formatNumber(receipt.transaction_id);
 
+    console.log('comparing transactionId ', transactionId);
+
     // Verify that the transaction isn't already stored in the database
     if (storedTransactions.some((storedTransaction) => formatNumber(storedTransaction.transactionId) === transactionId) === true) {
+      console.log(transactionId, ' already contained');
       continue;
     }
+
+    console.log(transactionId, ' not contained');
 
     promises.push(createInAppSubscriptionForUserIdFamilyIdTransactionInfo(
       databaseConnection,
