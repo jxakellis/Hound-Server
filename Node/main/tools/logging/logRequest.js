@@ -64,11 +64,33 @@ async function addUserIdToLogRequest(req, res, next) {
     );
   }
   catch (error) {
-    console.log('addUserIdToLogRequest failed', error);
     logServerError('logRequest', error);
   }
 
   return next();
 }
 
-module.exports = { logRequest, addUserIdToLogRequest };
+async function addFamilyIdToLogRequest(req, res, next) {
+  const requestId = formatNumber(req.requestId);
+  const familyId = formatSHA256Hash(req.params.familyId);
+
+  // We are going to be modifying a pre-existing requestId and the userId should exist if this function is invoked
+  if (areAllDefined(requestId, familyId) === false) {
+    return next();
+  }
+
+  try {
+    await databaseQuery(
+      databaseConnectionForLogging,
+      'UPDATE previousRequests SET requestFamilyId = ? WHERE requestId = ?',
+      [usefamilyIdrId, requestId],
+    );
+  }
+  catch (error) {
+    logServerError('logRequest', error);
+  }
+
+  return next();
+}
+
+module.exports = { logRequest, addUserIdToLogRequest, addFamilyIdToLogRequest };

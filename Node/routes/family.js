@@ -2,6 +2,8 @@ const express = require('express');
 
 const familyRouter = express.Router({ mergeParams: true });
 
+const { addFamilyIdToLogRequest } = require('../main/tools/logging/logRequest');
+
 const {
   getFamily, createFamily, updateFamily, deleteFamily,
 } = require('../controllers/controllerRoutes/family');
@@ -9,6 +11,8 @@ const {
 const { validateFamilyId } = require('../main/tools/format/validateId');
 
 familyRouter.param('familyId', validateFamilyId);
+// If familyId is successfully validated, then we add it to the request
+familyRouter.param('familyId', addFamilyIdToLogRequest);
 
 const { attachActiveSubscription } = require('../main/tools/format/validateSubscription');
 
