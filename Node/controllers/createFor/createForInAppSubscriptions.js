@@ -138,8 +138,10 @@ async function createTransactionsForUserIdFamilyIdEnvironmentReceipts(databaseCo
     ));
   }
 
-  // Resolves all promises in the array. Even if one fails, does not return error. Returns array of JSON with promise status and value/error
-  await Promise.all(promises);
+  // Resolves all promises in the array.
+  // Even if one fails, does not return error (this can occur if a user has purchased a subscription, deleted their account, created a new account, then purchased a new subscription).
+  // Returns array of JSON with promise status and value/error
+  await Promise.allSettled(promises);
 
   // now all of the receipts returned by apple (who's productId's match one that is known to us) are stored in our database
   await reassignActiveInAppSubscriptionForUserIdFamilyId(databaseConnection, userId, familyId);
