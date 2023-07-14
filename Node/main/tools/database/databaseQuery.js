@@ -19,6 +19,8 @@ const databaseQuery = (forDatabaseConnection, forSQLString, forSQLVariables) => 
     reject(new ValidationError('SQLString missing for databaseQuery', global.CONSTANT.ERROR.VALUE.MISSING));
   }
 
+  console.log(SQLString);
+
   const SQLVariables = areAllDefined(forSQLVariables) ? formatArray(forSQLVariables) : [];
 
   databaseConnection.query(
