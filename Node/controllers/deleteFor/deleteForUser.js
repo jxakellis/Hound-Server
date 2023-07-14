@@ -33,13 +33,13 @@ async function deleteUserForUserId(databaseConnection, userId) {
   const promises = [
     databaseQuery(
       databaseConnection,
-      `DELETE FROM users u
+      `DELETE FROM users
       WHERE userId = ?`,
       [userId],
     ),
     databaseQuery(
       databaseConnection,
-      `DELETE FROM userConfiguration uc
+      `DELETE FROM userConfiguration
       WHERE userId = ?`,
       [userId],
     ),

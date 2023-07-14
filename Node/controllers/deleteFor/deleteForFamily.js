@@ -105,14 +105,14 @@ async function deleteFamily(databaseConnection, familyId, familyActiveSubscripti
   promises = [
     databaseQuery(
       databaseConnection,
-      `DELETE FROM families f
+      `DELETE FROM families
       WHERE familyId = ?`,
       [familyId],
     ),
     // deletes all users from the family (should only be one)
     databaseQuery(
       databaseConnection,
-      `DELETE FROM familyMembers fm
+      `DELETE FROM familyMembers
       WHERE familyId = ?`,
       [familyId],
     ),
@@ -154,7 +154,7 @@ async function leaveFamily(databaseConnection, userId, familyId) {
   // deletes user from family
   await databaseQuery(
     databaseConnection,
-    `DELETE FROM familyMembers fm
+    `DELETE FROM familyMembers
     WHERE userId = ?`,
     [userId],
   );
@@ -196,7 +196,7 @@ async function kickFamilyMemberForUserIdFamilyId(databaseConnection, userId, fam
   // deletes user from family
   await databaseQuery(
     databaseConnection,
-    `DELETE FROM familyMembers fm
+    `DELETE FROM familyMembers
     WHERE userId = ?`,
     [kickedUserId],
   );

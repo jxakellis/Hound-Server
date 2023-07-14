@@ -24,7 +24,7 @@ const configureServerForRequests = (server) => new Promise((resolve) => {
       // Keep the latest DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES previousRequests, then delete any entries that are older
       databaseQuery(
         databaseConnectionForGeneral,
-        `DELETE pReq
+        `DELETE pr
         FROM previousRequests pr
         JOIN (SELECT requestId FROM previousRequests pr ORDER BY requestDate DESC LIMIT 1 OFFSET ?) prl ON pr.requestId < prl.requestId`,
         [global.CONSTANT.SERVER.DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES],
@@ -36,7 +36,7 @@ const configureServerForRequests = (server) => new Promise((resolve) => {
       // Keep the latest DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES previousResponses, then delete any entries that are older
       databaseQuery(
         databaseConnectionForGeneral,
-        `DELETE pRes
+        `DELETE pr
         FROM previousResponses pr
         JOIN (SELECT requestId FROM previousRequests pr ORDER BY requestDate DESC LIMIT 1 OFFSET ?) prl ON pr.requestId < prl.requestId`,
         [global.CONSTANT.SERVER.DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES],
