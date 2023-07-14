@@ -17,6 +17,9 @@ async function deleteUserForUserId(databaseConnection, userId) {
     throw new ValidationError('databaseConnection or userId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
+  // We need to get the familyId for the user first before we try to delete them, otherwise the fucntion will always return null
+  const familyId = await getFamilyIdForUserId(databaseConnection, userId);
+
   // We first delete the user from the database first, as this is easily reversible
   // keep record of user being deleted, do this first so the delete statement doesn't mess with this query
   await databaseQuery(
@@ -45,8 +48,6 @@ async function deleteUserForUserId(databaseConnection, userId) {
   ];
 
   await Promise.all(promises);
-
-  const familyId = await getFamilyIdForUserId(databaseConnection, userId);
 
   // The user is in a family, either attempt to delete the family or have the user leave the family
   if (areAllDefined(familyId) === true) {
