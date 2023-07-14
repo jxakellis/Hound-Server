@@ -24,7 +24,7 @@ async function getUserForUserIdentifier(databaseConnection, userIdentifier) {
   }
 
   // userIdentifier method of finding corresponding user(s)
-  // have to specifically reference the columns, otherwise familyMembers.userId will override users.userId.
+  // have to specifically reference the columns, otherwise fm.userId will override u.userId.
   // Therefore setting userId to null (if there is no family member) even though the userId isn't null.
   let [userInformation] = await databaseQuery(
     databaseConnection,
@@ -76,7 +76,7 @@ async function getUserForUserApplicationUsername(databaseConnection, userApplica
     throw new ValidationError('databaseConnection or userApplicationUsername missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
-  // have to specifically reference the columns, otherwise familyMembers.userId will override users.userId.
+  // have to specifically reference the columns, otherwise fm.userId will override u.userId.
   // Therefore setting userId to null (if there is no family member) even though the userId isn't null.
   const [userInformation] = await databaseQuery(
     databaseConnection,

@@ -47,7 +47,7 @@ async function deleteFamily(databaseConnection, familyId, familyActiveSubscripti
   const familyMembers = await databaseQuery(
     databaseConnection,
     `SELECT 1
-    FROM familyMembers
+    FROM familyMembers fm
     WHERE familyId = ?
     LIMIT 18446744073709551615`,
     [familyId],
@@ -84,7 +84,7 @@ async function deleteFamily(databaseConnection, familyId, familyActiveSubscripti
       `INSERT INTO previousFamilies
       (familyId, userId, familyCode, familyIsLocked, familyAccountCreationDate, familyAccountDeletionDate)
       SELECT familyId, userId, familyCode, familyIsLocked, familyAccountCreationDate, ?
-      FROM families 
+      FROM families f
       WHERE familyId = ?`,
       [new Date(), familyId],
     ),
@@ -105,14 +105,14 @@ async function deleteFamily(databaseConnection, familyId, familyActiveSubscripti
   promises = [
     databaseQuery(
       databaseConnection,
-      `DELETE FROM families
+      `DELETE FROM families f
       WHERE familyId = ?`,
       [familyId],
     ),
     // deletes all users from the family (should only be one)
     databaseQuery(
       databaseConnection,
-      `DELETE FROM familyMembers
+      `DELETE FROM familyMembers fm
       WHERE familyId = ?`,
       [familyId],
     ),
@@ -154,7 +154,7 @@ async function leaveFamily(databaseConnection, userId, familyId) {
   // deletes user from family
   await databaseQuery(
     databaseConnection,
-    `DELETE FROM familyMembers
+    `DELETE FROM familyMembers fm
     WHERE userId = ?`,
     [userId],
   );
@@ -196,7 +196,7 @@ async function kickFamilyMemberForUserIdFamilyId(databaseConnection, userId, fam
   // deletes user from family
   await databaseQuery(
     databaseConnection,
-    `DELETE FROM familyMembers
+    `DELETE FROM familyMembers fm
     WHERE userId = ?`,
     [kickedUserId],
   );

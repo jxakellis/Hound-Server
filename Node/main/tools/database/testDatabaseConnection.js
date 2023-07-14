@@ -12,7 +12,7 @@ async function testDatabaseConnection(databaseConnection) {
   await databaseQuery(
     databaseConnection,
     `SELECT 1
-    FROM users
+    FROM users u
     LIMIT 1`,
   );
   serverLogger.info(`databaseConnection with thread id ${databaseConnection.threadId} verified as connected`);

@@ -138,7 +138,7 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
     const [transaction] = await databaseQuery(
       databaseConnection,
       `SELECT userId
-      FROM transactions
+      FROM transactions t
       WHERE transactionId = ? OR originalTransactionId = ?
       ORDER BY purchaseDate DESC
       LIMIT 1`,

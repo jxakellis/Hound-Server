@@ -17,7 +17,7 @@ async function getAllFamilyInformationForFamilyId(databaseConnection, familyId, 
     databaseQuery(
       databaseConnection,
       `SELECT userId, familyCode, familyIsLocked
-      FROM families
+      FROM families f
       WHERE familyId = ?
       LIMIT 1`,
       [familyId],
@@ -69,7 +69,7 @@ async function getAllPreviousFamilyMembersForFamilyId(databaseConnection, family
   const result = await databaseQuery(
     databaseConnection,
     `SELECT userId, userFirstName, userLastName
-    FROM previousFamilyMembers
+    FROM previousFamilyMembers pfm
     WHERE familyId = ?
     ORDER BY familyMemberLeaveDate DESC
     LIMIT 18446744073709551615`,
@@ -107,7 +107,7 @@ async function getFamilyMemberUserIdForUserId(databaseConnection, userId) {
   const result = await databaseQuery(
     databaseConnection,
     `SELECT userId
-    FROM familyMembers
+    FROM familyMembers fm
     WHERE userId = ?
     LIMIT 1`,
     [userId],
@@ -128,7 +128,7 @@ async function getFamilyHeadUserIdForFamilyId(databaseConnection, familyId) {
   const [result] = await databaseQuery(
     databaseConnection,
     `SELECT userId
-    FROM families
+    FROM families f
     WHERE familyId = ?
     LIMIT 1`,
     [familyId],
@@ -150,7 +150,7 @@ async function getFamilyIdForUserId(databaseConnection, userId) {
     throw new ValidationError('databaseConnection or userId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
-  // have to specifically reference the columns, otherwise familyMembers.userId will override users.userId.
+  // have to specifically reference the columns, otherwise fm.userId will override u.userId.
   // Therefore setting userId to null (if there is no family member) even though the userId isn't null.
   const [result] = await databaseQuery(
     databaseConnection,

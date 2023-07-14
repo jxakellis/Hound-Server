@@ -69,7 +69,7 @@ async function sendAPNNotificationForFamily(familyId, reminderId) {
       databaseConnectionForAlarms,
       `SELECT d.dogName, dr.reminderExecutionDate, dr.reminderAction, dr.reminderCustomActionName, dr.reminderLastModified, dr.snoozeExecutionInterval
       FROM dogReminders dr
-      JOIN dogs ON dr.dogId = d.dogId
+      JOIN dogs d ON dr.dogId = d.dogId
       WHERE d.dogIsDeleted = 0 AND dr.reminderIsDeleted = 0 AND dr.reminderId = ? AND dr.reminderExecutionDate IS NOT NULL AND d.dogId IS NOT NULL
       LIMIT 18446744073709551615`,
       [reminderId],

@@ -19,7 +19,7 @@ async function getActiveInAppSubscriptionForFamilyId(databaseConnection, familyI
   let [familySubscription] = await databaseQuery(
     databaseConnection,
     `SELECT ${transactionsColumns}
-    FROM transactions
+    FROM transactions t
     WHERE familyId = ? AND expirationDate >= ? AND isRevoked = 0
     ORDER BY expirationDate DESC, purchaseDate DESC, transactionId DESC
     LIMIT 1`,
@@ -52,7 +52,7 @@ async function getAllInAppSubscriptionsForFamilyId(databaseConnection, familyId)
   const transactionsHistory = await databaseQuery(
     databaseConnection,
     `SELECT ${transactionsColumns}
-    FROM transactions
+    FROM transactions t
     WHERE familyId = ? ORDER BY expirationDate DESC, purchaseDate DESC
     LIMIT 18446744073709551615`,
     [familyId],
@@ -82,7 +82,7 @@ async function getInAppSubscriptionForTransactionId(databaseConnection, forTrans
   const [result] = await databaseQuery(
     databaseConnection,
     `SELECT ${transactionsColumns}
-    FROM transactions
+    FROM transactions t
     WHERE transactionId = ?
     LIMIT 1`,
     [transactionId],

@@ -18,7 +18,7 @@ async function createReminderForDogIdReminder(databaseConnection, dogId, reminde
   const reminders = await databaseQuery(
     databaseConnection,
     `SELECT 1
-    FROM dogReminders
+    FROM dogReminders dr
     WHERE reminderIsDeleted = 0 AND dogId = ?
     LIMIT ?`,
     [dogId, global.CONSTANT.LIMIT.NUMBER_OF_REMINDERS_PER_DOG],

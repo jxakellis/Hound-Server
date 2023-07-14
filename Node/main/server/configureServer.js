@@ -25,8 +25,8 @@ const configureServerForRequests = (server) => new Promise((resolve) => {
       databaseQuery(
         databaseConnectionForGeneral,
         `DELETE pReq
-        FROM previousRequests pReq
-        JOIN (SELECT requestId FROM previousRequests ORDER BY requestDate DESC LIMIT 1 OFFSET ?) pReqLimit ON pReq.requestId < pReqLimit.requestId`,
+        FROM previousRequests pr
+        JOIN (SELECT requestId FROM previousRequests pr ORDER BY requestDate DESC LIMIT 1 OFFSET ?) prl ON pr.requestId < prl.requestId`,
         [global.CONSTANT.SERVER.DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES],
       )
         .catch((error) => {
@@ -37,8 +37,8 @@ const configureServerForRequests = (server) => new Promise((resolve) => {
       databaseQuery(
         databaseConnectionForGeneral,
         `DELETE pRes
-        FROM previousResponses pRes
-        JOIN (SELECT requestId FROM previousRequests ORDER BY requestDate DESC LIMIT 1 OFFSET ?) pReqLimit ON pRes.requestId < pReqLimit.requestId`,
+        FROM previousResponses pr
+        JOIN (SELECT requestId FROM previousRequests pr ORDER BY requestDate DESC LIMIT 1 OFFSET ?) prl ON pr.requestId < prl.requestId`,
         [global.CONSTANT.SERVER.DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES],
       )
         .catch((error) => {

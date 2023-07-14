@@ -48,7 +48,7 @@ async function getAllFamilyMemberTokens(familyId) {
   // retrieve userNotificationToken that fit the criteria
   const result = await databaseQuery(
     databaseConnectionForGeneral,
-    `SELECT users.userNotificationToken, ${userConfigurationColumns}
+    `SELECT u.userNotificationToken, ${userConfigurationColumns}
     FROM users u
     JOIN userConfiguration uc ON u.userId = uc.userId
     JOIN familyMembers fm ON u.userId = fm.userId
@@ -72,7 +72,7 @@ async function getOtherFamilyMemberTokens(userId, familyId) {
   // retrieve userNotificationToken that fit the criteria
   const result = await databaseQuery(
     databaseConnectionForGeneral,
-    `SELECT users.userNotificationToken, ${userConfigurationColumns}
+    `SELECT u.userNotificationToken, ${userConfigurationColumns}
     FROM users u
     JOIN userConfiguration uc ON u.userId = uc.userId
     JOIN familyMembers fm ON u.userId = fm.userId

@@ -47,7 +47,7 @@ async function deleteAllDogsForFamilyId(databaseConnection, familyId) {
   const dogIds = await databaseQuery(
     databaseConnection,
     `SELECT dogId
-    FROM dogs
+    FROM dogs d
     WHERE dogIsDeleted = 0 AND familyId = ?
     LIMIT 18446744073709551615`,
     [familyId],

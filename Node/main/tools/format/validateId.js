@@ -52,7 +52,7 @@ async function validateUserId(req, res, next) {
     let [result] = await databaseQuery(
       req.databaseConnection,
       `SELECT 1
-      FROM users
+      FROM users u
       WHERE userId = ? AND userIdentifier = ?
       LIMIT 1`,
       [userId, userIdentifier],
@@ -67,7 +67,7 @@ async function validateUserId(req, res, next) {
       [result] = await databaseQuery(
         req.databaseConnection,
         `SELECT 1
-        FROM users
+        FROM users u
         WHERE userId = ? AND userIdentifier = ?
         LIMIT 1`,
         [userId, hashedUserIdentifier],
@@ -114,7 +114,7 @@ async function validateFamilyId(req, res, next) {
     const result = await databaseQuery(
       req.databaseConnection,
       `SELECT 1
-      FROM familyMembers
+      FROM familyMembers fm
       WHERE userId = ? AND familyId = ?
       LIMIT 1`,
       [userId, familyId],
@@ -157,8 +157,9 @@ async function validateDogId(req, res, next) {
     const [dog] = await databaseQuery(
       req.databaseConnection,
       `SELECT dogIsDeleted
-      FROM dogs JOIN families ON dogs.familyId = families.familyId
-      WHERE dogs.familyId = ? AND dogs.dogId = ?
+      FROM dogs d
+      JOIN families f ON d.familyId = f.familyId
+      WHERE d.familyId = ? AND d.dogId = ?
       LIMIT 1`,
       [familyId, dogId],
     );
@@ -202,7 +203,7 @@ async function validateLogId(req, res, next) {
   // query database to find out if user has permission for that logId
   try {
     // finds what logId (s) the user has linked to their dogId
-    // JOIN dogs as log has to have dog still attached to it
+    // JOIN dogs d as log has to have dog still attached to it
     const [log] = await databaseQuery(
       req.databaseConnection,
       `SELECT logIsDeleted
@@ -252,7 +253,7 @@ async function validateParamsReminderId(req, res, next) {
   // query database to find out if user has permission for that reminderId
   try {
     // finds what reminderId (s) the user has linked to their dogId
-    // JOIN dogs as reminder must have dog attached to it
+    // JOIN dogs d as reminder must have dog attached to it
     const [reminder] = await databaseQuery(
       req.databaseConnection,
       `SELECT reminderIsDeleted
@@ -310,7 +311,8 @@ async function validateBodyReminderId(req, res, next) {
       req.databaseConnection,
       `SELECT reminderIsDeleted
       FROM dogReminders dr
-      JOIN dogs d ON dr.dogId = d.dogId WHERE dr.dogId = ? AND dr.reminderId = ?
+      JOIN dogs d ON dr.dogId = d.dogId
+      WHERE dr.dogId = ? AND dr.reminderId = ?
       LIMIT 1`,
       [dogId, reminderId],
     ));

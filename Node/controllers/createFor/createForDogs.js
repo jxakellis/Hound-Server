@@ -23,7 +23,7 @@ async function createDogForFamilyId(databaseConnection, familyId, familyActiveSu
   const dogs = await databaseQuery(
     databaseConnection,
     `SELECT 1
-    FROM dogs
+    FROM dogs d
     WHERE dogIsDeleted = 0 AND familyId = ?
     LIMIT 18446744073709551615`,
     [familyId],

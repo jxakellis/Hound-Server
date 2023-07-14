@@ -101,7 +101,7 @@ async function createTransactionsForUserIdFamilyIdEnvironmentReceipts(databaseCo
   const storedTransactions = await databaseQuery(
     databaseConnection,
     `SELECT transactionId
-    FROM transactions
+    FROM transactions t
     WHERE userId = ?
     LIMIT 18446744073709551615`,
     [userId],

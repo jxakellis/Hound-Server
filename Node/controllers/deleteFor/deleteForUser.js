@@ -25,7 +25,7 @@ async function deleteUserForUserId(databaseConnection, userId) {
     `INSERT INTO previousUsers
     (userId, userIdentifier, userApplicationUsername, userEmail, userFirstName, userLastName, userNotificationToken, userAccountCreationDate, userAccountDeletionDate)
     SELECT userId, userIdentifier, userApplicationUsername, userEmail, userFirstName, userLastName, userNotificationToken, userAccountCreationDate, ?
-    FROM users 
+    FROM users  u
     WHERE userId = ?`,
     [new Date(), userId],
   );
@@ -33,13 +33,13 @@ async function deleteUserForUserId(databaseConnection, userId) {
   const promises = [
     databaseQuery(
       databaseConnection,
-      `DELETE FROM users
+      `DELETE FROM users u
       WHERE userId = ?`,
       [userId],
     ),
     databaseQuery(
       databaseConnection,
-      `DELETE FROM userConfiguration
+      `DELETE FROM userConfiguration uc
       WHERE userId = ?`,
       [userId],
     ),

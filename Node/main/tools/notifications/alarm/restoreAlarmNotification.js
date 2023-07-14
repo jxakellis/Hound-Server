@@ -22,7 +22,8 @@ async function restoreAlarmNotificationsForAllFamilies() {
     const remindersWithInfo = await databaseQuery(
       databaseConnectionForAlarms,
       `SELECT d.familyId, dr.reminderId, dr.reminderExecutionDate 
-      FROM dogReminders JOIN dogs ON d.dogId = dr.dogId
+      FROM dogReminders dr
+      JOIN dogs d ON d.dogId = dr.dogId
       WHERE d.dogIsDeleted = 0 AND dr.reminderIsDeleted = 0 AND dr.reminderExecutionDate IS NOT NULL AND dr.reminderExecutionDate > ?
       LIMIT 18446744073709551615`,
       [new Date()],

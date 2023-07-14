@@ -36,7 +36,7 @@ async function generateVerifiedFamilyCode(databaseConnection) {
     const result = await databaseQuery(
       databaseConnection,
       `SELECT 1
-      FROM families
+      FROM families f
       WHERE familyCode = ?
       LIMIT 1`,
       [potentialFamilyCode],

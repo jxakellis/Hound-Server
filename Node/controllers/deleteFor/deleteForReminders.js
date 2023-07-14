@@ -65,7 +65,7 @@ async function deleteAllRemindersForFamilyIdDogId(databaseConnection, familyId, 
     databaseQuery(
       databaseConnection,
       `SELECT reminderId
-      FROM dogReminders
+      FROM dogReminders dr
       WHERE reminderIsDeleted = 0 AND dogId = ?
       LIMIT 18446744073709551615`,
       [dogId],

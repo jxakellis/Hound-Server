@@ -21,7 +21,7 @@ async function getLogForLogId(databaseConnection, logId, forUserConfigurationPre
     ? await databaseQuery(
       databaseConnection,
       `SELECT ${dogLogsColumns}
-      FROM dogLogs
+      FROM dogLogs dl
       WHERE logLastModified >= ? AND logId = ?
       LIMIT 1`,
       [userConfigurationPreviousDogManagerSynchronization, logId],
@@ -29,7 +29,7 @@ async function getLogForLogId(databaseConnection, logId, forUserConfigurationPre
     : await databaseQuery(
       databaseConnection,
       `SELECT ${dogLogsColumns}
-      FROM dogLogs
+      FROM dogLogs dl
       WHERE logId = ?
       LIMIT 1`,
       [logId],
@@ -53,7 +53,7 @@ async function getAllLogsForDogId(databaseConnection, dogId, forUserConfiguratio
     ? await databaseQuery(
       databaseConnection,
       `SELECT ${dogLogsColumns}
-      FROM dogLogs
+      FROM dogLogs dl
       WHERE logLastModified >= ? AND dogId = ?
       LIMIT 18446744073709551615`,
       [userConfigurationPreviousDogManagerSynchronization, dogId],
@@ -61,7 +61,7 @@ async function getAllLogsForDogId(databaseConnection, dogId, forUserConfiguratio
     : await databaseQuery(
       databaseConnection,
       `SELECT ${dogLogsColumns}
-      FROM dogLogs
+      FROM dogLogs dl
       WHERE dogId = ?
       LIMIT 18446744073709551615`,
       [dogId],

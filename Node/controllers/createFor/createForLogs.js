@@ -21,7 +21,7 @@ async function createLogForUserIdDogId(databaseConnection, userId, dogId, forLog
   const logs = await databaseQuery(
     databaseConnection,
     `SELECT 1
-    FROM dogLogs
+    FROM dogLogs dl
     WHERE logIsDeleted = 0 AND dogId = ?
     LIMIT ?`,
     [dogId, global.CONSTANT.LIMIT.NUMBER_OF_LOGS_PER_DOG],

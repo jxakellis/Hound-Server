@@ -50,7 +50,7 @@ async function addFamilyMember(databaseConnection, userId, forFamilyCode) {
   const [family] = await databaseQuery(
     databaseConnection,
     `SELECT familyId, familyIsLocked
-    FROM families
+    FROM families f
     WHERE familyCode = ?
     LIMIT 1`,
     [familyCode],
@@ -110,7 +110,7 @@ async function addFamilyMember(databaseConnection, userId, forFamilyCode) {
       SELECT transactionId, originalTransactionId, userId, familyId, environment, productId, 
       subscriptionGroupIdentifier, purchaseDate, expirationDate, numberOfFamilyMembers, numberOfDogs, 
       quantity, webOrderLineItemId, inAppOwnershipType, isAutoRenewing, isRevoked, offerCode
-      FROM transactions
+      FROM transactions t
       WHERE familyId = ?`,
       [familyId],
     );

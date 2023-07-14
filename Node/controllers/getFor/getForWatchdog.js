@@ -16,19 +16,19 @@ async function getDatabaseStatusForWatchdog(databaseConnection) {
     databaseQuery(
       databaseConnection,
       `SELECT 1
-      FROM users
+      FROM users u
       LIMIT 1`,
     ),
     databaseQuery(
       databaseConnection,
       `SELECT 1
-      FROM dogs
+      FROM dogs d
       LIMIT 1`,
     ),
     databaseQuery(
       databaseConnection,
       `SELECT 1
-      FROM transactions
+      FROM transactions t
       LIMIT 1`,
     ),
   ];

@@ -22,7 +22,7 @@ async function getAppStoreServerNotificationForNotificationUUID(databaseConnecti
     transactionInfoQuantity, transactionInfoRevocationDate, transactionInfoRevocationReason, 
     transactionInfoSignedDate, transactionInfoSubscriptionGroupIdentifier, transactionInfoTransactionId, 
     transactionInfoType, transactionInfoWebOrderLineItemId
-    FROM appStoreServerNotifications 
+    FROM appStoreServerNotifications assn
     WHERE notificationUUID = ? 
     LIMIT 1`,
     [notificationUUID],
