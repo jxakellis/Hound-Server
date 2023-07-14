@@ -2,12 +2,8 @@ const { databaseQuery } = require('../../main/tools/database/databaseQuery');
 const { areAllDefined } = require('../../main/tools/format/validateDefined');
 const { ValidationError } = require('../../main/tools/general/errors');
 
-const usersColumns = 'users.userId, users.userFirstName, users.userLastName';
-const previousFamilyMembersColumns = 'previousFamilyMembers.userId, previousFamilyMembers.userFirstName, previousFamilyMembers.userLastName';
-const familiesColumns = 'userId, familyCode, familyIsLocked';
-
 /**
- *  If the query is successful, returns the userId, familyCode, familyIsLocked, and familyMembers for the familyId.
+ *  If the query is successful, returns the userId, familyCode, familyIsLocked, familyMembers, previousFamilyMembers, and familyActiveSubscription for the familyId.
  *  If a problem is encountered, creates and throws custom error
  */
 async function getAllFamilyInformationForFamilyId(databaseConnection, familyId, familyActiveSubscription) {
@@ -20,7 +16,7 @@ async function getAllFamilyInformationForFamilyId(databaseConnection, familyId, 
   const promises = [
     databaseQuery(
       databaseConnection,
-      `SELECT ${familiesColumns} FROM families WHERE familyId = ? LIMIT 1`,
+      'SELECT userId, familyCode, familyIsLocked FROM families WHERE familyId = ? LIMIT 1',
       [familyId],
     ),
     // get family members
@@ -49,7 +45,7 @@ async function getAllFamilyMembersForFamilyId(databaseConnection, familyId) {
   // get family members
   const result = await databaseQuery(
     databaseConnection,
-    `SELECT ${usersColumns} FROM familyMembers LEFT JOIN users ON familyMembers.userId = users.userId WHERE familyMembers.familyId = ? LIMIT 18446744073709551615`,
+    'SELECT u.userId, u.userFirstName, u.userLastName FROM familyMembers fm LEFT JOIN users u ON fm.userId = u.userId WHERE fm.familyId = ? LIMIT 18446744073709551615',
     [familyId],
   );
 
@@ -65,7 +61,7 @@ async function getAllPreviousFamilyMembersForFamilyId(databaseConnection, family
   // get family members
   const result = await databaseQuery(
     databaseConnection,
-    `SELECT ${previousFamilyMembersColumns} FROM previousFamilyMembers WHERE familyId = ? ORDER BY familyMemberLeaveDate DESC LIMIT 18446744073709551615`,
+    'SELECT userId, userFirstName, userLastName FROM previousFamilyMembers WHERE familyId = ? ORDER BY familyMemberLeaveDate DESC LIMIT 18446744073709551615',
     [familyId],
   );
 
@@ -88,7 +84,7 @@ async function getAllPreviousFamilyMembersForFamilyId(databaseConnection, family
 }
 
 /**
- *  If the query is successful, returns the family member for the userId.
+ *  If the query is successful, returns the family member for the userId. This function is used to determine if a user is in a family
  *  If a problem is encountered, creates and throws custom error
  */
 async function getFamilyMemberUserIdForUserId(databaseConnection, userId) {
@@ -128,6 +124,30 @@ async function getFamilyHeadUserIdForFamilyId(databaseConnection, familyId) {
   return result.userId;
 }
 
+/**
+ * If the query is successful, returns the familyId for the userId.
+ *  If a problem is encountered, creates and throws custom error
+ */
+async function getFamilyIdForUserId(databaseConnection, userId) {
+  if (areAllDefined(databaseConnection, userId) === false) {
+    throw new ValidationError('databaseConnection or userId missing', global.CONSTANT.ERROR.VALUE.MISSING);
+  }
+
+  // have to specifically reference the columns, otherwise familyMembers.userId will override users.userId.
+  // Therefore setting userId to null (if there is no family member) even though the userId isn't null.
+  const [result] = await databaseQuery(
+    databaseConnection,
+    'SELECT fm.familyId FROM users u LEFT JOIN familyMembers fm ON u.userId = fm.userId WHERE u.userId = ? LIMIT 1',
+    [userId],
+  );
+
+  if (areAllDefined(result) === false) {
+    return undefined;
+  }
+
+  return result.familyId;
+}
+
 module.exports = {
-  getAllFamilyInformationForFamilyId, getAllFamilyMembersForFamilyId, getFamilyMemberUserIdForUserId, getFamilyHeadUserIdForFamilyId,
+  getAllFamilyInformationForFamilyId, getAllFamilyMembersForFamilyId, getFamilyMemberUserIdForUserId, getFamilyHeadUserIdForFamilyId, getFamilyIdForUserId,
 };

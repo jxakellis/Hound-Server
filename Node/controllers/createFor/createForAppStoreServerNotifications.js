@@ -6,7 +6,8 @@ const {
 const { ValidationError } = require('../../main/tools/general/errors');
 const { requestLogger } = require('../../main/tools/logging/loggers');
 
-const { getUserForUserId, getUserForUserApplicationUsername } = require('../getFor/getForUser');
+const { getUserForUserApplicationUsername } = require('../getFor/getForUser');
+const { getFamilyIdForUserId } = require('../getFor/getForFamily');
 const { getAppStoreServerNotificationForNotificationUUID } = require('../getFor/getForAppStoreServerNotifications');
 const { getInAppSubscriptionForTransactionId } = require('../getFor/getForInAppSubscriptions');
 
@@ -147,7 +148,7 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
     throw new ValidationError('userId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
-  const { familyId } = await getUserForUserId(databaseConnection, userId);
+  const familyId = await getFamilyIdForUserId(databaseConnection, userId);
 
   // Check if a new transaction was created, warrenting an insert into the transactions table
   if (notificationType === 'DID_CHANGE_RENEWAL_PREF' || notificationType === 'DID_RENEW' || notificationType === 'OFFER_REDEEMED' || notificationType === 'SUBSCRIBED') {

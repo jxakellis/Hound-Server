@@ -24,7 +24,7 @@ const configureServerForRequests = (server) => new Promise((resolve) => {
       // Keep the latest DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES previousRequests, then delete any entries that are older
       databaseQuery(
         databaseConnectionForGeneral,
-        'DELETE pReq FROM previousRequests AS pReq JOIN (SELECT requestId FROM previousRequests ORDER BY requestDate DESC LIMIT 1 OFFSET ?) as pReqLimit ON pReq.requestId < pReqLimit.requestId',
+        'DELETE pReq FROM previousRequests pReq JOIN (SELECT requestId FROM previousRequests ORDER BY requestDate DESC LIMIT 1 OFFSET ?) pReqLimit ON pReq.requestId < pReqLimit.requestId',
         [global.CONSTANT.SERVER.DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES],
       )
         .catch((error) => {
@@ -34,7 +34,7 @@ const configureServerForRequests = (server) => new Promise((resolve) => {
       // Keep the latest DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES previousResponses, then delete any entries that are older
       databaseQuery(
         databaseConnectionForGeneral,
-        'DELETE pRes FROM previousResponses AS pRes JOIN (SELECT requestId FROM previousRequests ORDER BY requestDate DESC LIMIT 1 OFFSET ?) as pReqLimit ON pRes.requestId < pReqLimit.requestId',
+        'DELETE pRes FROM previousResponses pRes JOIN (SELECT requestId FROM previousRequests ORDER BY requestDate DESC LIMIT 1 OFFSET ?) pReqLimit ON pRes.requestId < pReqLimit.requestId',
         [global.CONSTANT.SERVER.DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES],
       )
         .catch((error) => {

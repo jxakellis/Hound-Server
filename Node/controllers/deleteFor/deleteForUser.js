@@ -1,9 +1,8 @@
 const { ValidationError } = require('../../main/tools/general/errors');
 const { databaseQuery } = require('../../main/tools/database/databaseQuery');
 const { areAllDefined } = require('../../main/tools/format/validateDefined');
-const { formatSHA256Hash } = require('../../main/tools/format/formatObject');
 
-const { getUserForUserId } = require('../getFor/getForUser');
+const { getFamilyIdForUserId } = require('../getFor/getForFamily');
 
 const { getActiveInAppSubscriptionForFamilyId } = require('../getFor/getForInAppSubscriptions');
 const { deleteFamilyLeaveFamilyForUserIdFamilyId } = require('./deleteForFamily');
@@ -18,21 +17,24 @@ async function deleteUserForUserId(databaseConnection, userId) {
     throw new ValidationError('databaseConnection or userId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
-  // Query the userId to find out if they are in a family
-  const userInformation = await getUserForUserId(databaseConnection, userId);
-
-  if (areAllDefined(userInformation) === false) {
-    throw new ValidationError('No user found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.USER);
-  }
-
   // We first delete the user from the database first, as this is easily reversible
-  await databaseQuery(
-    databaseConnection,
-    'DELETE FROM users WHERE userId = ?',
-    [userId],
-  );
+  // TO DO NOW insert record into previousUsers of user deletion
+  const promises = [
+    databaseQuery(
+      databaseConnection,
+      'DELETE FROM users WHERE userId = ?',
+      [userId],
+    ),
+    databaseQuery(
+      databaseConnection,
+      'DELETE FROM userConfiguration WHERE userId = ?',
+      [userId],
+    ),
+  ];
 
-  const familyId = formatSHA256Hash(userInformation.familyId);
+  await Promise.all(promises);
+
+  const familyId = await getFamilyIdForUserId(databaseConnection, userId);
 
   // The user is in a family, either attempt to delete the family or have the user leave the family
   if (areAllDefined(familyId) === true) {

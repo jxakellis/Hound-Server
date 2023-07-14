@@ -24,29 +24,6 @@ const userInformationColumns = `${userColumns}, familyMembers.familyId, ${userCo
 const userNameColumns = 'users.userFirstName, users.userLastName';
 
 /**
- * If the query is successful, returns the user for the userId.
- *  If a problem is encountered, creates and throws custom error
- */
-async function getUserForUserId(databaseConnection, userId) {
-  if (areAllDefined(databaseConnection, userId) === false) {
-    throw new ValidationError('databaseConnection or userId missing', global.CONSTANT.ERROR.VALUE.MISSING);
-  }
-
-  // have to specifically reference the columns, otherwise familyMembers.userId will override users.userId.
-  // Therefore setting userId to null (if there is no family member) even though the userId isn't null.
-  const [userInformation] = await databaseQuery(
-    databaseConnection,
-    `SELECT ${userInformationColumns} \
-FROM users JOIN userConfiguration ON users.userId = userConfiguration.userId \
-LEFT JOIN familyMembers ON users.userId = familyMembers.userId \
-WHERE users.userId = ? LIMIT 1`,
-    [userId],
-  );
-
-  return userInformation;
-}
-
-/**
 * If the query is successful, returns the user for the userIdentifier.
  *  If a problem is encountered, creates and throws custom error
  */
@@ -133,5 +110,5 @@ async function getUserFirstNameLastNameForUserId(databaseConnection, userId) {
 }
 
 module.exports = {
-  getUserForUserId, getUserForUserIdentifier, getUserForUserApplicationUsername, getUserFirstNameLastNameForUserId,
+  getUserForUserIdentifier, getUserForUserApplicationUsername, getUserFirstNameLastNameForUserId,
 };

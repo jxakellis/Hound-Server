@@ -75,6 +75,8 @@ async function deleteFamily(databaseConnection, familyId, familyActiveSubscripti
   //  However, they are safe from an accidential renewal
 
   // Destroy the family now that it is ok to do so
+  // TO DO NOW add record to previousFamilies of family deletion
+  // TO DO NOW add record of all users in familyMembers to previousFamilyMembers
   const promises = [
     databaseQuery(
       databaseConnection,
@@ -85,12 +87,6 @@ async function deleteFamily(databaseConnection, familyId, familyActiveSubscripti
     databaseQuery(
       databaseConnection,
       'DELETE FROM familyMembers WHERE familyId = ?',
-      [familyId],
-    ),
-    // deletes records of user leaving
-    databaseQuery(
-      databaseConnection,
-      'DELETE FROM previousFamilyMembers WHERE familyId = ?',
       [familyId],
     ),
     // delete all the corresponding dog, reminder, and log data

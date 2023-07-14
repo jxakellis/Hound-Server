@@ -12,7 +12,7 @@ const SERVER = {
   // App versions of the iOS Hound app that work properly with the server.
   // A version would be depreciated if an endpoint path is changed or endpoint data return format is changed
   // Allows for testing of new versions in development but leave production alone
-  COMPATIBLE_IOS_APP_VERSIONS: IS_PRODUCTION_DATABASE ? ['2.1.0', '2.2.0', '2.2.1', '2.2.2'] : ['2.2.2'],
+  COMPATIBLE_IOS_APP_VERSIONS: IS_PRODUCTION_DATABASE ? ['2.1.0', '2.2.0', '2.2.1', '2.2.2', '2.3.0'] : ['2.2.2', '2.3.0'],
   // How often the database connections are tested as being connected and excess previousRequests/previousResponses are deleted (in milliseconds)
   DATABASE_MAINTENANCE_INTERVAL: IS_PRODUCTION_DATABASE ? (1000 * 60 * 15) : (1000 * 60 * 5),
   // How long the database connection can stay idle before being killed (in seconds)
@@ -92,7 +92,8 @@ const NOTIFICATION = {
 
 const DEFAULT_SUBSCRIPTION_PRODUCT_ID = 'com.jonathanxakellis.hound.default';
 const DEFAULT_SUBSCRIPTION_NUMBER_OF_FAMILY_MEMBERS = 1;
-const DEFAULT_SUBSCRIPTION_NUMBER_OF_DOGS = 2;
+// STATIC 10 DOG LIMIT
+const DEFAULT_SUBSCRIPTION_NUMBER_OF_DOGS = 10;
 
 const SUBSCRIPTION = {
   DEFAULT_SUBSCRIPTION_PRODUCT_ID,
@@ -122,9 +123,26 @@ const SUBSCRIPTION = {
       numberOfFamilyMembers: 6,
       numberOfDogs: 6,
     },
+    // TO DO NOW make sure all these new subscriptions are input into both ASC and ios app, so that it is compatible
+    /*
+            base rate    discounted
+    1 mo:   6.99         6.99 (0%, 6.99/mo)       com.jonathanxakellis.hound.sixfamilymembers.onemonth
+    6 mo:   41.99        29.99 (28.5%, 4.99/mo)   com.jonathanxakellis.hound.sixfamilymembers.sixmonth
+    12 mo:  84.99        44.99 (47%, 3.75/mo)     com.jonathanxakellis.hound.sixfamilymembers.oneyear
+    */
     {
-      productId: 'com.jonathanxakellis.hound.tenfamilymemberstendogs.monthly',
-      numberOfFamilyMembers: 10,
+      productId: 'com.jonathanxakellis.hound.sixfamilymembers.onemonth',
+      numberOfFamilyMembers: 6,
+      numberOfDogs: 10,
+    },
+    {
+      productId: 'com.jonathanxakellis.hound.sixfamilymembers.sixmonth',
+      numberOfFamilyMembers: 6,
+      numberOfDogs: 10,
+    },
+    {
+      productId: 'com.jonathanxakellis.hound.sixfamilymembers.oneyear',
+      numberOfFamilyMembers: 6,
       numberOfDogs: 10,
     },
   ],
