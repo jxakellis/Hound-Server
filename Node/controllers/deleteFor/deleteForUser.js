@@ -19,7 +19,6 @@ async function deleteUserForUserId(databaseConnection, userId) {
 
   // We first delete the user from the database first, as this is easily reversible
   // keep record of user being deleted, do this first so the delete statement doesn't mess with this query
-  // TO DO NOW TEST that this record is saved properly
   await databaseQuery(
     databaseConnection,
     `INSERT INTO previousUsers

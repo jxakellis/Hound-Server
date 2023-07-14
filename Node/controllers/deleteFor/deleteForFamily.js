@@ -19,6 +19,7 @@ async function deleteFamilyLeaveFamilyForUserIdFamilyId(databaseConnection, user
   }
 
   const familyHeadUserId = await getFamilyHeadUserIdForFamilyId(databaseConnection, familyId);
+  console.log(familyHeadUserId, userId);
 
   if (familyHeadUserId === userId) {
     await deleteFamily(databaseConnection, familyId, familyActiveSubscription);
