@@ -25,7 +25,7 @@ async function deleteUserForUserId(databaseConnection, userId) {
     `INSERT INTO previousUsers
     (userId, userIdentifier, userApplicationUsername, userEmail, userFirstName, userLastName, userNotificationToken, userAccountCreationDate, userAccountDeletionDate)
     SELECT userId, userIdentifier, userApplicationUsername, userEmail, userFirstName, userLastName, userNotificationToken, userAccountCreationDate, ?
-    FROM users  u
+    FROM users u
     WHERE userId = ?`,
     [new Date(), userId],
   );

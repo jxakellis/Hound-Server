@@ -12,7 +12,8 @@ const databaseQuery = (forDatabaseConnection, forSQLString, forSQLVariables) => 
     reject(new ValidationError('databaseConnection missing for databaseQuery', global.CONSTANT.ERROR.VALUE.MISSING));
   }
 
-  const SQLString = formatString(forSQLString);
+  // Remove all newlines, remove all carriage returns, and make all >1 length spaces into 1 length spaces
+  const SQLString = formatString(forSQLString).replace('/\r?\n|\r/g', '').replace(/\s+/g, ' ');
 
   if (areAllDefined(SQLString) === false) {
     reject(new ValidationError('SQLString missing for databaseQuery', global.CONSTANT.ERROR.VALUE.MISSING));
