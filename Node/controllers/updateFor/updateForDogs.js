@@ -19,7 +19,9 @@ async function updateDogForDogId(databaseConnection, dogId, forDogName) {
   // updates the dogName for the dogId provided
   await databaseQuery(
     databaseConnection,
-    `UPDATE dogs SET dogName = ?, dogLastModified = ? WHERE dogId = ?',
+    `UPDATE dogs
+    SET dogName = ?, dogLastModified = ?
+    WHERE dogId = ?`,
     [dogName, dogLastModified, dogId],
   );
 }
