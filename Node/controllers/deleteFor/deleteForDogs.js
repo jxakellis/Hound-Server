@@ -24,7 +24,9 @@ async function deleteDogForFamilyIdDogId(databaseConnection, familyId, dogId) {
     // deletes dog
     databaseQuery(
       databaseConnection,
-      'UPDATE dogs SET dogIsDeleted = 1, dogLastModified = ? WHERE dogId = ?',
+      `UPDATE dogs
+      SET dogIsDeleted = 1, dogLastModified = ?
+      WHERE dogId = ?`,
       [dogLastModified, dogId],
     ),
   ];
@@ -44,7 +46,10 @@ async function deleteAllDogsForFamilyId(databaseConnection, familyId) {
   // attempt to find all dogIds
   const dogIds = await databaseQuery(
     databaseConnection,
-    'SELECT dogId FROM dogs WHERE dogIsDeleted = 0 AND familyId = ? LIMIT 18446744073709551615',
+    `SELECT dogId
+    FROM dogs
+    WHERE dogIsDeleted = 0 AND familyId = ?
+    LIMIT 18446744073709551615`,
     [familyId],
   );
 

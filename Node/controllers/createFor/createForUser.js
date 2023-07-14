@@ -100,47 +100,40 @@ async function createUserForUserIdentifier(
     userConfigurationSilentModeStartUTCMinute,
     userConfigurationSilentModeEndUTCMinute,
   ) === false) {
-    throw new ValidationError('userConfigurationIsNotificationEnabled, \
-userConfigurationIsLoudNotificationEnabled, \
-userConfigurationIsLogNotificationEnabled, \
-userConfigurationIsReminderNotificationEnabled, \
-userConfigurationInterfaceStyle, \
-userConfigurationSnoozeLength, \
-userConfigurationNotificationSound, \
-userConfigurationLogsInterfaceScale, \
-userConfigurationRemindersInterfaceScale, \
-userConfigurationIsSilentModeEnabled, \
-userConfigurationSilentModeStartUTCHour, \
-userConfigurationSilentModeEndUTCHour, \
-userConfigurationSilentModeStartUTCMinute, \
-or userConfigurationSilentModeEndUTCMinute missing', global.CONSTANT.ERROR.VALUE.MISSING);
+    throw new ValidationError(`userConfigurationIsNotificationEnabled,
+userConfigurationIsLoudNotificationEnabled,
+userConfigurationIsLogNotificationEnabled,
+userConfigurationIsReminderNotificationEnabled,
+userConfigurationInterfaceStyle,
+userConfigurationSnoozeLength,
+userConfigurationNotificationSound,
+userConfigurationLogsInterfaceScale,
+userConfigurationRemindersInterfaceScale,
+userConfigurationIsSilentModeEnabled,
+userConfigurationSilentModeStartUTCHour,
+userConfigurationSilentModeEndUTCHour,
+userConfigurationSilentModeStartUTCMinute,
+or userConfigurationSilentModeEndUTCMinute missing`, global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   const promises = [
     databaseQuery(
       databaseConnection,
-      'INSERT INTO users(userId, userIdentifier, userApplicationUsername, userEmail, userFirstName, userLastName, userNotificationToken, userAccountCreationDate) VALUES (?,?,?,?,?,?,?,?)',
+      `INSERT INTO users
+      (userId, userIdentifier, userApplicationUsername, userEmail, userFirstName, userLastName, userNotificationToken, userAccountCreationDate) 
+      VALUES (?,?,?,?,?,?,?,?)`,
       [userId, userIdentifier, userApplicationUsername, userEmail, userFirstName, userLastName, userNotificationToken, userAccountCreationDate],
     ),
     databaseQuery(
       databaseConnection,
-      'INSERT INTO userConfiguration(\
-userId, \
-userConfigurationIsNotificationEnabled, \
-userConfigurationIsLoudNotificationEnabled, \
-userConfigurationIsLogNotificationEnabled, \
-userConfigurationIsReminderNotificationEnabled, \
-userConfigurationSnoozeLength, \
-userConfigurationNotificationSound, \
-userConfigurationLogsInterfaceScale, \
-userConfigurationRemindersInterfaceScale, \
-userConfigurationInterfaceStyle, \
-userConfigurationIsSilentModeEnabled, \
-userConfigurationSilentModeStartUTCHour, \
-userConfigurationSilentModeEndUTCHour, \
-userConfigurationSilentModeStartUTCMinute, \
-userConfigurationSilentModeEndUTCMinute\
-) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?, ?, ?)',
+      `INSERT INTO userConfiguration
+      (userId, userConfigurationIsNotificationEnabled, userConfigurationIsLoudNotificationEnabled, 
+      userConfigurationIsLogNotificationEnabled, userConfigurationIsReminderNotificationEnabled, 
+      userConfigurationSnoozeLength, userConfigurationNotificationSound, userConfigurationLogsInterfaceScale, 
+      userConfigurationRemindersInterfaceScale, userConfigurationInterfaceStyle, userConfigurationIsSilentModeEnabled, 
+      userConfigurationSilentModeStartUTCHour, userConfigurationSilentModeEndUTCHour, userConfigurationSilentModeStartUTCMinute, 
+      userConfigurationSilentModeEndUTCMinute) 
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?, ?, ?)`,
       [userId,
         userConfigurationIsNotificationEnabled,
         userConfigurationIsLoudNotificationEnabled,

@@ -57,7 +57,10 @@ async function validateSubscription(req, res, next) {
     // only retrieve enough not deleted dogs that would exceed the limit
     const dogs = await databaseQuery(
       req.databaseConnection,
-      'SELECT 1 FROM dogs WHERE dogIsDeleted = 0 AND familyId = ? LIMIT ?',
+      `SELECT 1
+      FROM dogs
+      WHERE dogIsDeleted = 0 AND familyId = ?
+      LIMIT ?`,
       [familyId, numberOfDogs],
     );
 

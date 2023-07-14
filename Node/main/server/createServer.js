@@ -171,6 +171,7 @@ process.on('SIGUSR2', async () => {
 process.on('uncaughtException', async (error, origin) => {
   // uncaught error happened somewhere
   serverLogger.info(`Uncaught exception from origin: ${origin}`);
+  // Specifically await logServerError here to ensure that the error is logged before the server shuts down
   await logServerError('uncaughtException', error)
     .catch((shutdownError) => serverLogger.error(`Experienced error while attempting to shutdown (logServerError): ${shutdownError}`));
   await shutdown()

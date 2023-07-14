@@ -49,7 +49,10 @@ async function addFamilyMember(databaseConnection, userId, forFamilyCode) {
   // retrieve information about the family linked to the familyCode
   const [family] = await databaseQuery(
     databaseConnection,
-    'SELECT familyId, familyIsLocked FROM families WHERE familyCode = ? LIMIT 1',
+    `SELECT familyId, familyIsLocked
+    FROM families
+    WHERE familyCode = ?
+    LIMIT 1`,
     [familyCode],
   );
 
@@ -87,14 +90,30 @@ async function addFamilyMember(databaseConnection, userId, forFamilyCode) {
   // insert the user into the family as a family member.
   await databaseQuery(
     databaseConnection,
-    'INSERT INTO familyMembers(userId, familyId, familyMemberJoinDate) VALUES (?, ?, ?)',
+    `INSERT INTO familyMembers
+    (userId, familyId, familyMemberJoinDate)
+    VALUES (?, ?, ?)`,
     [userId, familyId, new Date()],
   );
 
   const { offerCode } = familyActiveSubscription;
 
   if (areAllDefined(offerCode) === true) {
-    // TO DO NOW since a new family member joined a family, add a record to affiliate program database (as a user joined a family thats subscription is from using someones affiliate referral code)
+    // A new family member joined a family with a subscription that has an offer code, insert record into affiliate program table
+    // TO DO NOW TEST that this inserts record when user joins family with offer code
+    await databaseQuery(
+      databaseConnection,
+      `INSERT INTO affiliateTransactions
+      (transactionId, originalTransactionId, userId, familyId, environment, productId, 
+      subscriptionGroupIdentifier, purchaseDate, expirationDate, numberOfFamilyMembers, numberOfDogs, 
+      quantity, webOrderLineItemId, inAppOwnershipType, isAutoRenewing, isRevoked, offerCode)
+      SELECT transactionId, originalTransactionId, userId, familyId, environment, productId, 
+      subscriptionGroupIdentifier, purchaseDate, expirationDate, numberOfFamilyMembers, numberOfDogs, 
+      quantity, webOrderLineItemId, inAppOwnershipType, isAutoRenewing, isRevoked, offerCode
+      FROM transactions
+      WHERE familyId = ?`,
+      [familyId],
+    );
   }
 
   createFamilyMemberJoinNotification(userId, family.familyId);
@@ -112,7 +131,9 @@ async function updateIsLocked(databaseConnection, userId, familyId, forIsLocked)
 
   await databaseQuery(
     databaseConnection,
-    'UPDATE families SET familyIsLocked = ? WHERE familyId = ?',
+    `UPDATE families
+    SET familyIsLocked = ?
+    WHERE familyId = ?`,
     [familyIsLocked, familyId],
   );
 

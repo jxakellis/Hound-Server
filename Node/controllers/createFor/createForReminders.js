@@ -17,7 +17,10 @@ async function createReminderForDogIdReminder(databaseConnection, dogId, reminde
   // only retrieve enough not deleted reminders that would exceed the limit
   const reminders = await databaseQuery(
     databaseConnection,
-    'SELECT 1 FROM dogReminders WHERE reminderIsDeleted = 0 AND dogId = ? LIMIT ?',
+    `SELECT 1
+    FROM dogReminders
+    WHERE reminderIsDeleted = 0 AND dogId = ?
+    LIMIT ?`,
     [dogId, global.CONSTANT.LIMIT.NUMBER_OF_REMINDERS_PER_DOG],
   );
 
@@ -69,15 +72,15 @@ async function createReminderForDogIdReminder(databaseConnection, dogId, reminde
   }
   // no need to check weeklySkippedDate validity as newly created reminder can't be skipped yet
   else if (areAllDefined(weeklyUTCHour, weeklyUTCMinute, weeklySunday, weeklyMonday, weeklyTuesday, weeklyWednesday, weeklyThursday, weeklyFriday, weeklySaturday) === false) {
-    throw new ValidationError('weeklyUTCHour, \
-weeklyUTCMinute, \
-weeklySunday, \
-weeklyMonday, \
-weeklyTuesday, \
-weeklyWednesday, \
-weeklyThursday, \
-weeklyFriday, \
-or weeklySaturday missing', global.CONSTANT.ERROR.VALUE.MISSING);
+    throw new ValidationError(`weeklyUTCHour
+weeklyUTCMinute
+weeklySunday
+weeklyMonday
+weeklyTuesday
+weeklyWednesday
+weeklyThursday
+weeklyFriday
+or weeklySaturday missing`, global.CONSTANT.ERROR.VALUE.MISSING);
   }
   // no need to check monthlySkippedDate validity as newly created reminder can't be skipped yet
   else if (areAllDefined(monthlyUTCDay, monthlyUTCHour, monthlyUTCMinute) === false) {
@@ -89,31 +92,11 @@ or weeklySaturday missing', global.CONSTANT.ERROR.VALUE.MISSING);
 
   const result = await databaseQuery(
     databaseConnection,
-    'INSERT INTO dogReminders(dogId, \
-reminderAction, \
-reminderCustomActionName, \
-reminderType, \
-reminderIsEnabled, \
-reminderExecutionBasis, \
-reminderExecutionDate, \
-reminderLastModified, \
-snoozeExecutionInterval, \
-countdownExecutionInterval, \
-weeklyUTCHour, \
-weeklyUTCMinute, \
-weeklySunday, \
-weeklyMonday, \
-weeklyTuesday, \
-weeklyWednesday, \
-weeklyThursday, \
-weeklyFriday, \
-weeklySaturday, \
-weeklySkippedDate, \
-monthlyUTCDay, \
-monthlyUTCHour, \
-monthlyUTCMinute, \
-monthlySkippedDate, \
-oneTimeDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    `INSERT INTO dogReminders(dogId, reminderAction, reminderCustomActionName, reminderType, reminderIsEnabled, 
+    reminderExecutionBasis, reminderExecutionDate, reminderLastModified, snoozeExecutionInterval, countdownExecutionInterval, 
+    weeklyUTCHour, weeklyUTCMinute, weeklySunday, weeklyMonday, weeklyTuesday, weeklyWednesday, weeklyThursday, weeklyFriday, weeklySaturday, 
+    weeklySkippedDate, monthlyUTCDay, monthlyUTCHour, monthlyUTCMinute, monthlySkippedDate, oneTimeDate)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       dogId, reminderAction, reminderCustomActionName, reminderType, reminderIsEnabled, reminderExecutionBasis, reminderExecutionDate, reminderLastModified,
       undefined,

@@ -12,7 +12,7 @@ const { getAllRemindersForDogId } = require('./getForReminders');
 // familyId is already known, and dogLastModified has no use client-side
 // TO DO FUTURE only select dogId and dogIsDeleted if dogIsDeleted = 0, otherwise include all columns
 // TO DO FUTURE if userConfigurationPreviousDogManagerSynchronization > dogLastModified, only select dogId and dogIdDeleted. Otherwise, select all columns (including dogIcon)
-const dogsColumns = 'dogs.dogId, dogs.dogName, dogs.dogIsDeleted';
+const dogsColumns = 'd.dogId, d.dogName, d.dogIsDeleted';
 
 /**
  *  If the query is successful, returns the dog for the dogId.
@@ -30,19 +30,24 @@ async function getDogForDogId(databaseConnection, dogId, forUserConfigurationPre
   const [dog] = areAllDefined(userConfigurationPreviousDogManagerSynchronization)
     ? await databaseQuery(
       databaseConnection,
-      `SELECT ${dogsColumns} \
-FROM dogs LEFT JOIN dogReminders ON dogs.dogId = dogReminders.dogId \
-LEFT JOIN dogLogs ON dogs.dogId = dogLogs.dogId \
-WHERE (dogLastModified >= ? OR reminderLastModified >= ? OR logLastModified >= ?) AND dogs.dogId = ? \
-GROUP BY dogs.dogId \
-LIMIT 1`,
+      `SELECT ${dogsColumns}
+      FROM dogs d
+      LEFT JOIN dogReminders dr ON d.dogId = dr.dogId
+      LEFT JOIN dogLogs dl ON d.dogId = dl.dogId
+      WHERE (d.dogLastModified >= ? OR dr.reminderLastModified >= ? OR dl.logLastModified >= ?) AND d.dogId = ?
+      GROUP BY d.dogId
+      LIMIT 1`,
       [userConfigurationPreviousDogManagerSynchronization, userConfigurationPreviousDogManagerSynchronization, userConfigurationPreviousDogManagerSynchronization, dogId],
     )
     // User is requesting a complete copy of dogs, therefore we can assume they have a blank copy
     // If they have a blank copy, no need to include deleted dogs that indicate whether to delete their local dog store
     : await databaseQuery(
       databaseConnection,
-      `SELECT ${dogsColumns} FROM dogs WHERE dogIsDeleted = 0 AND dogId = ? GROUP BY dogs.dogId LIMIT 1`,
+      `SELECT ${dogsColumns}
+      FROM dogs d
+      WHERE dogIsDeleted = 0 AND dogId = ?
+      GROUP BY dogId
+      LIMIT 1`,
       [dogId],
     );
 
@@ -86,19 +91,24 @@ async function getAllDogsForUserIdFamilyId(databaseConnection, userId, familyId,
   const dogs = areAllDefined(userConfigurationPreviousDogManagerSynchronization)
     ? await databaseQuery(
       databaseConnection,
-      `SELECT ${dogsColumns} \
-FROM dogs LEFT JOIN dogReminders ON dogs.dogId = dogReminders.dogId \
-LEFT JOIN dogLogs ON dogs.dogId = dogLogs.dogId \
-WHERE (dogLastModified >= ? OR reminderLastModified >= ? OR logLastModified >= ?) AND dogs.familyId = ? \
-GROUP BY dogs.dogId \
-LIMIT 18446744073709551615`,
+      `SELECT ${dogsColumns}
+      FROM dogs d
+      LEFT JOIN dogReminders dr ON d.dogId = dr.dogId
+      LEFT JOIN dogLogs dl ON d.dogId = dl.dogId
+      WHERE (d.dogLastModified >= ? OR dr.reminderLastModified >= ? OR dl.logLastModified >= ?) AND d.familyId = ?
+      GROUP BY d.dogId
+      LIMIT 18446744073709551615`,
       [userConfigurationPreviousDogManagerSynchronization, userConfigurationPreviousDogManagerSynchronization, userConfigurationPreviousDogManagerSynchronization, familyId],
     )
     // User is requesting a complete copy of dogs, therefore we can assume they have a blank copy
     // If they have a blank copy, no need to include deleted dogs that indicate whether to delete their local dog store
     : await databaseQuery(
       databaseConnection,
-      `SELECT ${dogsColumns} FROM dogs WHERE dogIsDeleted = 0 AND familyId = ? GROUP BY dogs.dogId LIMIT 18446744073709551615`,
+      `SELECT ${dogsColumns}
+      FROM dogs d
+      WHERE dogIsDeleted = 0 AND familyId = ?
+      GROUP BY dogId
+      LIMIT 18446744073709551615`,
       [familyId],
     );
 
@@ -153,7 +163,9 @@ LIMIT 18446744073709551615`,
     // Therefore, the user's userConfigurationPreviousDogManagerSynchronization should be saved as this counts as a dogManagerSyncronization
     await databaseQuery(
       databaseConnection,
-      'UPDATE userConfiguration SET userConfigurationPreviousDogManagerSynchronization = ? WHERE userId = ?',
+      `UPDATE userConfiguration
+      SET userConfigurationPreviousDogManagerSynchronization = ?
+      WHERE userId = ?`,
       [userConfigurationPreviousDogManagerSynchronization, userId],
     );
   }

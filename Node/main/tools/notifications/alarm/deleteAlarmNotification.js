@@ -18,12 +18,11 @@ async function deleteAlarmNotificationsForFamily(familyId) {
     // get all the reminders for the family
     const reminders = await databaseQuery(
       databaseConnectionForAlarms,
-      'SELECT reminderId \
-FROM dogReminders \
-JOIN dogs \
-ON dogReminders.dogId = dogs.dogId \
-WHERE dogs.dogIsDeleted = 0 AND dogReminders.reminderIsDeleted = 0 AND dogs.familyId = ? \
-LIMIT 18446744073709551615',
+      `SELECT reminderId
+      FROM dogReminders dr
+      JOIN dogs d ON dr.dogId = d.dogId
+      WHERE d.dogIsDeleted = 0 AND dr.reminderIsDeleted = 0 AND d.familyId = ? 
+      LIMIT 18446744073709551615`,
       [familyId],
     );
 

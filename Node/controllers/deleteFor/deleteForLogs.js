@@ -15,7 +15,9 @@ async function deleteLogForLogId(databaseConnection, dogId, logId) {
 
   await databaseQuery(
     databaseConnection,
-    'UPDATE dogLogs SET logIsDeleted = 1, logLastModified = ? WHERE logId = ?',
+    `UPDATE dogLogs
+    SET logIsDeleted = 1, logLastModified = ?
+    WHERE logId = ?`,
     [logLastModified, logId],
   );
 }
@@ -33,7 +35,9 @@ async function deleteAllLogsForDogId(databaseConnection, dogId) {
 
   await databaseQuery(
     databaseConnection,
-    'UPDATE dogLogs SET logIsDeleted = 1, logLastModified = ? WHERE logIsDeleted = 0 AND dogId = ?',
+    `UPDATE dogLogs
+    SET logIsDeleted = 1, logLastModified = ?
+    WHERE logIsDeleted = 0 AND dogId = ?`,
     [logLastModified, dogId],
   );
 }

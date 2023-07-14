@@ -20,7 +20,9 @@ async function deleteReminderForFamilyIdDogIdReminderId(databaseConnection, fami
 
   await databaseQuery(
     databaseConnection,
-    'UPDATE dogReminders SET reminderIsDeleted = 1, reminderLastModified = ? WHERE reminderId = ?',
+    `UPDATE dogReminders
+    SET reminderIsDeleted = 1, reminderLastModified = ?
+    WHERE reminderId = ?`,
     [reminderLastModified, reminderId],
   );
 
@@ -62,13 +64,18 @@ async function deleteAllRemindersForFamilyIdDogId(databaseConnection, familyId, 
   const promises = [
     databaseQuery(
       databaseConnection,
-      'SELECT reminderId FROM dogReminders WHERE reminderIsDeleted = 0 AND dogId = ? LIMIT 18446744073709551615',
+      `SELECT reminderId
+      FROM dogReminders
+      WHERE reminderIsDeleted = 0 AND dogId = ?
+      LIMIT 18446744073709551615`,
       [dogId],
     ),
     // deletes reminders
     databaseQuery(
       databaseConnection,
-      'UPDATE dogReminders SET reminderIsDeleted = 1, reminderLastModified = ? WHERE reminderIsDeleted = 0 AND dogId = ?',
+      `UPDATE dogReminders
+      SET reminderIsDeleted = 1, reminderLastModified = ?
+      WHERE reminderIsDeleted = 0 AND dogId = ?`,
       [reminderLastModified, dogId],
     ),
   ];

@@ -100,7 +100,10 @@ async function createTransactionsForUserIdFamilyIdEnvironmentReceipts(databaseCo
 
   const storedTransactions = await databaseQuery(
     databaseConnection,
-    'SELECT transactionId FROM transactions WHERE userId = ? LIMIT 18446744073709551615',
+    `SELECT transactionId
+    FROM transactions
+    WHERE userId = ?
+    LIMIT 18446744073709551615`,
     [userId],
   );
 
@@ -223,19 +226,19 @@ async function createInAppSubscriptionForUserIdFamilyIdTransactionInfo(
     inAppOwnershipType,
     // offerCode doesn't have to be defined
   ) === false) {
-    throw new ValidationError('databaseConnection, \
-userId, \
-familyId, \
-transactionId, \
-originalTransactionId, \
-environment, \
-productId, \
-subscriptionGroupIdentifier, \
-purchaseDate, \
-expirationDate, \
-quantity, \
-webOrderLineItemId, \
-or inAppOwnershipType missing', global.CONSTANT.ERROR.VALUE.MISSING);
+    throw new ValidationError(`databaseConnection,
+userId
+familyId
+transactionId
+originalTransactionId
+environment
+productId
+subscriptionGroupIdentifier
+purchaseDate
+expirationDate
+quantity
+webOrderLineItemId
+or inAppOwnershipType missing`, global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   const correspondingProduct = global.CONSTANT.SUBSCRIPTION.SUBSCRIPTIONS.find((subscription) => subscription.productId === productId);
@@ -281,21 +284,11 @@ or inAppOwnershipType missing', global.CONSTANT.ERROR.VALUE.MISSING);
   */
   await databaseQuery(
     databaseConnection,
-    'INSERT INTO transactions(transactionId, \
-originalTransactionId, \
-userId, \
-familyId, \
-environment, \
-productId, \
-subscriptionGroupIdentifier, \
-purchaseDate, \
-expirationDate, \
-numberOfFamilyMembers, \
-numberOfDogs, \
-quantity, \
-webOrderLineItemId, \
-inAppOwnershipType, \
-offerCode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    `INSERT INTO transactions
+    (transactionId, originalTransactionId, userId, familyId, environment, productId, 
+    subscriptionGroupIdentifier, purchaseDate, expirationDate, numberOfFamilyMembers, 
+    numberOfDogs, quantity, webOrderLineItemId, inAppOwnershipType, offerCode) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       transactionId,
       originalTransactionId,

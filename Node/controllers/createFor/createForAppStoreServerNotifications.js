@@ -137,7 +137,11 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
     // attempt to find userId with most recent transaction. Use originalTransactionId to link to potential transactions
     const [transaction] = await databaseQuery(
       databaseConnection,
-      'SELECT userId FROM transactions WHERE transactionId = ? OR originalTransactionId = ? ORDER BY purchaseDate DESC LIMIT 1',
+      `SELECT userId
+      FROM transactions
+      WHERE transactionId = ? OR originalTransactionId = ?
+      ORDER BY purchaseDate DESC
+      LIMIT 1`,
       [transactionId, originalTransactionId],
     );
     userId = areAllDefined(transaction) ? transaction.userId : undefined;
@@ -198,50 +202,6 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
     await updateInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseConnection, transactionId, userId, familyId, renewalInfo.autoRenewStatus, undefined);
   }
 }
-
-const appStoreServerNotificationsColumns = 'notificationType, \
-subtype, \
-notificationUUID, \
-version, \
-signedDate, \
-dataAppAppleId, \
-dataBundleId, \
-dataBundleVersion, \
-dataEnvironment, \
-renewalInfoAutoRenewProductId, \
-renewalInfoAutoRenewStatus, \
-renewalInfoEnvironment, \
-renewalInfoExpirationIntent, \
-renewalInfoGracePeriodExpiresDate, \
-renewalInfoIsInBillingRetryPeriod, \
-renewalInfoOfferIdentifier, \
-renewalInfoOfferType, \
-renewalInfoOriginalTransactionId, \
-renewalInfoPriceIncreaseStatus, \
-renewalInfoProductId, \
-renewalInfoRecentSubscriptionStartDate, \
-renewalInfoSignedDate, \
-transactionInfoAppAccountToken, \
-transactionInfoBundleId, \
-transactionInfoEnvironment, \
-transactionInfoExpiresDate, \
-transactionInfoInAppOwnershipType, \
-transactionInfoIsUpgraded, \
-transactionInfoOfferIdentifier, \
-transactionInfoOfferType, \
-transactionInfoOriginalPurchaseDate, \
-transactionInfoOriginalTransactionId, \
-transactionInfoProductId, \
-transactionInfoPurchaseDate, \
-transactionInfoQuantity, \
-transactionInfoRevocationDate, \
-transactionInfoRevocationReason, \
-transactionInfoSignedDate, \
-transactionInfoSubscriptionGroupIdentifier, \
-transactionInfoTransactionId, \
-transactionInfoType, \
-transactionInfoWebOrderLineItemId';
-const appStoreServerNotificationsValues = '?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?';
 
 /**
  *  Uses the notification, data, renewalInfo, and transactionInfo provided to attempt to locate a corresponding notification in the appStoreServerNotification database.
@@ -349,7 +309,18 @@ async function createAppStoreServerNotificationForNotification(databaseConnectio
 
   await databaseQuery(
     databaseConnection,
-    `INSERT INTO appStoreServerNotifications(${appStoreServerNotificationsColumns}) VALUES (${appStoreServerNotificationsValues})`,
+    `INSERT INTO appStoreServerNotifications
+    (notificationType, subtype, notificationUUID, version, signedDate, dataAppAppleId, dataBundleId, 
+    dataBundleVersion, dataEnvironment, renewalInfoAutoRenewProductId, renewalInfoAutoRenewStatus, 
+    renewalInfoEnvironment, renewalInfoExpirationIntent, renewalInfoGracePeriodExpiresDate, renewalInfoIsInBillingRetryPeriod,
+    renewalInfoOfferIdentifier, renewalInfoOfferType, renewalInfoOriginalTransactionId, renewalInfoPriceIncreaseStatus,
+    renewalInfoProductId, renewalInfoRecentSubscriptionStartDate, renewalInfoSignedDate, transactionInfoAppAccountToken,
+    transactionInfoBundleId, transactionInfoEnvironment, transactionInfoExpiresDate, transactionInfoInAppOwnershipType,
+    transactionInfoIsUpgraded, transactionInfoOfferIdentifier, transactionInfoOfferType, transactionInfoOriginalPurchaseDate,
+    transactionInfoOriginalTransactionId, transactionInfoProductId, transactionInfoPurchaseDate, transactionInfoQuantity,
+    transactionInfoRevocationDate, transactionInfoRevocationReason, transactionInfoSignedDate, transactionInfoSubscriptionGroupIdentifier,
+    transactionInfoTransactionId, transactionInfoType, transactionInfoWebOrderLineItemId) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       notificationType,
       subtype,

@@ -22,8 +22,11 @@ async function createDogForFamilyId(databaseConnection, familyId, familyActiveSu
   // only retrieve enough not deleted dogs that would exceed the limit
   const dogs = await databaseQuery(
     databaseConnection,
-    'SELECT 1 FROM dogs WHERE dogIsDeleted = 0 AND familyId = ? LIMIT ?',
-    [familyId, familyActiveSubscription.numberOfDogs],
+    `SELECT 1
+    FROM dogs
+    WHERE dogIsDeleted = 0 AND familyId = ?
+    LIMIT 18446744073709551615`,
+    [familyId],
   );
 
   if (areAllDefined(familyActiveSubscription, dogs) === false) {
@@ -37,7 +40,9 @@ async function createDogForFamilyId(databaseConnection, familyId, familyActiveSu
 
   const result = await databaseQuery(
     databaseConnection,
-    'INSERT INTO dogs(familyId, dogName, dogLastModified) VALUES (?,?,?)',
+    `INSERT INTO dogs
+    (familyId, dogName, dogLastModified)
+    VALUES (?,?,?)`,
     [familyId, dogName, dogLastModified],
   );
   return result.insertId;

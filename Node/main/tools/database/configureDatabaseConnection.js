@@ -34,7 +34,8 @@ async function findNumberOfThreadsConnectedToDatabase(databaseConnection) {
 
   const [threadsConnected] = await databaseQuery(
     databaseConnection,
-    'SHOW STATUS WHERE variable_name = ?',
+    `SHOW STATUS
+    WHERE variable_name = ?`,
     ['Threads_connected'],
   );
 

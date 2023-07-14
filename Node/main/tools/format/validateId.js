@@ -51,7 +51,10 @@ async function validateUserId(req, res, next) {
     // we are verifying that a user is able to use the provided userId, and to do so they must know the corresponding secret (the userIdentifier)
     let [result] = await databaseQuery(
       req.databaseConnection,
-      'SELECT 1 FROM users WHERE userId = ? AND userIdentifier = ? LIMIT 1',
+      `SELECT 1
+      FROM users
+      WHERE userId = ? AND userIdentifier = ?
+      LIMIT 1`,
       [userId, userIdentifier],
     );
 
@@ -63,7 +66,10 @@ async function validateUserId(req, res, next) {
 
       [result] = await databaseQuery(
         req.databaseConnection,
-        'SELECT 1 FROM users WHERE userId = ? AND userIdentifier = ? LIMIT 1',
+        `SELECT 1
+        FROM users
+        WHERE userId = ? AND userIdentifier = ?
+        LIMIT 1`,
         [userId, hashedUserIdentifier],
       );
 
@@ -107,7 +113,10 @@ async function validateFamilyId(req, res, next) {
     // queries the database to find familyIds associated with the userId
     const result = await databaseQuery(
       req.databaseConnection,
-      'SELECT 1 FROM familyMembers WHERE userId = ? AND familyId = ? LIMIT 1',
+      `SELECT 1
+      FROM familyMembers
+      WHERE userId = ? AND familyId = ?
+      LIMIT 1`,
       [userId, familyId],
     );
 
@@ -147,7 +156,10 @@ async function validateDogId(req, res, next) {
     // JOIN families as dog must have a family attached to it
     const [dog] = await databaseQuery(
       req.databaseConnection,
-      'SELECT dogIsDeleted FROM dogs JOIN families ON dogs.familyId = families.familyId WHERE dogs.familyId = ? AND dogs.dogId = ? LIMIT 1',
+      `SELECT dogIsDeleted
+      FROM dogs JOIN families ON dogs.familyId = families.familyId
+      WHERE dogs.familyId = ? AND dogs.dogId = ?
+      LIMIT 1`,
       [familyId, dogId],
     );
 
@@ -193,7 +205,11 @@ async function validateLogId(req, res, next) {
     // JOIN dogs as log has to have dog still attached to it
     const [log] = await databaseQuery(
       req.databaseConnection,
-      'SELECT logIsDeleted FROM dogLogs JOIN dogs ON dogLogs.dogId = dogs.dogId WHERE dogLogs.dogId = ? AND dogLogs.logId = ? LIMIT 1',
+      `SELECT logIsDeleted
+      FROM dogLogs dl
+      JOIN dogs d ON dl.dogId = d.dogId
+      WHERE dl.dogId = ? AND dl.logId = ?
+      LIMIT 1`,
       [dogId, logId],
     );
 
@@ -239,7 +255,11 @@ async function validateParamsReminderId(req, res, next) {
     // JOIN dogs as reminder must have dog attached to it
     const [reminder] = await databaseQuery(
       req.databaseConnection,
-      'SELECT reminderIsDeleted FROM dogReminders JOIN dogs ON dogReminders.dogId = dogs.dogId WHERE dogReminders.dogId = ? AND dogReminders.reminderId = ? LIMIT 1',
+      `SELECT reminderIsDeleted
+      FROM dogReminders dr
+      JOIN dogs d ON dr.dogId = d.dogId
+      WHERE dr.dogId = ? AND dr.reminderId = ?
+      LIMIT 1`,
       [dogId, reminderId],
     );
 
@@ -288,7 +308,10 @@ async function validateBodyReminderId(req, res, next) {
     // Attempt to locate a reminder. It must match the reminderId provided while being attached to a dog that the user has permission to use
     promises.push(databaseQuery(
       req.databaseConnection,
-      'SELECT reminderIsDeleted FROM dogReminders JOIN dogs ON dogReminders.dogId = dogs.dogId WHERE dogReminders.dogId = ? AND dogReminders.reminderId = ? LIMIT 1',
+      `SELECT reminderIsDeleted
+      FROM dogReminders dr
+      JOIN dogs d ON dr.dogId = d.dogId WHERE dr.dogId = ? AND dr.reminderId = ?
+      LIMIT 1`,
       [dogId, reminderId],
     ));
   }

@@ -12,19 +12,26 @@ async function getDatabaseStatusForWatchdog(databaseConnection) {
     throw new ValidationError('databaseConnection missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
-  const tablesToCheck = [
-    'dogs',
-    'transactions',
-    'users',
-  ];
-
-  const promises = [];
-  for (let i = 0; i < tablesToCheck.length; i += 1) {
-    promises.push(databaseQuery(
+  const promises = [
+    databaseQuery(
       databaseConnection,
-      `SELECT 1 FROM ${tablesToCheck[i]} LIMIT 1`,
-    ));
-  }
+      `SELECT 1
+      FROM users
+      LIMIT 1`,
+    ),
+    databaseQuery(
+      databaseConnection,
+      `SELECT 1
+      FROM dogs
+      LIMIT 1`,
+    ),
+    databaseQuery(
+      databaseConnection,
+      `SELECT 1
+      FROM transactions
+      LIMIT 1`,
+    ),
+  ];
 
   await Promise.all(promises);
 }

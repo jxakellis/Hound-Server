@@ -20,9 +20,11 @@ async function logServerError(forFunction, forError) {
 
   printServerError(forFunction, forError);
 
-  await databaseQuery(
+  databaseQuery(
     databaseConnectionForLogging,
-    'INSERT INTO previousServerErrors(errorDate, errorFunction, errorName, errorMessage, errorCode, errorStack) VALUES (?,?,?,?,?,?)',
+    `INSERT INTO previousServerErrors
+    (errorDate, errorFunction, errorName, errorMessage, errorCode, errorStack)
+    VALUES (?,?,?,?,?,?)`,
     [errorDate, errorFunction, errorName, errorMessage, errorCode, errorStack],
   ).catch((databaseError) => printServerError('logServerError', databaseError));
 }

@@ -18,16 +18,29 @@ async function deleteUserForUserId(databaseConnection, userId) {
   }
 
   // We first delete the user from the database first, as this is easily reversible
-  // TO DO NOW insert record into previousUsers of user deletion
+  // keep record of user being deleted, do this first so the delete statement doesn't mess with this query
+  // TO DO NOW TEST that this record is saved properly
+  await databaseQuery(
+    databaseConnection,
+    `INSERT INTO previousUsers
+    (userId, userIdentifier, userApplicationUsername userEmail, userFirstName, userLastName, userNotificationToken, userAccountCreationDate, userAccountDeletionDate)
+    SELECT userId, userIdentifier, userApplicationUsername userEmail, userFirstName, userLastName, userNotificationToken, userAccountCreationDate, ?
+    FROM users 
+    WHERE userId = ?`,
+    [new Date(), userId],
+  );
+
   const promises = [
     databaseQuery(
       databaseConnection,
-      'DELETE FROM users WHERE userId = ?',
+      `DELETE FROM users
+      WHERE userId = ?`,
       [userId],
     ),
     databaseQuery(
       databaseConnection,
-      'DELETE FROM userConfiguration WHERE userId = ?',
+      `DELETE FROM userConfiguration
+      WHERE userId = ?`,
       [userId],
     ),
   ];

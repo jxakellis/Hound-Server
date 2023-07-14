@@ -19,7 +19,9 @@ async function updateLogForDogIdLogId(databaseConnection, dogId, logId, forLogDa
 
   await databaseQuery(
     databaseConnection,
-    'UPDATE dogLogs SET logDate = ?, logAction = ?, logCustomActionName = ?, logNote = ?, logLastModified = ? WHERE logId = ?',
+    `UPDATE dogLogs
+    SET logDate = ?, logAction = ?, logCustomActionName = ?, logNote = ?, logLastModified = ?
+    WHERE logId = ?`,
     [logDate, logAction, logCustomActionName, logNote, logLastModified, logId],
   );
 }

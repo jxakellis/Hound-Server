@@ -3,17 +3,15 @@ const { databaseQuery } = require('../../database/databaseQuery');
 const { formatBoolean, formatArray } = require('../../format/formatObject');
 const { areAllDefined } = require('../../format/validateDefined');
 
-const userConfigurationColumns = 'userConfiguration.userConfigurationNotificationSound, \
-userConfiguration.userConfigurationIsLoudNotificationEnabled, \
-userConfiguration.userConfigurationIsLogNotificationEnabled, \
-userConfiguration.userConfigurationIsReminderNotificationEnabled, \
-userConfiguration.userConfigurationIsSilentModeEnabled, \
-userConfiguration.userConfigurationSilentModeStartUTCHour, \
-userConfiguration.userConfigurationSilentModeEndUTCHour, \
-userConfiguration.userConfigurationSilentModeStartUTCMinute, \
-userConfiguration.userConfigurationSilentModeEndUTCMinute';
-const userConfigurationJoin = 'JOIN userConfiguration ON users.userId = userConfiguration.userId';
-const familyMembersJoin = 'JOIN familyMembers ON users.userId = familyMembers.userId';
+const userConfigurationColumns = `uc.userConfigurationNotificationSound,
+uc.userConfigurationIsLoudNotificationEnabled,
+uc.userConfigurationIsLogNotificationEnabled,
+uc.userConfigurationIsReminderNotificationEnabled,
+uc.userConfigurationIsSilentModeEnabled,
+uc.userConfigurationSilentModeStartUTCHour,
+uc.userConfigurationSilentModeEndUTCHour,
+uc.userConfigurationSilentModeStartUTCMinute,
+uc.userConfigurationSilentModeEndUTCMinute`;
 
 /**
  *  Takes a userId
@@ -27,10 +25,11 @@ async function getUserToken(userId) {
   // retrieve userNotificationToken, userConfigurationNotificationSound, and isLoudNotificaiton of a user with the userId, non-null userNotificationToken, and userConfigurationIsNotificationEnabled
   const result = await databaseQuery(
     databaseConnectionForGeneral,
-    `SELECT users.userNotificationToken, ${userConfigurationColumns} \
-FROM users ${userConfigurationJoin} \
-WHERE users.userId = ? AND users.userNotificationToken IS NOT NULL AND userConfiguration.userConfigurationIsNotificationEnabled = 1 \
-LIMIT 1`,
+    `SELECT u.userNotificationToken, ${userConfigurationColumns}
+    FROM users u
+    JOIN userConfiguration uc ON u.userId = uc.userId
+    WHERE u.userId = ? AND u.userNotificationToken IS NOT NULL AND uc.userConfigurationIsNotificationEnabled = 1
+    LIMIT 1`,
     [userId],
   );
 
@@ -49,10 +48,12 @@ async function getAllFamilyMemberTokens(familyId) {
   // retrieve userNotificationToken that fit the criteria
   const result = await databaseQuery(
     databaseConnectionForGeneral,
-    `SELECT users.userNotificationToken, ${userConfigurationColumns} \
-FROM users ${userConfigurationJoin} ${familyMembersJoin} \
-WHERE familyMembers.familyId = ? AND users.userNotificationToken IS NOT NULL AND userConfiguration.userConfigurationIsNotificationEnabled = 1 \
-LIMIT 18446744073709551615`,
+    `SELECT users.userNotificationToken, ${userConfigurationColumns}
+    FROM users u
+    JOIN userConfiguration uc ON u.userId = uc.userId
+    JOIN familyMembers fm ON u.userId = fm.userId
+    WHERE fm.familyId = ? AND u.userNotificationToken IS NOT NULL AND uc.userConfigurationIsNotificationEnabled = 1
+    LIMIT 18446744073709551615`,
     [familyId],
   );
 
@@ -71,10 +72,12 @@ async function getOtherFamilyMemberTokens(userId, familyId) {
   // retrieve userNotificationToken that fit the criteria
   const result = await databaseQuery(
     databaseConnectionForGeneral,
-    `SELECT users.userNotificationToken, ${userConfigurationColumns} \
-FROM users ${userConfigurationJoin} ${familyMembersJoin} \
-WHERE users.userId != ? AND familyMembers.familyId = ? AND users.userNotificationToken IS NOT NULL AND userConfiguration.userConfigurationIsNotificationEnabled = 1 \
-LIMIT 18446744073709551615`,
+    `SELECT users.userNotificationToken, ${userConfigurationColumns}
+    FROM users u
+    JOIN userConfiguration uc ON u.userId = uc.userId
+    JOIN familyMembers fm ON u.userId = fm.userId
+    WHERE u.userId != ? AND fm.familyId = ? AND u.userNotificationToken IS NOT NULL AND uc.userConfigurationIsNotificationEnabled = 1
+    LIMIT 18446744073709551615`,
     [userId, familyId],
   );
 

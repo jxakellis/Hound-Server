@@ -16,7 +16,10 @@ async function getAllFamilyInformationForFamilyId(databaseConnection, familyId, 
   const promises = [
     databaseQuery(
       databaseConnection,
-      'SELECT userId, familyCode, familyIsLocked FROM families WHERE familyId = ? LIMIT 1',
+      `SELECT userId, familyCode, familyIsLocked
+      FROM families
+      WHERE familyId = ?
+      LIMIT 1`,
       [familyId],
     ),
     // get family members
@@ -45,7 +48,11 @@ async function getAllFamilyMembersForFamilyId(databaseConnection, familyId) {
   // get family members
   const result = await databaseQuery(
     databaseConnection,
-    'SELECT u.userId, u.userFirstName, u.userLastName FROM familyMembers fm LEFT JOIN users u ON fm.userId = u.userId WHERE fm.familyId = ? LIMIT 18446744073709551615',
+    `SELECT u.userId, u.userFirstName, u.userLastName
+    FROM familyMembers fm
+    LEFT JOIN users u ON fm.userId = u.userId
+    WHERE fm.familyId = ?
+    LIMIT 18446744073709551615`,
     [familyId],
   );
 
@@ -61,7 +68,11 @@ async function getAllPreviousFamilyMembersForFamilyId(databaseConnection, family
   // get family members
   const result = await databaseQuery(
     databaseConnection,
-    'SELECT userId, userFirstName, userLastName FROM previousFamilyMembers WHERE familyId = ? ORDER BY familyMemberLeaveDate DESC LIMIT 18446744073709551615',
+    `SELECT userId, userFirstName, userLastName
+    FROM previousFamilyMembers
+    WHERE familyId = ?
+    ORDER BY familyMemberLeaveDate DESC
+    LIMIT 18446744073709551615`,
     [familyId],
   );
 
@@ -95,7 +106,10 @@ async function getFamilyMemberUserIdForUserId(databaseConnection, userId) {
 
   const result = await databaseQuery(
     databaseConnection,
-    'SELECT userId FROM familyMembers WHERE userId = ? LIMIT 1',
+    `SELECT userId
+    FROM familyMembers
+    WHERE userId = ?
+    LIMIT 1`,
     [userId],
   );
 
@@ -113,7 +127,10 @@ async function getFamilyHeadUserIdForFamilyId(databaseConnection, familyId) {
 
   const [result] = await databaseQuery(
     databaseConnection,
-    'SELECT userId FROM families WHERE familyId = ? LIMIT 1',
+    `SELECT userId
+    FROM families
+    WHERE familyId = ?
+    LIMIT 1`,
     [familyId],
   );
 
@@ -137,7 +154,11 @@ async function getFamilyIdForUserId(databaseConnection, userId) {
   // Therefore setting userId to null (if there is no family member) even though the userId isn't null.
   const [result] = await databaseQuery(
     databaseConnection,
-    'SELECT fm.familyId FROM users u LEFT JOIN familyMembers fm ON u.userId = fm.userId WHERE u.userId = ? LIMIT 1',
+    `SELECT fm.familyId
+    FROM users u
+    LEFT JOIN familyMembers fm ON u.userId = fm.userId
+    WHERE u.userId = ?
+    LIMIT 1`,
     [userId],
   );
 

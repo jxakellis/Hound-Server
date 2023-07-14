@@ -51,14 +51,18 @@ async function updateInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseC
   if (areAllDefined(isAutoRenewing)) {
     promises.push(databaseQuery(
       databaseConnection,
-      'UPDATE transactions SET isAutoRenewing = ? WHERE transactionId = ?',
+      `UPDATE transactions
+      SET isAutoRenewing = ?
+      WHERE transactionId = ?`,
       [isAutoRenewing, transactionId],
     ));
   }
   if (areAllDefined(isRevoked)) {
     promises.push(databaseQuery(
       databaseConnection,
-      'UPDATE transactions SET isRevoked = ? WHERE transactionId = ?',
+      `UPDATE transactions
+      SET isRevoked = ?
+      WHERE transactionId = ?`,
       [isRevoked, transactionId],
     ));
   }
@@ -87,7 +91,9 @@ async function reassignActiveInAppSubscriptionForUserIdFamilyId(databaseConnecti
   // Reassign all non-expired, non-revoked transactions by the user to their current family.
   await databaseQuery(
     databaseConnection,
-    'UPDATE transactions SET familyId = ? WHERE userId = ? AND expirationDate >= ? AND isRevoked = 0',
+    `UPDATE transactions
+    SET familyId = ?
+    WHERE userId = ? AND expirationDate >= ? AND isRevoked = 0`,
     [familyId, userId, new Date()],
   );
 }

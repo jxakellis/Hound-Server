@@ -5,23 +5,14 @@ const { hash } = require('../../main/tools/format/hash');
 
 const { updateUserForUserIdentifierHashedUserIdentifier } = require('../updateFor/updateForUser');
 
-const userColumns = 'users.userId, users.userApplicationUsername, users.userNotificationToken, users.userFirstName, users.userLastName, users.userEmail';
-const userConfigurationColumns = 'userConfiguration.userConfigurationIsNotificationEnabled, \
-userConfiguration.userConfigurationIsLoudNotificationEnabled, \
-userConfiguration.userConfigurationIsLogNotificationEnabled, \
-userConfiguration.userConfigurationIsReminderNotificationEnabled, \
-userConfiguration.userConfigurationSnoozeLength, \
-userConfiguration.userConfigurationNotificationSound, \
-userConfiguration.userConfigurationLogsInterfaceScale, \
-userConfiguration.userConfigurationRemindersInterfaceScale, \
-userConfiguration.userConfigurationInterfaceStyle, \
-userConfiguration.userConfigurationIsSilentModeEnabled, \
-userConfiguration.userConfigurationSilentModeStartUTCHour, \
-userConfiguration.userConfigurationSilentModeEndUTCHour, \
-userConfiguration.userConfigurationSilentModeStartUTCMinute, \
-userConfiguration.userConfigurationSilentModeEndUTCMinute';
-const userInformationColumns = `${userColumns}, familyMembers.familyId, ${userConfigurationColumns}`;
-const userNameColumns = 'users.userFirstName, users.userLastName';
+const userColumns = 'u.userId, u.userApplicationUsername, u.userNotificationToken, u.userFirstName, u.userLastName, u.userEmail';
+const userConfigurationColumns = `uc.userConfigurationIsNotificationEnabled, uc.userConfigurationIsLoudNotificationEnabled, 
+uc.userConfigurationIsLogNotificationEnabled, uc.userConfigurationIsReminderNotificationEnabled, uc.userConfigurationSnoozeLength, 
+uc.userConfigurationNotificationSound, uc.userConfigurationLogsInterfaceScale, uc.userConfigurationRemindersInterfaceScale, 
+uc.userConfigurationInterfaceStyle, uc.userConfigurationIsSilentModeEnabled, uc.userConfigurationSilentModeStartUTCHour, 
+uc.userConfigurationSilentModeEndUTCHour, uc.userConfigurationSilentModeStartUTCMinute, uc.userConfigurationSilentModeEndUTCMinute`;
+const userInformationColumns = `${userColumns}, fm.familyId, ${userConfigurationColumns}`;
+const userNameColumns = 'u.userFirstName, u.userLastName';
 
 /**
 * If the query is successful, returns the user for the userIdentifier.
@@ -37,10 +28,12 @@ async function getUserForUserIdentifier(databaseConnection, userIdentifier) {
   // Therefore setting userId to null (if there is no family member) even though the userId isn't null.
   let [userInformation] = await databaseQuery(
     databaseConnection,
-    `SELECT ${userInformationColumns} \
-FROM users JOIN userConfiguration ON users.userId = userConfiguration.userId \
-LEFT JOIN familyMembers ON users.userId = familyMembers.userId \
-WHERE users.userIdentifier = ? LIMIT 1`,
+    `SELECT ${userInformationColumns}
+    FROM users u 
+    JOIN userConfiguration uc ON u.userId = uc.userId
+    LEFT JOIN familyMembers fm ON u.userId = fm.userId
+    WHERE u.userIdentifier = ?
+    LIMIT 1`,
     [userIdentifier],
   );
 
@@ -52,10 +45,12 @@ WHERE users.userIdentifier = ? LIMIT 1`,
 
     [userInformation] = await databaseQuery(
       databaseConnection,
-      `SELECT ${userInformationColumns} \
-  FROM users JOIN userConfiguration ON users.userId = userConfiguration.userId \
-  LEFT JOIN familyMembers ON users.userId = familyMembers.userId \
-  WHERE users.userIdentifier = ? LIMIT 1`,
+      `SELECT ${userInformationColumns} 
+      FROM users u
+      JOIN userConfiguration uc ON u.userId = uc.userId 
+      LEFT JOIN familyMembers fm ON u.userId = fm.userId
+      WHERE u.userIdentifier = ?
+      LIMIT 1`,
       [hashedUserIdentifier],
     );
 
@@ -85,10 +80,12 @@ async function getUserForUserApplicationUsername(databaseConnection, userApplica
   // Therefore setting userId to null (if there is no family member) even though the userId isn't null.
   const [userInformation] = await databaseQuery(
     databaseConnection,
-    `SELECT ${userInformationColumns} \
-FROM users JOIN userConfiguration ON users.userId = userConfiguration.userId \
-LEFT JOIN familyMembers ON users.userId = familyMembers.userId \
-WHERE users.userApplicationUsername = ? LIMIT 1`,
+    `SELECT ${userInformationColumns} 
+    FROM users u
+    JOIN userConfiguration uc ON u.userId = uc.userId
+    LEFT JOIN familyMembers fm ON u.userId = fm.userId
+    WHERE u.userApplicationUsername = ?
+    LIMIT 1`,
     [userApplicationUsername],
   );
 
@@ -102,7 +99,10 @@ async function getUserFirstNameLastNameForUserId(databaseConnection, userId) {
 
   const [userInformation] = await databaseQuery(
     databaseConnection,
-    `SELECT ${userNameColumns} FROM users WHERE users.userId = ? LIMIT 1`,
+    `SELECT ${userNameColumns}
+    FROM users u
+    WHERE u.userId = ?
+    LIMIT 1`,
     [userId],
   );
 

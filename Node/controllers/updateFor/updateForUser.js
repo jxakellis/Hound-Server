@@ -86,105 +86,135 @@ or userConfigurationSilentModeEndUTCMinute, provided', global.CONSTANT.ERROR.VAL
   if (areAllDefined(userNotificationToken)) {
     promises.push(databaseQuery(
       databaseConnection,
-      'UPDATE users SET userNotificationToken = ? WHERE userId = ?',
+      `UPDATE users
+      SET userNotificationToken = ?
+      WHERE userId = ?`,
       [userNotificationToken, userId],
     ));
   }
   if (areAllDefined(userConfigurationIsNotificationEnabled)) {
     promises.push(databaseQuery(
       databaseConnection,
-      'UPDATE userConfiguration SET userConfigurationIsNotificationEnabled = ? WHERE userId = ?',
+      `UPDATE userConfiguration
+      SET userConfigurationIsNotificationEnabled = ?
+      WHERE userId = ?`,
       [userConfigurationIsNotificationEnabled, userId],
     ));
   }
   if (areAllDefined(userConfigurationIsLoudNotificationEnabled)) {
     promises.push(databaseQuery(
       databaseConnection,
-      'UPDATE userConfiguration SET userConfigurationIsLoudNotificationEnabled = ? WHERE userId = ?',
+      `UPDATE userConfiguration
+      SET userConfigurationIsLoudNotificationEnabled = ?
+      WHERE userId = ?`,
       [userConfigurationIsLoudNotificationEnabled, userId],
     ));
   }
   if (areAllDefined(userConfigurationIsLogNotificationEnabled)) {
     promises.push(databaseQuery(
       databaseConnection,
-      'UPDATE userConfiguration SET userConfigurationIsLogNotificationEnabled = ? WHERE userId = ?',
+      `UPDATE userConfiguration
+      SET userConfigurationIsLogNotificationEnabled = ?
+      WHERE userId = ?`,
       [userConfigurationIsLogNotificationEnabled, userId],
     ));
   }
   if (areAllDefined(userConfigurationIsReminderNotificationEnabled)) {
     promises.push(databaseQuery(
       databaseConnection,
-      'UPDATE userConfiguration SET userConfigurationIsReminderNotificationEnabled = ? WHERE userId = ?',
+      `UPDATE userConfiguration
+      SET userConfigurationIsReminderNotificationEnabled = ?
+      WHERE userId = ?`,
       [userConfigurationIsReminderNotificationEnabled, userId],
     ));
   }
   if (areAllDefined(userConfigurationInterfaceStyle)) {
     promises.push(databaseQuery(
       databaseConnection,
-      'UPDATE userConfiguration SET userConfigurationInterfaceStyle = ? WHERE userId = ?',
+      `UPDATE userConfiguration
+      SET userConfigurationInterfaceStyle = ?
+      WHERE userId = ?`,
       [userConfigurationInterfaceStyle, userId],
     ));
   }
   if (areAllDefined(userConfigurationSnoozeLength)) {
     promises.push(databaseQuery(
       databaseConnection,
-      'UPDATE userConfiguration SET userConfigurationSnoozeLength = ? WHERE userId = ?',
+      `UPDATE userConfiguration
+      SET userConfigurationSnoozeLength = ?
+      WHERE userId = ?`,
       [userConfigurationSnoozeLength, userId],
     ));
   }
   if (areAllDefined(userConfigurationNotificationSound)) {
     promises.push(databaseQuery(
       databaseConnection,
-      'UPDATE userConfiguration SET userConfigurationNotificationSound = ? WHERE userId = ?',
+      `UPDATE userConfiguration
+      SET userConfigurationNotificationSound = ?
+      WHERE userId = ?`,
       [userConfigurationNotificationSound, userId],
     ));
   }
   if (areAllDefined(userConfigurationLogsInterfaceScale)) {
     promises.push(databaseQuery(
       databaseConnection,
-      'UPDATE userConfiguration SET userConfigurationLogsInterfaceScale = ? WHERE userId = ?',
+      `UPDATE userConfiguration
+      SET userConfigurationLogsInterfaceScale = ?
+      WHERE userId = ?`,
       [userConfigurationLogsInterfaceScale, userId],
     ));
   }
   if (areAllDefined(userConfigurationRemindersInterfaceScale)) {
     promises.push(databaseQuery(
       databaseConnection,
-      'UPDATE userConfiguration SET userConfigurationRemindersInterfaceScale = ? WHERE userId = ?',
+      `UPDATE userConfiguration
+      SET userConfigurationRemindersInterfaceScale = ?
+      WHERE userId = ?`,
       [userConfigurationRemindersInterfaceScale, userId],
     ));
   }
   if (areAllDefined(userConfigurationIsSilentModeEnabled)) {
     promises.push(databaseQuery(
       databaseConnection,
-      'UPDATE userConfiguration SET userConfigurationIsSilentModeEnabled = ? WHERE userId = ?',
+      `UPDATE userConfiguration
+      SET userConfigurationIsSilentModeEnabled = ?
+      WHERE userId = ?`,
       [userConfigurationIsSilentModeEnabled, userId],
     ));
   }
   if (areAllDefined(userConfigurationSilentModeStartUTCHour)) {
     promises.push(databaseQuery(
       databaseConnection,
-      'UPDATE userConfiguration SET userConfigurationSilentModeStartUTCHour = ? WHERE userId = ?',
+      `UPDATE userConfiguration
+      SET userConfigurationSilentModeStartUTCHour = ?
+      WHERE userId = ?`,
       [userConfigurationSilentModeStartUTCHour, userId],
     ));
   }
   if (areAllDefined(userConfigurationSilentModeEndUTCHour)) {
     promises.push(databaseQuery(
       databaseConnection,
-      'UPDATE userConfiguration SET userConfigurationSilentModeEndUTCHour = ? WHERE userId = ?',
+      `UPDATE userConfiguration
+      SET userConfigurationSilentModeEndUTCHour = ?
+      WHERE userId = ?`,
       [userConfigurationSilentModeEndUTCHour, userId],
     ));
   }
   if (areAllDefined(userConfigurationSilentModeStartUTCMinute)) {
     promises.push(databaseQuery(
       databaseConnection,
-      'UPDATE userConfiguration SET userConfigurationSilentModeStartUTCMinute = ? WHERE userId = ?',
+      `UPDATE userConfiguration
+      SET userConfigurationSilentModeStartUTCMinute = ?
+      WHERE userId = ?`,
       [userConfigurationSilentModeStartUTCMinute, userId],
     ));
   }
   if (areAllDefined(userConfigurationSilentModeEndUTCMinute)) {
     promises.push(databaseQuery(
       databaseConnection,
-      'UPDATE userConfiguration SET userConfigurationSilentModeEndUTCMinute = ? WHERE userId = ?',
+      `UPDATE userConfiguration
+      SET userConfigurationSilentModeEndUTCMinute = ?
+      WHERE userId = ?`,
       [userConfigurationSilentModeEndUTCMinute, userId],
     ));
   }
@@ -216,7 +246,9 @@ async function updateUserForUserIdentifierHashedUserIdentifier(
 
   await databaseQuery(
     databaseConnection,
-    'UPDATE users SET userIdentifier = ? WHERE userIdentifier = ?',
+    `UPDATE users
+    SET userIdentifier = ?
+    WHERE userIdentifier = ?`,
     [unhashedUserIdentifier, hashedUserIdentifier],
   );
 }

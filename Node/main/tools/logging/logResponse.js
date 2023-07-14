@@ -19,7 +19,9 @@ async function logResponse(req, res, body) {
     try {
       const result = await databaseQuery(
         databaseConnectionForLogging,
-        'INSERT INTO previousResponses(requestId, responseDate, responseBody) VALUES (?,?,?)',
+        `INSERT INTO previousResponses
+        (requestId, responseDate, responseBody)
+        VALUES (?,?,?)`,
         [req.requestId, date, responseBody],
       );
       const responseId = formatNumber(result.insertId);

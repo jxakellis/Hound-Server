@@ -3,33 +3,12 @@ const { formatDate } = require('../../main/tools/format/formatObject');
 const { areAllDefined } = require('../../main/tools/format/validateDefined');
 const { ValidationError } = require('../../main/tools/general/errors');
 
-// Select every column except for dogId, reminderExecutionDate, and reminderLastModified (by not transmitting, increases network efficiency)
-// dogId is already known, reminderExecutionDate is calculated client-side and server-side is only used for notification sending, and reminderLastModified has no use client-side
 // TO DO FUTURE only select reminderId and reminderIsDeleted if reminderIsDeleted = 0, otherwise include all columns
-const dogRemindersColumns = 'reminderId, \
-reminderAction, \
-reminderCustomActionName, \
-reminderType, \
-reminderIsEnabled, \
-reminderExecutionBasis, \
-reminderIsDeleted, \
-snoozeExecutionInterval, \
-countdownExecutionInterval, \
-weeklyUTCHour, \
-weeklyUTCMinute, \
-weeklySunday, \
-weeklyMonday, \
-weeklyTuesday, \
-weeklyWednesday, \
-weeklyThursday, \
-weeklyFriday, \
-weeklySaturday, \
-weeklySkippedDate, \
-monthlyUTCDay, \
-monthlyUTCHour, \
-monthlyUTCMinute, \
-monthlySkippedDate, \
-oneTimeDate';
+// OMITTED (not necessary): dogId, reminderExecutionDate, reminderLastModified
+const dogRemindersColumns = `reminderId, reminderAction, reminderCustomActionName, reminderType, reminderIsEnabled, 
+reminderExecutionBasis, reminderIsDeleted, snoozeExecutionInterval, countdownExecutionInterval, weeklyUTCHour, 
+weeklyUTCMinute, weeklySunday, weeklyMonday, weeklyTuesday, weeklyWednesday, weeklyThursday, weeklyFriday, weeklySaturday,
+weeklySkippedDate, monthlyUTCDay, monthlyUTCHour, monthlyUTCMinute, monthlySkippedDate, oneTimeDate`;
 
 /**
  *  If the query is successful, returns the reminder for the reminderId.
@@ -45,12 +24,18 @@ async function getReminderForReminderId(databaseConnection, reminderId, forUserC
   const [result] = areAllDefined(userConfigurationPreviousDogManagerSynchronization)
     ? await databaseQuery(
       databaseConnection,
-      `SELECT ${dogRemindersColumns} FROM dogReminders WHERE reminderLastModified >= ? AND reminderId = ? LIMIT 1`,
+      `SELECT ${dogRemindersColumns}
+      FROM dogReminders
+      WHERE reminderLastModified >= ? AND reminderId = ?
+      LIMIT 1`,
       [userConfigurationPreviousDogManagerSynchronization, reminderId],
     )
     : await databaseQuery(
       databaseConnection,
-      `SELECT ${dogRemindersColumns} FROM dogReminders WHERE reminderId = ? LIMIT 1`,
+      `SELECT ${dogRemindersColumns}
+      FROM dogReminders
+      WHERE reminderId = ?
+      LIMIT 1`,
       [reminderId],
     );
 
@@ -73,12 +58,18 @@ async function getAllRemindersForDogId(databaseConnection, dogId, forUserConfigu
   const result = areAllDefined(userConfigurationPreviousDogManagerSynchronization)
     ? await databaseQuery(
       databaseConnection,
-      `SELECT ${dogRemindersColumns} FROM dogReminders WHERE reminderLastModified >= ? AND dogId = ? LIMIT 18446744073709551615`,
+      `SELECT ${dogRemindersColumns}
+      FROM dogReminders
+      WHERE reminderLastModified >= ? AND dogId = ?
+      LIMIT 18446744073709551615`,
       [userConfigurationPreviousDogManagerSynchronization, dogId],
     )
     : await databaseQuery(
       databaseConnection,
-      `SELECT ${dogRemindersColumns} FROM dogReminders WHERE dogId = ? LIMIT 18446744073709551615`,
+      `SELECT ${dogRemindersColumns}
+      FROM dogReminders
+      WHERE dogId = ?
+      LIMIT 18446744073709551615`,
       [dogId],
     );
 

@@ -33,7 +33,9 @@ async function logRequest(req, res, next) {
     try {
       const result = await databaseQuery(
         databaseConnectionForLogging,
-        'INSERT INTO previousRequests(requestIP, requestDate, requestMethod, requestOriginalURL, requestBody) VALUES (?,?,?,?,?)',
+        `INSERT INTO previousRequests
+        (requestIP, requestDate, requestMethod, requestOriginalURL, requestBody)
+        VALUES (?,?,?,?,?)`,
         [ip, date, method, originalUrl, body],
       );
       const requestId = formatNumber(result.insertId);
@@ -59,7 +61,9 @@ async function addUserIdToLogRequest(req, res, next) {
   try {
     await databaseQuery(
       databaseConnectionForLogging,
-      'UPDATE previousRequests SET requestUserId = ? WHERE requestId = ?',
+      `UPDATE previousRequests
+      SET requestUserId = ?
+      WHERE requestId = ?`,
       [userId, requestId],
     );
   }
@@ -82,7 +86,9 @@ async function addFamilyIdToLogRequest(req, res, next) {
   try {
     await databaseQuery(
       databaseConnectionForLogging,
-      'UPDATE previousRequests SET requestFamilyId = ? WHERE requestId = ?',
+      `UPDATE previousRequests
+      SET requestFamilyId = ?
+      WHERE requestId = ?`,
       [familyId, requestId],
     );
   }

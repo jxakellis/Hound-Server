@@ -3,15 +3,18 @@ const { databaseQuery } = require('./databaseQuery');
 const { serverLogger } = require('../logging/loggers');
 const { formatArray } = require('../format/formatObject');
 
-const databaseConnectionPingQuery = 'SELECT 1 FROM users LIMIT 1';
-
 /// Performs basic query on user table to establish if the databaseConnection is valid
 async function testDatabaseConnection(databaseConnection) {
   if (areAllDefined(databaseConnection) === false) {
     return;
   }
 
-  await databaseQuery(databaseConnection, databaseConnectionPingQuery);
+  await databaseQuery(
+    databaseConnection,
+    `SELECT 1
+    FROM users
+    LIMIT 1`,
+  );
   serverLogger.info(`databaseConnection with thread id ${databaseConnection.threadId} verified as connected`);
 }
 

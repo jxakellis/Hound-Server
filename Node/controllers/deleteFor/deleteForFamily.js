@@ -4,7 +4,6 @@ const { formatSHA256Hash } = require('../../main/tools/format/formatObject');
 const { areAllDefined } = require('../../main/tools/format/validateDefined');
 
 const { getFamilyHeadUserIdForFamilyId } = require('../getFor/getForFamily');
-const { getUserFirstNameLastNameForUserId } = require('../getFor/getForUser');
 
 const { createFamilyMemberLeaveNotification } = require('../../main/tools/notifications/alert/createFamilyNotification');
 const { createUserKickedNotification } = require('../../main/tools/notifications/alert/createUserKickedNotification');
@@ -47,7 +46,10 @@ async function deleteFamily(databaseConnection, familyId, familyActiveSubscripti
   // find the amount of family members in the family
   const familyMembers = await databaseQuery(
     databaseConnection,
-    'SELECT 1 FROM familyMembers WHERE familyId = ? LIMIT 18446744073709551615',
+    `SELECT 1
+    FROM familyMembers
+    WHERE familyId = ?
+    LIMIT 18446744073709551615`,
     [familyId],
   );
 
@@ -74,25 +76,54 @@ async function deleteFamily(databaseConnection, familyId, familyActiveSubscripti
   //  They will forfit the rest of their active subscription (if it exists) by deleting their family.
   //  However, they are safe from an accidential renewal
 
-  // Destroy the family now that it is ok to do so
-  // TO DO NOW add record to previousFamilies of family deletion
-  // TO DO NOW add record of all users in familyMembers to previousFamilyMembers
-  const promises = [
+  // TO DO NOW TEST that these records save all the families and family members correctly
+  // Copy the current, up-to-date records into the "previous" tables. This keeps a record in case we need to reference it later, but in a table that isn't used much
+  let promises = [
     databaseQuery(
       databaseConnection,
-      'DELETE FROM families WHERE familyId = ?',
+      `INSERT INTO previousFamilies
+      (familyId, userId, familyCode, familyIsLocked, familyAccountCreationDate, familyAccountDeletionDate)
+      SELECT familyId, userId, familyCode, familyIsLocked, familyAccountCreationDate, ?
+      FROM families 
+      WHERE familyId = ?`,
+      [new Date(), familyId],
+    ),
+    databaseQuery(
+      databaseConnection,
+      `INSERT INTO previousFamilyMembers
+      (familyId, userId, familyMemberJoinDate, userFirstName, userLastName, familyMemberLeaveDate, familyMemberLeaveReason) 
+      SELECT fm.familyId, fm.userId, fm.familyMemberJoinDate, u.userFirstName, u.userLastName, ?, 'familyDeleted' 
+      FROM familyMembers fm
+      JOIN users u ON fm.userId = u.userId
+      WHERE fm.familyId = ?`,
+      [new Date(), familyId],
+    ),
+  ];
+  await Promise.all(promises);
+
+  // Family copied into "previous" tables, delete the actual family now
+  promises = [
+    databaseQuery(
+      databaseConnection,
+      `DELETE FROM families
+      WHERE familyId = ?`,
       [familyId],
     ),
     // deletes all users from the family (should only be one)
     databaseQuery(
       databaseConnection,
-      'DELETE FROM familyMembers WHERE familyId = ?',
+      `DELETE FROM familyMembers
+      WHERE familyId = ?`,
       [familyId],
     ),
     // delete all the corresponding dog, reminder, and log data
     databaseQuery(
       databaseConnection,
-      'DELETE dogs, dogReminders, dogLogs FROM dogs LEFT JOIN dogLogs ON dogs.dogId = dogLogs.dogId LEFT JOIN dogReminders ON dogs.dogId = dogReminders.dogId WHERE dogs.familyId = ?',
+      `DELETE d, dr, dl
+      FROM dogs d
+      LEFT JOIN dogLogs dl ON d.dogId = dl.dogId
+      LEFT JOIN dogReminders dr ON d.dogId = dr.dogId
+      WHERE d.familyId = ?`,
       [familyId],
     ),
   ];
@@ -108,52 +139,39 @@ async function leaveFamily(databaseConnection, userId, familyId) {
     throw new ValidationError('databaseConnection, userId, or familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
-  let promises = [
-    getUserFirstNameLastNameForUserId(databaseConnection, userId),
-    databaseQuery(
-      databaseConnection,
-      'SELECT familyMemberJoinDate FROM familyMembers WHERE userId = ? LIMIT 1',
-      [userId],
-    ),
-  ];
-  const [userFullName, [familyMemberJoinDate]] = await Promise.all(promises);
+  // keep record of user leaving, do this first so the delete statement doesn't mess with this query
+  await databaseQuery(
+    databaseConnection,
+    `INSERT INTO previousFamilyMembers
+    (familyId, userId, familyMemberJoinDate, userFirstName, userLastName, familyMemberLeaveDate, familyMemberLeaveReason) 
+    SELECT fm.familyId, fm.userId, fm.familyMemberJoinDate, u.userFirstName, u.userLastName, ?, 'userLeft' 
+    FROM familyMembers fm
+    JOIN users u ON fm.userId = u.userId
+    WHERE fm.userId = ?`,
+    [new Date(), userId],
+  );
 
-  if (areAllDefined(userFullName, familyMemberJoinDate) === false) {
-    throw new ValidationError('userFullName or familyMemberJoinDate missing', global.CONSTANT.ERROR.VALUE.MISSING);
-  }
-
-  const { userFirstName, userLastName } = userFullName;
-
-  promises = [
-    // deletes user from family
-    databaseQuery(
-      databaseConnection,
-      'DELETE FROM familyMembers WHERE userId = ?',
-      [userId],
-    ),
-    // keep record of user leaving
-    databaseQuery(
-      databaseConnection,
-      'INSERT INTO previousFamilyMembers(familyId, userId, familyMemberJoinDate, userFirstName, userLastName, familyMemberLeaveDate, familyMemberLeaveReason) VALUES (?,?,?,?,?,?,?)',
-      [familyId, userId, familyMemberJoinDate.familyMemberJoinDate, userFirstName, userLastName, new Date(), 'userLeft'],
-    ),
-  ];
-
-  await Promise.all(promises);
+  // deletes user from family
+  await databaseQuery(
+    databaseConnection,
+    `DELETE FROM familyMembers
+    WHERE userId = ?`,
+    [userId],
+  );
 }
 
 /**
 * Helper method for deleteFamilyLeaveFamilyKickFamilyMemberForUserIdFamilyId, goes through checks to attempt to kick a user from the family
 */
-async function kickFamilyMemberForUserIdFamilyId(databaseConnection, userId, familyId, forKickUserId) {
-  const familyKickUserId = formatSHA256Hash(forKickUserId);
+async function kickFamilyMemberForUserIdFamilyId(databaseConnection, userId, familyId, forKickedUserId) {
+  const kickedUserId = formatSHA256Hash(forKickedUserId);
 
   // have to specify who to kick from the family
-  if (areAllDefined(databaseConnection, userId, familyId, familyKickUserId) === false) {
-    throw new ValidationError('databaseConnection, userId, familyId, or familyKickUserId missing', global.CONSTANT.ERROR.VALUE.MISSING);
+  if (areAllDefined(databaseConnection, userId, familyId, kickedUserId) === false) {
+    throw new ValidationError('databaseConnection, userId, familyId, or kickedUserId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
   // a user cannot kick themselves
-  if (userId === familyKickUserId) {
+  if (userId === kickedUserId) {
     throw new ValidationError("You can't kick yourself from your own family", global.CONSTANT.ERROR.VALUE.INVALID);
   }
   const familyHeadUserId = await getFamilyHeadUserIdForFamilyId(databaseConnection, familyId);
@@ -163,43 +181,29 @@ async function kickFamilyMemberForUserIdFamilyId(databaseConnection, userId, fam
     throw new ValidationError('You are not the family head. Only the family head can kick family members', global.CONSTANT.ERROR.PERMISSION.INVALID.FAMILY);
   }
 
-  let promises = [
-    getUserFirstNameLastNameForUserId(databaseConnection, familyKickUserId),
-    databaseQuery(
-      databaseConnection,
-      'SELECT familyMemberJoinDate FROM familyMembers WHERE userId = ? LIMIT 1',
-      [familyKickUserId],
-    ),
-  ];
-  const [userFullName, [familyMemberJoinDate]] = await Promise.all(promises);
+  // kick the user by deleting them from the family, do this first so the delete statement doesn't mess with this query
+  await databaseQuery(
+    databaseConnection,
+    `INSERT INTO previousFamilyMembers
+    (familyId, userId, familyMemberJoinDate, userFirstName, userLastName, familyMemberLeaveDate, familyMemberLeaveReason) 
+    SELECT fm.familyId, fm.userId, fm.familyMemberJoinDate, u.userFirstName, u.userLastName, ?, 'userKicked' 
+    FROM familyMembers fm
+    JOIN users u ON fm.userId = u.userId
+    WHERE fm.userId = ?`,
+    [new Date(), kickedUserId],
+  );
 
-  if (areAllDefined(userFullName, familyMemberJoinDate) === false) {
-    throw new ValidationError('userFullName or familyMemberJoinDate missing', global.CONSTANT.ERROR.VALUE.MISSING);
-  }
-
-  const { userFirstName, userLastName } = userFullName;
-
-  promises = [
-    // familyKickUserId is valid, familyKickUserId is different then the requester, requester is the family head so everything is valid
-    // kick the user by deleting them from the family
-    databaseQuery(
-      databaseConnection,
-      'DELETE FROM familyMembers WHERE userId = ?',
-      [familyKickUserId],
-    ),
-    // keep a record of user kicked
-    databaseQuery(
-      databaseConnection,
-      'INSERT INTO previousFamilyMembers(familyId, userId, familyMemberJoinDate, userFirstName, userLastName, familyMemberLeaveDate, familyMemberLeaveReason) VALUES (?,?,?,?,?,?,?)',
-      [familyId, familyKickUserId, familyMemberJoinDate.familyMemberJoinDate, userFirstName, userLastName, new Date(), 'userKicked'],
-    ),
-  ];
-
-  await Promise.all(promises);
+  // deletes user from family
+  await databaseQuery(
+    databaseConnection,
+    `DELETE FROM familyMembers
+    WHERE userId = ?`,
+    [kickedUserId],
+  );
 
   // The alarm notifications retrieve the notification tokens of familyMembers right as they fire, so the user will not be included
-  createFamilyMemberLeaveNotification(familyKickUserId, familyId);
-  createUserKickedNotification(familyKickUserId);
+  createFamilyMemberLeaveNotification(kickedUserId, familyId);
+  createUserKickedNotification(kickedUserId);
 }
 
 module.exports = { deleteFamilyLeaveFamilyForUserIdFamilyId, kickFamilyMemberForUserIdFamilyId };
