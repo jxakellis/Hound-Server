@@ -96,9 +96,9 @@ async function addFamilyMember(databaseConnection, userId, forFamilyCode) {
     [userId, familyId, new Date()],
   );
 
-  const { offerCode } = familyActiveSubscription;
+  const { offerCode, transactionId } = familyActiveSubscription;
 
-  if (areAllDefined(offerCode) === true) {
+  if (areAllDefined(offerCode, transactionId) === true) {
     // A new family member joined a family with a subscription that has an offer code, insert record into affiliate program table
     // TO DO NOW TEST that this inserts record when user joins family with offer code
     await databaseQuery(
@@ -111,8 +111,9 @@ async function addFamilyMember(databaseConnection, userId, forFamilyCode) {
       subscriptionGroupIdentifier, purchaseDate, expirationDate, numberOfFamilyMembers, numberOfDogs, 
       quantity, webOrderLineItemId, inAppOwnershipType, isAutoRenewing, isRevoked, offerCode
       FROM transactions t
-      WHERE familyId = ?`,
-      [familyId],
+      WHERE transactionId = ?
+      LIMIT 1`,
+      [transactionId],
     );
   }
 

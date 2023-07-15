@@ -77,7 +77,6 @@ async function deleteFamily(databaseConnection, familyId, familyActiveSubscripti
   //  They will forfit the rest of their active subscription (if it exists) by deleting their family.
   //  However, they are safe from an accidential renewal
 
-  // TO DO NOW TEST that these records save all the families and family members correctly
   // Copy the current, up-to-date records into the "previous" tables. This keeps a record in case we need to reference it later, but in a table that isn't used much
   let promises = [
     databaseQuery(
