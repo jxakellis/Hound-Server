@@ -100,7 +100,7 @@ const SUBSCRIPTION = {
   DEFAULT_SUBSCRIPTION_NUMBER_OF_FAMILY_MEMBERS,
   DEFAULT_SUBSCRIPTION_NUMBER_OF_DOGS,
   // How many milliseconds the expiration date of a sandbox subscription should be extended
-  SANDBOX_EXPIRATION_DATE_EXTENSION: 1000 * 60 * 60 * 24 * 365,
+  SANDBOX_EXPIRATION_DATE_EXTENSION: 1000 * 60 * 60 * 24 * 365 * 0 * 0 * 0 * 0,
   // The in app purchase offerings for subscriptions (default indicates free / no payment)
   SUBSCRIPTIONS: [
     {
@@ -123,7 +123,6 @@ const SUBSCRIPTION = {
       numberOfFamilyMembers: 6,
       numberOfDogs: 6,
     },
-    // TO DO NOW make sure all these new subscriptions are input into both ASC and ios app, so that it is compatible
     /*
             base rate    discounted
     1 mo:   6.99         6.99 (0%, 6.99/mo)       com.jonathanxakellis.hound.sixfamilymembers.onemonth

@@ -100,7 +100,6 @@ async function addFamilyMember(databaseConnection, userId, forFamilyCode) {
 
   if (areAllDefined(offerCode, transactionId) === true) {
     // A new family member joined a family with a subscription that has an offer code, insert record into affiliate program table
-    // TO DO NOW TEST that this inserts record when user joins family with offer code
     await databaseQuery(
       databaseConnection,
       `INSERT INTO affiliateTransactions
