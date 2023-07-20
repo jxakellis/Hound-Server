@@ -33,8 +33,7 @@ async function createDog(req, res) {
   try {
     const { familyId } = req.params;
     const { dogName } = req.body;
-    const { familyActiveSubscription } = req;
-    const result = await createDogForFamilyId(req.databaseConnection, familyId, familyActiveSubscription, dogName);
+    const result = await createDogForFamilyId(req.databaseConnection, familyId, dogName);
 
     return res.sendResponseForStatusBodyError(200, result, undefined);
   }

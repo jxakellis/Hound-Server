@@ -31,6 +31,9 @@ const LIMIT = {
   // A user can have <= the number listed below of reminders for each dog. E.g. if 10 then the family can have <= 10 reminders per dog
   // IMPORTANT: If you modify this value, change the value on Hound app's DogConstant
   NUMBER_OF_REMINDERS_PER_DOG: 10,
+  // A family can have <= the number listed below of dogs. E.g. if 10 then the family can have <= 10 dogs
+  // IMPORTANT: If you modify this value, change the value on Hound app's DogConstant
+  NUMBER_OF_DOGS_PER_FAMILY: 10,
 };
 
 const NOTIFICATION = {
@@ -92,13 +95,10 @@ const NOTIFICATION = {
 
 const DEFAULT_SUBSCRIPTION_PRODUCT_ID = 'com.jonathanxakellis.hound.default';
 const DEFAULT_SUBSCRIPTION_NUMBER_OF_FAMILY_MEMBERS = 1;
-// STATIC 10 DOG LIMIT
-const DEFAULT_SUBSCRIPTION_NUMBER_OF_DOGS = 10;
 
 const SUBSCRIPTION = {
   DEFAULT_SUBSCRIPTION_PRODUCT_ID,
   DEFAULT_SUBSCRIPTION_NUMBER_OF_FAMILY_MEMBERS,
-  DEFAULT_SUBSCRIPTION_NUMBER_OF_DOGS,
   // How many milliseconds the expiration date of a sandbox subscription should be extended
   SANDBOX_EXPIRATION_DATE_EXTENSION: 1000 * 60 * 60 * 24 * 365 * 0 * 0 * 0 * 0,
   // The in app purchase offerings for subscriptions (default indicates free / no payment)
@@ -106,43 +106,37 @@ const SUBSCRIPTION = {
     {
       productId: DEFAULT_SUBSCRIPTION_PRODUCT_ID,
       numberOfFamilyMembers: DEFAULT_SUBSCRIPTION_NUMBER_OF_FAMILY_MEMBERS,
-      numberOfDogs: DEFAULT_SUBSCRIPTION_NUMBER_OF_DOGS,
+      numberOfDogs: LIMIT.NUMBER_OF_DOGS_PER_FAMILY,
     },
     {
       productId: 'com.jonathanxakellis.hound.twofamilymemberstwodogs.monthly',
       numberOfFamilyMembers: 2,
-      numberOfDogs: 2,
+      numberOfDogs: LIMIT.NUMBER_OF_DOGS_PER_FAMILY,
     },
     {
       productId: 'com.jonathanxakellis.hound.fourfamilymembersfourdogs.monthly',
       numberOfFamilyMembers: 4,
-      numberOfDogs: 4,
+      numberOfDogs: LIMIT.NUMBER_OF_DOGS_PER_FAMILY,
     },
     {
       productId: 'com.jonathanxakellis.hound.sixfamilymemberssixdogs.monthly',
       numberOfFamilyMembers: 6,
-      numberOfDogs: 6,
+      numberOfDogs: LIMIT.NUMBER_OF_DOGS_PER_FAMILY,
     },
-    /*
-            base rate    discounted
-    1 mo:   6.99         6.99 (0%, 6.99/mo)       com.jonathanxakellis.hound.sixfamilymembers.onemonth
-    6 mo:   41.99        29.99 (28.5%, 4.99/mo)   com.jonathanxakellis.hound.sixfamilymembers.sixmonth
-    12 mo:  84.99        44.99 (47%, 3.75/mo)     com.jonathanxakellis.hound.sixfamilymembers.oneyear
-    */
     {
       productId: 'com.jonathanxakellis.hound.sixfamilymembers.onemonth',
       numberOfFamilyMembers: 6,
-      numberOfDogs: 10,
+      numberOfDogs: LIMIT.NUMBER_OF_DOGS_PER_FAMILY,
     },
     {
       productId: 'com.jonathanxakellis.hound.sixfamilymembers.sixmonth',
       numberOfFamilyMembers: 6,
-      numberOfDogs: 10,
+      numberOfDogs: LIMIT.NUMBER_OF_DOGS_PER_FAMILY,
     },
     {
       productId: 'com.jonathanxakellis.hound.sixfamilymembers.oneyear',
       numberOfFamilyMembers: 6,
-      numberOfDogs: 10,
+      numberOfDogs: LIMIT.NUMBER_OF_DOGS_PER_FAMILY,
     },
   ],
 };
