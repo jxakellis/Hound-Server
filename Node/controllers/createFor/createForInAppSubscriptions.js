@@ -191,7 +191,7 @@ async function createInAppSubscriptionForUserIdFamilyIdTransactionInfo(
   forInAppOwnershipType,
   forOfferCode,
 ) {
-  // TO DO NOW TEST that the offer code is recieve from both server and reciept
+  // TODO NOW TEST that the offer code is recieve from both server and reciept
   console.log(`createInAppSubscriptionForUserIdFamilyIdTransactionInfo did recieve ${forOfferCode}`);
   // userId
   // familyId

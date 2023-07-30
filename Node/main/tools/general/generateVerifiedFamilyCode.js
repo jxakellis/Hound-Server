@@ -17,7 +17,7 @@ const generateFamilyCode = () => {
     familyCode += characters.charAt(getRandomInt(charactersLength));
   }
 
-  // TO DO FUTURE add swear word filter to auto code generator
+  // TODO FUTURE add swear word filter to auto code generator
 
   return familyCode;
 };

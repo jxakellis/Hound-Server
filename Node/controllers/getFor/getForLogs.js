@@ -3,7 +3,6 @@ const { formatDate } = require('../../main/tools/format/formatObject');
 const { areAllDefined } = require('../../main/tools/format/validateDefined');
 const { ValidationError } = require('../../main/tools/general/errors');
 
-// TO DO FUTURE only select logId and logIsDeleted if logIsDeleted = 0, otherwise include all columns
 // OMITTED (not necessary): dogId and logLastModified
 const dogLogsColumns = 'logId, userId, logDate, logNote, logAction, logCustomActionName, logIsDeleted';
 

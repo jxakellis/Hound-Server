@@ -3,7 +3,6 @@ const { formatDate } = require('../../main/tools/format/formatObject');
 const { areAllDefined } = require('../../main/tools/format/validateDefined');
 const { ValidationError } = require('../../main/tools/general/errors');
 
-// TO DO FUTURE only select reminderId and reminderIsDeleted if reminderIsDeleted = 0, otherwise include all columns
 // OMITTED (not necessary): dogId, reminderExecutionDate, reminderLastModified
 const dogRemindersColumns = `reminderId, reminderAction, reminderCustomActionName, reminderType, reminderIsEnabled, 
 reminderExecutionBasis, reminderIsDeleted, snoozeExecutionInterval, countdownExecutionInterval, weeklyUTCHour, 

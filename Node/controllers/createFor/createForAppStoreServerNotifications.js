@@ -28,7 +28,7 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
   if (areAllDefined(databaseConnection, signedPayload) === false) {
     throw new ValidationError('databaseConnection or signedPayload missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
-  // TO DO FUTURE verify Apple signature
+  // TODO FUTURE verify Apple signature with gpt
   const signedPayloadBuffer = Buffer.from(signedPayload.split('.')[1], 'base64');
   const notification = JSON.parse(signedPayloadBuffer.toString());
 
@@ -60,11 +60,11 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
     throw new ValidationError('signedRenewalInfo or signedTransactionInfo missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
-  // TO DO FUTURE verify Apple signature
+  // TODO FUTURE verify Apple signature with gpt
   const signedRenewalInfoBuffer = Buffer.from(signedRenewalInfo.split('.')[1], 'base64');
   const renewalInfo = JSON.parse(signedRenewalInfoBuffer.toString());
 
-  // TO DO FUTURE verify Apple signature
+  // TODO FUTURE verify Apple signature with gpt
   const signedTransactionInfoBuffer = Buffer.from(signedTransactionInfo.split('.')[1], 'base64');
   const transactionInfo = JSON.parse(signedTransactionInfoBuffer.toString());
 
@@ -166,7 +166,7 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
     if (areAllDefined(storedTransaction)) {
     // The transaction already exists, so no need to create
 
-      // TO DO FUTURE potentially this transaction could contain more information than the transaction created through reciepts.
+      // TODO FUTURE potentially this transaction could contain more information than the transaction created through reciepts.
       // investigate and if it does, then invoke function to provide that additonal information
 
       return;
