@@ -20,6 +20,7 @@ async function getDogForDogId(databaseConnection, dogId, forUserConfigurationPre
   if (areAllDefined(databaseConnection, dogId) === false) {
     throw new ValidationError('databaseConnection or dogId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
+  console.log('getDogForDogId');
 
   const userConfigurationPreviousDogManagerSynchronization = formatDate(forUserConfigurationPreviousDogManagerSynchronization);
 
@@ -49,6 +50,9 @@ async function getDogForDogId(databaseConnection, dogId, forUserConfigurationPre
       [dogId],
     );
 
+  console.log(areAllDefined(userConfigurationPreviousDogManagerSynchronization));
+  console.log(dog);
+
   // no need to do anything else as there are no dogs
   if (areAllDefined(dog) === false) {
     return dog;
@@ -56,19 +60,25 @@ async function getDogForDogId(databaseConnection, dogId, forUserConfigurationPre
 
   const isRetrievingReminders = formatBoolean(forIsRetrievingReminders);
   const isRetrievingLogs = formatBoolean(forIsRetrievingLogs);
+
+  console.log(isRetrievingReminders, isRetrievingLogs);
   if (atLeastOneDefined(isRetrievingReminders, isRetrievingLogs) === false) {
     return dog;
   }
 
   // if the query parameter indicates that they want the logs and the reminders too, we add them.
   if (areAllDefined(isRetrievingReminders) && isRetrievingReminders) {
+    console.log('isRetrievingReminders');
     // add all the reminders we want to retrieving into an array, 1:1 corresponding to dogs
     dog.reminders = await getAllRemindersForDogId(databaseConnection, dog.dogId, userConfigurationPreviousDogManagerSynchronization);
   }
 
   if (areAllDefined(isRetrievingLogs) && isRetrievingLogs) {
+    console.log('isRetrievingLogs');
     dog.logs = await getAllLogsForDogId(databaseConnection, dog.dogId, userConfigurationPreviousDogManagerSynchronization);
   }
+
+  console.log(dog);
 
   return dog;
 }
@@ -82,6 +92,7 @@ async function getAllDogsForUserIdFamilyId(databaseConnection, userId, familyId,
   if (areAllDefined(databaseConnection, familyId) === false) {
     throw new ValidationError('databaseConnection or familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
+  console.log('getAllDogsForUserIdFamilyId');
 
   const userConfigurationPreviousDogManagerSynchronization = formatDate(forUserConfigurationPreviousDogManagerSynchronization);
 
@@ -110,6 +121,9 @@ async function getAllDogsForUserIdFamilyId(databaseConnection, userId, familyId,
       [familyId],
     );
 
+  console.log(areAllDefined(userConfigurationPreviousDogManagerSynchronization));
+  console.log(dog);
+
   // no need to do anything else as there are no dogs
   if (dogs.length === 0) {
     return dogs;
@@ -117,12 +131,14 @@ async function getAllDogsForUserIdFamilyId(databaseConnection, userId, familyId,
 
   const isRetrievingReminders = formatBoolean(forIsRetrievingReminders);
   const isRetrievingLogs = formatBoolean(forIsRetrievingLogs);
+  console.log(isRetrievingReminders, isRetrievingLogs);
   if (atLeastOneDefined(isRetrievingReminders, isRetrievingLogs) === false) {
     return dogs;
   }
 
   // if the query parameter indicates that they want the logs and the reminders too, we add them.
   if (areAllDefined(isRetrievingReminders) && isRetrievingReminders) {
+    console.log('isRetrievingReminders');
     let reminderPromises = [];
     // add all the reminders we want to retrieving into an array, 1:1 corresponding to dogs
     for (let i = 0; i < dogs.length; i += 1) {
@@ -139,6 +155,7 @@ async function getAllDogsForUserIdFamilyId(databaseConnection, userId, familyId,
   }
 
   if (areAllDefined(isRetrievingLogs) && isRetrievingLogs) {
+    console.log('isRetrievingLogs');
     let logPromises = [];
     // add all the logs we want to retrieving into an array, 1:1 corresponding to dogs
     for (let i = 0; i < dogs.length; i += 1) {

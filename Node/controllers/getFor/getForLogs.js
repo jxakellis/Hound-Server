@@ -48,6 +48,7 @@ async function getAllLogsForDogId(databaseConnection, dogId, forUserConfiguratio
 
   const userConfigurationPreviousDogManagerSynchronization = formatDate(forUserConfigurationPreviousDogManagerSynchronization);
 
+  console.log('getAllLogsForDogId', dogId);
   const result = areAllDefined(userConfigurationPreviousDogManagerSynchronization)
     ? await databaseQuery(
       databaseConnection,
@@ -65,6 +66,8 @@ async function getAllLogsForDogId(databaseConnection, dogId, forUserConfiguratio
       LIMIT 18446744073709551615`,
       [dogId],
     );
+
+  console.log(result);
 
   return result;
 }
