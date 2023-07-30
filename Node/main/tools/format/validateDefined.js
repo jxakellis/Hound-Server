@@ -8,7 +8,7 @@ function areAllDefined(...args) {
   }
   // checks to see all objects in array are defined
   for (let i = 0; i < args.length; i += 1) {
-    // Check for undefined, null, and NaN
+    // Check if arguyment is either undefined, null, or (if a number) NaN
     if (args[i] === undefined || args[i] === null || (typeof args[i] === 'number' && Number.isNaN(args[i]))) {
       // single object in array is undefined so return false
       return false;
@@ -29,7 +29,7 @@ function atLeastOneDefined(...args) {
 
   // checks to see if at least one object in array is defined
   for (let i = 0; i < args.length; i += 1) {
-    // Check for undefined, null, and NaN
+    // Check if argument is either not undefined, not null, or (if a number) not NaN
     if (args[i] !== undefined || args[i] !== null || (typeof args[i] === 'number' && !Number.isNaN(args[i]))) {
       // Single object in array is defined, so atLeastOneDefined in args, therefore return true
       return true;

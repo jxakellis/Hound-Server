@@ -2,6 +2,7 @@ const { ValidationError, DatabaseError } = require('../general/errors');
 const { formatArray, formatString } = require('../format/formatObject');
 const { areAllDefined } = require('../format/validateDefined');
 const { databaseConnectionForGeneral } = require('./createDatabaseConnections');
+const { poolLogger } = require('../logging/loggers');
 
 /**
  * Queries the database with the given sqlString. If a databaseConnection is provided, then uses that databaseConnection, otherwise uses the databaseConnectionForGeneral
@@ -18,8 +19,7 @@ const databaseQuery = (forDatabaseConnection, forSQLString, forSQLVariables) => 
   if (areAllDefined(SQLString) === false) {
     reject(new ValidationError('SQLString missing for databaseQuery', global.CONSTANT.ERROR.VALUE.MISSING));
   }
-
-  console.log(SQLString);
+  poolLogger.debug(`databaseQuery w/o variables: ${SQLString}`);
 
   const SQLVariables = areAllDefined(forSQLVariables) ? formatArray(forSQLVariables) : [];
 
