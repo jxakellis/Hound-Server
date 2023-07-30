@@ -122,7 +122,7 @@ async function getAllDogsForUserIdFamilyId(databaseConnection, userId, familyId,
     );
 
   console.log(areAllDefined(userConfigurationPreviousDogManagerSynchronization));
-  console.log(dog);
+  console.log(dogs);
 
   // no need to do anything else as there are no dogs
   if (dogs.length === 0) {
