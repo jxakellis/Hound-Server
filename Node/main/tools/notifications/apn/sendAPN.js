@@ -118,7 +118,7 @@ function sendAPN(userNotificationConfiguration, category, forAlertTitle, forAler
       'mutable-content': 1,
       // A string that indicates the importance and delivery timing of a notification
       // The string values “passive”, “active”, “time-sensitive”, or “critical” correspond to the
-      'interruption-level': 'active',
+      'interruption-level': global.CONSTANT.NOTIFICATION.CATEGORY.REMINDER.ALARM ? 'time-sensitive' : 'active',
       // The number to display in a badge on your app’s icon. Specify 0 to remove the current badge, if any.
       badge: 0,
       // alert Dictionary
