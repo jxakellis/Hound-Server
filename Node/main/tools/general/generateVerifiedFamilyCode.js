@@ -442,7 +442,7 @@ const generateFamilyCode = () => {
 
     console.log('inital code', familyCode);
     if (familyCode.length === familyCodeLength && iter <= 5) {
-      familyCode = 'PENIS';
+      familyCode = 'XPENISSS';
       iter += 1;
     }
 
