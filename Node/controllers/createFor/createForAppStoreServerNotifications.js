@@ -82,6 +82,9 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
     return;
   }
 
+  console.log(`\n${notificationType} for transactionId ${transactionInfo.transactionId} for ${transactionInfo.productId}\n`);
+  console.log(transactionInfo);
+
   // Check if the notification type indicates we need to create or update an entry for transactions table
   if (notificationType === 'CONSUMPTION_REQUEST'
   || notificationType === 'GRACE_PERIOD_EXPIRED'
@@ -136,8 +139,6 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
   }
 
   const familyId = await getFamilyIdForUserId(databaseConnection, userId);
-
-  console.log(`\n${notificationType} for transactionId ${transactionId} for ${transactionInfo.productId}\n`);
 
   // Check if a new transaction was created, warrenting an insert into the transactions table
   if (notificationType === 'DID_RENEW' || notificationType === 'OFFER_REDEEMED' || notificationType === 'SUBSCRIBED') {
