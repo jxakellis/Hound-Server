@@ -60,11 +60,17 @@ async function updateInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseC
     ));
   }
   if (areAllDefined(autoRenewProductId)) {
+    // Find all other non-expired transactions for a family. Set all their autoRenewProductId to the value found here.
     promises.push(databaseQuery(
       databaseConnection,
-      `UPDATE transactions
-      SET autoRenewProductId = ?
-      WHERE transactionId = ?`,
+      `UPDATE transactions 
+      SET autoRenewProductId = ? 
+      WHERE familyId = (
+        SELECT familyId 
+        FROM transactions 
+        WHERE transactionId = ?
+        AND TIMESTAMPDIFF(SECOND, CURRENT_TIMESTAMP(), expirationDate) >= 0
+      )`,
       [autoRenewProductId, transactionId],
     ));
   }
