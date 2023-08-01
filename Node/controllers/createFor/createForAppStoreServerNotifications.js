@@ -150,7 +150,8 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
 
     // Verify the transaction isn't already in the database
     if (areAllDefined(storedTransaction)) {
-    // Currently, the data we store on transactions is the same whether is through a receipt or an app store server notification
+      console.log('\ntransactionId already stored', transactionId, storedTransaction, notificationType, '\n');
+      // Currently, the data we store on transactions is the same whether is through a receipt or an app store server notification
       return;
     }
 

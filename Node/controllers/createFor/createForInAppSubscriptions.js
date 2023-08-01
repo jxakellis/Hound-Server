@@ -121,6 +121,7 @@ async function createTransactionsForUserIdFamilyIdEnvironmentReceipts(databaseCo
     // Verify the transaction isn't already in the database
     // Currently, the data we store on transactions is the same whether is through a receipt or an app store server notification
     if (storedTransactions.some((storedTransaction) => formatNumber(storedTransaction.transactionId) === transactionId) === true) {
+      console.log('transactionId already stored', transactionId);
       continue;
     }
     promises.push(createInAppSubscriptionForUserIdFamilyIdTransactionInfo(
