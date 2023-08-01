@@ -47,8 +47,8 @@ echo "MOVING '/PARENT_DIR/secrets/' INTO '/HOUND_SERVER_DIR/Node/main/'"
 rm -rf "${HOUND_SERVER_DIR}/Node/main/secrets/"
 mv -f "${PARENT_DIR}/secrets/" "${HOUND_SERVER_DIR}/Node/main/"
 
-echo "MOVING '/HOUND_SERVER_DIR/Bash/' INTO '/PARENT_DIR/' "
-mv -f "${HOUND_SERVER_DIR}/Bash/" "${PARENT_DIR}"
+echo "MOVING '/HOUND_SERVER_DIR/Bash/*' INTO '/PARENT_DIR/' "
+mv -f "${HOUND_SERVER_DIR}/Bash/*" "${PARENT_DIR}"
 
 echo
 echo "PM2"

@@ -19,7 +19,7 @@ echo
 echo "UPDATING REPOSITORY"
 echo
 
-echo "PULLING LATEST FROM 'Hound-Server' IN '/PARENT_DIR/'"
+echo "PULLING LATEST FROM 'Hound-Server/Node' IN '/PARENT_DIR/'"
 git -C "${HOUND_SERVER_DIR}" pull origin main
 
 echo "INSTALLING node_modules IN /HOUND_SERVER_DIR/Node/"
@@ -32,8 +32,8 @@ chmod a+rwx "${BASH_SOURCE[0]}"
 echo "GRANTING PRIVILEGES FOR '/HOUND_SERVER_DIR/'"
 chmod -R a+rwx "${HOUND_SERVER_DIR}/"
 
-echo "MOVING '/HOUND_SERVER_DIR/Bash/' INTO '/PARENT_DIR/' "
-mv -f "${HOUND_SERVER_DIR}/Bash/" "${PARENT_DIR}"
+echo "MOVING '/HOUND_SERVER_DIR/Bash/*' INTO '/PARENT_DIR/' "
+mv -f "${HOUND_SERVER_DIR}/Bash/*" "${PARENT_DIR}"
 
 echo
 echo "PM2"
