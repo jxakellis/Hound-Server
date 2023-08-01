@@ -32,6 +32,9 @@ chmod a+rwx "${BASH_SOURCE[0]}"
 echo "GRANTING PRIVILEGES FOR '/HOUND_SERVER_DIR/'"
 chmod -R a+rwx "${HOUND_SERVER_DIR}/"
 
+echo "MOVING '/HOUND_SERVER_DIR/Bash/' INTO '/PARENT_DIR/' "
+mv -f "${HOUND_SERVER_DIR}/Bash/" "${PARENT_DIR}"
+
 echo
 echo "PM2"
 echo
