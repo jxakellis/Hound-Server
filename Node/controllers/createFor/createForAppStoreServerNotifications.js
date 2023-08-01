@@ -84,6 +84,7 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
 
   console.log(`\n${notificationType} for transactionId ${transactionInfo.transactionId} for ${transactionInfo.productId}\n`);
   console.log(transactionInfo);
+  console.log(renewalInfo);
 
   // Check if the notification type indicates we need to create or update an entry for transactions table
   if (notificationType === 'CONSUMPTION_REQUEST'
