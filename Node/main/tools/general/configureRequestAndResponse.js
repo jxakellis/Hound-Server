@@ -3,7 +3,7 @@ const { logResponse } = require('../logging/logResponse');
 const { logServerError } = require('../logging/logServerError');
 const { formatNumber, formatBoolean } = require('../format/formatObject');
 const { convertErrorToJSON } = require('./errors');
-const { areAllDefined } = require('../format/validateDefined');
+const { areAllDefined } = require('../validate/validateDefined');
 const { databaseQuery } = require('../database/databaseQuery');
 const { databaseConnectionPoolForRequests } = require('../database/createDatabaseConnections');
 

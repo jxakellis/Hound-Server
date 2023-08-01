@@ -1,7 +1,7 @@
 const { databaseConnectionForGeneral } = require('../../database/createDatabaseConnections');
 const { databaseQuery } = require('../../database/databaseQuery');
 const { formatBoolean, formatArray } = require('../../format/formatObject');
-const { areAllDefined } = require('../../format/validateDefined');
+const { areAllDefined } = require('../../validate/validateDefined');
 
 const userConfigurationColumns = `uc.userConfigurationNotificationSound,
 uc.userConfigurationIsLoudNotificationEnabled,

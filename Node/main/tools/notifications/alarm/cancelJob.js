@@ -2,7 +2,7 @@ const { alarmLogger } = require('../../logging/loggers');
 
 const { schedule } = require('./schedule');
 
-const { areAllDefined } = require('../../format/validateDefined');
+const { areAllDefined } = require('../../validate/validateDefined');
 
 /**
  * Cancels jobs scheduled with the provided familyId and reminderId

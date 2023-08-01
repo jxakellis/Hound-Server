@@ -2,7 +2,7 @@ const { databaseQuery } = require('../../main/tools/database/databaseQuery');
 const {
   formatBoolean, formatDate,
 } = require('../../main/tools/format/formatObject');
-const { areAllDefined, atLeastOneDefined } = require('../../main/tools/format/validateDefined');
+const { areAllDefined, atLeastOneDefined } = require('../../main/tools/validate/validateDefined');
 const { ValidationError } = require('../../main/tools/general/errors');
 
 const { getAllLogsForDogId } = require('./getForLogs');

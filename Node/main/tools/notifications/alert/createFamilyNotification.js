@@ -1,7 +1,7 @@
 const { alertLogger } = require('../../logging/loggers');
 const { databaseConnectionForGeneral } = require('../../database/createDatabaseConnections');
 const { formatBoolean } = require('../../format/formatObject');
-const { areAllDefined } = require('../../format/validateDefined');
+const { areAllDefined } = require('../../validate/validateDefined');
 
 const { logServerError } = require('../../logging/logServerError');
 const { getUserFirstNameLastNameForUserId } = require('../../../../controllers/getFor/getForUser');

@@ -8,13 +8,13 @@ const {
   getFamily, createFamily, updateFamily, deleteFamily,
 } = require('../controllers/controllerRoutes/family');
 
-const { validateFamilyId } = require('../main/tools/format/validateId');
+const { validateFamilyId } = require('../main/tools/validate/validateId');
 
 familyRouter.param('familyId', validateFamilyId);
 // If familyId is successfully validated, then we add it to the request
 familyRouter.param('familyId', addFamilyIdToLogRequest);
 
-const { attachActiveSubscription } = require('../main/tools/format/validateSubscription');
+const { attachActiveSubscription } = require('../main/tools/validate/validateSubscription');
 
 familyRouter.use('/:familyId', attachActiveSubscription);
 

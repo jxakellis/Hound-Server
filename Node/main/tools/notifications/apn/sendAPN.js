@@ -2,7 +2,7 @@ const { apnLogger } = require('../../logging/loggers');
 
 const { logServerError } = require('../../logging/logServerError');
 const { formatString, formatBoolean, formatNumber } = require('../../format/formatObject');
-const { areAllDefined } = require('../../format/validateDefined');
+const { areAllDefined } = require('../../validate/validateDefined');
 
 const { apn, productionAPNProvider, developmentAPNProvider } = require('./apnProvider');
 

@@ -1,5 +1,5 @@
 const { formatArray } = require('../../main/tools/format/formatObject');
-const { areAllDefined } = require('../../main/tools/format/validateDefined');
+const { areAllDefined } = require('../../main/tools/validate/validateDefined');
 const { createAlarmNotificationForFamily } = require('../../main/tools/notifications/alarm/createAlarmNotification');
 
 const { getReminderForReminderId, getAllRemindersForDogId } = require('../getFor/getForReminders');

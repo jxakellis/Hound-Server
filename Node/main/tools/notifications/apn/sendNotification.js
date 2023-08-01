@@ -2,7 +2,7 @@ const { apnLogger } = require('../../logging/loggers');
 
 const { logServerError } = require('../../logging/logServerError');
 const { formatArray } = require('../../format/formatObject');
-const { areAllDefined } = require('../../format/validateDefined');
+const { areAllDefined } = require('../../validate/validateDefined');
 
 const { sendAPN } = require('./sendAPN');
 const { getUserToken, getAllFamilyMemberTokens, getOtherFamilyMemberTokens } = require('./apnTokens');

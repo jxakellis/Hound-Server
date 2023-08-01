@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const { formatString } = require('./formatObject');
-const { areAllDefined } = require('./validateDefined');
+const { areAllDefined } = require('../validate/validateDefined');
 
 function hash(forString, forSalt) {
   const string = formatString(forString);

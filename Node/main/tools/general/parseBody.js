@@ -1,6 +1,6 @@
 const bodyParser = require('body-parser');
-const { ParseError } = require('./errors');
-const { areAllDefined } = require('../format/validateDefined');
+const { ValidationError } = require('./errors');
+const { areAllDefined } = require('../validate/validateDefined');
 const { logServerError } = require('../logging/logServerError');
 
 function parseFormData(req, res, next) {
@@ -10,7 +10,7 @@ function parseFormData(req, res, next) {
   })(req, res, (error) => {
     if (areAllDefined(error)) {
       logServerError('parseFormData', error);
-      return res.sendResponseForStatusBodyError(400, undefined, new ParseError('Unable to parse form data', global.CONSTANT.ERROR.GENERAL.APP_VERSION_OUTDATED));
+      return res.sendResponseForStatusBodyError(400, undefined, new ValidationError('Unable to parse form data', global.CONSTANT.ERROR.GENERAL.APP_VERSION_OUTDATED));
     }
     return next();
   });
@@ -22,7 +22,7 @@ function parseJSON(req, res, next) {
   })(req, res, (error) => {
     if (areAllDefined(error)) {
       logServerError('parseJSON', error);
-      return res.sendResponseForStatusBodyError(400, undefined, new ParseError('Unable to parse json', global.CONSTANT.ERROR.GENERAL.PARSE_JSON_FAILED));
+      return res.sendResponseForStatusBodyError(400, undefined, new ValidationError('Unable to parse json', global.CONSTANT.ERROR.GENERAL.PARSE_JSON_FAILED));
     }
 
     return next();

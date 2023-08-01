@@ -1,5 +1,5 @@
 /* eslint-disable max-classes-per-file */
-const { areAllDefined } = require('../format/validateDefined');
+const { areAllDefined } = require('../validate/validateDefined');
 
 class GeneralError extends Error {
   constructor(message, code) {
@@ -28,7 +28,7 @@ class ValidationError extends Error {
   }
 }
 
-class ParseError extends Error {
+class ExternalServerError extends Error {
   constructor(message, code) {
     super(message);
     this.message = message;
@@ -52,5 +52,5 @@ const convertErrorToJSON = (error) => {
 };
 
 module.exports = {
-  GeneralError, DatabaseError, ValidationError, ParseError, convertErrorToJSON,
+  GeneralError, DatabaseError, ValidationError, ExternalServerError, convertErrorToJSON,
 };

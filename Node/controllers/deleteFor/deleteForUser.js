@@ -1,6 +1,6 @@
 const { ValidationError } = require('../../main/tools/general/errors');
 const { databaseQuery } = require('../../main/tools/database/databaseQuery');
-const { areAllDefined } = require('../../main/tools/format/validateDefined');
+const { areAllDefined } = require('../../main/tools/validate/validateDefined');
 
 const { getFamilyIdForUserId } = require('../getFor/getForFamily');
 

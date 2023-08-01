@@ -1,4 +1,4 @@
-const { areAllDefined } = require('../../format/validateDefined');
+const { areAllDefined } = require('../../validate/validateDefined');
 const { sendNotificationForUser } = require('../apn/sendNotification');
 
 function createUserKickedNotification(userId) {

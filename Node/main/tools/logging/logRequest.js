@@ -2,7 +2,7 @@ const { requestLogger } = require('./loggers');
 const { logServerError } = require('./logServerError');
 const { databaseConnectionForLogging } = require('../database/createDatabaseConnections');
 const { databaseQuery } = require('../database/databaseQuery');
-const { areAllDefined } = require('../format/validateDefined');
+const { areAllDefined } = require('../validate/validateDefined');
 const { formatString, formatNumber, formatSHA256Hash } = require('../format/formatObject');
 const { ValidationError } = require('../general/errors');
 

@@ -2,14 +2,14 @@ const express = require('express');
 
 const dogsRouter = express.Router({ mergeParams: true });
 
-const { validateSubscription } = require('../main/tools/format/validateSubscription');
+const { validateSubscription } = require('../main/tools/validate/validateSubscription');
 
 dogsRouter.use('/', validateSubscription);
 
 const {
   getDogs, createDog, updateDog, deleteDog,
 } = require('../controllers/controllerRoutes/dogs');
-const { validateDogId } = require('../main/tools/format/validateId');
+const { validateDogId } = require('../main/tools/validate/validateId');
 
 // validation that params are formatted correctly and have adequate permissions
 dogsRouter.param('dogId', validateDogId);

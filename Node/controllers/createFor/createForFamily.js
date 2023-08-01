@@ -2,7 +2,7 @@ const { databaseQuery } = require('../../main/tools/database/databaseQuery');
 const { generateVerifiedFamilyCode } = require('../../main/tools/general/generateVerifiedFamilyCode');
 const { ValidationError } = require('../../main/tools/general/errors');
 const { hash } = require('../../main/tools/format/hash');
-const { areAllDefined } = require('../../main/tools/format/validateDefined');
+const { areAllDefined } = require('../../main/tools/validate/validateDefined');
 
 const { getFamilyMemberUserIdForUserId } = require('../getFor/getForFamily');
 

@@ -5,7 +5,7 @@ const { databaseQuery } = require('../../database/databaseQuery');
 const { schedule } = require('./schedule');
 
 const { formatDate } = require('../../format/formatObject');
-const { areAllDefined } = require('../../format/validateDefined');
+const { areAllDefined } = require('../../validate/validateDefined');
 const { sendNotificationForFamily } = require('../apn/sendNotification');
 
 const { logServerError } = require('../../logging/logServerError');

@@ -1,6 +1,6 @@
 const { ValidationError, DatabaseError } = require('../general/errors');
 const { formatArray, formatString } = require('../format/formatObject');
-const { areAllDefined } = require('../format/validateDefined');
+const { areAllDefined } = require('../validate/validateDefined');
 const { databaseConnectionForGeneral } = require('./createDatabaseConnections');
 const { poolLogger } = require('../logging/loggers');
 

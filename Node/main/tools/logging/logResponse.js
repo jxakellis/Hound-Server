@@ -2,7 +2,7 @@ const { responseLogger } = require('./loggers');
 const { logServerError } = require('./logServerError');
 const { databaseConnectionForLogging } = require('../database/createDatabaseConnections');
 const { databaseQuery } = require('../database/databaseQuery');
-const { areAllDefined } = require('../format/validateDefined');
+const { areAllDefined } = require('../validate/validateDefined');
 const { formatString, formatNumber } = require('../format/formatObject');
 
 // Outputs response to the console and logs to database

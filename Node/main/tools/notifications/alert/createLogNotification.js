@@ -1,6 +1,6 @@
 const { alertLogger } = require('../../logging/loggers');
 const { databaseConnectionForGeneral } = require('../../database/createDatabaseConnections');
-const { areAllDefined } = require('../../format/validateDefined');
+const { areAllDefined } = require('../../validate/validateDefined');
 
 const { logServerError } = require('../../logging/logServerError');
 const { getDogForDogId } = require('../../../../controllers/getFor/getForDogs');

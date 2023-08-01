@@ -1,4 +1,4 @@
-const { areAllDefined } = require('./validateDefined');
+const { areAllDefined } = require('../validate/validateDefined');
 
 // RFC 5322 compliant regex statement from http://emailregex.com/
 // eslint-disable-next-line max-len, no-control-regex

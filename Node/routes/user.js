@@ -8,7 +8,7 @@ const {
   getUser, createUser, updateUser, deleteUser,
 } = require('../controllers/controllerRoutes/user');
 
-const { validateUserId } = require('../main/tools/format/validateId');
+const { validateUserId } = require('../main/tools/validate/validateId');
 
 userRouter.param('userId', validateUserId);
 // If userId is successfully validated, then we add it to the request

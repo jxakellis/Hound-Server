@@ -1,5 +1,5 @@
 const { databaseQuery } = require('../../main/tools/database/databaseQuery');
-const { areAllDefined } = require('../../main/tools/format/validateDefined');
+const { areAllDefined } = require('../../main/tools/validate/validateDefined');
 const { ValidationError } = require('../../main/tools/general/errors');
 
 async function getAppStoreServerNotificationForNotificationUUID(databaseConnection, notificationUUID) {

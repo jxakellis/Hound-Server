@@ -3,7 +3,7 @@ const {
   formatNumber, formatBoolean, formatSHA256Hash, formatString,
 } = require('../../main/tools/format/formatObject');
 const { hash } = require('../../main/tools/format/hash');
-const { atLeastOneDefined, areAllDefined } = require('../../main/tools/format/validateDefined');
+const { atLeastOneDefined, areAllDefined } = require('../../main/tools/validate/validateDefined');
 const { ValidationError } = require('../../main/tools/general/errors');
 
 /**

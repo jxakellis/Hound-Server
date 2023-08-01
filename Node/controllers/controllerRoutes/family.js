@@ -1,4 +1,4 @@
-const { areAllDefined } = require('../../main/tools/format/validateDefined');
+const { areAllDefined } = require('../../main/tools/validate/validateDefined');
 
 const { getAllFamilyInformationForFamilyId } = require('../getFor/getForFamily');
 

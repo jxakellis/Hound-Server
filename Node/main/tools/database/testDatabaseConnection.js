@@ -1,4 +1,4 @@
-const { areAllDefined } = require('../format/validateDefined');
+const { areAllDefined } = require('../validate/validateDefined');
 const { databaseQuery } = require('./databaseQuery');
 const { serverLogger } = require('../logging/loggers');
 const { formatArray } = require('../format/formatObject');

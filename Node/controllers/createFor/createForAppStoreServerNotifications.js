@@ -1,10 +1,12 @@
 const { databaseQuery } = require('../../main/tools/database/databaseQuery');
-const { areAllDefined } = require('../../main/tools/format/validateDefined');
+const { areAllDefined } = require('../../main/tools/validate/validateDefined');
 const {
   formatDate, formatNumber, formatBoolean, formatString,
 } = require('../../main/tools/format/formatObject');
 const { ValidationError } = require('../../main/tools/general/errors');
 const { requestLogger } = require('../../main/tools/logging/loggers');
+
+const { validateAppleSignedPayload } = require('../../main/tools/validate/validateAppleSignedPayload');
 
 const { getUserForUserApplicationUsername } = require('../getFor/getForUser');
 const { getFamilyIdForUserId } = require('../getFor/getForFamily');
@@ -28,7 +30,9 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
   if (areAllDefined(databaseConnection, signedPayload) === false) {
     throw new ValidationError('databaseConnection or signedPayload missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
-  // TODO FUTURE verify Apple signature with gpt
+
+  await validateAppleSignedPayload(signedPayload);
+
   const signedPayloadBuffer = Buffer.from(signedPayload.split('.')[1], 'base64');
   const notification = JSON.parse(signedPayloadBuffer.toString());
 
@@ -60,11 +64,11 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
     throw new ValidationError('signedRenewalInfo or signedTransactionInfo missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
-  // TODO FUTURE verify Apple signature with gpt
+  await validateAppleSignedPayload(signedRenewalInfo);
   const signedRenewalInfoBuffer = Buffer.from(signedRenewalInfo.split('.')[1], 'base64');
   const renewalInfo = JSON.parse(signedRenewalInfoBuffer.toString());
 
-  // TODO FUTURE verify Apple signature with gpt
+  await validateAppleSignedPayload(signedTransactionInfo);
   const signedTransactionInfoBuffer = Buffer.from(signedTransactionInfo.split('.')[1], 'base64');
   const transactionInfo = JSON.parse(signedTransactionInfoBuffer.toString());
 

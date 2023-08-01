@@ -3,7 +3,7 @@ const { databaseConnectionForAlarms } = require('../../database/createDatabaseCo
 const { databaseQuery } = require('../../database/databaseQuery');
 
 const { logServerError } = require('../../logging/logServerError');
-const { areAllDefined } = require('../../format/validateDefined');
+const { areAllDefined } = require('../../validate/validateDefined');
 const { cancelJobForFamilyForReminder } = require('./cancelJob');
 
 async function deleteAlarmNotificationsForFamily(familyId) {

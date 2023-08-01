@@ -4,9 +4,10 @@ const { databaseQuery } = require('../../main/tools/database/databaseQuery');
 const {
   formatDate, formatBase64EncodedString, formatArray, formatNumber, formatString,
 } = require('../../main/tools/format/formatObject');
-const { areAllDefined } = require('../../main/tools/format/validateDefined');
-const { GeneralError, ValidationError } = require('../../main/tools/general/errors');
+const { areAllDefined } = require('../../main/tools/validate/validateDefined');
+const { ExternalServerError, ValidationError } = require('../../main/tools/general/errors');
 const { houndSharedSecret } = require('../../main/secrets/houndSharedSecret');
+const { logServerError } = require('../../main/tools/logging/logServerError');
 
 const { getFamilyHeadUserIdForFamilyId } = require('../getFor/getForFamily');
 const { getActiveInAppSubscriptionForFamilyId } = require('../getFor/getForInAppSubscriptions');
@@ -52,25 +53,29 @@ async function createInAppSubscriptionForUserIdFamilyIdRecieptId(databaseConnect
     }
   }
   catch (error) {
-    throw new GeneralError("There was an error querying Apple's iTunes server to verify the receipt", global.CONSTANT.ERROR.GENERAL.APPLE_SERVER_FAILED);
+    logServerError('axios.post(\'https://buy.itunes.apple.com/verifyReceipt\', requestBody)', error);
+    throw new ExternalServerError('Axios failed to query https://buy.itunes.apple.com/verifyReceipt. We could not verify the receipt', global.CONSTANT.ERROR.GENERAL.APPLE_SERVER_FAILED);
   }
 
   // verify that the status is successful
   if (formatNumber(result.data.status) !== 0) {
-    throw new GeneralError("There was an error querying Apple's iTunes server to verify the receipt", global.CONSTANT.ERROR.GENERAL.APPLE_SERVER_FAILED);
+    throw new ValidationError(
+      `Status of ${result.data.status} from https://buy.itunes.apple.com/verifyReceipt is not valid. We could not verify the receipt`,
+      global.CONSTANT.ERROR.VALUE.INVALID,
+    );
   }
 
   // check to see the result has a body
   const resultBody = result.data;
   if (areAllDefined(resultBody) === false) {
-    throw new ValidationError("Unable to parse the responseBody from Apple's iTunes servers", global.CONSTANT.ERROR.VALUE.MISSING);
+    throw new ValidationError("Unable to parse the resultBody from Apple's iTunes servers", global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   // check to see .latest_receipt_info array exists
   const environment = formatString(resultBody.environment, 10);
   const receipts = formatArray(resultBody.latest_receipt_info);
   if (areAllDefined(receipts, environment) === false) {
-    throw new ValidationError("Unable to parse the responseBody from Apple's iTunes servers", global.CONSTANT.ERROR.VALUE.MISSING);
+    throw new ValidationError("Unable to parse the receipts or environment from Apple's iTunes servers", global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   // CANT PROMISE.ALL BECAUSE createTransactionsForUserIdFamilyIdEnvironmentReceipts CHANGES RESULT OF getActiveInAppSubscriptionForFamilyId

@@ -1,4 +1,4 @@
-const { areAllDefined } = require('../../main/tools/format/validateDefined');
+const { areAllDefined } = require('../../main/tools/validate/validateDefined');
 const { ValidationError } = require('../../main/tools/general/errors');
 
 const { getUserForUserIdentifier } = require('../getFor/getForUser');

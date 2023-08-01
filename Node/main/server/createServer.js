@@ -56,7 +56,7 @@ configureAppForRequests(app);
 //
 
 const { logServerError } = require('../tools/logging/logServerError');
-const { areAllDefined } = require('../tools/format/validateDefined');
+const { areAllDefined } = require('../tools/validate/validateDefined');
 const { schedule } = require('../tools/notifications/alarm/schedule');
 const {
   databaseConnectionForGeneral, databaseConnectionForLogging, databaseConnectionForAlarms, databaseConnectionPoolForRequests,

@@ -3,7 +3,7 @@ const {
   databaseConnectionForGeneral, databaseConnectionForLogging, databaseConnectionForAlarms, databaseConnectionPoolForRequests,
 } = require('./createDatabaseConnections');
 const { testDatabaseConnections } = require('./testDatabaseConnection');
-const { areAllDefined } = require('../format/validateDefined');
+const { areAllDefined } = require('../validate/validateDefined');
 const { databaseQuery } = require('./databaseQuery');
 const { formatArray } = require('../format/formatObject');
 

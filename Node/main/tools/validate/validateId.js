@@ -1,10 +1,10 @@
 const { databaseQuery } = require('../database/databaseQuery');
 const {
   formatSHA256Hash, formatString, formatArray, formatNumber, formatBoolean,
-} = require('./formatObject');
+} = require('../format/formatObject');
 const { areAllDefined } = require('./validateDefined');
 const { ValidationError } = require('../general/errors');
-const { hash } = require('./hash');
+const { hash } = require('../format/hash');
 
 const { updateUserForUserIdentifierHashedUserIdentifier } = require('../../../controllers/updateFor/updateForUser');
 

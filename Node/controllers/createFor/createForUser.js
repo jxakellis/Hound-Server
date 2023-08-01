@@ -6,7 +6,7 @@ const {
   formatNumber, formatEmail, formatBoolean, formatString,
 } = require('../../main/tools/format/formatObject');
 const { hash } = require('../../main/tools/format/hash');
-const { areAllDefined } = require('../../main/tools/format/validateDefined');
+const { areAllDefined } = require('../../main/tools/validate/validateDefined');
 
 const { getUserForUserIdentifier } = require('../getFor/getForUser');
 
