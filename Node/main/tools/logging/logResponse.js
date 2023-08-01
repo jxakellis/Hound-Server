@@ -19,7 +19,7 @@ async function logResponse(req, res, body) {
         databaseConnectionForLogging,
         `INSERT INTO previousResponses
         (requestId, responseDate, responseBody)
-        VALUES (?, ?, CURRENT_TIMESTAMP())`,
+        VALUES (?, CURRENT_TIMESTAMP(), ?)`,
         [req.requestId, responseBody],
       );
       const responseId = formatNumber(result.insertId);
