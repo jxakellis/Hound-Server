@@ -33,7 +33,8 @@ echo "GRANTING PRIVILEGES FOR '/HOUND_SERVER_DIR/'"
 chmod -R a+rwx "${HOUND_SERVER_DIR}/"
 
 echo "MOVING '/HOUND_SERVER_DIR/Bash/*' INTO '/PARENT_DIR/' "
-mv -f "${HOUND_SERVER_DIR}/Bash/*" "${PARENT_DIR}"
+# When you include the * wildcard character inside quotes, bash doesn't expand it. So, bash is trying to find a file literally named *, which of course doesn't exist.
+mv -f ${HOUND_SERVER_DIR}/Bash/* "${PARENT_DIR}"
 
 echo
 echo "PM2"
