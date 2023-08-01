@@ -60,45 +60,58 @@ async function validateAppleSignedPayload(signedPayload) {
   // Parse header and payload
   const [encodedHeader, encodedPayload] = signedPayload.split('.');
   const header = JSON.parse(Buffer.from(encodedHeader, 'base64').toString());
+  console.log('1');
 
   // Extract x5c and alg from header
   const { x5c, alg } = header;
+  console.log('2');
 
   // Get the certificate in DER format and convert it into PEM
   let certificate = Buffer.from(x5c[0], 'base64').toString('binary');
   certificate = `-----BEGIN CERTIFICATE-----\n${certificate}\n-----END CERTIFICATE-----`;
+  console.log('3');
 
   // Check the cache for the public key corresponding to the certificate
   let publicKey = certificateCache.get(x5c[0]);
+  console.log('4');
 
   if (!publicKey) {
     // Verify the certificate chain, you may need to add Apple's root and intermediate certificates for chain verification
     const caStore = pki.createCaStore(appleCertificates);
+    console.log('5');
     const cert = pki.certificateFromPem(certificate);
-
+    console.log('6');
     try {
       pki.verifyCertificateChain(caStore, [cert]);
+      console.log('7');
     }
     catch (error) {
+      console.log(error);
       logServerError('Certificate chain verification failed', error);
       throw new ExternalServerError('Failed to verify Apple\'s certificate chain', global.CONSTANT.ERROR.GENERAL.APPLE_SERVER_FAILED);
     }
 
+    console.log('8');
     // Extract the public key from the certificate
     publicKey = pki.publicKeyToPem(cert.publicKey);
+    console.log('9');
 
     // Cache the public key
     certificateCache.set(x5c[0], publicKey);
+    console.log('10');
   }
 
   let verifiedPayload;
   try {
     // Validate the signed payload using the public key and the algorithm from the header
     verifiedPayload = jwt.verify(`${encodedHeader}.${encodedPayload}`, publicKey, { algorithms: [alg] });
+    console.log('11');
 
     // Perform whatever processing is necessary on the verified payload
   }
   catch (error) {
+    console.log('12');
+    console.log(error);
     logServerError('Payload verification failed', error);
     throw new ValidationError('Failed to verify the signed payload', global.CONSTANT.ERROR.VALUE.MISSING);
   }
