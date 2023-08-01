@@ -42,7 +42,7 @@ async function getActiveInAppSubscriptionForFamilyId(databaseConnection, familyI
     FROM mostRecentlyPurchasedForEachProductId AS mrp
     WHERE mrp.rowNumberByProductId = 1
     ORDER BY mrp.productIdCorrespondingRank DESC
-    LIMIT 1;`,
+    LIMIT 1`,
     [familyId],
   );
 
