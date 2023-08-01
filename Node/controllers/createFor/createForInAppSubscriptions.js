@@ -266,6 +266,19 @@ or inAppOwnershipType missing`, global.CONSTANT.ERROR.VALUE.MISSING);
     throw new ValidationError(`inAppOwnershipType must be PURCHASED, not ${inAppOwnershipType}`, global.CONSTANT.ERROR.VALUE.INVALID);
   }
 
+  console.log(
+    '\nCREATE SUBSCRIPTION',
+    transactionId,
+    transactionId,
+    productId,
+    purchaseDate,
+    expirationDate,
+    numberOfFamilyMembers,
+    numberOfDogs,
+    offerCode,
+    '\n',
+  );
+
   /*
   transactionId
   originalTransactionId
