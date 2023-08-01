@@ -6,7 +6,7 @@ const {
 const { ValidationError } = require('../../main/tools/general/errors');
 const { requestLogger } = require('../../main/tools/logging/loggers');
 
-const { validateAppleSignedPayload } = require('../../main/tools/validate/validateAppleSignedPayload');
+const { validateNotificationSignedPayload, validateTransactionSignedPayload, validateRenewalInfoSignedPayload } = require('../../main/tools/appStoreConnectAPI/validatePayload');
 
 const { getUserForUserApplicationUsername } = require('../getFor/getForUser');
 const { getFamilyIdForUserId } = require('../getFor/getForFamily');
@@ -31,10 +31,7 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
     throw new ValidationError('databaseConnection or signedPayload missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
-  await validateAppleSignedPayload(signedPayload);
-
-  const signedPayloadBuffer = Buffer.from(signedPayload.split('.')[1], 'base64');
-  const notification = JSON.parse(signedPayloadBuffer.toString());
+  const notification = validateNotificationSignedPayload(signedPayload);
 
   if (areAllDefined(notification) === false) {
     throw new ValidationError('notification missing', global.CONSTANT.ERROR.VALUE.MISSING);
@@ -53,27 +50,11 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
     throw new ValidationError('notificationUUID or data missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
-  const {
-    // Subscription renewal information signed by the App Store, in JSON Web Signature format.
-    signedRenewalInfo,
-    // Transaction information signed by the App Store, in JSON Web Signature format.
-    signedTransactionInfo,
-  } = data;
+  const transactionInfo = await validateTransactionSignedPayload(data.signedTransactionInfo);
+  const renewalInfo = await validateRenewalInfoSignedPayload(data.signedRenewalInfo);
 
-  if (areAllDefined(signedRenewalInfo, signedTransactionInfo) === false) {
-    throw new ValidationError('signedRenewalInfo or signedTransactionInfo missing', global.CONSTANT.ERROR.VALUE.MISSING);
-  }
-
-  await validateAppleSignedPayload(signedRenewalInfo);
-  const signedRenewalInfoBuffer = Buffer.from(signedRenewalInfo.split('.')[1], 'base64');
-  const renewalInfo = JSON.parse(signedRenewalInfoBuffer.toString());
-
-  await validateAppleSignedPayload(signedTransactionInfo);
-  const signedTransactionInfoBuffer = Buffer.from(signedTransactionInfo.split('.')[1], 'base64');
-  const transactionInfo = JSON.parse(signedTransactionInfoBuffer.toString());
-
-  if (areAllDefined(renewalInfo, transactionInfo) === false) {
-    throw new ValidationError('renewalInfo or transactionInfo missing', global.CONSTANT.ERROR.VALUE.MISSING);
+  if (areAllDefined(transactionInfo, renewalInfo) === false) {
+    throw new ValidationError('transactionInfo or renewalInfo missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   requestLogger.debug(`App Store Server Notification ${notificationUUID} of type ${notificationType} with subtype ${subtype} for transaction ${transactionInfo.transactionId}`);

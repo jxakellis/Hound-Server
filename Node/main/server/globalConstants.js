@@ -2,6 +2,9 @@
 // /server/ -> ../ -> /main/ -> ../ -> /Node/ -> ../ -> /Hound-Server/ -> ../ -> /PARENT_DIR/
 const IS_PRODUCTION_DATABASE = require('fs').existsSync(`${__dirname}/../../../../productionIndicator.txt`);
 
+// TODO NOW when we update the production server, update node for both sudo and non-sudo
+// TODO NOW when we update the prod server, update the secrets folder
+
 const SERVER = {
   // True if we are using the production database that houses real users, false if we are launching a development server for testing
   IS_PRODUCTION_DATABASE,
@@ -19,6 +22,7 @@ const SERVER = {
   DATABASE_CONNECTION_WAIT_TIMEOUT: IS_PRODUCTION_DATABASE ? (60 * 60 * 3) : (60 * 60 * 1),
   // How many entries to keep in the previousRequests and previousResponses tables
   DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES: IS_PRODUCTION_DATABASE ? 10000000 : 10000,
+  APP_BUNDLE_ID: 'com.example.Pupotty',
 };
 
 const LIMIT = {

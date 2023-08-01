@@ -6,7 +6,7 @@ const {
 } = require('../../main/tools/format/formatObject');
 const { areAllDefined } = require('../../main/tools/validate/validateDefined');
 const { ExternalServerError, ValidationError } = require('../../main/tools/general/errors');
-const { houndSharedSecret } = require('../../main/secrets/houndSharedSecret');
+const { appSpecificSharedSecret } = require('../../main/secrets/appSpecificSharedSecret');
 const { logServerError } = require('../../main/tools/logging/logServerError');
 
 const { getFamilyHeadUserIdForFamilyId } = require('../getFor/getForFamily');
@@ -38,7 +38,7 @@ async function createInAppSubscriptionForUserIdFamilyIdRecieptId(databaseConnect
     // (Required) The Base64-encoded receipt data.
     'receipt-data': appStoreReceiptURL,
     // password (string): Your app’s shared secret, which is a hexadecimal string. For more information about the shared secret, see Generate a Receipt Validation Code.
-    password: houndSharedSecret,
+    password: appSpecificSharedSecret,
     // Set this value to true for the response to include only the latest renewal transaction for any subscriptions. Use this field only for app receipts that contain auto-renewable subscriptions.
     'exclude-old-transactions': false,
   };

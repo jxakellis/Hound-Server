@@ -8,7 +8,7 @@ const {
   productionHoundHost,
   productionHoundPassword,
   productionHoundDatabase,
-} = require('../../secrets/databaseCredentials');
+} = require('../../secrets/databaseConnection');
 
 const user = global.CONSTANT.SERVER.IS_PRODUCTION_DATABASE ? productionHoundUser : developmentHoundUser;
 const host = global.CONSTANT.SERVER.IS_PRODUCTION_DATABASE ? productionHoundHost : developmentHoundHost;

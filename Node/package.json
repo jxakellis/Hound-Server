@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@parse/node-apn": "^5.1.3",
+    "app-store-server-api": "^0.9.0",
     "axios": "^0.27.2",
     "body-parser": "^1.20.0",
     "express": "^4.18.1",

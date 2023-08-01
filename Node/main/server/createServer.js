@@ -12,11 +12,11 @@ const { exec } = require('child_process');
 
 // Import builtin NodeJS modules to instantiate the server
 const https = require('https');
-const fs = require('fs');
 
 // Import the express module
 const app = require('express')();
 const { serverLogger } = require('../tools/logging/loggers');
+const { key, cert } = require('../secrets/houndOrganizerHTTPS');
 
 //
 //
@@ -25,10 +25,9 @@ const { serverLogger } = require('../tools/logging/loggers');
 //
 
 // Create a NodeJS HTTPS listener on port that points to the Express app
-const pathToSecrets = `${__dirname}/../secrets/`;
 const httpsServer = https.createServer({
-  key: fs.readFileSync(`${pathToSecrets}houndorganizer_com_private_key.pem`),
-  cert: fs.readFileSync(`${pathToSecrets}houndorganizer_com_certificate.pem`),
+  key,
+  cert,
 }, app);
 
 //
