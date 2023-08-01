@@ -37,7 +37,7 @@ echo "GRANTING R & W PRIVILEGES ON '/HOUND_SERVER_DIR/'"
 chmod -R a+rwx "${HOUND_SERVER_DIR}/"
 
 echo "INSTALLING node_modules IN /HOUND_SERVER_DIR/Node/"
-npm --prefix "${HOUND_SERVER_DIR}/Node/" i
+npm --prefix "${HOUND_SERVER_DIR}/Node/" ci
 
 echo "GRANTING R & W PRIVILEGES ON '/HOUND_SERVER_DIR/' (again)"
 # Grant privileges AGAIN so that jxakellis has read/write privileges on node_modules folder
