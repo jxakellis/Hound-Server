@@ -148,12 +148,9 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
     // If notification provided a transactionId, then attempt to see if we have a transaction stored for that transactionId
     const storedTransaction = await getInAppSubscriptionForTransactionId(databaseConnection, transactionId);
 
+    // Verify the transaction isn't already in the database
     if (areAllDefined(storedTransaction)) {
-    // The transaction already exists, so no need to create
-
-      // TODO FUTURE potentially this transaction could contain more information than the transaction created through reciepts.
-      // investigate and if it does, then invoke function to provide that additonal information
-
+    // Currently, the data we store on transactions is the same whether is through a receipt or an app store server notification
       return;
     }
 

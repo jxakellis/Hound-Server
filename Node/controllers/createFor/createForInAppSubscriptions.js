@@ -118,7 +118,8 @@ async function createTransactionsForUserIdFamilyIdEnvironmentReceipts(databaseCo
     const receipt = receipts[i];
     const transactionId = formatNumber(receipt.transaction_id);
 
-    // Verify that the transaction isn't already stored in the database, if it is then we skip it
+    // Verify the transaction isn't already in the database
+    // Currently, the data we store on transactions is the same whether is through a receipt or an app store server notification
     if (storedTransactions.some((storedTransaction) => formatNumber(storedTransaction.transactionId) === transactionId) === true) {
       continue;
     }

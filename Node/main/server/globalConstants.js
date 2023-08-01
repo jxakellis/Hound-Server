@@ -2,8 +2,10 @@
 // /server/ -> ../ -> /main/ -> ../ -> /Node/ -> ../ -> /Hound-Server/ -> ../ -> /PARENT_DIR/
 const IS_PRODUCTION_DATABASE = require('fs').existsSync(`${__dirname}/../../../../productionIndicator.txt`);
 
-// TODO NOW when we update the production server, update node for both sudo and non-sudo
-// TODO NOW when we update the prod server, update the secrets folder
+// TODO NOW when we update the prod server, update linux (FIRST)
+// TODO NOW when we update the prod server, update node for both sudo and non-sudo (SECOND)
+// TODO NOW when we update the prod server, delete inside the secrest folder and scp new secrets folder (THIRD)
+// TODO NOW when we update the prod server, clone repo (FOURTH)
 
 const SERVER = {
   // True if we are using the production database that houses real users, false if we are launching a development server for testing
