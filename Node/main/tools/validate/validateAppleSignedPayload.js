@@ -1,101 +1,110 @@
-const axios = require('axios');
 const jwt = require('jsonwebtoken');
 const NodeCache = require('node-cache');
+const { pki } = require('node-forge');
 const { areAllDefined } = require('./validateDefined');
 const { ValidationError, ExternalServerError } = require('../general/errors');
 const { logServerError } = require('../logging/logServerError');
 
 // The cache is set to expire every 6 hours, and checks for expired keys every 15 seconds
 // If you want to store more items in the cache, you can continue using the same NodeCache instance.
-const appleKeysCache = new NodeCache({ stdTTL: 60 * 60 * 6, checkperiod: 15 });
-const keyNameForApplePublicKeys = 'applePublicKeys';
+const certificateCache = new NodeCache({ stdTTL: 60 * 60 * 6, checkperiod: 15 });
 
-// Function to fetch Apple's public keys
-async function fetchApplePublicKeys() {
-  console.log('fetchApplePublicKeys');
-  // Try to get the keys from the cache
-  let applePublicKeys = appleKeysCache.get(keyNameForApplePublicKeys);
-  console.log('appleKeysCache.get', applePublicKeys);
+// https://www.apple.com/certificateauthority/
+const appleCertificates = [
+  // Apple Root CA - G3 Root
+  `-----BEGIN CERTIFICATE-----
+  MIICQzCCAcmgAwIBAgIILcX8iNLFS5UwCgYIKoZIzj0EAwMwZzEbMBkGA1UEAwwS
+  QXBwbGUgUm9vdCBDQSAtIEczMSYwJAYDVQQLDB1BcHBsZSBDZXJ0aWZpY2F0aW9u
+  IEF1dGhvcml0eTETMBEGA1UECgwKQXBwbGUgSW5jLjELMAkGA1UEBhMCVVMwHhcN
+  MTQwNDMwMTgxOTA2WhcNMzkwNDMwMTgxOTA2WjBnMRswGQYDVQQDDBJBcHBsZSBS
+  b290IENBIC0gRzMxJjAkBgNVBAsMHUFwcGxlIENlcnRpZmljYXRpb24gQXV0aG9y
+  aXR5MRMwEQYDVQQKDApBcHBsZSBJbmMuMQswCQYDVQQGEwJVUzB2MBAGByqGSM49
+  AgEGBSuBBAAiA2IABJjpLz1AcqTtkyJygRMc3RCV8cWjTnHcFBbZDuWmBSp3ZHtf
+  TjjTuxxEtX/1H7YyYl3J6YRbTzBPEVoA/VhYDKX1DyxNB0cTddqXl5dvMVztK517
+  IDvYuVTZXpmkOlEKMaNCMEAwHQYDVR0OBBYEFLuw3qFYM4iapIqZ3r6966/ayySr
+  MA8GA1UdEwEB/wQFMAMBAf8wDgYDVR0PAQH/BAQDAgEGMAoGCCqGSM49BAMDA2gA
+  MGUCMQCD6cHEFl4aXTQY2e3v9GwOAEZLuN+yRhHFD/3meoyhpmvOwgPUnPWTxnS4
+  at+qIxUCMG1mihDK1A3UT82NQz60imOlM27jbdoXt2QfyFMm+YhidDkLF1vLUagM
+  6BgD56KyKA==
+   -----END CERTIFICATE-----`,
+  // Worldwide Developer Relations - G8 (Expiring 01/24/2025 00:00:00 UTC)
+  `-----BEGIN CERTIFICATE-----
+  MIIEVTCCAz2gAwIBAgIUVLULr3kNjX+Mr2hMVi9QaQoaul8wDQYJKoZIhvcNAQEF
+  BQAwYjELMAkGA1UEBhMCVVMxEzARBgNVBAoTCkFwcGxlIEluYy4xJjAkBgNVBAsT
+  HUFwcGxlIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MRYwFAYDVQQDEw1BcHBsZSBS
+  b290IENBMB4XDTIzMDYyMDIzMzcxNVoXDTI1MDEyNDAwMDAwMFowdTELMAkGA1UE
+  BhMCVVMxEzARBgNVBAoMCkFwcGxlIEluYy4xCzAJBgNVBAsMAkc4MUQwQgYDVQQD
+  DDtBcHBsZSBXb3JsZHdpZGUgRGV2ZWxvcGVyIFJlbGF0aW9ucyBDZXJ0aWZpY2F0
+  aW9uIEF1dGhvcml0eTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANBA
+  ENQI+VIhY088aPfUnIICjINovLeNf4jnQk0s7yKlwonevQzXTWFQLTnkMHOl0tVo
+  mjPy79kqrS4fA7r4pfFCC1cuRsbQWNNwX/eyN+9qHz6/iTnCrf71BftYljHIhyzV
+  I7p1sCz1q6C68iAMTOskY2npIkDwjlhb3mR7iRtREgTgF7JZzd/x586vLDLoacHQ
+  CH4dokdz0Us7/bmF3EenKIJ5KUiJAijiwewsH1uG/Ni2y3HAcwFL/AUREWwBAzRa
+  9oHCXh98FA7eP2shy0/112HmhAOSvOclKZ7NWwzB2+PEOtl2V6wvOBQZyLexolVP
+  X06OGVmp2v1y2rAEIQUCAwEAAaOB7zCB7DASBgNVHRMBAf8ECDAGAQH/AgEAMB8G
+  A1UdIwQYMBaAFCvQaUeUdgn+9GuNLkCm90dNfwheMEQGCCsGAQUFBwEBBDgwNjA0
+  BggrBgEFBQcwAYYoaHR0cDovL29jc3AuYXBwbGUuY29tL29jc3AwMy1hcHBsZXJv
+  b3RjYTAuBgNVHR8EJzAlMCOgIaAfhh1odHRwOi8vY3JsLmFwcGxlLmNvbS9yb290
+  LmNybDAdBgNVHQ4EFgQUtb28gMQM4zik9LetI7PvRM65WoUwDgYDVR0PAQH/BAQD
+  AgEGMBAGCiqGSIb3Y2QGAgEEAgUAMA0GCSqGSIb3DQEBBQUAA4IBAQBMs+t6OZRK
+  lWb6FjHqDYqPXUI4xgfN6MkirPwIQn5fk18xKqgiwXYZK+6ucum9Vs9JJJII980Z
+  dcP5GicNDtwpjT+226VPTHLEYJGJEX4klUMiYGe83/+r5TwWF52CFE6d9HX+ULmt
+  BbK4efaV1hDl9lP0zyPmdw/suEtp+OKeAjHZjtnKvmNeX+Ggac7BzW5Jo3hhrzk8
+  aksKNCVk1TC1PKvdEYE5cejAw1iAERAaEdLCvFnwitk1c8DmbeTJfWIUPoICqRBp
+  N3lhb/BGlD419ausY9DYXllXadG4S25d1F8TnHBOJRHcJCweFp6WWgTtRe467mdd
+  j8OGsPVMH2gQ
+  -----END CERTIFICATE-----`,
+];
 
-  // If the keys are not in the cache, fetch them from Apple's server
-  if (areAllDefined(applePublicKeys) === false) {
-    console.log('going to get from /auth/keys');
-    let response;
+async function validateAppleSignedPayload(signedPayload) {
+  // Parse header and payload
+  const [encodedHeader, encodedPayload] = signedPayload.split('.');
+  const header = JSON.parse(Buffer.from(encodedHeader, 'base64').toString());
+
+  // Extract x5c and alg from header
+  const { x5c, alg } = header;
+
+  // Get the certificate in DER format and convert it into PEM
+  let certificate = Buffer.from(x5c[0], 'base64').toString('binary');
+  certificate = `-----BEGIN CERTIFICATE-----\n${certificate}\n-----END CERTIFICATE-----`;
+
+  // Check the cache for the public key corresponding to the certificate
+  let publicKey = certificateCache.get(x5c[0]);
+
+  if (!publicKey) {
+    // Verify the certificate chain, you may need to add Apple's root and intermediate certificates for chain verification
+    const caStore = pki.createCaStore(appleCertificates);
+    const cert = pki.certificateFromPem(certificate);
+
     try {
-      // Fetch Apple’s public key to verify the ID token signature.
-      response = await axios.get('https://appleid.apple.com/auth/keys');
+      pki.verifyCertificateChain(caStore, [cert]);
     }
     catch (error) {
-      console.log('axios error', error);
-      logServerError('axios.get(\'https://appleid.apple.com/auth/keys\')', error);
-      throw new ExternalServerError('Axios failed to query https://appleid.apple.com/auth/keys. We could not retrieve Apple\'s public keys', global.CONSTANT.ERROR.GENERAL.APPLE_SERVER_FAILED);
-    }
-    console.log('after axios.get');
-
-    if (areAllDefined(response) === false || areAllDefined(response.data) === false || areAllDefined(response.data.keys) === false) {
-      throw new ValidationError('response, response.data, or response.data.keys missing', global.CONSTANT.ERROR.VALUE.MISSING);
+      logServerError('Certificate chain verification failed', error);
+      throw new ExternalServerError('Failed to verify Apple\'s certificate chain', global.CONSTANT.ERROR.GENERAL.APPLE_SERVER_FAILED);
     }
 
-    applePublicKeys = response.data.keys;
+    // Extract the public key from the certificate
+    publicKey = pki.publicKeyToPem(cert.publicKey);
 
-    // Store the fetched keys in the cache
-    appleKeysCache.set(keyNameForApplePublicKeys, applePublicKeys);
-  }
-  console.log('end fetchApplePublicKeys', applePublicKeys);
-  return applePublicKeys;
-}
-
-// Function to validate a signed payload using Apple's public keys
-async function validateAppleSignedPayload(signedPayload) {
-  console.log('validateAppleSignedPayload');
-  if (areAllDefined(signedPayload) === false) {
-    throw new ValidationError('signedPayload missing', global.CONSTANT.ERROR.VALUE.MISSING);
-  }
-
-  // signedPayload has 3 components (header, payload, and signature). Decode the header from Base64 and parse it as JSON.
-  const headerJSON = JSON.parse(Buffer.from(signedPayload.split('.')[0], 'base64').toString());
-  console.log('headerJSON', headerJSON);
-  if (areAllDefined(headerJSON) === false) {
-    throw new ValidationError('headerJSON missing', global.CONSTANT.ERROR.VALUE.MISSING);
-  }
-
-  // Fetch Apple's public keys
-  let applePublicKeys = await fetchApplePublicKeys();
-  if (areAllDefined(applePublicKeys) === false) {
-    throw new ValidationError('applePublicKeys missing', global.CONSTANT.ERROR.VALUE.MISSING);
-  }
-
-  // Find the key from the fetched keys that matches the key identifier in the header
-  let matchingKey = applePublicKeys.find((key) => key.kid === headerJSON.kid);
-  console.log('matchingKey', matchingKey, headerJSON.kid);
-  // If no matching key is found, potentially the keys changed very recently, so we refetch the keys
-  if (areAllDefined(matchingKey) === false) {
-    // Delete the currently stored Apple public keys
-    appleKeysCache.del(keyNameForApplePublicKeys);
-    // Refetch Apple's public keys
-    applePublicKeys = await fetchApplePublicKeys();
-    if (areAllDefined(applePublicKeys) === false) {
-      throw new ValidationError('applePublicKeys missing', global.CONSTANT.ERROR.VALUE.MISSING);
-    }
-    // Research for matchingKey
-    matchingKey = applePublicKeys.find((key) => key.kid === headerJSON.kid);
-    console.log('matchingKey', matchingKey, headerJSON.kid);
-    if (areAllDefined(matchingKey) === false) {
-      // We refreshed the keys and there is still no match, therefore the key simply does not exist.
-      throw new ValidationError(`The headerJSON.kid ${headerJSON.kid} does not match any known, updated applePublicKey.kid`, global.CONSTANT.ERROR.VALUE.INVALID);
-    }
+    // Cache the public key
+    certificateCache.set(x5c[0], publicKey);
   }
 
   let verifiedPayload;
   try {
-    // Validate the signed payload using the matching key and return the result
-    // jwt.validate will throw an error if the verification fails
-    verifiedPayload = await jwt.verify(signedPayload, matchingKey.n, { algorithms: [matchingKey.alg] });
+    // Validate the signed payload using the public key and the algorithm from the header
+    verifiedPayload = jwt.verify(`${encodedHeader}.${encodedPayload}`, publicKey, { algorithms: [alg] });
+
+    // Perform whatever processing is necessary on the verified payload
   }
   catch (error) {
-    console.log('jwt error', verifiedPayload);
-    throw new ValidationError('await jwt.verify(signedPayload, matchingKey.n, { algorithms: [matchingKey.alg] }) failed to verify the signedPayload', global.CONSTANT.ERROR.VALUE.MISSING);
+    logServerError('Payload verification failed', error);
+    throw new ValidationError('Failed to verify the signed payload', global.CONSTANT.ERROR.VALUE.MISSING);
   }
+
+  // TO DO return info from [1] so we don't decode it 3 times in createForAppStoreServerNotif
+  return verifiedPayload;
 }
 
 module.exports = { validateAppleSignedPayload };
