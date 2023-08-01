@@ -55,6 +55,7 @@ async function getActiveInAppSubscriptionForFamilyId(databaseConnection, familyI
   familySubscription.isAutoRenewing = formatBoolean(familySubscription.isAutoRenewing) ?? true;
   familySubscription.isRevoked = formatBoolean(familySubscription.isRevoked) ?? false;
 
+  console.log('\nACTIVE SUBSCRIPTION', familySubscription, '\n');
   return familySubscription;
 }
 
