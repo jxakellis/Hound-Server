@@ -84,14 +84,12 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
 
   // Check if the notification type indicates we need to create or update an entry for transactions table
   if (notificationType === 'CONSUMPTION_REQUEST'
-  || notificationType === 'DID_FAIL_TO_RENEW'
   || notificationType === 'GRACE_PERIOD_EXPIRED'
   || notificationType === 'PRICE_INCREASE'
   || notificationType === 'REFUND_DECLINED'
   || notificationType === 'RENEWAL_EXTENDED'
   || notificationType === 'TEST') {
     // CONSUMPTION_REQUEST: Indicates that the customer initiated a refund request for a consumable in-app purchase, and the App Store is requesting that you provide consumption data.
-    // DID_FAIL_TO_RENEW: A notification type that along with its subtype indicates that the subscription failed to renew due to a billing issue.
     // GRACE_PERIOD_EXPIRED: Indicates that the billing grace period has ended without renewing the subscription, so you can turn off access to service or content.
     // PRICE_INCREASE: A notification type that along with its subtype indicates that the system has informed the user of an auto-renewable subscription price increase.
     // REFUND_DECLINED: Indicates that the App Store declined a refund request initiated by the app developer.
@@ -139,9 +137,10 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
 
   const familyId = await getFamilyIdForUserId(databaseConnection, userId);
 
+  console.log(`\n${notificationType}\n`);
+
   // Check if a new transaction was created, warrenting an insert into the transactions table
-  if (notificationType === 'DID_CHANGE_RENEWAL_PREF' || notificationType === 'DID_RENEW' || notificationType === 'OFFER_REDEEMED' || notificationType === 'SUBSCRIBED') {
-    // DID_CHANGE_RENEWAL_PREF: A notification type that along with its subtype indicates that the user made a change to their subscription plan.
+  if (notificationType === 'DID_RENEW' || notificationType === 'OFFER_REDEEMED' || notificationType === 'SUBSCRIBED') {
     // DID_RENEW: A notification type that along with its subtype indicates that the subscription successfully renewed.
     // OFFER_REDEEMED: A notification type that along with its subtype indicates that the user redeemed a promotional offer or offer code.
     // SUBSCRIBED: A notification type that along with its subtype indicates that the user subscribed to a product.
@@ -179,8 +178,10 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
     await updateInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseConnection, transactionId, userId, familyId, undefined, transactionInfo.revocationReason);
   }
   // Check if a future transaction renewal was changed, warrenting an update to the transactions table
-  else if (notificationType === 'DID_CHANGE_RENEWAL_STATUS' || notificationType === 'EXPIRED') {
+  else if (notificationType === 'DID_CHANGE_RENEWAL_PREF' || notificationType === 'DID_CHANGE_RENEWAL_STATUS' || notificationType === 'DID_FAIL_TO_RENEW' || notificationType === 'EXPIRED') {
+    // DID_CHANGE_RENEWAL_PREF: A notification type that along with its subtype indicates that the user made a change to their subscription plan.
     // DID_CHANGE_RENEWAL_STATUS: A notification type that along with its subtype indicates that the user made a change to the subscription renewal status.
+    // DID_FAIL_TO_RENEW: A notification type that along with its subtype indicates that the subscription failed to renew due to a billing issue.
     // EXPIRED: A notification type that along with its subtype indicates that a subscription expired.
     await updateInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseConnection, transactionId, userId, familyId, renewalInfo.autoRenewStatus, undefined);
   }

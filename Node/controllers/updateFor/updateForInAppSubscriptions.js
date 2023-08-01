@@ -8,6 +8,7 @@ const { ValidationError } = require('../../main/tools/general/errors');
 const { getFamilyHeadUserIdForFamilyId } = require('../getFor/getForFamily');
 
 async function updateInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseConnection, transactionId, userId, familyId, autoRenewStatus, revocationReason) {
+  console.log('\nupdateInAppSubscriptionForUserIdFamilyIdTransactionInfo for transactionId and autoRenewStatus', transactionId, autoRenewStatus);
   if (areAllDefined(databaseConnection, transactionId, userId, familyId) === false) {
     throw new ValidationError('databaseConnection, transactionId, userId, or familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
