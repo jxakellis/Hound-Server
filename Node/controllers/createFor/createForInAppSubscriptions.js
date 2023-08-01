@@ -141,6 +141,7 @@ async function createTransactionsForUserIdFamilyIdEnvironmentReceipts(databaseCo
       receipt.web_order_line_item_id,
       receipt.in_app_ownership_type,
       receipt.offer_code_ref_name,
+      receipt.product_id, // autoRenewProductId
     ));
   }
 
@@ -199,6 +200,7 @@ async function createInAppSubscriptionForUserIdFamilyIdTransactionInfo(
   forWebOrderLineItemId,
   forInAppOwnershipType,
   forOfferCode,
+  forAutoRenewProductId,
 ) {
   // TODO NOW TEST that the offer code is recieve from both server and reciept
   console.log(`createInAppSubscriptionForUserIdFamilyIdTransactionInfo did recieve ${forOfferCode}`);
@@ -215,6 +217,7 @@ async function createInAppSubscriptionForUserIdFamilyIdTransactionInfo(
   const webOrderLineItemId = formatNumber(forWebOrderLineItemId);
   const inAppOwnershipType = formatString(forInAppOwnershipType, 13);
   const offerCode = formatString(forOfferCode, 64);
+  const autoRenewProductId = formatString(forAutoRenewProductId, 60);
 
   if (areAllDefined(
     databaseConnection,
@@ -231,6 +234,7 @@ async function createInAppSubscriptionForUserIdFamilyIdTransactionInfo(
     webOrderLineItemId,
     inAppOwnershipType,
     // offerCode doesn't have to be defined
+    // autoRenewProductId doesn't have to be defined
   ) === false) {
     throw new ValidationError(`databaseConnection,
 userId
@@ -279,6 +283,7 @@ or inAppOwnershipType missing`, global.CONSTANT.ERROR.VALUE.MISSING);
     numberOfFamilyMembers,
     numberOfDogs,
     offerCode,
+    autoRenewProductId,
     '\n',
   );
 
@@ -298,17 +303,17 @@ or inAppOwnershipType missing`, global.CONSTANT.ERROR.VALUE.MISSING);
   webOrderLineItemId
   inAppOwnershipType
   NOT INCLUDED AT THIS STAGE isAutoRenewing
-  NOT INCLUDED AT THIS STAGE autoRenewProductId
   NOT INCLUDED AT THIS STAGE isRevoked
   offerCode
+  autoRenewProductId
   */
   await databaseQuery(
     databaseConnection,
     `INSERT INTO transactions
     (transactionId, originalTransactionId, userId, familyId, environment, productId, 
     subscriptionGroupIdentifier, purchaseDate, expirationDate, numberOfFamilyMembers, 
-    numberOfDogs, quantity, webOrderLineItemId, inAppOwnershipType, offerCode) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    numberOfDogs, quantity, webOrderLineItemId, inAppOwnershipType, offerCode, autoRenewProductId) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       transactionId,
       originalTransactionId,
@@ -325,6 +330,7 @@ or inAppOwnershipType missing`, global.CONSTANT.ERROR.VALUE.MISSING);
       webOrderLineItemId,
       inAppOwnershipType,
       offerCode,
+      autoRenewProductId,
     ],
   );
 }

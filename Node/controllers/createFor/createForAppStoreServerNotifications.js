@@ -171,6 +171,7 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
       transactionInfo.webOrderLineItemId,
       transactionInfo.inAppOwnershipType,
       transactionInfo.offerIdentifier,
+      renewalInfo.autoRenewProductId,
     );
   }
   // Check if a transaction was invalidated, warrenting an update to the transactions table
