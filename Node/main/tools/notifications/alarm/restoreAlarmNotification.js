@@ -24,9 +24,11 @@ async function restoreAlarmNotificationsForAllFamilies() {
       `SELECT d.familyId, dr.reminderId, dr.reminderExecutionDate 
       FROM dogReminders dr
       JOIN dogs d ON d.dogId = dr.dogId
-      WHERE d.dogIsDeleted = 0 AND dr.reminderIsDeleted = 0 AND dr.reminderExecutionDate IS NOT NULL AND dr.reminderExecutionDate > ?
+      WHERE d.dogIsDeleted = 0
+      AND dr.reminderIsDeleted = 0 
+      AND dr.reminderExecutionDate IS NOT NULL
+      AND TIMESTAMPDIFF(MICROSECOND, CURRENT_TIMESTAMP(), dr.reminderExecutionDate) >= 0
       LIMIT 18446744073709551615`,
-      [new Date()],
     );
 
     // for every reminder that exists (with a valid reminderExecutionDate that is in the future), we invoke createAlarmNotificationForAll for it

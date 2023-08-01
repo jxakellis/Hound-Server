@@ -9,7 +9,6 @@ const { areAllDefined } = require('../../main/tools/validate/validateDefined');
  */
 async function createLogForUserIdDogId(databaseConnection, userId, dogId, forLogDate, logAction, forLogCustomActionName, forLogNote) {
   const logDate = formatDate(forLogDate);
-  const logLastModified = new Date();
   const logCustomActionName = formatString(forLogCustomActionName, 32);
   const logNote = formatString(forLogNote, 500);
 
@@ -36,8 +35,8 @@ async function createLogForUserIdDogId(databaseConnection, userId, dogId, forLog
     databaseConnection,
     `INSERT INTO dogLogs
     (userId, dogId, logDate, logNote, logAction, logCustomActionName, logLastModified)
-    VALUES (?, ?, ?, ?, ?, ?, ?)`,
-    [userId, dogId, logDate, logNote, logAction, logCustomActionName, logLastModified],
+    VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP())`,
+    [userId, dogId, logDate, logNote, logAction, logCustomActionName],
   );
 
   return result.insertId;

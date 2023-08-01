@@ -82,20 +82,20 @@ async function deleteFamily(databaseConnection, familyId, familyActiveSubscripti
       databaseConnection,
       `INSERT INTO previousFamilies
       (familyId, userId, familyCode, familyIsLocked, familyAccountCreationDate, familyAccountDeletionDate)
-      SELECT familyId, userId, familyCode, familyIsLocked, familyAccountCreationDate, ?
+      SELECT familyId, userId, familyCode, familyIsLocked, familyAccountCreationDate, CURRENT_TIMESTAMP()
       FROM families f
       WHERE familyId = ?`,
-      [new Date(), familyId],
+      [familyId],
     ),
     databaseQuery(
       databaseConnection,
       `INSERT INTO previousFamilyMembers
       (familyId, userId, familyMemberJoinDate, userFirstName, userLastName, familyMemberLeaveDate, familyMemberLeaveReason) 
-      SELECT fm.familyId, fm.userId, fm.familyMemberJoinDate, u.userFirstName, u.userLastName, ?, 'familyDeleted' 
+      SELECT fm.familyId, fm.userId, fm.familyMemberJoinDate, u.userFirstName, u.userLastName, CURRENT_TIMESTAMP(), 'familyDeleted' 
       FROM familyMembers fm
       JOIN users u ON fm.userId = u.userId
       WHERE fm.familyId = ?`,
-      [new Date(), familyId],
+      [familyId],
     ),
   ];
   await Promise.all(promises);
@@ -143,11 +143,11 @@ async function leaveFamily(databaseConnection, userId, familyId) {
     databaseConnection,
     `INSERT INTO previousFamilyMembers
     (familyId, userId, familyMemberJoinDate, userFirstName, userLastName, familyMemberLeaveDate, familyMemberLeaveReason) 
-    SELECT fm.familyId, fm.userId, fm.familyMemberJoinDate, u.userFirstName, u.userLastName, ?, 'userLeft' 
+    SELECT fm.familyId, fm.userId, fm.familyMemberJoinDate, u.userFirstName, u.userLastName, CURRENT_TIMESTAMP(), 'userLeft' 
     FROM familyMembers fm
     JOIN users u ON fm.userId = u.userId
     WHERE fm.userId = ?`,
-    [new Date(), userId],
+    [userId],
   );
 
   // deletes user from family
@@ -185,11 +185,11 @@ async function kickFamilyMemberForUserIdFamilyId(databaseConnection, userId, fam
     databaseConnection,
     `INSERT INTO previousFamilyMembers
     (familyId, userId, familyMemberJoinDate, userFirstName, userLastName, familyMemberLeaveDate, familyMemberLeaveReason) 
-    SELECT fm.familyId, fm.userId, fm.familyMemberJoinDate, u.userFirstName, u.userLastName, ?, 'userKicked' 
+    SELECT fm.familyId, fm.userId, fm.familyMemberJoinDate, u.userFirstName, u.userLastName, CURRENT_TIMESTAMP(), 'userKicked' 
     FROM familyMembers fm
     JOIN users u ON fm.userId = u.userId
     WHERE fm.userId = ?`,
-    [new Date(), kickedUserId],
+    [kickedUserId],
   );
 
   // deletes user from family

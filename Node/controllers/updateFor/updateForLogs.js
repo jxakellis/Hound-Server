@@ -9,7 +9,6 @@ const { ValidationError } = require('../../main/tools/general/errors');
  */
 async function updateLogForDogIdLogId(databaseConnection, dogId, logId, forLogDate, logAction, forLogCustomActionName, forLogNote) {
   const logDate = formatDate(forLogDate);
-  const logLastModified = new Date();
   const logCustomActionName = formatString(forLogCustomActionName, 32);
   const logNote = formatString(forLogNote, 500);
 
@@ -20,9 +19,9 @@ async function updateLogForDogIdLogId(databaseConnection, dogId, logId, forLogDa
   await databaseQuery(
     databaseConnection,
     `UPDATE dogLogs
-    SET logDate = ?, logAction = ?, logCustomActionName = ?, logNote = ?, logLastModified = ?
+    SET logDate = ?, logAction = ?, logCustomActionName = ?, logNote = ?, logLastModified = CURRENT_TIMESTAMP()
     WHERE logId = ?`,
-    [logDate, logAction, logCustomActionName, logNote, logLastModified, logId],
+    [logDate, logAction, logCustomActionName, logNote, logId],
   );
 }
 

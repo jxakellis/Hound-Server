@@ -8,8 +8,6 @@ const { ValidationError } = require('../general/errors');
 
 // Outputs request to the console and logs to database
 async function logRequest(req, res, next) {
-  const date = new Date();
-
   const ip = formatString(req.ip, 32);
 
   const method = formatString(req.method, 6);
@@ -35,8 +33,8 @@ async function logRequest(req, res, next) {
         databaseConnectionForLogging,
         `INSERT INTO previousRequests
         (requestIP, requestDate, requestMethod, requestOriginalURL, requestBody)
-        VALUES (?,?,?,?,?)`,
-        [ip, date, method, originalUrl, body],
+        VALUES (?, CURRENT_TIMESTAMP(), ?, ?, ?)`,
+        [ip, method, originalUrl, body],
       );
       const requestId = formatNumber(result.insertId);
       req.requestId = requestId;

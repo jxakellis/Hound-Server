@@ -12,8 +12,6 @@ const { deleteAlarmNotificationsForReminder } = require('../../main/tools/notifi
  *  If an error is encountered, creates and throws custom error
  */
 async function deleteReminderForFamilyIdDogIdReminderId(databaseConnection, familyId, dogId, reminderId) {
-  const reminderLastModified = new Date();
-
   if (areAllDefined(databaseConnection, familyId, dogId, reminderId) === false) {
     throw new ValidationError('databaseConnection, familyId, dogId, or reminderId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
@@ -21,9 +19,9 @@ async function deleteReminderForFamilyIdDogIdReminderId(databaseConnection, fami
   await databaseQuery(
     databaseConnection,
     `UPDATE dogReminders
-    SET reminderIsDeleted = 1, reminderLastModified = ?
+    SET reminderIsDeleted = 1, reminderLastModified = CURRENT_TIMESTAMP()
     WHERE reminderId = ?`,
-    [reminderLastModified, reminderId],
+    [reminderId],
   );
 
   // everything here succeeded so we shoot off a request to delete the alarm notification for the reminder
@@ -55,8 +53,6 @@ async function deleteRemindersForFamilyIdDogIdReminderIds(databaseConnection, fa
  *  If an error is encountered, creates and throws custom error
  */
 async function deleteAllRemindersForFamilyIdDogId(databaseConnection, familyId, dogId) {
-  const reminderLastModified = new Date();
-
   if (areAllDefined(databaseConnection, familyId, dogId) === false) {
     throw new ValidationError('databaseConnection, familyId, or dogId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
@@ -74,9 +70,9 @@ async function deleteAllRemindersForFamilyIdDogId(databaseConnection, familyId, 
     databaseQuery(
       databaseConnection,
       `UPDATE dogReminders
-      SET reminderIsDeleted = 1, reminderLastModified = ?
+      SET reminderIsDeleted = 1, reminderLastModified = CURRENT_TIMESTAMP()
       WHERE reminderIsDeleted = 0 AND dogId = ?`,
-      [reminderLastModified, dogId],
+      [dogId],
     ),
   ];
 

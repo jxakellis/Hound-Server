@@ -18,12 +18,32 @@ async function getActiveInAppSubscriptionForFamilyId(databaseConnection, familyI
   // find the family's most recent subscription
   let [familySubscription] = await databaseQuery(
     databaseConnection,
-    `SELECT ${transactionsColumns}
-    FROM transactions t
-    WHERE familyId = ? AND expirationDate >= ? AND isRevoked = 0
-    ORDER BY expirationDate DESC, purchaseDate DESC, transactionId DESC
-    LIMIT 1`,
-    [familyId, new Date()],
+    // For mrp, we only select transactions that aren't expired, then
+    // For mrp, for each productId, we give a rowNumber of 1 to the row that has the greatest (most recent) purchaseDate, then
+    // For mrp, for each transaction, we then rank their productId's by level of importance. If importanceA > importanceB, then A is a upgrade and take priority.
+    `WITH mostRecentlyPurchasedForEachProductId AS (
+        SELECT 
+            *,
+            ROW_NUMBER() OVER (PARTITION BY productId ORDER BY purchaseDate DESC) AS rowNumberByProductId,
+            CASE 
+                WHEN productId = 'com.jonathanxakellis.hound.twofamilymemberstwodogs.monthly' THEN 1
+                WHEN productId = 'com.jonathanxakellis.hound.fourfamilymembersfourdogs.monthly' THEN 2
+                WHEN productId = 'com.jonathanxakellis.hound.sixfamilymemberssixdogs.monthly' THEN 3
+                WHEN productId = 'com.jonathanxakellis.hound.tenfamilymemberstendogs.monthly' THEN 4
+                WHEN productId = 'com.jonathanxakellis.hound.sixfamilymembers.onemonth' THEN 5
+                WHEN productId = 'com.jonathanxakellis.hound.sixfamilymembers.sixmonth' THEN 6
+                WHEN productId = 'com.jonathanxakellis.hound.sixfamilymembers.oneyear' THEN 7
+                ELSE 0
+            END AS productIdCorrespondingRank
+        FROM transactions t
+        WHERE familyId = ? AND (TIMESTAMPDIFF(SECOND, CURRENT_TIMESTAMP(), expirationDate) >= 0)
+    )
+    SELECT ${transactionsColumns},
+    FROM mostRecentlyPurchasedForEachProductId AS mrp
+    WHERE mrp.rowNumberByProductId = 1
+    ORDER BY mrp.productIdCorrespondingRank DESC
+    LIMIT 1;`,
+    [familyId],
   );
 
   // since we found no family subscription, assign the family to the default subscription
@@ -53,7 +73,7 @@ async function getAllInAppSubscriptionsForFamilyId(databaseConnection, familyId)
     databaseConnection,
     `SELECT ${transactionsColumns}
     FROM transactions t
-    WHERE familyId = ? ORDER BY expirationDate DESC, purchaseDate DESC
+    WHERE familyId = ? ORDER BY purchaseDate DESC, expirationDate DESC
     LIMIT 18446744073709551615`,
     [familyId],
   );

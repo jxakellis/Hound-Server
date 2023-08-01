@@ -5,8 +5,6 @@ const { formatString } = require('../format/formatObject');
 
 // Outputs response to the console and logs to database
 async function logServerError(forFunction, forError) {
-  const errorDate = new Date();
-
   const errorFunction = formatString(forFunction, 100);
 
   const errorName = formatString(forError && forError.constructor && forError.constructor.name, 500);
@@ -24,8 +22,8 @@ async function logServerError(forFunction, forError) {
     databaseConnectionForLogging,
     `INSERT INTO previousServerErrors
     (errorDate, errorFunction, errorName, errorMessage, errorCode, errorStack)
-    VALUES (?,?,?,?,?,?)`,
-    [errorDate, errorFunction, errorName, errorMessage, errorCode, errorStack],
+    VALUES (CURRENT_TIMESTAMP(), ?, ?, ?, ?, ?)`,
+    [errorFunction, errorName, errorMessage, errorCode, errorStack],
   ).catch((databaseError) => printServerError('logServerError', databaseError));
 }
 

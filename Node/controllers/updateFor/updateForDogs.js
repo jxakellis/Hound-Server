@@ -8,7 +8,6 @@ const { ValidationError } = require('../../main/tools/general/errors');
  *  If a problem is encountered, creates and throws custom error
  */
 async function updateDogForDogId(databaseConnection, dogId, forDogName) {
-  const dogLastModified = new Date();
   const dogName = formatString(forDogName, 32);
 
   // if dogName undefined, then there is nothing to update
@@ -20,9 +19,9 @@ async function updateDogForDogId(databaseConnection, dogId, forDogName) {
   await databaseQuery(
     databaseConnection,
     `UPDATE dogs
-    SET dogName = ?, dogLastModified = ?
+    SET dogName = ?, dogLastModified = CURRENT_TIMESTAMP()
     WHERE dogId = ?`,
-    [dogName, dogLastModified, dogId],
+    [dogName, dogId],
   );
 }
 

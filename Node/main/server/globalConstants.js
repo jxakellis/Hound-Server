@@ -23,7 +23,7 @@ const SERVER = {
   // How long the database connection can stay idle before being killed (in seconds)
   DATABASE_CONNECTION_WAIT_TIMEOUT: IS_PRODUCTION_DATABASE ? (60 * 60 * 3) : (60 * 60 * 1),
   // How many entries to keep in the previousRequests and previousResponses tables
-  DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES: IS_PRODUCTION_DATABASE ? 10000000 : 10000,
+  DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES: IS_PRODUCTION_DATABASE ? 10000000 : 10000000,
   APP_BUNDLE_ID: 'com.example.Pupotty',
 };
 
@@ -105,8 +105,6 @@ const DEFAULT_SUBSCRIPTION_NUMBER_OF_FAMILY_MEMBERS = 1;
 const SUBSCRIPTION = {
   DEFAULT_SUBSCRIPTION_PRODUCT_ID,
   DEFAULT_SUBSCRIPTION_NUMBER_OF_FAMILY_MEMBERS,
-  // How many milliseconds the expiration date of a sandbox subscription should be extended
-  SANDBOX_EXPIRATION_DATE_EXTENSION: 1000 * 60 * 60 * 24 * 365 * 0 * 0 * 0 * 0,
   // The in app purchase offerings for subscriptions (default indicates free / no payment)
   SUBSCRIPTIONS: [
     {

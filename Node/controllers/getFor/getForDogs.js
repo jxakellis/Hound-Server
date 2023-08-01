@@ -32,7 +32,13 @@ async function getDogForDogId(databaseConnection, dogId, forUserConfigurationPre
       FROM dogs d
       LEFT JOIN dogReminders dr ON d.dogId = dr.dogId
       LEFT JOIN dogLogs dl ON d.dogId = dl.dogId
-      WHERE (d.dogLastModified >= ? OR dr.reminderLastModified >= ? OR dl.logLastModified >= ?) AND d.dogId = ?
+      WHERE
+      (
+        TIMESTAMPDIFF(MICROSECOND, d.dogLastModified, ?) <= 0
+        OR TIMESTAMPDIFF(MICROSECOND, dr.reminderLastModified, ?) <= 0
+        OR TIMESTAMPDIFF(MICROSECOND, dl.logLastModified, ?) <= 0
+      )
+      AND d.dogId = ?
       GROUP BY d.dogId
       LIMIT 1`,
       [userConfigurationPreviousDogManagerSynchronization, userConfigurationPreviousDogManagerSynchronization, userConfigurationPreviousDogManagerSynchronization, dogId],
@@ -94,7 +100,12 @@ async function getAllDogsForUserIdFamilyId(databaseConnection, userId, familyId,
       FROM dogs d
       LEFT JOIN dogReminders dr ON d.dogId = dr.dogId
       LEFT JOIN dogLogs dl ON d.dogId = dl.dogId
-      WHERE (d.dogLastModified >= ? OR dr.reminderLastModified >= ? OR dl.logLastModified >= ?) AND d.familyId = ?
+      WHERE (
+        TIMESTAMPDIFF(MICROSECOND, d.dogLastModified, ?) <= 0
+        OR TIMESTAMPDIFF(MICROSECOND, dr.reminderLastModified, ?) <= 0
+        OR TIMESTAMPDIFF(MICROSECOND, dl.logLastModified, ?) <= 0
+      )
+      AND d.familyId = ?
       GROUP BY d.dogId
       LIMIT 18446744073709551615`,
       [userConfigurationPreviousDogManagerSynchronization, userConfigurationPreviousDogManagerSynchronization, userConfigurationPreviousDogManagerSynchronization, familyId],

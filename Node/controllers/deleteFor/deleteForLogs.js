@@ -7,8 +7,6 @@ const { ValidationError } = require('../../main/tools/general/errors');
  *  If an error is encountered, creates and throws custom error
  */
 async function deleteLogForLogId(databaseConnection, dogId, logId) {
-  const logLastModified = new Date();
-
   if (areAllDefined(databaseConnection, dogId, logId) === false) {
     throw new ValidationError('databaseConnection, dogId, or logId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
@@ -16,9 +14,9 @@ async function deleteLogForLogId(databaseConnection, dogId, logId) {
   await databaseQuery(
     databaseConnection,
     `UPDATE dogLogs
-    SET logIsDeleted = 1, logLastModified = ?
+    SET logIsDeleted = 1, logLastModified = CURRENT_TIMESTAMP()
     WHERE logId = ?`,
-    [logLastModified, logId],
+    [logId],
   );
 }
 
@@ -27,8 +25,6 @@ async function deleteLogForLogId(databaseConnection, dogId, logId) {
  *  If an error is encountered, creates and throws custom error
  */
 async function deleteAllLogsForDogId(databaseConnection, dogId) {
-  const logLastModified = new Date();
-
   if (areAllDefined(databaseConnection, dogId) === false) {
     throw new ValidationError('databaseConnection or dogId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
@@ -36,9 +32,9 @@ async function deleteAllLogsForDogId(databaseConnection, dogId) {
   await databaseQuery(
     databaseConnection,
     `UPDATE dogLogs
-    SET logIsDeleted = 1, logLastModified = ?
+    SET logIsDeleted = 1, logLastModified = CURRENT_TIMESTAMP()
     WHERE logIsDeleted = 0 AND dogId = ?`,
-    [logLastModified, dogId],
+    [dogId],
   );
 }
 

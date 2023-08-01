@@ -35,7 +35,6 @@ async function createReminderForDogIdReminder(databaseConnection, dogId, reminde
   const reminderIsEnabled = formatBoolean(reminder.reminderIsEnabled); // required
   const reminderExecutionBasis = formatDate(reminder.reminderExecutionBasis); // required
   const reminderExecutionDate = formatDate(reminder.reminderExecutionDate); // optional
-  const reminderLastModified = new Date(); // manual
 
   // countdown components
   const countdownExecutionInterval = formatNumber(reminder.countdownExecutionInterval); // required
@@ -92,13 +91,21 @@ or weeklySaturday missing`, global.CONSTANT.ERROR.VALUE.MISSING);
 
   const result = await databaseQuery(
     databaseConnection,
-    `INSERT INTO dogReminders(dogId, reminderAction, reminderCustomActionName, reminderType, reminderIsEnabled, 
-    reminderExecutionBasis, reminderExecutionDate, reminderLastModified, snoozeExecutionInterval, countdownExecutionInterval, 
-    weeklyUTCHour, weeklyUTCMinute, weeklySunday, weeklyMonday, weeklyTuesday, weeklyWednesday, weeklyThursday, weeklyFriday, weeklySaturday, 
-    weeklySkippedDate, monthlyUTCDay, monthlyUTCHour, monthlyUTCMinute, monthlySkippedDate, oneTimeDate)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO dogReminders(
+      dogId, reminderAction, reminderCustomActionName, reminderType, reminderIsEnabled, reminderExecutionBasis, reminderExecutionDate,
+      CURRENT_TIMESTAMP(),
+      snoozeExecutionInterval,
+      countdownExecutionInterval, 
+      weeklyUTCHour, weeklyUTCMinute, weeklySunday, weeklyMonday, weeklyTuesday, weeklyWednesday, weeklyThursday, weeklyFriday, weeklySaturday, weeklySkippedDate,
+      monthlyUTCDay, monthlyUTCHour, monthlyUTCMinute, monthlySkippedDate, oneTimeDate)
+    VALUES (
+      ?, ?, ?, ?, ?, ?, ?,
+      ?,
+      ?,
+      ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+      ?, ?, ?, ?, ?)`,
     [
-      dogId, reminderAction, reminderCustomActionName, reminderType, reminderIsEnabled, reminderExecutionBasis, reminderExecutionDate, reminderLastModified,
+      dogId, reminderAction, reminderCustomActionName, reminderType, reminderIsEnabled, reminderExecutionBasis, reminderExecutionDate,
       undefined,
       countdownExecutionInterval,
       weeklyUTCHour, weeklyUTCMinute, weeklySunday, weeklyMonday, weeklyTuesday, weeklyWednesday, weeklyThursday, weeklyFriday, weeklySaturday, undefined,

@@ -17,11 +17,10 @@ async function createFamilyForUserId(databaseConnection, userId) {
     throw new ValidationError('databaseConnection or userId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
-  const familyAccountCreationDate = new Date();
-  const familyId = hash(userId, familyAccountCreationDate.toISOString());
+  const familyId = hash(userId);
 
-  if (areAllDefined(familyAccountCreationDate, familyId) === false) {
-    throw new ValidationError('familyAccountCreationDate or familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
+  if (areAllDefined(familyId) === false) {
+    throw new ValidationError('familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   // check if the user is already in a family
@@ -40,15 +39,15 @@ async function createFamilyForUserId(databaseConnection, userId) {
       databaseConnection,
       `INSERT INTO families
       (userId, familyId, familyCode, familyIsLocked, familyAccountCreationDate)
-      VALUES (?, ?, ?, ?, ?)`,
-      [userId, familyId, familyCode, false, familyAccountCreationDate],
+      VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP())`,
+      [userId, familyId, familyCode, false],
     ),
     databaseQuery(
       databaseConnection,
       `INSERT INTO familyMembers
       (userId, familyId, familyMemberJoinDate)
-      VALUES (?, ?, ?)`,
-      [userId, familyId, new Date()],
+      VALUES (?, ?, CURRENT_TIMESTAMP())`,
+      [userId, familyId],
     ),
   ];
 

@@ -25,7 +25,7 @@ async function getReminderForReminderId(databaseConnection, reminderId, forUserC
       databaseConnection,
       `SELECT ${dogRemindersColumns}
       FROM dogReminders dr
-      WHERE reminderLastModified >= ? AND reminderId = ?
+      WHERE TIMESTAMPDIFF(MICROSECOND, reminderLastModified, ?) <= 0 AND reminderId = ?
       LIMIT 1`,
       [userConfigurationPreviousDogManagerSynchronization, reminderId],
     )
@@ -59,7 +59,7 @@ async function getAllRemindersForDogId(databaseConnection, dogId, forUserConfigu
       databaseConnection,
       `SELECT ${dogRemindersColumns}
       FROM dogReminders dr
-      WHERE reminderLastModified >= ? AND dogId = ?
+      WHERE TIMESTAMPDIFF(MICROSECOND, reminderLastModified, ?) <= 0 AND dogId = ?
       LIMIT 18446744073709551615`,
       [userConfigurationPreviousDogManagerSynchronization, dogId],
     )

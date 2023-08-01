@@ -207,10 +207,7 @@ async function createInAppSubscriptionForUserIdFamilyIdTransactionInfo(
   const productId = formatString(forProductId, 60);
   const subscriptionGroupIdentifier = formatNumber(forSubscriptionGroupIdentifier);
   const purchaseDate = formatDate(formatNumber(forPurchaseDateMS));
-  const expirationDate = formatDate(
-    formatNumber(forExpirationDateMS)
-         + (environment === 'Sandbox' ? global.CONSTANT.SUBSCRIPTION.SANDBOX_EXPIRATION_DATE_EXTENSION : 0),
-  );
+  const expirationDate = formatDate(formatNumber(forExpirationDateMS));
   const quantity = formatNumber(forQuantity);
   const webOrderLineItemId = formatNumber(forWebOrderLineItemId);
   const inAppOwnershipType = formatString(forInAppOwnershipType, 13);
@@ -304,7 +301,7 @@ or inAppOwnershipType missing`, global.CONSTANT.ERROR.VALUE.MISSING);
       productId,
       subscriptionGroupIdentifier,
       purchaseDate,
-      new Date(expirationDate.getTime() + (environment === 'Sandbox' ? global.CONSTANT.SUBSCRIPTION.SANDBOX_EXPIRATION_DATE_EXTENSION : 0)),
+      expirationDate,
       numberOfFamilyMembers,
       numberOfDogs,
       quantity,

@@ -7,8 +7,6 @@ const { formatString, formatNumber } = require('../format/formatObject');
 
 // Outputs response to the console and logs to database
 async function logResponse(req, res, body) {
-  const date = new Date();
-
   const originalUrl = formatString(req.originalUrl, 500);
 
   const responseBody = formatString(JSON.stringify(body), 500);
@@ -21,8 +19,8 @@ async function logResponse(req, res, body) {
         databaseConnectionForLogging,
         `INSERT INTO previousResponses
         (requestId, responseDate, responseBody)
-        VALUES (?,?,?)`,
-        [req.requestId, date, responseBody],
+        VALUES (?, ?, CURRENT_TIMESTAMP())`,
+        [req.requestId, responseBody],
       );
       const responseId = formatNumber(result.insertId);
       res.responseId = responseId;

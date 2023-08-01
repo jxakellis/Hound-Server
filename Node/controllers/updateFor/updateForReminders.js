@@ -23,7 +23,6 @@ async function updateReminderForDogIdReminder(databaseConnection, dogId, reminde
   const reminderIsEnabled = formatBoolean(reminder.reminderIsEnabled);
   const reminderExecutionBasis = formatDate(reminder.reminderExecutionBasis);
   const reminderExecutionDate = formatDate(reminder.reminderExecutionDate);
-  const reminderLastModified = new Date();
 
   // snooze components
   const snoozeExecutionInterval = formatNumber(reminder.snoozeExecutionInterval);
@@ -89,34 +88,21 @@ or weeklySaturday missing', global.CONSTANT.ERROR.VALUE.MISSING);
     databaseConnection,
     `UPDATE dogReminders
     SET reminderAction = ?, reminderCustomActionName = ?, reminderType = ?, reminderIsEnabled = ?, reminderExecutionBasis = ?, 
-    reminderExecutionDate = ?, reminderLastModified = ?, snoozeExecutionInterval = ?, countdownExecutionInterval = ?, weeklyUTCHour = ?, 
-    weeklyUTCMinute = ?, weeklySunday = ?, weeklyMonday = ?, weeklyTuesday = ?, weeklyWednesday = ?, weeklyThursday = ?, weeklyFriday = ?, 
-    weeklySaturday = ?, weeklySkippedDate = ?, monthlyUTCDay = ?, monthlyUTCHour = ?, monthlyUTCMinute = ?, monthlySkippedDate = ?, oneTimeDate = ?
+    reminderExecutionDate = ?,
+    reminderLastModified = CURRENT_TIMESTAMP(),
+    snoozeExecutionInterval = ?, countdownExecutionInterval = ?,
+    weeklyUTCHour = ?, weeklyUTCMinute = ?,
+    weeklySunday = ?, weeklyMonday = ?, weeklyTuesday = ?, weeklyWednesday = ?, weeklyThursday = ?, weeklyFriday = ?, weeklySaturday = ?, weeklySkippedDate = ?,
+    monthlyUTCDay = ?, monthlyUTCHour = ?, monthlyUTCMinute = ?, monthlySkippedDate = ?,
+    oneTimeDate = ?
     WHERE reminderId = ?`,
     [
-      reminderAction,
-      reminderCustomActionName,
-      reminderType,
-      reminderIsEnabled,
-      reminderExecutionBasis,
+      reminderAction, reminderCustomActionName, reminderType, reminderIsEnabled, reminderExecutionBasis,
       reminderExecutionDate,
-      reminderLastModified,
-      snoozeExecutionInterval,
-      countdownExecutionInterval,
-      weeklyUTCHour,
-      weeklyUTCMinute,
-      weeklySunday,
-      weeklyMonday,
-      weeklyTuesday,
-      weeklyWednesday,
-      weeklyThursday,
-      weeklyFriday,
-      weeklySaturday,
-      weeklySkippedDate,
-      monthlyUTCDay,
-      monthlyUTCHour,
-      monthlyUTCMinute,
-      monthlySkippedDate,
+      snoozeExecutionInterval, countdownExecutionInterval,
+      weeklyUTCHour, weeklyUTCMinute,
+      weeklySunday, weeklyMonday, weeklyTuesday, weeklyWednesday, weeklyThursday, weeklyFriday, weeklySaturday, weeklySkippedDate,
+      monthlyUTCDay, monthlyUTCHour, monthlyUTCMinute, monthlySkippedDate,
       oneTimeDate,
       reminderId,
     ],

@@ -92,8 +92,8 @@ async function addFamilyMember(databaseConnection, userId, forFamilyCode) {
     databaseConnection,
     `INSERT INTO familyMembers
     (userId, familyId, familyMemberJoinDate)
-    VALUES (?, ?, ?)`,
-    [userId, familyId, new Date()],
+    VALUES (?, ?, CURRENT_TIMESTAMP())`,
+    [userId, familyId],
   );
 
   const { offerCode, transactionId } = familyActiveSubscription;

@@ -93,8 +93,8 @@ async function reassignActiveInAppSubscriptionForUserIdFamilyId(databaseConnecti
     databaseConnection,
     `UPDATE transactions
     SET familyId = ?
-    WHERE userId = ? AND expirationDate >= ? AND isRevoked = 0`,
-    [familyId, userId, new Date()],
+    WHERE userId = ? AND isRevoked = 0 AND TIMESTAMPDIFF(MICROSECOND, CURRENT_TIMESTAMP(), expirationDate) >= 0`,
+    [familyId, userId],
   );
 }
 

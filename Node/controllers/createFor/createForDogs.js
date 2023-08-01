@@ -8,7 +8,6 @@ const { ValidationError } = require('../../main/tools/general/errors');
  *  If a problem is encountered, creates and throws custom error
  */
 async function createDogForFamilyId(databaseConnection, familyId, forDogName) {
-  const dogLastModified = new Date();
   const dogName = formatString(forDogName, 32);
 
   if (areAllDefined(databaseConnection, familyId, dogName) === false) {
@@ -38,8 +37,8 @@ async function createDogForFamilyId(databaseConnection, familyId, forDogName) {
     databaseConnection,
     `INSERT INTO dogs
     (familyId, dogName, dogLastModified)
-    VALUES (?,?,?)`,
-    [familyId, dogName, dogLastModified],
+    VALUES (?, ?, CURRENT_TIMESTAMP())`,
+    [familyId, dogName],
   );
   return result.insertId;
 }

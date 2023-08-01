@@ -10,8 +10,6 @@ const { deleteAllRemindersForFamilyIdDogId } = require('./deleteForReminders');
  *  If an error is encountered, creates and throws custom error
  */
 async function deleteDogForFamilyIdDogId(databaseConnection, familyId, dogId) {
-  const dogLastModified = new Date();
-
   if (areAllDefined(databaseConnection, familyId, dogId) === false) {
     throw new ValidationError('databaseConnection, familyId, or dogId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
@@ -25,9 +23,9 @@ async function deleteDogForFamilyIdDogId(databaseConnection, familyId, dogId) {
     databaseQuery(
       databaseConnection,
       `UPDATE dogs
-      SET dogIsDeleted = 1, dogLastModified = ?
+      SET dogIsDeleted = 1, dogLastModified = CURRENT_TIMESTAMP()
       WHERE dogId = ?`,
-      [dogLastModified, dogId],
+      [dogId],
     ),
   ];
 

@@ -48,8 +48,7 @@ async function createUserForUserIdentifier(
     throw new ValidationError('userIdentifier already belongs to an account', global.CONSTANT.ERROR.VALUE.INVALID);
   }
 
-  const userAccountCreationDate = new Date();
-  const userId = hash(userIdentifier, userAccountCreationDate.toISOString());
+  const userId = hash(userIdentifier);
   // userIdentifier
   const userApplicationUsername = formatString(crypto.randomUUID(), 36);
   const userEmail = formatEmail(forUserEmail);
@@ -64,9 +63,8 @@ async function createUserForUserIdentifier(
     // userFirstName
     // userLastName
     // userNotificationToken
-    userAccountCreationDate,
   ) === false) {
-    throw new ValidationError('userId or userAccountCreationDate missing', global.CONSTANT.ERROR.VALUE.MISSING);
+    throw new ValidationError('userId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   const userConfigurationIsNotificationEnabled = formatBoolean(forUserConfigurationIsNotificationEnabled) ?? false;
@@ -120,9 +118,11 @@ or userConfigurationSilentModeEndUTCMinute missing`, global.CONSTANT.ERROR.VALUE
     databaseQuery(
       databaseConnection,
       `INSERT INTO users
-      (userId, userIdentifier, userApplicationUsername, userEmail, userFirstName, userLastName, userNotificationToken, userAccountCreationDate) 
-      VALUES (?,?,?,?,?,?,?,?)`,
-      [userId, userIdentifier, userApplicationUsername, userEmail, userFirstName, userLastName, userNotificationToken, userAccountCreationDate],
+      (userId, userIdentifier, userApplicationUsername, userEmail,
+        userFirstName, userLastName, userNotificationToken, userAccountCreationDate) 
+      VALUES (?, ?, ?, ?,
+        ?, ?, ?, CURRENT_TIMESTAMP())`,
+      [userId, userIdentifier, userApplicationUsername, userEmail, userFirstName, userLastName, userNotificationToken],
     ),
     databaseQuery(
       databaseConnection,
@@ -133,7 +133,7 @@ or userConfigurationSilentModeEndUTCMinute missing`, global.CONSTANT.ERROR.VALUE
       userConfigurationRemindersInterfaceScale, userConfigurationInterfaceStyle, userConfigurationIsSilentModeEnabled, 
       userConfigurationSilentModeStartUTCHour, userConfigurationSilentModeEndUTCHour, userConfigurationSilentModeStartUTCMinute, 
       userConfigurationSilentModeEndUTCMinute) 
-      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?, ?, ?)`,
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [userId,
         userConfigurationIsNotificationEnabled,
         userConfigurationIsLoudNotificationEnabled,
