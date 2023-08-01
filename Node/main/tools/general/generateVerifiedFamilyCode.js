@@ -411,39 +411,30 @@ const swearWords = [
 const filteredSwearWords = swearWords.filter((word) => word.length <= familyCodeLength);
 
 const includesSwearWord = (string) => {
-  console.log('includesSwearWord', string);
   for (let i = 0; i < filteredSwearWords.length; i += 1) {
     const swearWord = filteredSwearWords[i];
     if (string.includes(swearWord)) {
-      console.log('true');
       return true;
     }
   }
-  console.log('false');
   return false;
 };
+
+// O and 0 + L and I are all removed because they look similar
+const characters = 'ABCDEFGHJKMNPQRSTUVWXYZ123456789';
+const charactersLength = characters.length;
 
 // Makes a code for a family to use that consists of A-Z and 0-9
 const generateFamilyCode = () => {
   let familyCode = '';
-  // O and 0 + L and I are all removed because they look similar
-  const characters = 'ABCDEFGHJKMNPQRSTUVWXYZ123456789';
-  const charactersLength = characters.length;
 
   function getRandomInt(max) {
     return Math.floor(Math.random() * max);
   }
 
-  let iter = 0;
   while (familyCode.length < familyCodeLength) {
     for (let i = 0; i < familyCodeLength; i += 1) {
       familyCode += characters.charAt(getRandomInt(charactersLength));
-    }
-
-    console.log('inital code', familyCode);
-    if (familyCode.length === familyCodeLength && iter <= 5) {
-      familyCode = 'XPENISSS';
-      iter += 1;
     }
 
     // If we have a completed familyCode, check if for swear words
@@ -452,7 +443,6 @@ const generateFamilyCode = () => {
     }
   }
 
-  console.log('final code', familyCode);
   return familyCode;
 };
 
