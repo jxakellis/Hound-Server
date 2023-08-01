@@ -177,7 +177,7 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
   else if (notificationType === 'REFUND' || notificationType === 'REVOKE') {
     // REFUND: Indicates that the App Store successfully refunded a transaction for a consumable in-app purchase, a non-consumable in-app purchase, an auto-renewable subscription, or a non-renewing subscription.
     // REVOKE: Indicates that an in-app purchase the user was entitled to through Family Sharing is no longer available through sharing.
-    await updateInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseConnection, transactionId, userId, familyId, undefined, transactionInfo.revocationReason);
+    await updateInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseConnection, transactionId, userId, familyId, undefined, undefined, transactionInfo.revocationReason);
   }
   // Check if a future transaction renewal was changed, warrenting an update to the transactions table
   else if (notificationType === 'DID_CHANGE_RENEWAL_PREF' || notificationType === 'DID_CHANGE_RENEWAL_STATUS' || notificationType === 'DID_FAIL_TO_RENEW' || notificationType === 'EXPIRED') {
@@ -185,7 +185,7 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
     // DID_CHANGE_RENEWAL_STATUS: A notification type that along with its subtype indicates that the user made a change to the subscription renewal status.
     // DID_FAIL_TO_RENEW: A notification type that along with its subtype indicates that the subscription failed to renew due to a billing issue.
     // EXPIRED: A notification type that along with its subtype indicates that a subscription expired.
-    await updateInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseConnection, transactionId, userId, familyId, renewalInfo.autoRenewStatus, undefined);
+    await updateInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseConnection, transactionId, userId, familyId, renewalInfo.autoRenewStatus, renewalInfo.autoRenewProductId, undefined);
   }
 }
 

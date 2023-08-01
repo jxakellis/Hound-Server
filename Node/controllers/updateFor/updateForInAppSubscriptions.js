@@ -1,25 +1,26 @@
 const { databaseQuery } = require('../../main/tools/database/databaseQuery');
 const {
-  formatBoolean,
+  formatBoolean, formatString
 } = require('../../main/tools/format/formatObject');
 const { areAllDefined, atLeastOneDefined } = require('../../main/tools/validate/validateDefined');
 const { ValidationError } = require('../../main/tools/general/errors');
 
 const { getFamilyHeadUserIdForFamilyId } = require('../getFor/getForFamily');
 
-async function updateInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseConnection, transactionId, userId, familyId, autoRenewStatus, revocationReason) {
-  console.log('\nupdateInAppSubscriptionForUserIdFamilyIdTransactionInfo for transactionId and autoRenewStatus', transactionId, autoRenewStatus);
+async function updateInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseConnection, transactionId, userId, familyId, autoRenewStatus, forAutoRenewProductId, revocationReason) {
+  console.log('\nupdateInAppSubscriptionForUserIdFamilyIdTransactionInfo for transactionId and autoRenewStatus', transactionId, autoRenewStatus, forAutoRenewProductId, revocationReason);
   if (areAllDefined(databaseConnection, transactionId, userId, familyId) === false) {
     throw new ValidationError('databaseConnection, transactionId, userId, or familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   const isAutoRenewing = formatBoolean(autoRenewStatus);
+  const autoRenewProductId = formatString(forAutoRenewProductId, 60);
   // If revocation reason is defined, then that means the transaction was revoked
   // Otherwise, if revocationReason is undefined then leave isRevoked as undefined so it doesn't overwrite the pre existing isRevoked
   const isRevoked = areAllDefined(revocationReason) ? true : undefined;
 
-  if (atLeastOneDefined(isAutoRenewing, isRevoked) === false) {
-    throw new ValidationError('isAutoRenewing or isRevoked missing', global.CONSTANT.ERROR.VALUE.MISSING);
+  if (atLeastOneDefined(isAutoRenewing, autoRenewProductId, isRevoked) === false) {
+    throw new ValidationError('isAutoRenewing, autoRenewProductId, or isRevoked missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   const familyHeadUserId = await getFamilyHeadUserIdForFamilyId(databaseConnection, familyId);
@@ -56,6 +57,15 @@ async function updateInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseC
       SET isAutoRenewing = ?
       WHERE transactionId = ?`,
       [isAutoRenewing, transactionId],
+    ));
+  }
+  if (areAllDefined(autoRenewProductId)) {
+    promises.push(databaseQuery(
+      databaseConnection,
+      `UPDATE transactions
+      SET autoRenewProductId = ?
+      WHERE transactionId = ?`,
+      [autoRenewProductId, transactionId],
     ));
   }
   if (areAllDefined(isRevoked)) {

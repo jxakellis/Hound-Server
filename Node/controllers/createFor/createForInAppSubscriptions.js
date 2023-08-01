@@ -298,6 +298,7 @@ or inAppOwnershipType missing`, global.CONSTANT.ERROR.VALUE.MISSING);
   webOrderLineItemId
   inAppOwnershipType
   NOT INCLUDED AT THIS STAGE isAutoRenewing
+  NOT INCLUDED AT THIS STAGE autoRenewProductId
   NOT INCLUDED AT THIS STAGE isRevoked
   offerCode
   */

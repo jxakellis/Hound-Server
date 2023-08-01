@@ -105,10 +105,10 @@ async function addFamilyMember(databaseConnection, userId, forFamilyCode) {
       `INSERT INTO affiliateTransactions
       (transactionId, originalTransactionId, userId, familyId, environment, productId, 
       subscriptionGroupIdentifier, purchaseDate, expirationDate, numberOfFamilyMembers, numberOfDogs, 
-      quantity, webOrderLineItemId, inAppOwnershipType, isAutoRenewing, isRevoked, offerCode)
+      quantity, webOrderLineItemId, inAppOwnershipType, isAutoRenewing, autoRenewProductId, isRevoked, offerCode)
       SELECT transactionId, originalTransactionId, userId, familyId, environment, productId, 
       subscriptionGroupIdentifier, purchaseDate, expirationDate, numberOfFamilyMembers, numberOfDogs, 
-      quantity, webOrderLineItemId, inAppOwnershipType, isAutoRenewing, isRevoked, offerCode
+      quantity, webOrderLineItemId, inAppOwnershipType, isAutoRenewing, autoRenewProductId, isRevoked, offerCode
       FROM transactions t
       WHERE transactionId = ?
       LIMIT 1`,
