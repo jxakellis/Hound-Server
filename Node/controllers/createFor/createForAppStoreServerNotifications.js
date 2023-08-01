@@ -137,7 +137,7 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
 
   const familyId = await getFamilyIdForUserId(databaseConnection, userId);
 
-  console.log(`\n${notificationType} for transactionId ${transactionId}\n`);
+  console.log(`\n${notificationType} for transactionId ${transactionId} for ${transactionInfo.productId}\n`);
 
   // Check if a new transaction was created, warrenting an insert into the transactions table
   if (notificationType === 'DID_RENEW' || notificationType === 'OFFER_REDEEMED' || notificationType === 'SUBSCRIBED') {
