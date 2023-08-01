@@ -31,7 +31,7 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
     throw new ValidationError('databaseConnection or signedPayload missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
-  const notification = validateNotificationSignedPayload(signedPayload);
+  const notification = await validateNotificationSignedPayload(signedPayload);
 
   if (areAllDefined(notification) === false) {
     throw new ValidationError('notification missing', global.CONSTANT.ERROR.VALUE.MISSING);
