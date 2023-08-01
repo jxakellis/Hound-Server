@@ -30,7 +30,7 @@ async function fetchApplePublicKeys() {
       logServerError('axios.get(\'https://appleid.apple.com/auth/keys\')', error);
       throw new ExternalServerError('Axios failed to query https://appleid.apple.com/auth/keys. We could not retrieve Apple\'s public keys', global.CONSTANT.ERROR.GENERAL.APPLE_SERVER_FAILED);
     }
-    console.log('after axios.get', response, response.data, response.data.keys);
+    console.log('after axios.get');
 
     if (areAllDefined(response) === false || areAllDefined(response.data) === false || areAllDefined(response.data.keys) === false) {
       throw new ValidationError('response, response.data, or response.data.keys missing', global.CONSTANT.ERROR.VALUE.MISSING);
@@ -47,15 +47,16 @@ async function fetchApplePublicKeys() {
 
 // Function to validate a signed payload using Apple's public keys
 async function validateAppleSignedPayload(signedPayload) {
-  console.log('validateAppleSignedPayload', signedPayload);
+  console.log('validateAppleSignedPayload');
   if (areAllDefined(signedPayload) === false) {
     throw new ValidationError('signedPayload missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   // signedPayload has 3 components (header, payload, and signature). Decode the header from Base64 and parse it as JSON.
-  const headerJson = JSON.parse(Buffer.from(signedPayload.split('.')[0], 'base64').toString());
-  if (areAllDefined(headerJson) === false) {
-    throw new ValidationError('headerJson missing', global.CONSTANT.ERROR.VALUE.MISSING);
+  const headerJSON = JSON.parse(Buffer.from(signedPayload.split('.')[0], 'base64').toString());
+  console.log('headerJSON', headerJSON);
+  if (areAllDefined(headerJSON) === false) {
+    throw new ValidationError('headerJSON missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   // Fetch Apple's public keys
@@ -65,8 +66,8 @@ async function validateAppleSignedPayload(signedPayload) {
   }
 
   // Find the key from the fetched keys that matches the key identifier in the header
-  let matchingKey = applePublicKeys.find((key) => key.kid === headerJson.kid);
-  console.log('matchingKey', matchingKey, headerJson.kid);
+  let matchingKey = applePublicKeys.find((key) => key.kid === headerJSON.kid);
+  console.log('matchingKey', matchingKey, headerJSON.kid);
   // If no matching key is found, potentially the keys changed very recently, so we refetch the keys
   if (areAllDefined(matchingKey) === false) {
     // Delete the currently stored Apple public keys
@@ -77,11 +78,11 @@ async function validateAppleSignedPayload(signedPayload) {
       throw new ValidationError('applePublicKeys missing', global.CONSTANT.ERROR.VALUE.MISSING);
     }
     // Research for matchingKey
-    matchingKey = applePublicKeys.find((key) => key.kid === headerJson.kid);
-    console.log('matchingKey', matchingKey, headerJson.kid);
+    matchingKey = applePublicKeys.find((key) => key.kid === headerJSON.kid);
+    console.log('matchingKey', matchingKey, headerJSON.kid);
     if (areAllDefined(matchingKey) === false) {
       // We refreshed the keys and there is still no match, therefore the key simply does not exist.
-      throw new ValidationError(`The headerJson.kid ${headerJson.kid} does not match any known, updated applePublicKey.kid`, global.CONSTANT.ERROR.VALUE.INVALID);
+      throw new ValidationError(`The headerJSON.kid ${headerJSON.kid} does not match any known, updated applePublicKey.kid`, global.CONSTANT.ERROR.VALUE.INVALID);
     }
   }
 
