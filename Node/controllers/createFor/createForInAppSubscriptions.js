@@ -119,10 +119,11 @@ async function createTransactionsForUserIdFamilyIdEnvironmentReceipts(databaseCo
     const transactionId = formatNumber(receipt.transaction_id);
     console.log('looking at transactionId', transactionId);
 
+    const storedTransaction = storedTransactions.find((stored) => formatNumber(stored.transactionId) === transactionId);
     // Verify the transaction isn't already in the database
     // Currently, the data we store on transactions is the same whether is through a receipt or an app store server notification
-    if (storedTransactions.some((storedTransaction) => formatNumber(storedTransaction.transactionId) === transactionId) === true) {
-      console.log('transactionId already stored', transactionId);
+    if (areAllDefined(storedTransaction) === true) {
+      console.log('transactionId already stored', storedTransaction, transactionId);
       continue;
     }
     promises.push(createInAppSubscriptionForUserIdFamilyIdTransactionInfo(
