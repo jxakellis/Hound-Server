@@ -38,7 +38,7 @@ async function getActiveInAppSubscriptionForFamilyId(databaseConnection, familyI
         FROM transactions t
         WHERE familyId = ? AND (TIMESTAMPDIFF(SECOND, CURRENT_TIMESTAMP(), expirationDate) >= 0)
     )
-    SELECT ${transactionsColumns},
+    SELECT ${transactionsColumns}
     FROM mostRecentlyPurchasedForEachProductId AS mrp
     WHERE mrp.rowNumberByProductId = 1
     ORDER BY mrp.productIdCorrespondingRank DESC
