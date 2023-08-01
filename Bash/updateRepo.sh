@@ -19,6 +19,10 @@ echo
 echo "UPDATING REPOSITORY"
 echo
 
+
+echo "DISCARDING LOCAL CHANGES TO REPO"
+git -C "${HOUND_SERVER_DIR}" reset --hard
+
 echo "PULLING LATEST FROM 'Hound-Server/Node' IN '/PARENT_DIR/'"
 git -C "${HOUND_SERVER_DIR}" pull origin main
 
