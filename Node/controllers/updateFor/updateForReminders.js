@@ -87,21 +87,17 @@ or weeklySaturday missing', global.CONSTANT.ERROR.VALUE.MISSING);
   await databaseQuery(
     databaseConnection,
     `UPDATE dogReminders
-    SET reminderAction = ?, reminderCustomActionName = ?, reminderType = ?, reminderIsEnabled = ?, reminderExecutionBasis = ?, 
-    reminderExecutionDate = ?,
+    SET reminderAction = ?, reminderCustomActionName = ?, reminderType = ?, reminderIsEnabled = ?, reminderExecutionBasis = ?, reminderExecutionDate = ?,
     reminderLastModified = CURRENT_TIMESTAMP(),
     snoozeExecutionInterval = ?, countdownExecutionInterval = ?,
-    weeklyUTCHour = ?, weeklyUTCMinute = ?,
-    weeklySunday = ?, weeklyMonday = ?, weeklyTuesday = ?, weeklyWednesday = ?, weeklyThursday = ?, weeklyFriday = ?, weeklySaturday = ?, weeklySkippedDate = ?,
+    weeklyUTCHour = ?, weeklyUTCMinute = ?, weeklySunday = ?, weeklyMonday = ?, weeklyTuesday = ?, weeklyWednesday = ?, weeklyThursday = ?, weeklyFriday = ?, weeklySaturday = ?, weeklySkippedDate = ?,
     monthlyUTCDay = ?, monthlyUTCHour = ?, monthlyUTCMinute = ?, monthlySkippedDate = ?,
     oneTimeDate = ?
     WHERE reminderId = ?`,
     [
-      reminderAction, reminderCustomActionName, reminderType, reminderIsEnabled, reminderExecutionBasis,
-      reminderExecutionDate,
+      reminderAction, reminderCustomActionName, reminderType, reminderIsEnabled, reminderExecutionBasis, reminderExecutionDate,
       snoozeExecutionInterval, countdownExecutionInterval,
-      weeklyUTCHour, weeklyUTCMinute,
-      weeklySunday, weeklyMonday, weeklyTuesday, weeklyWednesday, weeklyThursday, weeklyFriday, weeklySaturday, weeklySkippedDate,
+      weeklyUTCHour, weeklyUTCMinute, weeklySunday, weeklyMonday, weeklyTuesday, weeklyWednesday, weeklyThursday, weeklyFriday, weeklySaturday, weeklySkippedDate,
       monthlyUTCDay, monthlyUTCHour, monthlyUTCMinute, monthlySkippedDate,
       oneTimeDate,
       reminderId,

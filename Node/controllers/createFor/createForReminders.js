@@ -93,15 +93,14 @@ or weeklySaturday missing`, global.CONSTANT.ERROR.VALUE.MISSING);
     databaseConnection,
     `INSERT INTO dogReminders(
       dogId, reminderAction, reminderCustomActionName, reminderType, reminderIsEnabled, reminderExecutionBasis, reminderExecutionDate,
-      CURRENT_TIMESTAMP(),
-      snoozeExecutionInterval,
-      countdownExecutionInterval, 
+      reminderLastModified,
+      snoozeExecutionInterval, countdownExecutionInterval, 
       weeklyUTCHour, weeklyUTCMinute, weeklySunday, weeklyMonday, weeklyTuesday, weeklyWednesday, weeklyThursday, weeklyFriday, weeklySaturday, weeklySkippedDate,
       monthlyUTCDay, monthlyUTCHour, monthlyUTCMinute, monthlySkippedDate, oneTimeDate)
     VALUES (
       ?, ?, ?, ?, ?, ?, ?,
-      ?,
-      ?,
+      CURRENT_TIMESTAMP()
+      ?, ?,
       ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
       ?, ?, ?, ?, ?)`,
     [
