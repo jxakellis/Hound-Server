@@ -99,7 +99,7 @@ or weeklySaturday missing`, global.CONSTANT.ERROR.VALUE.MISSING);
       monthlyUTCDay, monthlyUTCHour, monthlyUTCMinute, monthlySkippedDate, oneTimeDate)
     VALUES (
       ?, ?, ?, ?, ?, ?, ?,
-      CURRENT_TIMESTAMP()
+      CURRENT_TIMESTAMP(),
       ?, ?,
       ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
       ?, ?, ?, ?, ?)`,
