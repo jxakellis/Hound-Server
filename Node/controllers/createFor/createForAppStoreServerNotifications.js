@@ -15,7 +15,7 @@ const { getInAppSubscriptionForTransactionId } = require('../getFor/getForInAppS
 
 const { createInAppSubscriptionForUserIdFamilyIdTransactionInfo } = require('./createForInAppSubscriptions');
 
-const { updateInAppSubscriptionForUserIdFamilyIdTransactionInfo } = require('../updateFor/updateForInAppSubscriptions');
+const { updateSubscriptionAutoRenewal, updateSubscriptionRevocation } = require('../updateFor/updateForInAppSubscriptions');
 
 /*
 Processes an App Store Server Notification from start to finish. If anything goes wrong, it logs it as a server error.
@@ -90,13 +90,11 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
   if (notificationType === 'CONSUMPTION_REQUEST'
   || notificationType === 'GRACE_PERIOD_EXPIRED'
   || notificationType === 'PRICE_INCREASE'
-  || notificationType === 'REFUND_DECLINED'
   || notificationType === 'RENEWAL_EXTENDED'
   || notificationType === 'TEST') {
     // CONSUMPTION_REQUEST: Indicates that the customer initiated a refund request for a consumable in-app purchase, and the App Store is requesting that you provide consumption data.
     // GRACE_PERIOD_EXPIRED: Indicates that the billing grace period has ended without renewing the subscription, so you can turn off access to service or content.
     // PRICE_INCREASE: A notification type that along with its subtype indicates that the system has informed the user of an auto-renewable subscription price increase.
-    // REFUND_DECLINED: Indicates that the App Store declined a refund request initiated by the app developer.
     // RENEWAL_EXTENDED: Indicates that the App Store extended the subscription renewal date that the developer requested.
     // TEST: A notification type that the App Store server sends when you request it by calling the Request a Test Notification endpoint.
     return;
@@ -151,7 +149,6 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
 
     // Verify the transaction isn't already in the database
     if (areAllDefined(storedTransaction)) {
-      console.log('\ntransactionId already stored', transactionId, storedTransaction, notificationType, '\n');
       // Currently, the data we store on transactions is the same whether is through a receipt or an app store server notification
       return;
     }
@@ -171,14 +168,16 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
       transactionInfo.webOrderLineItemId,
       transactionInfo.inAppOwnershipType,
       transactionInfo.offerIdentifier,
-      renewalInfo.autoRenewProductId,
     );
   }
   // Check if a transaction was invalidated, warrenting an update to the transactions table
-  else if (notificationType === 'REFUND' || notificationType === 'REVOKE') {
+  else if (notificationType === 'REFUND' || notificationType === 'REVOKE' || notificationType === 'REFUND_DECLINED' || notificationType === 'REFUND_REVERSED') {
     // REFUND: Indicates that the App Store successfully refunded a transaction for a consumable in-app purchase, a non-consumable in-app purchase, an auto-renewable subscription, or a non-renewing subscription.
     // REVOKE: Indicates that an in-app purchase the user was entitled to through Family Sharing is no longer available through sharing.
-    await updateInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseConnection, transactionId, userId, familyId, undefined, undefined, transactionInfo.revocationReason);
+    // REFUND_DECLINED: A notification type that indicates the App Store declined a refund request initiated by the app developer using any of the following methods: beginRefundRequest(for:in:), beginRefundRequest(in:), beginRefundRequest(for:in:), beginRefundRequest(in:), and refundRequestSheet(for:isPresented:onDismiss:).
+    // REFUND_REVERSED: A notification type that indicates the App Store reversed a previously granted refund due to a dispute that the customer raised. If your app revoked content or services as a result of the related refund, it needs to reinstate them.
+    // This notification type can apply to any in-app purchase type: consumable, non-consumable, non-renewing subscription, and auto-renewable subscription. For auto-renewable subscriptions, the renewal date remains unchanged when the App Store reverses a refund.
+    await updateSubscriptionRevocation(databaseConnection, transactionId, userId, familyId, transactionInfo.revocationReason);
   }
   // Check if a future transaction renewal was changed, warrenting an update to the transactions table
   else if (notificationType === 'DID_CHANGE_RENEWAL_PREF' || notificationType === 'DID_CHANGE_RENEWAL_STATUS' || notificationType === 'DID_FAIL_TO_RENEW' || notificationType === 'EXPIRED') {
@@ -186,7 +185,7 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
     // DID_CHANGE_RENEWAL_STATUS: A notification type that along with its subtype indicates that the user made a change to the subscription renewal status.
     // DID_FAIL_TO_RENEW: A notification type that along with its subtype indicates that the subscription failed to renew due to a billing issue.
     // EXPIRED: A notification type that along with its subtype indicates that a subscription expired.
-    await updateInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseConnection, transactionId, userId, familyId, renewalInfo.autoRenewStatus, renewalInfo.autoRenewProductId, undefined);
+    await updateSubscriptionAutoRenewal(databaseConnection, transactionId, userId, familyId, renewalInfo.autoRenewStatus, renewalInfo.autoRenewProductId);
   }
 }
 

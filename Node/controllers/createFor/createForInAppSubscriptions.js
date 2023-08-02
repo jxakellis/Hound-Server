@@ -12,7 +12,7 @@ const { logServerError } = require('../../main/tools/logging/logServerError');
 const { getFamilyHeadUserIdForFamilyId } = require('../getFor/getForFamily');
 const { getActiveInAppSubscriptionForFamilyId } = require('../getFor/getForInAppSubscriptions');
 
-const { reassignActiveInAppSubscriptionForUserIdFamilyId } = require('../updateFor/updateForInAppSubscriptions');
+const { reassignActiveSubscriptionsToNewFamilyForUserIdFamilyId } = require('../updateFor/updateForInAppSubscriptions');
 
 /**
  *  Contacts Apple's server to retrieve records of any transaction, given the appStoreReceiptURL
@@ -117,13 +117,11 @@ async function createTransactionsForUserIdFamilyIdEnvironmentReceipts(databaseCo
   for (let i = 0; i < receipts.length; i += 1) {
     const receipt = receipts[i];
     const transactionId = formatNumber(receipt.transaction_id);
-    console.log('looking at transactionId', transactionId);
 
     const storedTransaction = storedTransactions.find((stored) => formatNumber(stored.transactionId) === transactionId);
     // Verify the transaction isn't already in the database
     // Currently, the data we store on transactions is the same whether is through a receipt or an app store server notification
     if (areAllDefined(storedTransaction) === true) {
-      console.log('transactionId already stored', storedTransaction, transactionId);
       continue;
     }
     promises.push(createInAppSubscriptionForUserIdFamilyIdTransactionInfo(
@@ -141,7 +139,6 @@ async function createTransactionsForUserIdFamilyIdEnvironmentReceipts(databaseCo
       receipt.web_order_line_item_id,
       receipt.in_app_ownership_type,
       receipt.offer_code_ref_name,
-      receipt.product_id, // autoRenewProductId
     ));
   }
 
@@ -151,7 +148,7 @@ async function createTransactionsForUserIdFamilyIdEnvironmentReceipts(databaseCo
   await Promise.allSettled(promises);
 
   // now all of the receipts returned by apple (who's productId's match one that is known to us) are stored in our database
-  await reassignActiveInAppSubscriptionForUserIdFamilyId(databaseConnection, userId, familyId);
+  await reassignActiveSubscriptionsToNewFamilyForUserIdFamilyId(databaseConnection, userId, familyId);
 }
 
 /**
@@ -200,7 +197,6 @@ async function createInAppSubscriptionForUserIdFamilyIdTransactionInfo(
   forWebOrderLineItemId,
   forInAppOwnershipType,
   forOfferCode,
-  forAutoRenewProductId,
 ) {
   // TODO NOW TEST that the offer code is recieve from both server and reciept
   console.log(`createInAppSubscriptionForUserIdFamilyIdTransactionInfo did recieve ${forOfferCode}`);
@@ -217,7 +213,8 @@ async function createInAppSubscriptionForUserIdFamilyIdTransactionInfo(
   const webOrderLineItemId = formatNumber(forWebOrderLineItemId);
   const inAppOwnershipType = formatString(forInAppOwnershipType, 13);
   const offerCode = formatString(forOfferCode, 64);
-  const autoRenewProductId = formatString(forAutoRenewProductId, 60);
+  // autoRenewProductId == productId when a subscription is created
+  const autoRenewProductId = formatString(forProductId, 60);
 
   if (areAllDefined(
     databaseConnection,
@@ -234,21 +231,22 @@ async function createInAppSubscriptionForUserIdFamilyIdTransactionInfo(
     webOrderLineItemId,
     inAppOwnershipType,
     // offerCode doesn't have to be defined
-    // autoRenewProductId doesn't have to be defined
+    autoRenewProductId,
   ) === false) {
     throw new ValidationError(`databaseConnection,
-userId
-familyId
-transactionId
-originalTransactionId
-environment
-productId
-subscriptionGroupIdentifier
-purchaseDate
-expirationDate
-quantity
-webOrderLineItemId
-or inAppOwnershipType missing`, global.CONSTANT.ERROR.VALUE.MISSING);
+userId,
+familyId,
+transactionId, 
+originalTransactionId, 
+environment, 
+productId, 
+subscriptionGroupIdentifier, 
+purchaseDate, 
+expirationDate, 
+quantity, 
+webOrderLineItemId, 
+inAppOwnershipType,
+or autoRenewProductId  missing`, global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   const correspondingProduct = global.CONSTANT.SUBSCRIPTION.SUBSCRIPTIONS.find((subscription) => subscription.productId === productId);
@@ -272,20 +270,6 @@ or inAppOwnershipType missing`, global.CONSTANT.ERROR.VALUE.MISSING);
   if (inAppOwnershipType !== 'PURCHASED') {
     throw new ValidationError(`inAppOwnershipType must be PURCHASED, not ${inAppOwnershipType}`, global.CONSTANT.ERROR.VALUE.INVALID);
   }
-
-  console.log(
-    '\nCREATE SUBSCRIPTION',
-    transactionId,
-    transactionId,
-    productId,
-    purchaseDate,
-    expirationDate,
-    numberOfFamilyMembers,
-    numberOfDogs,
-    offerCode,
-    autoRenewProductId,
-    '\n',
-  );
 
   /*
   transactionId
@@ -312,7 +296,7 @@ or inAppOwnershipType missing`, global.CONSTANT.ERROR.VALUE.MISSING);
     `INSERT INTO transactions
     (transactionId, originalTransactionId, userId, familyId, environment, productId, 
     subscriptionGroupIdentifier, purchaseDate, expirationDate, numberOfFamilyMembers, 
-    numberOfDogs, quantity, webOrderLineItemId, inAppOwnershipType, offerCode, autoRenewProductId) 
+    numberOfDogs, quantity, webOrderLineItemId, inAppOwnershipType, autoRenewProductId, offerCode) 
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       transactionId,
@@ -329,8 +313,8 @@ or inAppOwnershipType missing`, global.CONSTANT.ERROR.VALUE.MISSING);
       quantity,
       webOrderLineItemId,
       inAppOwnershipType,
-      offerCode,
       autoRenewProductId,
+      offerCode,
     ],
   );
 }

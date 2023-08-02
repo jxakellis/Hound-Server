@@ -7,20 +7,16 @@ const { ValidationError } = require('../../main/tools/general/errors');
 
 const { getFamilyHeadUserIdForFamilyId } = require('../getFor/getForFamily');
 
-async function updateInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseConnection, transactionId, userId, familyId, autoRenewStatus, forAutoRenewProductId, revocationReason) {
-  console.log('\nupdateInAppSubscriptionForUserIdFamilyIdTransactionInfo for transactionId and autoRenewStatus', transactionId, autoRenewStatus, forAutoRenewProductId, revocationReason);
+async function updateSubscriptionAutoRenewal(databaseConnection, transactionId, userId, familyId, forAutoRenewStatus, forAutoRenewProductId) {
   if (areAllDefined(databaseConnection, transactionId, userId, familyId) === false) {
     throw new ValidationError('databaseConnection, transactionId, userId, or familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
-  const isAutoRenewing = formatBoolean(autoRenewStatus);
+  const isAutoRenewing = formatBoolean(forAutoRenewStatus);
   const autoRenewProductId = formatString(forAutoRenewProductId, 60);
-  // If revocation reason is defined, then that means the transaction was revoked
-  // Otherwise, if revocationReason is undefined then leave isRevoked as undefined so it doesn't overwrite the pre existing isRevoked
-  const isRevoked = areAllDefined(revocationReason) ? true : undefined;
 
-  if (atLeastOneDefined(isAutoRenewing, autoRenewProductId, isRevoked) === false) {
-    throw new ValidationError('isAutoRenewing, autoRenewProductId, or isRevoked missing', global.CONSTANT.ERROR.VALUE.MISSING);
+  if (atLeastOneDefined(isAutoRenewing, autoRenewProductId) === false) {
+    throw new ValidationError('isAutoRenewing or autoRenewProductId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   const familyHeadUserId = await getFamilyHeadUserIdForFamilyId(databaseConnection, familyId);
@@ -31,21 +27,10 @@ async function updateInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseC
 
   /*
   Once a transaction is performed, certain values shouldn't be changed
-  IMMUTABLE transactionId
-  IMMUTABLE originalTransactionId
-  IMMUTABLE userId
-  IMMUTABLE familyId
-  IMMUTABLE productId
-  IMMUTABLE subscriptionGroupIdentifier
-  IMMUTABLE purchaseDate
-  IMMUTABLE expirationDate
-  IMMUTABLE numberOfFamilyMembers
-  IMMUTABLE numberOfDogs
-  IMMUTABLE quantity
-  IMMUTABLE webOrderLineItemId
-  IMMUTABLE inAppOwnershipType
   MUTABLE isAutoRenewing
+  MUTABLE autoRenewProductId
   MUTABLE isRevoked
+  IMMUTABLE other
   */
 
   const promises = [];
@@ -74,17 +59,44 @@ async function updateInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseC
       [autoRenewProductId, transactionId],
     ));
   }
-  if (areAllDefined(isRevoked)) {
-    promises.push(databaseQuery(
-      databaseConnection,
-      `UPDATE transactions
-      SET isRevoked = ?
-      WHERE transactionId = ?`,
-      [isRevoked, transactionId],
-    ));
-  }
 
   await Promise.all(promises);
+}
+
+async function updateSubscriptionRevocation(databaseConnection, transactionId, userId, familyId, forRevocationReason) {
+  if (areAllDefined(databaseConnection, transactionId, userId, familyId) === false) {
+    throw new ValidationError('databaseConnection, transactionId, userId, or familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
+  }
+
+  // If revocation reason is defined, then that means the transaction was revoked
+  // Otherwise, if revocationReason is undefined then leave isRevoked as undefined so it doesn't overwrite the pre existing isRevoked
+  const isRevoked = areAllDefined(forRevocationReason) ? true : undefined;
+
+  if (areAllDefined(isRevoked) === false) {
+    throw new ValidationError('isRevoked missing', global.CONSTANT.ERROR.VALUE.MISSING);
+  }
+
+  const familyHeadUserId = await getFamilyHeadUserIdForFamilyId(databaseConnection, familyId);
+
+  if (familyHeadUserId !== userId) {
+    throw new ValidationError('You are not the family head. Only the family head can modify the family subscription', global.CONSTANT.ERROR.PERMISSION.INVALID.FAMILY);
+  }
+
+  /*
+  Once a transaction is performed, certain values shouldn't be changed
+  MUTABLE isAutoRenewing
+  MUTABLE autoRenewProductId
+  MUTABLE isRevoked
+  IMMUTABLE other
+  */
+
+  await databaseQuery(
+    databaseConnection,
+    `UPDATE transactions
+    SET isRevoked = ?
+    WHERE transactionId = ?`,
+    [isRevoked, transactionId],
+  );
 }
 
 /**
@@ -92,15 +104,15 @@ async function updateInAppSubscriptionForUserIdFamilyIdTransactionInfo(databaseC
  * The user must be the head of their current family, the subscription must not have expired, and the subscription must be assigned to that user but under a different family
  * If these conditions are met, then update the familyId of the transaction to the user's current family
  */
-async function reassignActiveInAppSubscriptionForUserIdFamilyId(databaseConnection, userId, familyId) {
-  if (areAllDefined(databaseConnection, userId, familyId) === false) {
+async function reassignActiveSubscriptionsToNewFamilyForUserIdFamilyId(databaseConnection, forUserId, forNewFamilyId) {
+  if (areAllDefined(databaseConnection, forUserId, forUserId) === false) {
     throw new ValidationError('databaseConnection, userId, or familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
-  const familyHeadUserId = await getFamilyHeadUserIdForFamilyId(databaseConnection, familyId);
+  const newFamilyFamilyHeadUserId = await getFamilyHeadUserIdForFamilyId(databaseConnection, forNewFamilyId);
 
   // Only a user that is the head of their family can have subscriptions reassigned
-  if (familyHeadUserId !== userId) {
+  if (newFamilyFamilyHeadUserId !== forUserId) {
     // Reassigning subscriptions is optional. It is acceptable if this check fails.
     return;
   }
@@ -111,8 +123,8 @@ async function reassignActiveInAppSubscriptionForUserIdFamilyId(databaseConnecti
     `UPDATE transactions
     SET familyId = ?
     WHERE userId = ? AND isRevoked = 0 AND TIMESTAMPDIFF(MICROSECOND, CURRENT_TIMESTAMP(), expirationDate) >= 0`,
-    [familyId, userId],
+    [forNewFamilyId, forUserId],
   );
 }
 
-module.exports = { updateInAppSubscriptionForUserIdFamilyIdTransactionInfo, reassignActiveInAppSubscriptionForUserIdFamilyId };
+module.exports = { updateSubscriptionAutoRenewal, updateSubscriptionRevocation, reassignActiveSubscriptionsToNewFamilyForUserIdFamilyId };

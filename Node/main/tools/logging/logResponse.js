@@ -6,10 +6,12 @@ const { areAllDefined } = require('../validate/validateDefined');
 const { formatString, formatNumber } = require('../format/formatObject');
 
 // Outputs response to the console and logs to database
-async function logResponse(req, res, body) {
+async function logResponse(req, res, forStatus, forBody) {
   const originalUrl = formatString(req.originalUrl, 500);
 
-  const responseBody = formatString(JSON.stringify(body), 500);
+  const responseStatus = formatNumber(forStatus);
+
+  const responseBody = formatString(JSON.stringify(forBody), 500);
 
   responseLogger.debug(`Response for ${req.method} ${originalUrl}\n With body: ${JSON.stringify(responseBody)}`);
 
@@ -18,9 +20,9 @@ async function logResponse(req, res, body) {
       const result = await databaseQuery(
         databaseConnectionForLogging,
         `INSERT INTO previousResponses
-        (requestId, responseDate, responseBody)
-        VALUES (?, CURRENT_TIMESTAMP(), ?)`,
-        [req.requestId, responseBody],
+        (requestId, responseDate, responseStatus, responseBody)
+        VALUES (?, ?, CURRENT_TIMESTAMP(), ?)`,
+        [req.requestId, responseStatus, responseBody],
       );
       const responseId = formatNumber(result.insertId);
       res.responseId = responseId;
