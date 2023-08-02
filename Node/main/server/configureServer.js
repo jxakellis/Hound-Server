@@ -29,9 +29,7 @@ const configureServerForRequests = (server) => new Promise((resolve) => {
         JOIN (SELECT requestId FROM previousRequests pr ORDER BY requestDate DESC LIMIT 1 OFFSET ?) prl ON pr.requestId < prl.requestId`,
         [global.CONSTANT.SERVER.DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES],
       )
-        .catch((error) => {
-          logServerError('DELETE previousRequests for databaseMaintenanceIntervalObject', error);
-        });
+        .catch((error) => logServerError('DELETE previousRequests for databaseMaintenanceIntervalObject', error));
 
       // Keep the latest DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES previousResponses, then delete any entries that are older
       databaseQuery(
@@ -41,15 +39,11 @@ const configureServerForRequests = (server) => new Promise((resolve) => {
         JOIN (SELECT requestId FROM previousRequests pr ORDER BY requestDate DESC LIMIT 1 OFFSET ?) prl ON pr.requestId < prl.requestId`,
         [global.CONSTANT.SERVER.DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES],
       )
-        .catch((error) => {
-          logServerError('DELETE previousResponses for databaseMaintenanceIntervalObject', error);
-        });
+        .catch((error) => logServerError('DELETE previousResponses for databaseMaintenanceIntervalObject', error));
 
       // Ensure that the database connections are valid and can query the database
       testDatabaseConnections(databaseConnectionForGeneral, databaseConnectionForLogging, databaseConnectionForAlarms, databaseConnectionPoolForRequests)
-        .catch((error) => {
-          logServerError('testDatabaseConnections for databaseMaintenanceIntervalObject', error);
-        });
+        .catch((error) => logServerError('testDatabaseConnections for databaseMaintenanceIntervalObject', error));
     }, global.CONSTANT.SERVER.DATABASE_MAINTENANCE_INTERVAL);
 
     resolve(databaseMaintenanceIntervalObject);

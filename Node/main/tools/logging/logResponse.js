@@ -20,7 +20,7 @@ async function logResponse(req, res, forStatus, forBody) {
       const result = await databaseQuery(
         databaseConnectionForLogging,
         `INSERT INTO previousResponses
-        (requestId, responseDate, responseStatus, responseBody)
+        (requestId, responseStatus, responseDate, responseBody)
         VALUES (?, ?, CURRENT_TIMESTAMP(), ?)`,
         [req.requestId, responseStatus, responseBody],
       );

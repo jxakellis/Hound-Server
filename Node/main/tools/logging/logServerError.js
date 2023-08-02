@@ -24,7 +24,9 @@ async function logServerError(forFunction, forError) {
     (errorDate, errorFunction, errorName, errorMessage, errorCode, errorStack)
     VALUES (CURRENT_TIMESTAMP(), ?, ?, ?, ?, ?)`,
     [errorFunction, errorName, errorMessage, errorCode, errorStack],
-  ).catch((databaseError) => printServerError('logServerError', databaseError));
+  ).catch(
+    (error) => printServerError('logServerError', error),
+  );
 }
 
 function printServerError(forFunction, forError) {
