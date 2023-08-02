@@ -85,7 +85,7 @@ function configureResponse(req, res) {
       ? convertErrorToJSON(error)
       : { result: body ?? '' };
 
-    await logResponse(req, res, response);
+    await logResponse(req, res, status, response);
 
     if (req.originalUrl !== '/watchdog') {
       // need to update watchdog so it recognizes pattern of requestId and responseId. currently can only recognize {"result":""} as success
