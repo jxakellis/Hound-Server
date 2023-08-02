@@ -19,7 +19,7 @@ const databaseQuery = (forDatabaseConnection, forSQLString, forSQLVariables) => 
   if (areAllDefined(SQLString) === false) {
     reject(new ValidationError('SQLString missing for databaseQuery', global.CONSTANT.ERROR.VALUE.MISSING));
   }
-  poolLogger.debug(`\ndatabaseQuery w/o variables: ${SQLString}\n`);
+  poolLogger.debug(`databaseQuery w/o variables: ${SQLString}`);
 
   const SQLVariables = areAllDefined(forSQLVariables) ? formatArray(forSQLVariables) : [];
 
@@ -27,7 +27,6 @@ const databaseQuery = (forDatabaseConnection, forSQLString, forSQLVariables) => 
     SQLString,
     SQLVariables,
     (error, result) => {
-      poolLogger.debug(`\ndatabaseQuery finished variables: ${result} \n ${error}\n`);
       if (error) {
         // error when trying to do query to database
         reject(new DatabaseError(error.message, error.code));
