@@ -15,9 +15,10 @@ Known:
 */
 async function getFamily(req, res) {
   try {
+    console.log('\ngetFamily\n');
     const { familyId } = req.params;
     const result = await getAllFamilyInformationForFamilyId(req.databaseConnection, familyId, req.familyActiveSubscription);
-
+    console.log(result);
     return res.sendResponseForStatusBodyError(200, result, undefined);
   }
   catch (error) {
