@@ -82,10 +82,6 @@ async function createAppStoreServerNotificationForSignedPayload(databaseConnecti
     return;
   }
 
-  console.log(`\n${notificationType} for transactionId ${transactionInfo.transactionId} for ${transactionInfo.productId}\n`);
-  console.log(transactionInfo);
-  console.log(renewalInfo);
-
   // Check if the notification type indicates we need to create or update an entry for transactions table
   if (notificationType === 'CONSUMPTION_REQUEST'
   || notificationType === 'GRACE_PERIOD_EXPIRED'
