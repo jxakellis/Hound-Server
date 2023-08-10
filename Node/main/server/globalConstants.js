@@ -14,11 +14,11 @@ const SERVER = {
   // Allows for testing of new versions in development but leave production alone
   COMPATIBLE_IOS_APP_VERSIONS: IS_PRODUCTION_DATABASE ? ['2.2.1', '3.0.0'] : ['2.2.1', '3.0.0'],
   // How often the database connections are tested as being connected and excess previousRequests/previousResponses are deleted (in milliseconds)
-  DATABASE_MAINTENANCE_INTERVAL: IS_PRODUCTION_DATABASE ? (1000 * 60 * 15) : (1000 * 60 * 5),
+  DATABASE_MAINTENANCE_INTERVAL: (1000 * 60 * 5),
   // How long the database connection can stay idle before being killed (in seconds)
-  DATABASE_CONNECTION_WAIT_TIMEOUT: IS_PRODUCTION_DATABASE ? (60 * 60 * 3) : (60 * 60 * 1),
+  DATABASE_CONNECTION_WAIT_TIMEOUT: (60 * 60 * 1),
   // How many entries to keep in the previousRequests and previousResponses tables
-  DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES: IS_PRODUCTION_DATABASE ? 10000000 : 10000000,
+  DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES: 10000000,
   APP_BUNDLE_ID: 'com.example.Pupotty',
 };
 

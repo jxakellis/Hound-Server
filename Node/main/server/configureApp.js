@@ -1,7 +1,7 @@
 const express = require('express');
 
 const { parseFormData, parseJSON } = require('../tools/general/parseBody');
-const { logRequest } = require('../tools/logging/logRequest');
+const { logRequest, addAppVersionToLogRequest } = require('../tools/logging/logRequest');
 const { configureRequestForResponse } = require('../tools/general/configureRequestAndResponse');
 const { validateAppVersion } = require('../tools/validate/validateId');
 const { watchdogRouter } = require('../../routes/watchdog');
@@ -34,7 +34,7 @@ function configureAppForRequests(app) {
 
   // Make sure the user is on an updated version
 
-  app.use(userPath, validateAppVersion);
+  app.use(userPath, validateAppVersion, addAppVersionToLogRequest);
 
   // Route the request to the userRouter
 

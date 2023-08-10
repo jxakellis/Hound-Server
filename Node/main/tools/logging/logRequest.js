@@ -47,6 +47,31 @@ async function logRequest(req, res, next) {
   return next();
 }
 
+async function addAppVersionToLogRequest(req, res, next) {
+  const requestId = formatNumber(req.requestId);
+  const appVersion = formatString(req.params.appVersion);
+
+  // We are going to be modifying a pre-existing requestId and the appVersion should exist if this function is invoked
+  if (areAllDefined(requestId, appVersion) === false) {
+    return next();
+  }
+
+  try {
+    await databaseQuery(
+      databaseConnectionForLogging,
+      `UPDATE previousRequests
+      SET requestAppVersion = ?
+      WHERE requestId = ?`,
+      [appVersion, requestId],
+    );
+  }
+  catch (error) {
+    logServerError('logRequest', error);
+  }
+
+  return next();
+}
+
 async function addUserIdToLogRequest(req, res, next) {
   const requestId = formatNumber(req.requestId);
   const userId = formatSHA256Hash(req.params.userId);
@@ -97,4 +122,6 @@ async function addFamilyIdToLogRequest(req, res, next) {
   return next();
 }
 
-module.exports = { logRequest, addUserIdToLogRequest, addFamilyIdToLogRequest };
+module.exports = {
+  logRequest, addAppVersionToLogRequest, addUserIdToLogRequest, addFamilyIdToLogRequest,
+};

@@ -10,7 +10,7 @@ function parseFormData(req, res, next) {
   })(req, res, (error) => {
     if (areAllDefined(error)) {
       logServerError('parseFormData', error);
-      return res.sendResponseForStatusBodyError(400, undefined, new ValidationError('Unable to parse form data', global.CONSTANT.ERROR.GENERAL.APP_VERSION_OUTDATED));
+      return res.sendResponseForStatusBodyError(400, undefined, new ValidationError('Unable to parse form data', global.CONSTANT.ERROR.GENERAL.PARSE_FORM_DATA_FAILED));
     }
     return next();
   });
