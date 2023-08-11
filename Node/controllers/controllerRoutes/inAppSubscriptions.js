@@ -1,6 +1,6 @@
-const { getAllInAppSubscriptionsForFamilyId } = require('../getFor/getForInAppSubscriptions');
+const { getAllInAppSubscriptionsForFamilyId, getActiveInAppSubscriptionForFamilyId } = require('../getFor/getForTransactions');
 
-const { createTransactionsForAppStoreReceiptURL } = require('../createFor/createForReceipt');
+const { createTransactionsForAppStoreReceiptURL } = require('../../main/tools/appStoreConnectAPI/insertTransaction');
 
 async function getInAppSubscriptions(req, res) {
   try {
@@ -18,6 +18,11 @@ async function createInAppSubscriptions(req, res) {
   try {
     const { userId, familyId } = req.params;
     const { appStoreReceiptURL } = req.body;
+    // TODO NOW extract transactionId from appStoreReceiptURL then use api to query apple's servers
+    /*
+    const receiptUtil = new ReceiptUtility()
+const transactionId = receiptUtil.extractTransactionIdFromAppReceipt(appReceipt)
+*/
     const result = await createTransactionsForAppStoreReceiptURL(req.databaseConnection, userId, familyId, appStoreReceiptURL);
 
     return res.sendResponseForStatusBodyError(200, result, undefined);

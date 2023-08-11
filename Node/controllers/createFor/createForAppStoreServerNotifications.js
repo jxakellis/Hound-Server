@@ -11,9 +11,9 @@ const { validateNotificationSignedPayload, validateTransactionSignedPayload, val
 const { getUserForUserApplicationUsername } = require('../getFor/getForUser');
 const { getFamilyIdForUserId } = require('../getFor/getForFamily');
 const { getAppStoreServerNotificationForNotificationUUID } = require('../getFor/getForAppStoreServerNotifications');
-const { getInAppSubscriptionForTransactionId } = require('../getFor/getForInAppSubscriptions');
+const { getInAppSubscriptionForTransactionId } = require('../getFor/getForTransactions');
 
-const { insertTransactionForTransactionInfo } = require('./createForReceipt');
+const { insertTransactionForTransactionInfo } = require('../../main/tools/appStoreConnectAPI/insertTransaction');
 
 const { updateSubscriptionAutoRenewal, updateSubscriptionRevocation } = require('../updateFor/updateForInAppSubscriptions');
 
