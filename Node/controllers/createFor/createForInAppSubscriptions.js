@@ -118,8 +118,6 @@ async function createTransactionsForReceipts(databaseConnection, userId, familyI
     const receipt = receipts[i];
     const transactionId = formatNumber(receipt.transaction_id);
 
-    console.log(receipt);
-
     const storedTransaction = storedTransactions.find((stored) => formatNumber(stored.transactionId) === transactionId);
     // Verify the transaction isn't already in the database
     // Currently, the data we store on transactions is the same whether is through a receipt or an app store server notification
