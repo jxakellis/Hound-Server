@@ -13,7 +13,7 @@ const { getFamilyIdForUserId } = require('../getFor/getForFamily');
 const { getAppStoreServerNotificationForNotificationUUID } = require('../getFor/getForAppStoreServerNotifications');
 const { getInAppSubscriptionForTransactionId } = require('../getFor/getForInAppSubscriptions');
 
-const { insertTransactionForTransactionInfo } = require('./createForInAppSubscriptions');
+const { insertTransactionForTransactionInfo } = require('./createForReceipt');
 
 const { updateSubscriptionAutoRenewal, updateSubscriptionRevocation } = require('../updateFor/updateForInAppSubscriptions');
 

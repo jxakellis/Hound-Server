@@ -1,6 +1,6 @@
 const { getAllInAppSubscriptionsForFamilyId } = require('../getFor/getForInAppSubscriptions');
 
-const { createTransactionsForAppStoreReceiptURL } = require('../createFor/createForInAppSubscriptions');
+const { createTransactionsForAppStoreReceiptURL } = require('../createFor/createForReceipt');
 
 async function getInAppSubscriptions(req, res) {
   try {
