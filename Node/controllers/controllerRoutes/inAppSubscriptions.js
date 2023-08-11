@@ -1,6 +1,6 @@
 const { getAllInAppSubscriptionsForFamilyId } = require('../getFor/getForInAppSubscriptions');
 
-const { createInAppSubscriptionForUserIdFamilyIdRecieptId } = require('../createFor/createForInAppSubscriptions');
+const { createTransactionsForAppStoreReceiptURL } = require('../createFor/createForInAppSubscriptions');
 
 async function getInAppSubscriptions(req, res) {
   try {
@@ -18,7 +18,7 @@ async function createInAppSubscriptions(req, res) {
   try {
     const { userId, familyId } = req.params;
     const { appStoreReceiptURL } = req.body;
-    const result = await createInAppSubscriptionForUserIdFamilyIdRecieptId(req.databaseConnection, userId, familyId, appStoreReceiptURL);
+    const result = await createTransactionsForAppStoreReceiptURL(req.databaseConnection, userId, familyId, appStoreReceiptURL);
 
     return res.sendResponseForStatusBodyError(200, result, undefined);
   }

@@ -1,11 +1,11 @@
 const { logServerError } = require('../../main/tools/logging/logServerError');
 
-const { createAppStoreServerNotificationForSignedPayload } = require('../createFor/createForAppStoreServerNotifications');
+const { createASSNForSignedPayload } = require('../createFor/createForAppStoreServerNotifications');
 
 async function createAppStoreServerNotification(req, res) {
   try {
     const { signedPayload } = req.body;
-    await createAppStoreServerNotificationForSignedPayload(req.databaseConnection, signedPayload);
+    await createASSNForSignedPayload(req.databaseConnection, signedPayload);
     return res.sendResponseForStatusBodyError(200, undefined, undefined);
   }
   catch (error) {
