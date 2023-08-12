@@ -36,7 +36,7 @@ async function getActiveInAppSubscriptionForFamilyId(databaseConnection, familyI
                 ELSE 0
             END AS productIdCorrespondingRank
         FROM transactions t
-        WHERE familyId = ? AND (TIMESTAMPDIFF(SECOND, CURRENT_TIMESTAMP(), expirationDate) >= 0)
+        WHERE isRevoked = 0 AND (TIMESTAMPDIFF(MICROSECOND, CURRENT_TIMESTAMP(), expirationDate) >= 0) AND familyId = ?
     )
     SELECT ${transactionsColumns}
     FROM mostRecentlyPurchasedForEachProductId AS mrp
@@ -74,7 +74,8 @@ async function getAllInAppSubscriptionsForFamilyId(databaseConnection, familyId)
     databaseConnection,
     `SELECT ${transactionsColumns}
     FROM transactions t
-    WHERE familyId = ? ORDER BY purchaseDate DESC, expirationDate DESC
+    WHERE familyId = ?
+    ORDER BY purchaseDate DESC, expirationDate DESC
     LIMIT 18446744073709551615`,
     [familyId],
   );

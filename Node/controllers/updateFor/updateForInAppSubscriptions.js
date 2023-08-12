@@ -54,7 +54,7 @@ async function updateSubscriptionAutoRenewal(databaseConnection, transactionId, 
         SELECT familyId 
         FROM transactions 
         WHERE transactionId = ?
-        AND TIMESTAMPDIFF(SECOND, CURRENT_TIMESTAMP(), expirationDate) >= 0
+        AND TIMESTAMPDIFF(MICROSECOND, CURRENT_TIMESTAMP(), expirationDate) >= 0
       )`,
       [autoRenewProductId, transactionId],
     ));

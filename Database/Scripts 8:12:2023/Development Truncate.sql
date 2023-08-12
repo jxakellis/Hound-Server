@@ -1,4 +1,4 @@
-    /*
+   
    TRUNCATE TABLE developmentHound.affiliateTransactions;
     TRUNCATE TABLE developmentHound.appStoreServerNotifications;
     TRUNCATE TABLE developmentHound.dogLogs;
@@ -15,5 +15,6 @@
     TRUNCATE TABLE developmentHound.transactions;
     TRUNCATE TABLE developmentHound.userConfiguration;
     TRUNCATE TABLE developmentHound.users;
-    */
+
    
+

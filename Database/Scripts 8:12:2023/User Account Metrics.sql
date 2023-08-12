@@ -95,33 +95,42 @@ FROM Retention r
 ORDER BY r.DayNumber
 LIMIT 100;
 
--- User Signups by Day, Average User Signups Per Day, and Change in Signups Over Time
-WITH UserSignups AS (
-    # Get signups based on date and the user identifier.
-    SELECT 
-        DATE(requestDate) AS signupDate, 
-        COUNT(DISTINCT SUBSTRING_INDEX(SUBSTRING_INDEX(requestOriginalURL, '/user?userIdentifier=', -1), '&', 1)) AS numberOfSignups
-    FROM previousRequests 
-    WHERE requestMethod = 'POST' AND requestOriginalURL LIKE '%/user?userIdentifier=%' 
-    GROUP BY signupDate
-),
-RollingAvg AS (
-    # Calculate a 7-day rolling average for signups.
-    SELECT 
-        signupDate,
-        AVG(numberOfSignups) OVER (ORDER BY signupDate ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS rollingAvg
-    FROM UserSignups
+
+
+
+
+-- Number of Sign Ups for Average Day in Last Day, Last Week, Last Month, Last Quarter, and Last Year
+WITH 
+TimeFrames AS (
+    SELECT
+        COUNT(*) AS signUpCount,
+        CASE 
+            WHEN userAccountCreationDate BETWEEN DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 1 DAY) AND CURRENT_TIMESTAMP THEN 'Past Day'
+            WHEN userAccountCreationDate BETWEEN DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 7 DAY) AND CURRENT_TIMESTAMP THEN 'Past 7 Days'
+            WHEN userAccountCreationDate BETWEEN DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 30 DAY) AND CURRENT_TIMESTAMP THEN 'Past 30 Days'
+            WHEN userAccountCreationDate BETWEEN DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 90 DAY) AND CURRENT_TIMESTAMP THEN 'Past 90 Days'
+            WHEN userAccountCreationDate BETWEEN DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 365 DAY) AND CURRENT_TIMESTAMP THEN 'Past 365 Days'
+        END AS period
+    FROM users
+    GROUP BY period
 )
-SELECT 
-    uS.signupDate, 
-    uS.numberOfSignups,
-    (SELECT AVG(numberOfSignups) FROM UserSignups) AS 'Average Signups',
-    (uS.numberOfSignups - IFNULL(LAG(uS.numberOfSignups) OVER(ORDER BY uS.signupDate), 0)) AS 'Change From Previous Day',
-    ROUND(
-        IFNULL((uS.numberOfSignups - LAG(uS.numberOfSignups) OVER(ORDER BY uS.signupDate)) / NULLIF(LAG(uS.numberOfSignups) OVER(ORDER BY uS.signupDate), 0), 0) * 100, 2
-    ) AS 'Percentage Change',
-    rA.rollingAvg AS '7 Day Rolling Avg'
-FROM UserSignups uS
-JOIN RollingAvg rA ON uS.signupDate = rA.signupDate
-ORDER BY uS.signupDate DESC;
+SELECT
+    period,
+    CASE
+        WHEN period = 'Past Day' THEN signUpCount
+        WHEN period = 'Past 7 Days' THEN signUpCount / 7
+        WHEN period = 'Past 30 Days' THEN signUpCount / 30
+        WHEN period = 'Past 90 Days' THEN signUpCount / 90
+        WHEN period = 'Past 365 Days' THEN signUpCount / 365
+    END AS 'Sign Ups for Average Day in Period'
+FROM TimeFrames
+WHERE period IS NOT NULL
+ORDER BY 
+    CASE
+        WHEN period = 'Past Day' THEN 1
+        WHEN period = 'Past 7 Days' THEN 2
+        WHEN period = 'Past 30 Days' THEN 3
+        WHEN period = 'Past 90 Days' THEN 4
+        WHEN period = 'Past 365 Days' THEN 5
+    END;
 
