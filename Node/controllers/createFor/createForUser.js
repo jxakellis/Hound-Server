@@ -44,8 +44,10 @@ async function createUserForUserIdentifier(
     throw new ValidationError('databaseConnection or userIdentifier missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
-  if (areAllDefined(await getUserForUserIdentifier(databaseConnection, userIdentifier)) === true) {
-    throw new ValidationError('userIdentifier already belongs to an account', global.CONSTANT.ERROR.VALUE.INVALID);
+  const existingUser = await getUserForUserIdentifier(databaseConnection, userIdentifier);
+
+  if (areAllDefined(existingUser) === true) {
+    return existingUser.userId;
   }
 
   const userId = hash(userIdentifier);
