@@ -34,7 +34,7 @@ function configureAppForRequests(app) {
 
   // Make sure the user is on an updated version
 
-  app.use(userPath, validateAppVersion, addAppVersionToLogRequest);
+  app.use(userPath, addAppVersionToLogRequest, validateAppVersion);
 
   // Route the request to the userRouter
 

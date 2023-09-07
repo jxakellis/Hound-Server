@@ -11,6 +11,9 @@ const { getActiveInAppSubscriptionForFamilyId } = require('../getFor/getForInApp
 
 const { createFamilyLockedNotification } = require('../../main/tools/notifications/alert/createFamilyNotification');
 
+// TODO NOW add logic for a family to allow it to switch family heads. this will mean checking the active subscription to make sure it is not renewing, similar to deleting a family. 
+// ^^ also check other logic, since in the past a family always had the same userId for its family head, but now that could switch, so verify that functions are compatible with that (e.g. retrieving transactions, reassigning transctions, transaction metrics)
+
 /**
  *  Queries the database to update a family to add a new user. If the query is successful, then returns
  *  If a problem is encountered, creates and throws custom error

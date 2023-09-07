@@ -27,6 +27,7 @@ Processes an App Store Server Notification from start to finish. If anything goe
 6. updates the transaction records to reflect the new/updated information (e.g. insert transaction, change auto-renew flag on existing one, revokes refunded transaction)
 */
 async function createASSNForSignedPayload(databaseConnection, signedPayload) {
+  // TODO NOW split this function into multiple parts, first part checks if assn is valid and hasnt been logged (then logs it), second part goes into the transaction insertion/update logic
   if (areAllDefined(databaseConnection, signedPayload) === false) {
     throw new ValidationError('databaseConnection or signedPayload missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
@@ -106,6 +107,7 @@ async function createASSNForSignedPayload(databaseConnection, signedPayload) {
   // Attempt to find a corresponding userId
   let userId;
 
+  // TODO NOW BUG if a user redeems an offer with a offer code, we are unable to link it to them.
   const applicationUsername = transactionInfo.appAccountToken;
   if (areAllDefined(applicationUsername)) {
     const user = await getUserForUserApplicationUsername(databaseConnection, applicationUsername);

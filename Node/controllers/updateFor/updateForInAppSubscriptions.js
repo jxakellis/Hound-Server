@@ -105,6 +105,7 @@ async function updateSubscriptionRevocation(databaseConnection, transactionId, u
  * If these conditions are met, then update the familyId of the transaction to the user's current family
  */
 async function reassignActiveSubscriptionsToNewFamilyForUserIdFamilyId(databaseConnection, forUserId, forNewFamilyId) {
+  // TODO NOW we are going to add logic to allow a family to switch its family head, therefore, verify this function will reassign all transactions correctly to the new family
   if (areAllDefined(databaseConnection, forUserId, forUserId) === false) {
     throw new ValidationError('databaseConnection, userId, or familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
