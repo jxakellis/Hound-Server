@@ -5,6 +5,7 @@ const IS_PRODUCTION_DATABASE = require('fs').existsSync(`${__dirname}/../../../.
 const SERVER = {
   // True if we are using the production database that houses real users, false if we are launching a development server for testing
   IS_PRODUCTION_DATABASE,
+  ENVIRONMENT: IS_PRODUCTION_DATABASE ? 'Production' : 'Sandbox',
   // HTTPS uses port 443
   SERVER_PORT: 443,
   // True if we are using a development database, false if we are using a production database as we don't want lots of console logs from users (note: serverLogger logs regardless of this settings)

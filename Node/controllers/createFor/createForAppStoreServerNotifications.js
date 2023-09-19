@@ -76,9 +76,8 @@ async function createASSNForSignedPayload(databaseConnection, signedPayload) {
   const dataEnvironment = formatString(data.environment, 10);
   const renewalInfoEnvironment = formatString(renewalInfo.environment, 10);
   const transactionInfoEnvironment = formatString(transactionInfo.environment, 10);
-  const currentDatabaseEnvironment = global.CONSTANT.SERVER.IS_PRODUCTION_DATABASE ? 'Production' : 'Sandbox';
 
-  if (dataEnvironment !== currentDatabaseEnvironment || renewalInfoEnvironment !== currentDatabaseEnvironment || transactionInfoEnvironment !== currentDatabaseEnvironment) {
+  if (dataEnvironment !== global.CONSTANT.SERVER.ENVIRONMENT || renewalInfoEnvironment !== global.CONSTANT.SERVER.ENVIRONMENT || transactionInfoEnvironment !== global.CONSTANT.SERVER.ENVIRONMENT) {
     // Always log the App Store Server Notification. However, if the environments don't match, then don't do anything with that information.
     return;
   }
@@ -165,7 +164,7 @@ async function createASSNForSignedPayload(databaseConnection, signedPayload) {
       transactionInfo.quantity,
       transactionInfo.webOrderLineItemId,
       transactionInfo.inAppOwnershipType,
-      formatNumber(transactionInfo.offerType) === 1,
+      transactionInfo.offerType,
       transactionInfo.offerIdentifier,
     );
   }

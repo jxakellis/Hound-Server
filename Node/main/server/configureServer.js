@@ -11,7 +11,7 @@ const { restoreAlarmNotificationsForAllFamilies } = require('../tools/notificati
 const configureServerForRequests = (server) => new Promise((resolve) => {
 // We can only create an HTTPS server on the AWS instance. Otherwise we create a HTTP server.
   server.listen(global.CONSTANT.SERVER.SERVER_PORT, async () => {
-    serverLogger.info(`Running HTTPS server on port ${global.CONSTANT.SERVER.SERVER_PORT}; ${global.CONSTANT.SERVER.IS_PRODUCTION_DATABASE ? 'production' : 'development'} database`);
+    serverLogger.info(`Running HTTPS server on port ${global.CONSTANT.SERVER.SERVER_PORT}; ${global.CONSTANT.SERVER.ENVIRONMENT} database`);
 
     await configureDatabaseConnections();
 
