@@ -66,7 +66,7 @@ async function createUser(req, res) {
       req.databaseConnection,
       // userId,
       userIdentifier,
-      // userApplicationUsername,
+      // userAppAccountToken,
       userEmail,
       userFirstName,
       userLastName,

@@ -60,7 +60,7 @@ expiresDate 1660256311000
 inAppOwnershipType PURCHASED
 isUpgraded undefined
 offerIdentifier undefined
-offerIdentifier undefined
+offerType undefined
 originalPurchaseDate 1657848841000
 originalTransactionId 2000000106174332
 productId com.jonathanxakellis.hound.fourfamilymembersfourdogs.monthly

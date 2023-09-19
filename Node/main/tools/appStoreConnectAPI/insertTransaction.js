@@ -1,11 +1,13 @@
 const { databaseQuery } = require('../database/databaseQuery');
 const {
-  formatDate, formatNumber, formatString, formatBoolean,
+  formatDate, formatNumber, formatString,
 } = require('../format/formatObject');
 const { areAllDefined } = require('../validate/validateDefined');
 const { ValidationError } = require('../general/errors');
 
 const { getFamilyHeadUserIdForFamilyId } = require('../../../controllers/getFor/getForFamily');
+
+// TODO NOW TEST this code
 
 async function insertTransactionForTransactionInfo(
   databaseConnection,
@@ -16,8 +18,8 @@ async function insertTransactionForTransactionInfo(
   forInAppOwnershipType,
   forTransactionId,
   forOfferIdentifier,
-  forOriginalTransactionId,
   forOfferType,
+  forOriginalTransactionId,
   forProductId,
   forPurchaseDate,
   forQuantity,
@@ -35,20 +37,19 @@ async function insertTransactionForTransactionInfo(
   // The product identifier of the subscription that will renew when the current subscription expires. autoRenewProductId == productId when a subscription is created
   const autoRenewProductId = formatString(forProductId, 60);
   // bundleId; The bundle identifier of the app.
-  // The server environment, either sandbox or production.
+  // The server environment, either Sandbox or Production.
   const environment = formatString(forEnvironment, 10);
   // The UNIX time, in milliseconds, the subscription expires or renews.
   const expirationDate = formatDate(formatNumber(forExpirationDate));
   // A string that describes whether the transaction was purchased by the user, or is available to them through Family Sharing.
   const inAppOwnershipType = formatString(forInAppOwnershipType, 13);
   // isAutoRenewing; NOT INCLUDED AT THIS STAGE
-  // 1 An introductory offer. 2 A promotional offer. 3 An offer with a subscription offer code.
-  const isInIntroductoryPeriod = formatBoolean(formatNumber(forOfferType) === 1);
   // isRevoked; NOT INCLUDED AT THIS STAGE
   // isUpgraded; A Boolean value that indicates whether the user upgraded to another subscription.
   // The identifier that contains the offer code or the promotional offer identifier.
   const offerIdentifier = formatString(forOfferIdentifier, 64);
-  // offerType; A value that represents the promotional offer type. The offer types 2 and 3 have an offerIdentifier.
+  // A value that represents the promotional offer type. The offer types 2 and 3 have an offerIdentifier.
+  const offerType = formatNumber(forOfferType);
   // originalPurchaseDate; The UNIX time, in milliseconds, that represents the purchase date of the original transaction identifier.
   // The transaction identifier of the original purchase.
   const originalTransactionId = formatNumber(forOriginalTransactionId);
@@ -81,8 +82,8 @@ async function insertTransactionForTransactionInfo(
     environment,
     expirationDate,
     inAppOwnershipType,
-    isInIntroductoryPeriod,
     // offerIdentifier is optionally defined
+    // offerType is optionally defined
     originalTransactionId,
     productId,
     purchaseDate,
@@ -98,7 +99,6 @@ familyId,
 autoRenewProductId, 
 environment, 
 inAppOwnershipType, 
-isInIntroductoryPeriod, 
 originalTransactionId, 
 productId, 
 purchaseDate, 
@@ -135,6 +135,8 @@ or webOrderLineItemId is missing`, global.CONSTANT.ERROR.VALUE.MISSING);
     throw new ValidationError('You are not the family head. Only the family head can modify the family subscription', global.CONSTANT.ERROR.PERMISSION.INVALID.FAMILY);
   }
 
+  // We attempt to insert the transaction.
+  // If we encounter a duplicate key error, which should only arise if the transactionId already exists in the database, we perform a NO-OP update statement to catch and disregard the error.
   await databaseQuery(
     databaseConnection,
     `INSERT INTO transactions
@@ -142,7 +144,7 @@ or webOrderLineItemId is missing`, global.CONSTANT.ERROR.VALUE.MISSING);
       userId, familyId,
       numberOfFamilyMembers, numberOfDogs,
       autoRenewProductId, environment, expirationDate, inAppOwnershipType,
-      isInIntroductoryPeriod, offerIdentifier, originalTransactionId, productId,
+      offerIdentifier, offerType, originalTransactionId, productId,
       purchaseDate, quantity, subscriptionGroupIdentifier, transactionId,
       transactionReason, webOrderLineItemId
     )
@@ -154,12 +156,13 @@ or webOrderLineItemId is missing`, global.CONSTANT.ERROR.VALUE.MISSING);
       ?, ?, ?, ?, 
       ?, ?, ?, ?,
       ?, ?
-    )`,
+    )
+    ON DUPLICATE KEY UPDATE transactionId=transactionId`,
     [
       userId, familyId,
       numberOfFamilyMembers, numberOfDogs,
       autoRenewProductId, environment, expirationDate, inAppOwnershipType,
-      isInIntroductoryPeriod, offerIdentifier, originalTransactionId, productId,
+      offerIdentifier, offerType, originalTransactionId, productId,
       purchaseDate, quantity, subscriptionGroupIdentifier, transactionId,
       transactionReason, webOrderLineItemId,
     ],

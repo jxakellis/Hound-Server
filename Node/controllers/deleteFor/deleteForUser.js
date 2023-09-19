@@ -33,8 +33,8 @@ async function deleteUserForUserId(databaseConnection, userId) {
   await databaseQuery(
     databaseConnection,
     `INSERT INTO previousUsers
-    (userId, userIdentifier, userApplicationUsername, userEmail, userFirstName, userLastName, userNotificationToken, userAccountCreationDate, userAccountDeletionDate)
-    SELECT userId, userIdentifier, userApplicationUsername, userEmail, userFirstName, userLastName, userNotificationToken, userAccountCreationDate, CURRENT_TIMESTAMP()
+    (userId, userIdentifier, userAppAccountToken, userEmail, userFirstName, userLastName, userNotificationToken, userAccountCreationDate, userAccountDeletionDate)
+    SELECT userId, userIdentifier, userAppAccountToken, userEmail, userFirstName, userLastName, userNotificationToken, userAccountCreationDate, CURRENT_TIMESTAMP()
     FROM users u
     WHERE userId = ?`,
     [userId],

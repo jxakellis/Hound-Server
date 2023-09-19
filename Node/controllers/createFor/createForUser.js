@@ -18,7 +18,7 @@ async function createUserForUserIdentifier(
   databaseConnection,
   // userId,
   userIdentifier,
-  // userApplicationUsername,
+  // userAppAccountToken,
   forUserEmail,
   forUserFirstName,
   forUserLastName,
@@ -52,7 +52,7 @@ async function createUserForUserIdentifier(
 
   const userId = hash(userIdentifier);
   // userIdentifier
-  const userApplicationUsername = formatString(crypto.randomUUID(), 36);
+  const userAppAccountToken = formatString(crypto.randomUUID(), 36);
   const userEmail = formatEmail(forUserEmail);
   const userFirstName = formatString(forUserFirstName, 32);
   const userLastName = formatString(forUserLastName, 32);
@@ -60,7 +60,7 @@ async function createUserForUserIdentifier(
 
   if (areAllDefined(
     userId,
-    // userApplicationUsername
+    // userAppAccountToken
     // userEmail,
     // userFirstName
     // userLastName
@@ -120,11 +120,11 @@ or userConfigurationSilentModeEndUTCMinute missing`, global.CONSTANT.ERROR.VALUE
     databaseQuery(
       databaseConnection,
       `INSERT INTO users
-      (userId, userIdentifier, userApplicationUsername, userEmail,
+      (userId, userIdentifier, userAppAccountToken, userEmail,
         userFirstName, userLastName, userNotificationToken, userAccountCreationDate) 
       VALUES (?, ?, ?, ?,
         ?, ?, ?, CURRENT_TIMESTAMP())`,
-      [userId, userIdentifier, userApplicationUsername, userEmail, userFirstName, userLastName, userNotificationToken],
+      [userId, userIdentifier, userAppAccountToken, userEmail, userFirstName, userLastName, userNotificationToken],
     ),
     databaseQuery(
       databaseConnection,

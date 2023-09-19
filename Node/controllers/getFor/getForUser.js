@@ -5,7 +5,7 @@ const { hash } = require('../../main/tools/format/hash');
 
 const { updateUserForUserIdentifierHashedUserIdentifier } = require('../updateFor/updateForUser');
 
-const userColumns = 'u.userId, u.userApplicationUsername, u.userNotificationToken, u.userFirstName, u.userLastName, u.userEmail';
+const userColumns = 'u.userId, u.userAppAccountToken, u.userNotificationToken, u.userFirstName, u.userLastName, u.userEmail';
 const userConfigurationColumns = `uc.userConfigurationIsNotificationEnabled, uc.userConfigurationIsLoudNotificationEnabled, 
 uc.userConfigurationIsLogNotificationEnabled, uc.userConfigurationIsReminderNotificationEnabled, uc.userConfigurationSnoozeLength, 
 uc.userConfigurationNotificationSound, uc.userConfigurationLogsInterfaceScale, uc.userConfigurationRemindersInterfaceScale, 
@@ -67,31 +67,6 @@ async function getUserForUserIdentifier(databaseConnection, userIdentifier) {
   return userInformation;
 }
 
-/**
-*  If the query is successful, returns the user for the userApplicationUsername.
- * If a problem is encountered, creates and throws custom error
- */
-async function getUserForUserApplicationUsername(databaseConnection, userApplicationUsername) {
-  if (areAllDefined(databaseConnection, userApplicationUsername) === false) {
-    throw new ValidationError('databaseConnection or userApplicationUsername missing', global.CONSTANT.ERROR.VALUE.MISSING);
-  }
-
-  // have to specifically reference the columns, otherwise fm.userId will override u.userId.
-  // Therefore setting userId to null (if there is no family member) even though the userId isn't null.
-  const [userInformation] = await databaseQuery(
-    databaseConnection,
-    `SELECT ${userInformationColumns} 
-    FROM users u
-    JOIN userConfiguration uc ON u.userId = uc.userId
-    LEFT JOIN familyMembers fm ON u.userId = fm.userId
-    WHERE u.userApplicationUsername = ?
-    LIMIT 1`,
-    [userApplicationUsername],
-  );
-
-  return userInformation;
-}
-
 async function getUserFirstNameLastNameForUserId(databaseConnection, userId) {
   if (areAllDefined(databaseConnection, userId) === false) {
     throw new ValidationError('databaseConnection or userId missing', global.CONSTANT.ERROR.VALUE.MISSING);
@@ -110,5 +85,5 @@ async function getUserFirstNameLastNameForUserId(databaseConnection, userId) {
 }
 
 module.exports = {
-  getUserForUserIdentifier, getUserForUserApplicationUsername, getUserFirstNameLastNameForUserId,
+  getUserForUserIdentifier, getUserFirstNameLastNameForUserId,
 };
