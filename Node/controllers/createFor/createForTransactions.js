@@ -1,15 +1,38 @@
-const { databaseQuery } = require('../database/databaseQuery');
+const { databaseQuery } = require('../../main/tools/database/databaseQuery');
 const {
   formatDate, formatNumber, formatString,
-} = require('../format/formatObject');
-const { areAllDefined } = require('../validate/validateDefined');
-const { ValidationError } = require('../general/errors');
+} = require('../../main/tools/format/formatObject');
+const { areAllDefined } = require('../../main/tools/validate/validateDefined');
+const { ValidationError } = require('../../main/tools/general/errors');
 
-const { getFamilyHeadUserIdForFamilyId } = require('../../../controllers/getFor/getForFamily');
+const { getFamilyHeadUserIdForFamilyId } = require('../getFor/getForFamily');
 
 // TODO NOW TEST this code
-
-async function insertTransactionForTransactionInfo(
+/**
+ * 1. Formats the parameters provided
+ * 2. Validates the parameters
+ * 3. Attempts to insert the transaction
+ * 4a. Transaction successfully inserted, returns without issue
+ * 4b. Transaction unsuccessfully inserted due to duplicate transactionId, returns without issue (as transaction already exists so no need to insert it)
+ * 4c. Transaction unsuccessfully inserted due to non-duplicate key error, throws error
+ * @param {*} databaseConnection
+ * @param {*} userId
+ * @param {*} familyId
+ * @param {*} forEnvironment
+ * @param {*} forExpirationDate
+ * @param {*} forInAppOwnershipType
+ * @param {*} forTransactionId
+ * @param {*} forOfferIdentifier
+ * @param {*} forOfferType
+ * @param {*} forOriginalTransactionId
+ * @param {*} forProductId
+ * @param {*} forPurchaseDate
+ * @param {*} forQuantity
+ * @param {*} forSubscriptionGroupIdentifier
+ * @param {*} forTransactionReason
+ * @param {*} forWebOrderLineItemId
+ */
+async function createTransactionForTransactionInfo(
   databaseConnection,
   userId,
   familyId,
@@ -28,7 +51,7 @@ async function insertTransactionForTransactionInfo(
   forWebOrderLineItemId,
 ) {
   // TODO NOW TEST that the offer code is recieve from both server and reciept
-  console.log(`insertTransactionForTransactionInfo did recieve ${forOfferIdentifier}`);
+  console.log(`createTransactionForTransactionInfo did recieve ${forOfferIdentifier}`);
   // userId
   // familyId
 
@@ -169,4 +192,16 @@ or webOrderLineItemId is missing`, global.CONSTANT.ERROR.VALUE.MISSING);
   );
 }
 
-module.exports = { insertTransactionForTransactionInfo };
+async function createTransactionForAppStoreReceiptURL(databaseConnection, appStoreReceiptURL) {
+
+  // TODO NOW
+  // validate databaseconnection and asrurl
+
+  // extract transactionId and confirm its real number
+
+  // query for all transactions w ASC api linked to transactionId
+
+  // attempt to insert every transaction
+}
+
+module.exports = { createTransactionForTransactionInfo, createTransactionForAppStoreReceiptURL };

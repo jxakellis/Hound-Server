@@ -7,7 +7,7 @@ const { ValidationError } = require('../../main/tools/general/errors');
 const { createFamilyMemberJoinNotification } = require('../../main/tools/notifications/alert/createFamilyNotification');
 
 const { getAllFamilyMembersForFamilyId, getFamilyMemberUserIdForUserId } = require('../getFor/getForFamily');
-const { getActiveInAppSubscriptionForFamilyId } = require('../getFor/getForInAppSubscriptions');
+const { getActiveTransaction } = require('../getFor/getForTransactions');
 
 const { createFamilyLockedNotification } = require('../../main/tools/notifications/alert/createFamilyNotification');
 
@@ -81,7 +81,7 @@ async function addFamilyMember(databaseConnection, userId, forFamilyCode) {
   }
 
   // Don't use .familyActiveSubscription property: the property wasn't assigned to the request due to the user not being in a family (only assigned with familyId is path param)
-  const familyActiveSubscription = await getActiveInAppSubscriptionForFamilyId(databaseConnection, familyId);
+  const familyActiveSubscription = await getActiveTransaction(databaseConnection, familyId);
   const familyMembers = await getAllFamilyMembersForFamilyId(databaseConnection, familyId);
 
   // the family is either at the limit of family members is exceeds the limit, therefore no new users can join

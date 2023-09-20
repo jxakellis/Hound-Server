@@ -7,7 +7,7 @@ const { ValidationError } = require('../../main/tools/general/errors');
 
 const { getFamilyHeadUserIdForFamilyId } = require('../getFor/getForFamily');
 
-async function updateSubscriptionAutoRenewal(databaseConnection, transactionId, userId, familyId, forAutoRenewStatus, forAutoRenewProductId) {
+async function updateSubscriptionAutoRenewal(databaseConnection, userId, familyId, transactionId, forAutoRenewStatus, forAutoRenewProductId) {
   if (areAllDefined(databaseConnection, transactionId, userId, familyId) === false) {
     throw new ValidationError('databaseConnection, transactionId, userId, or familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
@@ -63,7 +63,7 @@ async function updateSubscriptionAutoRenewal(databaseConnection, transactionId, 
   await Promise.all(promises);
 }
 
-async function updateSubscriptionRevocation(databaseConnection, transactionId, userId, familyId, forRevocationReason) {
+async function updateSubscriptionRevocation(databaseConnection, userId, familyId, transactionId, forRevocationReason) {
   if (areAllDefined(databaseConnection, transactionId, userId, familyId) === false) {
     throw new ValidationError('databaseConnection, transactionId, userId, or familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }

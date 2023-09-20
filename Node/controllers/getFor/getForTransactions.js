@@ -1,5 +1,5 @@
 const { databaseQuery } = require('../../main/tools/database/databaseQuery');
-const { formatNumber, formatBoolean } = require('../../main/tools/format/formatObject');
+const { formatBoolean } = require('../../main/tools/format/formatObject');
 const { areAllDefined } = require('../../main/tools/validate/validateDefined');
 const { ValidationError } = require('../../main/tools/general/errors');
 
@@ -10,7 +10,7 @@ const transactionsColumns = 'transactionId, productId, purchaseDate, expirationD
  *  If the query is successful, returns the most recent subscription for the familyId (if no most recent subscription, fills in default subscription details).
  *  If a problem is encountered, creates and throws custom error
  */
-async function getActiveInAppSubscriptionForFamilyId(databaseConnection, familyId) {
+async function getActiveTransaction(databaseConnection, familyId) {
   if (areAllDefined(databaseConnection, familyId) === false) {
     throw new ValidationError('databaseConnection or familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
@@ -63,7 +63,7 @@ async function getActiveInAppSubscriptionForFamilyId(databaseConnection, familyI
  *  If the query is successful, returns the subscription history and active subscription for the familyId.
  *  If a problem is encountered, creates and throws custom error
  */
-async function getAllInAppSubscriptionsForFamilyId(databaseConnection, familyId) {
+async function getAllTransactions(databaseConnection, familyId) {
   // validate that a familyId was passed, assume that its in the correct format
   if (areAllDefined(databaseConnection, familyId) === false) {
     throw new ValidationError('databaseConnection or familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
@@ -81,7 +81,7 @@ async function getAllInAppSubscriptionsForFamilyId(databaseConnection, familyId)
   );
 
   // Don't use .familyActiveSubscription property: Want to make sure this function always returns the most updated/accurate information
-  const familyActiveSubscription = await getActiveInAppSubscriptionForFamilyId(databaseConnection, familyId);
+  const familyActiveSubscription = await getActiveTransaction(databaseConnection, familyId);
 
   for (let i = 0; i < transactionsHistory.length; i += 1) {
     const subscription = transactionsHistory[i];
@@ -92,27 +92,74 @@ async function getAllInAppSubscriptionsForFamilyId(databaseConnection, familyId)
 }
 
 /**
- *  If the query is successful, returns the transaction for the transactionId.
- *  If a problem is encountered, creates and throws custom error
+ * Attempts to use the provided paramters to find an associated userId
+ * 1. Attempts to find users record with same appAccountToken, returns userId if found
+ * 2. Attempts to find transactions record with same originalTransactionId, returns userId if found
+ * 3. Attempts to find transactions record with same transactionId, returns userId if found
+ * 4. Returns undefined
+ * @param {*} databaseConnection
+ * @param {*} appAccountToken
+ * @param {*} transactionId
+ * @param {*} originalTransactionId
+ * @returns
  */
-async function getInAppSubscriptionForTransactionId(databaseConnection, forTransactionId) {
-  const transactionId = formatNumber(forTransactionId);
-  if (areAllDefined(databaseConnection, transactionId) === false) {
-    throw new ValidationError('databaseConnection or transactionId missing', global.CONSTANT.ERROR.VALUE.MISSING);
+async function getTransactionOwner(databaseConnection, appAccountToken, transactionId, originalTransactionId) {
+  if (areAllDefined(databaseConnection) === false) {
+    return undefined;
   }
 
-  const [result] = await databaseQuery(
-    databaseConnection,
-    `SELECT ${transactionsColumns}
-    FROM transactions t
-    WHERE transactionId = ?
-    LIMIT 1`,
-    [transactionId],
-  );
+  if (areAllDefined(appAccountToken) === true) {
+    const [user] = await databaseQuery(
+      databaseConnection,
+      `SELECT userId 
+      FROM users u
+      WHERE u.userAppAccountToken = ?
+      LIMIT 1`,
+      [appAccountToken],
+    );
 
-  return result;
+    if (areAllDefined(user) === true) {
+      return user.userId;
+    }
+  }
+
+  // If the user supplied an originalTransactionId, search with this first to attempt to find the userId for the most recent associated transaction
+  if (areAllDefined(originalTransactionId) === true) {
+    const [transaction] = await databaseQuery(
+      databaseConnection,
+      `SELECT userId
+        FROM transactions t
+        WHERE originalTransactionId = ?
+        ORDER BY purchaseDate DESC
+        LIMIT 1`,
+      [originalTransactionId],
+    );
+
+    if (areAllDefined(transaction) === true) {
+      return transaction.userId;
+    }
+  }
+
+  // If the user supplied an transactionId, attempt to find the userId for the most recent associated transaction
+  if (areAllDefined(transactionId) === true) {
+    const [transaction] = await databaseQuery(
+      databaseConnection,
+      `SELECT userId
+        FROM transactions t
+        WHERE transactionId = ?
+        ORDER BY purchaseDate DESC
+        LIMIT 1`,
+      [transactionId],
+    );
+
+    if (areAllDefined(transaction) === true) {
+      return transaction.userId;
+    }
+  }
+
+  return undefined;
 }
 
 module.exports = {
-  getActiveInAppSubscriptionForFamilyId, getAllInAppSubscriptionsForFamilyId, getInAppSubscriptionForTransactionId,
+  getActiveTransaction, getAllTransactions, getTransactionOwner,
 };

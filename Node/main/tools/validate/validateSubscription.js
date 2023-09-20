@@ -1,11 +1,11 @@
 const { ValidationError } = require('../general/errors');
 const { areAllDefined } = require('./validateDefined');
-const { getActiveInAppSubscriptionForFamilyId } = require('../../../controllers/getFor/getForInAppSubscriptions');
+const { getActiveTransaction } = require('../../../controllers/getFor/getForTransactions');
 const { getAllFamilyMembersForFamilyId } = require('../../../controllers/getFor/getForFamily');
 
 /**
  * Checks the family's subscription
- * Uses getActiveInAppSubscriptionForFamilyId to either get the family's paid subscription or the default free subscription
+ * Uses getActiveTransaction to either get the family's paid subscription or the default free subscription
  * Attached the information to the req (under req.familyActiveSubscription.xxx)
  */
 async function attachActiveSubscription(req, res, next) {
@@ -17,7 +17,7 @@ async function attachActiveSubscription(req, res, next) {
       throw new ValidationError('familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
     }
 
-    const familyActiveSubscription = await getActiveInAppSubscriptionForFamilyId(req.databaseConnection, familyId);
+    const familyActiveSubscription = await getActiveTransaction(req.databaseConnection, familyId);
 
     req.familyActiveSubscription = familyActiveSubscription;
 

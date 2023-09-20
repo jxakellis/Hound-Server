@@ -5,36 +5,35 @@ const {
 const { ValidationError } = require('../../main/tools/general/errors');
 const { requestLogger } = require('../../main/tools/logging/loggers');
 
-const { validateNotificationSignedPayload, validateTransactionSignedPayload, validateRenewalInfoSignedPayload } = require('../../main/tools/appStoreConnectAPI/validatePayload');
+const { validateSignedPayload } = require('../../main/tools/appStoreConnectAPI/validateSignedPayload');
 const { insertAppStoreServerNotification } = require('../../main/tools/appStoreServerNotifications/insertAppStoreServerNotification');
 
-const { findTransactionOwner } = require('../../main/tools/appStoreConnectAPI/findTransactionOwner');
+const { getTransactionOwner } = require('../getFor/getForTransactions');
 const { getFamilyIdForUserId } = require('../getFor/getForFamily');
-const { getInAppSubscriptionForTransactionId } = require('../getFor/getForTransactions');
 
-const { insertTransactionForTransactionInfo } = require('../../main/tools/appStoreConnectAPI/insertTransaction');
+const { createTransactionForTransactionInfo } = require('./createForTransactions');
 
-const { updateSubscriptionAutoRenewal, updateSubscriptionRevocation } = require('../updateFor/updateForInAppSubscriptions');
+const { updateSubscriptionAutoRenewal, updateSubscriptionRevocation } = require('../updateFor/updateForTransactions');
 
-/*
-Processes an App Store Server Notification from start to finish. If anything goes wrong, it logs it as a server error.
-1. decodes the payload,
-2. checks to see if the notification has been logged before,
-3. logs the notification,
-4. lhecks to see if the notification is a transaction we can process (e.g. auto renewed subscription),
-5. attempts to link the notification to a user account,
-6. updates the transaction records to reflect the new/updated information (e.g. insert transaction, change auto-renew flag on existing one, revokes refunded transaction)
-*/
+/**
+ * Processes an App Store Server Notification
+ * 1. Decodes the payload
+ * 2. Logs the ASSN (if already logged then prematurely returns)
+ * 3. Checks to see if the ASSN is a transaction we can process (e.g. SUBSCRIBED and not CONSUMPTION_REQUEST)
+ * 4. Attempts to link the notification to a user account (if can't link then prematurely returns)
+ * 5. Inserts or updates transaction records to reflect the information (e.g. insert transaction, change isAutoRenewing flag...)
+ * @param {*} databaseConnection
+ * @param {*} signedPayload
+ */
 async function createASSNForSignedPayload(databaseConnection, signedPayload) {
-  // TODO NOW split this function into multiple parts, first part checks if assn is valid and hasnt been logged (then logs it), second part goes into the transaction insertion/update logic
   if (areAllDefined(databaseConnection, signedPayload) === false) {
     throw new ValidationError('databaseConnection or signedPayload missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
-  const notification = await validateNotificationSignedPayload(signedPayload);
+  const [notification, data, renewalInfo, transactionInfo] = await validateSignedPayload(signedPayload);
 
-  if (areAllDefined(notification) === false) {
-    throw new ValidationError('notification missing', global.CONSTANT.ERROR.VALUE.MISSING);
+  if (areAllDefined(notification, data, renewalInfo, transactionInfo) === false) {
+    throw new ValidationError('notification, data, renewalInfo, or transactionInfo missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   // The in-app purchase event for which the App Store sent this version 2 notification.
@@ -43,32 +42,15 @@ async function createASSNForSignedPayload(databaseConnection, signedPayload) {
   const subtype = formatString(notification.subtype, 19);
   // A unique identifier for the notification. Use this value to identify a duplicate notification.
   const notificationUUID = formatString(notification.notificationUUID, 36);
-  // The object that contains the app metadata and signed renewal and transaction information.
-  const { data } = notification;
 
-  if (areAllDefined(notificationUUID, data) === false) {
-    throw new ValidationError('notificationUUID or data missing', global.CONSTANT.ERROR.VALUE.MISSING);
-  }
-
-  const transactionInfo = await validateTransactionSignedPayload(data.signedTransactionInfo);
-  const renewalInfo = await validateRenewalInfoSignedPayload(data.signedRenewalInfo);
-
-  if (areAllDefined(transactionInfo, renewalInfo) === false) {
-    throw new ValidationError('transactionInfo or renewalInfo missing', global.CONSTANT.ERROR.VALUE.MISSING);
+  if (areAllDefined(notificationUUID) === false) {
+    throw new ValidationError('notificationUUID missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   requestLogger.debug(`App Store Server Notification ${notificationUUID} of type ${notificationType} with subtype ${subtype} for transaction ${transactionInfo.transactionId}`);
 
+  // TODO NOW if ASSN already exists, then we end our logic here, if it didn't then that means we got new info and we continue
   await insertAppStoreServerNotification(databaseConnection, notification, data, renewalInfo, transactionInfo);
-
-  const dataEnvironment = formatString(data.environment, 10);
-  const renewalInfoEnvironment = formatString(renewalInfo.environment, 10);
-  const transactionInfoEnvironment = formatString(transactionInfo.environment, 10);
-
-  if (dataEnvironment !== global.CONSTANT.SERVER.ENVIRONMENT || renewalInfoEnvironment !== global.CONSTANT.SERVER.ENVIRONMENT || transactionInfoEnvironment !== global.CONSTANT.SERVER.ENVIRONMENT) {
-    // Always log the App Store Server Notification. However, if the environments don't match, then don't do anything with that information.
-    return;
-  }
 
   // Check if the notification type indicates we need to create or update an entry for transactions table
   if (notificationType === 'CONSUMPTION_REQUEST'
@@ -91,7 +73,7 @@ async function createASSNForSignedPayload(databaseConnection, signedPayload) {
     throw new ValidationError('transactionId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
-  const userId = await findTransactionOwner(
+  const userId = await getTransactionOwner(
     databaseConnection,
     formatString(transactionInfo.appAccountToken),
     transactionId,
@@ -99,10 +81,12 @@ async function createASSNForSignedPayload(databaseConnection, signedPayload) {
   );
 
   if (areAllDefined(userId) === false) {
-    // Unable to locate userId through appAccountToken nor through previous transactions
-    throw new ValidationError('userId missing', global.CONSTANT.ERROR.VALUE.MISSING);
+    // Unable to find the userId associated with the transaction.
+    // This likely means this is the user's first transaction with Hound and it wasn't done through the app (i.e. through Apple's external offer code or IAP page  )
+    return;
   }
 
+  // TODO NOW revise use of functions below. their logic was changed and parameters were reordered etc
   const familyId = await getFamilyIdForUserId(databaseConnection, userId);
 
   // Check if a new transaction was created, warrenting an insert into the transactions table
@@ -110,31 +94,24 @@ async function createASSNForSignedPayload(databaseConnection, signedPayload) {
     // DID_RENEW: A notification type that along with its subtype indicates that the subscription successfully renewed.
     // OFFER_REDEEMED: A notification type that along with its subtype indicates that the user redeemed a promotional offer or offer code.
     // SUBSCRIBED: A notification type that along with its subtype indicates that the user subscribed to a product.
-    // If notification provided a transactionId, then attempt to see if we have a transaction stored for that transactionId
-    const storedTransaction = await getInAppSubscriptionForTransactionId(databaseConnection, transactionId);
 
-    // Verify the transaction isn't already in the database
-    if (areAllDefined(storedTransaction)) {
-      // Currently, the data we store on transactions is the same whether is through a receipt or an app store server notification
-      return;
-    }
-
-    await insertTransactionForTransactionInfo(
+    await createTransactionForTransactionInfo(
       databaseConnection,
       userId,
       familyId,
-      transactionId,
-      transactionInfo.originalTransactionId,
       transactionInfo.environment,
-      transactionInfo.productId,
-      transactionInfo.subscriptionGroupIdentifier,
-      transactionInfo.purchaseDate,
       transactionInfo.expiresDate,
-      transactionInfo.quantity,
-      transactionInfo.webOrderLineItemId,
       transactionInfo.inAppOwnershipType,
-      transactionInfo.offerType,
+      transactionInfo.transactionId,
       transactionInfo.offerIdentifier,
+      transactionInfo.offerType,
+      transactionInfo.originalTransactionId,
+      transactionInfo.productId,
+      transactionInfo.purchaseDate,
+      transactionInfo.quantity,
+      transactionInfo.subscriptionGroupIdentifier,
+      transactionInfo.transactionReason,
+      transactionInfo.webOrderLineItemId,
     );
   }
   // Check if a transaction was invalidated, warrenting an update to the transactions table
@@ -144,7 +121,13 @@ async function createASSNForSignedPayload(databaseConnection, signedPayload) {
     // REFUND_DECLINED: A notification type that indicates the App Store declined a refund request initiated by the app developer using any of the following methods: beginRefundRequest(for:in:), beginRefundRequest(in:), beginRefundRequest(for:in:), beginRefundRequest(in:), and refundRequestSheet(for:isPresented:onDismiss:).
     // REFUND_REVERSED: A notification type that indicates the App Store reversed a previously granted refund due to a dispute that the customer raised. If your app revoked content or services as a result of the related refund, it needs to reinstate them.
     // This notification type can apply to any in-app purchase type: consumable, non-consumable, non-renewing subscription, and auto-renewable subscription. For auto-renewable subscriptions, the renewal date remains unchanged when the App Store reverses a refund.
-    await updateSubscriptionRevocation(databaseConnection, transactionId, userId, familyId, transactionInfo.revocationReason);
+    await updateSubscriptionRevocation(
+      databaseConnection,
+      userId,
+      familyId,
+      transactionInfo.transactionId,
+      transactionInfo.revocationReason,
+    );
   }
   // Check if a future transaction renewal was changed, warrenting an update to the transactions table
   else if (notificationType === 'DID_CHANGE_RENEWAL_PREF' || notificationType === 'DID_CHANGE_RENEWAL_STATUS' || notificationType === 'DID_FAIL_TO_RENEW' || notificationType === 'EXPIRED') {
@@ -152,7 +135,14 @@ async function createASSNForSignedPayload(databaseConnection, signedPayload) {
     // DID_CHANGE_RENEWAL_STATUS: A notification type that along with its subtype indicates that the user made a change to the subscription renewal status.
     // DID_FAIL_TO_RENEW: A notification type that along with its subtype indicates that the subscription failed to renew due to a billing issue.
     // EXPIRED: A notification type that along with its subtype indicates that a subscription expired.
-    await updateSubscriptionAutoRenewal(databaseConnection, transactionId, userId, familyId, renewalInfo.autoRenewStatus, renewalInfo.autoRenewProductId);
+    await updateSubscriptionAutoRenewal(
+      databaseConnection,
+      userId,
+      familyId,
+      transactionInfo.transactionId,
+      renewalInfo.autoRenewStatus,
+      renewalInfo.autoRenewProductId,
+    );
   }
 }
 

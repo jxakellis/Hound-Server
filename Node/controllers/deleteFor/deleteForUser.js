@@ -4,7 +4,7 @@ const { areAllDefined } = require('../../main/tools/validate/validateDefined');
 
 const { getFamilyIdForUserId } = require('../getFor/getForFamily');
 
-const { getActiveInAppSubscriptionForFamilyId } = require('../getFor/getForInAppSubscriptions');
+const { getActiveTransaction } = require('../getFor/getForTransactions');
 const { deleteFamilyLeaveFamilyForUserIdFamilyId } = require('./deleteForFamily');
 
 /**
@@ -24,7 +24,7 @@ async function deleteUserForUserId(databaseConnection, userId) {
   // The user is in a family, either attempt to delete the family or have the user leave the family
   if (areAllDefined(familyId) === true) {
     // Since the path for delete user doesn't have familyId attached (as it predicates the family path), no active subscription is attached
-    const familyActiveSubscription = await getActiveInAppSubscriptionForFamilyId(databaseConnection, familyId);
+    const familyActiveSubscription = await getActiveTransaction(databaseConnection, familyId);
 
     // This step is reversible but sends a non-reversible notification at the end, so we save it for the very end so the notif is only sent if everything else is successful
     await deleteFamilyLeaveFamilyForUserIdFamilyId(databaseConnection, userId, familyId, familyActiveSubscription);

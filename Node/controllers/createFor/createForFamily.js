@@ -6,7 +6,7 @@ const { areAllDefined } = require('../../main/tools/validate/validateDefined');
 
 const { getFamilyMemberUserIdForUserId } = require('../getFor/getForFamily');
 
-const { reassignActiveSubscriptionsToNewFamilyForUserIdFamilyId } = require('../updateFor/updateForInAppSubscriptions');
+const { reassignActiveSubscriptionsToNewFamilyForUserIdFamilyId } = require('../updateFor/updateForTransactions');
 
 /**
  *  Queries the database to create a family. If the query is successful, then returns the familyId.

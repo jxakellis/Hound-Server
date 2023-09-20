@@ -6,21 +6,14 @@ const {
 const { ValidationError } = require('../general/errors');
 
 /**
- *  Uses the notification, data, renewalInfo, and transactionInfo provided to attempt to locate a corresponding notification in the appStoreServerNotification database.
- *  If a notification is located, then said notification has already been logged and returns
- *  If no notification is located, then inserts the notification into the database
- *  If the query is successful, then returns
- *  If a problem is encountered, creates and throws custom error
- */
-/**
  * Extracts data from parameters provided and attempts to insert a corresponding notification into the appStoreServerNotification table.
  * If a duplicate key is found for notificationUUID, a no-op operation is performed.
- * Throws error is data is missing or databaseQuery fails.
  * @param {*} databaseConnection
  * @param {*} notification
  * @param {*} data
  * @param {*} renewalInfo
  * @param {*} transactionInfo
+ * @throws If data is missing or databaseQuery fails
  */
 async function insertAppStoreServerNotification(databaseConnection, notification, data, renewalInfo, transactionInfo) {
   if (areAllDefined(databaseConnection, notification, data, renewalInfo, transactionInfo) === false) {
