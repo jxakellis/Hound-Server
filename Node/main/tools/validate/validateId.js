@@ -15,13 +15,13 @@ async function validateAppVersion(req, res, next) {
   const appVersion = formatString(req.params.appVersion);
 
   if (areAllDefined(appVersion) === false) {
-    return res.sendResponseForStatusBodyError(400, undefined, new ValidationError('appVersion missing', global.CONSTANT.ERROR.VALUE.MISSING));
+    return res.sendResponseForStatusBodyError(400, null, new ValidationError('appVersion missing', global.CONSTANT.ERROR.VALUE.MISSING));
   }
   // the user isn't on the previous or current app version
   if (global.CONSTANT.SERVER.COMPATIBLE_IOS_APP_VERSIONS.includes(appVersion) === false) {
     return res.sendResponseForStatusBodyError(
       400,
-      undefined,
+      null,
       new ValidationError(
         `App version of ${appVersion} is incompatible. Compatible version(s): ${global.CONSTANT.SERVER.COMPATIBLE_IOS_APP_VERSIONS}`,
         global.CONSTANT.ERROR.GENERAL.APP_VERSION_OUTDATED,
@@ -43,7 +43,7 @@ async function validateUserId(req, res, next) {
   const userIdentifier = formatString(req.query.userIdentifier);
 
   if (areAllDefined(userIdentifier, userId) === false) {
-    return res.sendResponseForStatusBodyError(400, undefined, new ValidationError('userId or userIdentifier missing', global.CONSTANT.ERROR.VALUE.INVALID));
+    return res.sendResponseForStatusBodyError(400, null, new ValidationError('userId or userIdentifier missing', global.CONSTANT.ERROR.VALUE.INVALID));
   }
 
   // if userId is defined and it is a number then continue
@@ -84,14 +84,14 @@ async function validateUserId(req, res, next) {
 
     if (areAllDefined(result) === false) {
       // userId does not exist in the table
-      return res.sendResponseForStatusBodyError(404, undefined, new ValidationError('No user found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.USER));
+      return res.sendResponseForStatusBodyError(404, null, new ValidationError('No user found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.USER));
     }
 
     return next();
   }
   catch (error) {
     // couldn't query database to find userId
-    return res.sendResponseForStatusBodyError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, null, error);
   }
 }
 
@@ -105,7 +105,7 @@ async function validateFamilyId(req, res, next) {
 
   if (areAllDefined(familyId) === false) {
     // familyId was not provided or is invalid format
-    return res.sendResponseForStatusBodyError(400, undefined, new ValidationError('familyId missing', global.CONSTANT.ERROR.VALUE.INVALID));
+    return res.sendResponseForStatusBodyError(400, null, new ValidationError('familyId missing', global.CONSTANT.ERROR.VALUE.INVALID));
   }
 
   // if familyId is defined and it is a number then continue
@@ -122,7 +122,7 @@ async function validateFamilyId(req, res, next) {
 
     if (result.length === 0) {
       // familyId does not exist in the table
-      return res.sendResponseForStatusBodyError(404, undefined, new ValidationError('No family found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.FAMILY));
+      return res.sendResponseForStatusBodyError(404, null, new ValidationError('No family found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.FAMILY));
     }
 
     // familyId exists in the table, therefore userId is  part of the family
@@ -132,7 +132,7 @@ async function validateFamilyId(req, res, next) {
   }
   catch (error) {
     // couldn't query database to find familyId
-    return res.sendResponseForStatusBodyError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, null, error);
   }
 }
 
@@ -147,7 +147,7 @@ async function validateDogId(req, res, next) {
   const dogId = formatNumber(req.params.dogId);
 
   if (areAllDefined(dogId) === false) {
-    return res.sendResponseForStatusBodyError(400, undefined, new ValidationError('dogId missing', global.CONSTANT.ERROR.VALUE.INVALID));
+    return res.sendResponseForStatusBodyError(400, null, new ValidationError('dogId missing', global.CONSTANT.ERROR.VALUE.INVALID));
   }
 
   // query database to find out if user has permission for that dogId
@@ -168,12 +168,12 @@ async function validateDogId(req, res, next) {
 
     if (areAllDefined(dog) === false) {
       // the dogId does not exist and/or the user does not have access to that dogId
-      return res.sendResponseForStatusBodyError(404, undefined, new ValidationError('No dog found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.DOG));
+      return res.sendResponseForStatusBodyError(404, null, new ValidationError('No dog found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.DOG));
     }
 
     if (formatBoolean(dog.dogIsDeleted) !== false) {
       // the dog has been found but its been deleted
-      return res.sendResponseForStatusBodyError(404, undefined, new ValidationError('Dog has been deleted', global.CONSTANT.ERROR.FAMILY.DELETED.DOG));
+      return res.sendResponseForStatusBodyError(404, null, new ValidationError('Dog has been deleted', global.CONSTANT.ERROR.FAMILY.DELETED.DOG));
     }
 
     // the dogId exists and it is linked to the familyId, valid!
@@ -182,7 +182,7 @@ async function validateDogId(req, res, next) {
     return next();
   }
   catch (error) {
-    return res.sendResponseForStatusBodyError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, null, error);
   }
 }
 
@@ -197,7 +197,7 @@ async function validateLogId(req, res, next) {
   const logId = formatNumber(req.params.logId);
 
   if (areAllDefined(logId) === false) {
-    return res.sendResponseForStatusBodyError(400, undefined, new ValidationError('logId missing', global.CONSTANT.ERROR.VALUE.INVALID));
+    return res.sendResponseForStatusBodyError(400, null, new ValidationError('logId missing', global.CONSTANT.ERROR.VALUE.INVALID));
   }
 
   // query database to find out if user has permission for that logId
@@ -218,12 +218,12 @@ async function validateLogId(req, res, next) {
 
     if (areAllDefined(log) === false) {
       // the logId does not exist and/or the dog does not have access to that logId
-      return res.sendResponseForStatusBodyError(404, undefined, new ValidationError('No logs found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.LOG));
+      return res.sendResponseForStatusBodyError(404, null, new ValidationError('No logs found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.LOG));
     }
 
     if (formatBoolean(log.logIsDeleted) !== false) {
       // the log has been found but its been deleted
-      return res.sendResponseForStatusBodyError(404, undefined, new ValidationError('Log has been deleted', global.CONSTANT.ERROR.FAMILY.DELETED.LOG));
+      return res.sendResponseForStatusBodyError(404, null, new ValidationError('Log has been deleted', global.CONSTANT.ERROR.FAMILY.DELETED.LOG));
     }
 
     // the logId exists and it is linked to the dogId, valid!
@@ -232,7 +232,7 @@ async function validateLogId(req, res, next) {
     return next();
   }
   catch (error) {
-    return res.sendResponseForStatusBodyError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, null, error);
   }
 }
 
@@ -247,7 +247,7 @@ async function validateParamsReminderId(req, res, next) {
   const reminderId = formatNumber(req.params.reminderId);
 
   if (areAllDefined(reminderId) === false) {
-    return res.sendResponseForStatusBodyError(400, undefined, new ValidationError('reminderId missing', global.CONSTANT.ERROR.VALUE.INVALID));
+    return res.sendResponseForStatusBodyError(400, null, new ValidationError('reminderId missing', global.CONSTANT.ERROR.VALUE.INVALID));
   }
 
   // query database to find out if user has permission for that reminderId
@@ -268,12 +268,12 @@ async function validateParamsReminderId(req, res, next) {
 
     if (areAllDefined(reminder) === false) {
       // the reminderId does not exist and/or the dog does not have access to that reminderId
-      return res.sendResponseForStatusBodyError(404, undefined, new ValidationError('No reminders found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.REMINDER));
+      return res.sendResponseForStatusBodyError(404, null, new ValidationError('No reminders found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.REMINDER));
     }
 
     if (formatBoolean(reminder.reminderIsDeleted) !== false) {
       // the reminder has been found but its been deleted
-      return res.sendResponseForStatusBodyError(404, undefined, new ValidationError('Reminder has been deleted', global.CONSTANT.ERROR.FAMILY.DELETED.REMINDER));
+      return res.sendResponseForStatusBodyError(404, null, new ValidationError('Reminder has been deleted', global.CONSTANT.ERROR.FAMILY.DELETED.REMINDER));
     }
 
     // the reminderId exists and it is linked to the dogId, valid!
@@ -282,7 +282,7 @@ async function validateParamsReminderId(req, res, next) {
     return next();
   }
   catch (error) {
-    return res.sendResponseForStatusBodyError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, null, error);
   }
 }
 
@@ -294,7 +294,7 @@ async function validateBodyReminderId(req, res, next) {
   const reminders = areAllDefined(formatArray(req.body.reminders)) === true ? formatArray(req.body.reminders) : [req.body];
 
   if (areAllDefined(reminders) === false) {
-    return res.sendResponseForStatusBodyError(400, undefined, new ValidationError('reminders missing', global.CONSTANT.ERROR.VALUE.INVALID));
+    return res.sendResponseForStatusBodyError(400, null, new ValidationError('reminders missing', global.CONSTANT.ERROR.VALUE.INVALID));
   }
 
   let promises = [];
@@ -303,7 +303,7 @@ async function validateBodyReminderId(req, res, next) {
     const reminderId = formatNumber(reminders[i].reminderId);
 
     if (areAllDefined(reminderId) === false) {
-      return res.sendResponseForStatusBodyError(400, undefined, new ValidationError('reminderId missing', global.CONSTANT.ERROR.VALUE.INVALID));
+      return res.sendResponseForStatusBodyError(400, null, new ValidationError('reminderId missing', global.CONSTANT.ERROR.VALUE.INVALID));
     }
 
     // Attempt to locate a reminder. It must match the reminderId provided while being attached to a dog that the user has permission to use
@@ -323,7 +323,7 @@ async function validateBodyReminderId(req, res, next) {
     promises = await Promise.all(promises);
   }
   catch (error) {
-    return res.sendResponseForStatusBodyError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, null, error);
   }
 
   // parse all reminders
@@ -333,12 +333,12 @@ async function validateBodyReminderId(req, res, next) {
     if (areAllDefined(reminder) === false) {
       // the reminderId does not exist and/or the dog does not have access to that reminderId
       // eslint-disable-next-line no-await-in-loop
-      return res.sendResponseForStatusBodyError(404, undefined, new ValidationError('No reminders found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.REMINDER));
+      return res.sendResponseForStatusBodyError(404, null, new ValidationError('No reminders found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.REMINDER));
     }
 
     if (formatBoolean(reminder.reminderIsDeleted) !== false) {
       // the reminder has been found but its been deleted
-      return res.sendResponseForStatusBodyError(404, undefined, new ValidationError('Reminder has been deleted', global.CONSTANT.ERROR.FAMILY.DELETED.REMINDER));
+      return res.sendResponseForStatusBodyError(404, null, new ValidationError('Reminder has been deleted', global.CONSTANT.ERROR.FAMILY.DELETED.REMINDER));
     }
     // The reminderId exists and it is linked to the dogId! Reassign reminderId to guarantee integer and not a string
     reminders[i].reminderId = formatNumber(reminders[i].reminderId);

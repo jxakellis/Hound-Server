@@ -25,10 +25,10 @@ async function getLogs(req, res) {
     // query for multiple logs
       : await getAllLogsForDogId(req.databaseConnection, dogId, userConfigurationPreviousDogManagerSynchronization);
 
-    return res.sendResponseForStatusBodyError(200, result, undefined);
+    return res.sendResponseForStatusBodyError(200, result, null);
   }
   catch (error) {
-    return res.sendResponseForStatusBodyError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, null, error);
   }
 }
 
@@ -47,10 +47,10 @@ async function createLog(req, res) {
       logCustomActionName,
     );
 
-    return res.sendResponseForStatusBodyError(200, result, undefined);
+    return res.sendResponseForStatusBodyError(200, result, null);
   }
   catch (error) {
-    return res.sendResponseForStatusBodyError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, null, error);
   }
 }
 
@@ -61,10 +61,10 @@ async function updateLog(req, res) {
       logDate, logAction, logCustomActionName, logNote,
     } = req.body;
     await updateLogForDogIdLogId(req.databaseConnection, dogId, logId, logDate, logAction, logCustomActionName, logNote);
-    return res.sendResponseForStatusBodyError(200, undefined, undefined);
+    return res.sendResponseForStatusBodyError(200, null, null);
   }
   catch (error) {
-    return res.sendResponseForStatusBodyError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, null, error);
   }
 }
 
@@ -72,10 +72,10 @@ async function deleteLog(req, res) {
   try {
     const { dogId, logId } = req.params;
     await deleteLogForLogId(req.databaseConnection, dogId, logId);
-    return res.sendResponseForStatusBodyError(200, undefined, undefined);
+    return res.sendResponseForStatusBodyError(200, null, null);
   }
   catch (error) {
-    return res.sendResponseForStatusBodyError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, null, error);
   }
 }
 

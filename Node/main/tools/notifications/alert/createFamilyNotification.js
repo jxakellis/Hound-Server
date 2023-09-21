@@ -117,17 +117,17 @@ async function createFamilyLockedNotification(userId, familyId, newIsLocked) {
  */
 async function abreviatedFullNameForUserId(userId) {
   if (areAllDefined(userId) === false) {
-    return undefined;
+    return null;
   }
 
   const result = await getUserFirstNameLastNameForUserId(databaseConnectionForGeneral, userId);
 
   if (areAllDefined(result) === false) {
-    return undefined;
+    return null;
   }
 
   if (areAllDefined(result.userFirstName, result.userLastName) === false) {
-    return undefined;
+    return null;
   }
 
   const abreviatedFullName = formatIntoAbreviatedFullName(result.userFirstName, result.userLastName);

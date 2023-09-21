@@ -47,7 +47,7 @@ function extractTransactionIdFromAppStoreReceiptURL(appStoreReceiptURL) {
 
     index += 1;
   }
-  return undefined;
+  return null;
 }
 
 module.exports = { extractTransactionIdFromAppStoreReceiptURL };

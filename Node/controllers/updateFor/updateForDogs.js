@@ -10,7 +10,7 @@ const { ValidationError } = require('../../main/tools/general/errors');
 async function updateDogForDogId(databaseConnection, dogId, forDogName) {
   const dogName = formatString(forDogName, 32);
 
-  // if dogName undefined, then there is nothing to update
+  // if dogName null, then there is nothing to update
   if (areAllDefined(databaseConnection, dogId, dogName) === false) {
     throw new ValidationError('databaseConnection, dogId, or dogName missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }

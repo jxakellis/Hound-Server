@@ -96,7 +96,7 @@ async function getAllTransactions(databaseConnection, familyId) {
  * 1. Attempts to find users record with same appAccountToken, returns userId if found
  * 2. Attempts to find transactions record with same originalTransactionId, returns userId if found
  * 3. Attempts to find transactions record with same transactionId, returns userId if found
- * 4. Returns undefined
+ * 4. Returns null
  * @param {*} databaseConnection
  * @param {*} appAccountToken
  * @param {*} transactionId
@@ -105,7 +105,7 @@ async function getAllTransactions(databaseConnection, familyId) {
  */
 async function getTransactionOwner(databaseConnection, appAccountToken, transactionId, originalTransactionId) {
   if (areAllDefined(databaseConnection) === false) {
-    return undefined;
+    return null;
   }
 
   if (areAllDefined(appAccountToken) === true) {
@@ -157,7 +157,7 @@ async function getTransactionOwner(databaseConnection, appAccountToken, transact
     }
   }
 
-  return undefined;
+  return null;
 }
 
 module.exports = {

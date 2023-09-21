@@ -6,7 +6,7 @@ const { ValidationError } = require('../general/errors');
  * Attempts to find the App Store Server Notification associated with the notificationUUID provided
  * @param {*} databaseConnection
  * @param {*} notificationUUID unique identifier for ASSN
- * @returns If found, returns stored ASSN. Otherwise, returns undefined.
+ * @returns If found, returns stored ASSN. Otherwise, returns null.
  */
 async function getAppStoreServerNotification(databaseConnection, notificationUUID) {
   if (areAllDefined(databaseConnection, notificationUUID) === false) {

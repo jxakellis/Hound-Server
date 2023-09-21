@@ -19,11 +19,11 @@ async function logRequest(req, res, next) {
   requestLogger.debug(`Request for ${method} ${originalUrl}`);
 
   if (areAllDefined(method) === false) {
-    return res.sendResponseForStatusBodyError(400, undefined, new ValidationError('method missing', global.CONSTANT.ERROR.VALUE.MISSING));
+    return res.sendResponseForStatusBodyError(400, null, new ValidationError('method missing', global.CONSTANT.ERROR.VALUE.MISSING));
   }
 
   if (method !== 'GET' && method !== 'POST' && method !== 'PUT' && method !== 'DELETE') {
-    return res.sendResponseForStatusBodyError(400, undefined, new ValidationError('method invalid', global.CONSTANT.ERROR.VALUE.INVALID));
+    return res.sendResponseForStatusBodyError(400, null, new ValidationError('method invalid', global.CONSTANT.ERROR.VALUE.INVALID));
   }
 
   // Inserts request information into the previousRequests table.

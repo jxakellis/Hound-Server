@@ -105,10 +105,10 @@ or weeklySaturday missing`, global.CONSTANT.ERROR.VALUE.MISSING);
       ?, ?, ?, ?, ?)`,
     [
       dogId, reminderAction, reminderCustomActionName, reminderType, reminderIsEnabled, reminderExecutionBasis, reminderExecutionDate,
-      undefined,
+      null,
       countdownExecutionInterval,
-      weeklyUTCHour, weeklyUTCMinute, weeklySunday, weeklyMonday, weeklyTuesday, weeklyWednesday, weeklyThursday, weeklyFriday, weeklySaturday, undefined,
-      monthlyUTCDay, monthlyUTCHour, monthlyUTCMinute, undefined,
+      weeklyUTCHour, weeklyUTCMinute, weeklySunday, weeklyMonday, weeklyTuesday, weeklyWednesday, weeklyThursday, weeklyFriday, weeklySaturday, null,
+      monthlyUTCDay, monthlyUTCHour, monthlyUTCMinute, null,
       oneTimeDate,
     ],
   );

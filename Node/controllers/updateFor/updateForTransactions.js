@@ -69,8 +69,8 @@ async function updateSubscriptionRevocation(databaseConnection, userId, familyId
   }
 
   // If revocation reason is defined, then that means the transaction was revoked
-  // Otherwise, if revocationReason is undefined then leave isRevoked as undefined so it doesn't overwrite the pre existing isRevoked
-  const isRevoked = areAllDefined(forRevocationReason) ? true : undefined;
+  // Otherwise, if revocationReason is null then leave isRevoked as null so it doesn't overwrite the pre existing isRevoked
+  const isRevoked = areAllDefined(forRevocationReason) ? true : null;
 
   if (areAllDefined(isRevoked) === false) {
     throw new ValidationError('isRevoked missing', global.CONSTANT.ERROR.VALUE.MISSING);

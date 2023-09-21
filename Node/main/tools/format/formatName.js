@@ -1,10 +1,10 @@
 const { areAllDefined } = require('../validate/validateDefined');
 const { formatString } = require('./formatObject');
 
-// Returned string with whitespaces and new lines removed. If parameter is not a string, returns undefined
+// Returned string with whitespaces and new lines removed. If parameter is not a string, returns null
 function formatName(string) {
   if (typeof string !== 'string') {
-    return undefined;
+    return null;
   }
   // removes whitespaces and newLines from beginning / end of string
   return string.trim();
@@ -54,7 +54,7 @@ function formatLogAction(forLogAction, forLogCustomActionName) {
   const logAction = formatString(forLogAction);
   const logCustomActionName = formatString(forLogCustomActionName);
   if (areAllDefined(logAction, logCustomActionName) === false) {
-    return undefined;
+    return null;
   }
 
   switch (logAction) {
@@ -99,7 +99,7 @@ function formatLogAction(forLogAction, forLogCustomActionName) {
       }
       return logCustomActionName;
     default:
-      return undefined;
+      return null;
   }
 }
 
@@ -107,7 +107,7 @@ function formatReminderAction(forReminderAction, forReminderCustomActionName) {
   const reminderAction = formatString(forReminderAction);
   const reminderCustomActionName = formatString(forReminderCustomActionName);
   if (areAllDefined(reminderAction, reminderCustomActionName) === false) {
-    return undefined;
+    return null;
   }
 
   switch (reminderAction) {
@@ -138,7 +138,7 @@ function formatReminderAction(forReminderAction, forReminderCustomActionName) {
       }
       return reminderCustomActionName;
     default:
-      return undefined;
+      return null;
   }
 }
 

@@ -23,7 +23,7 @@ async function createLogNotification(userId, familyId, dogId, logAction, logCust
 
     const promises = [
       getUserFirstNameLastNameForUserId(databaseConnectionForGeneral, userId),
-      getDogForDogId(databaseConnectionForGeneral, dogId, undefined, undefined, undefined),
+      getDogForDogId(databaseConnectionForGeneral, dogId, null, null, null),
     ];
     const [user, dog] = await Promise.all(promises);
 

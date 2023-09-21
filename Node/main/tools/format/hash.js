@@ -6,7 +6,7 @@ function hash(forString, forSalt) {
   const string = formatString(forString);
 
   if (areAllDefined(string) === false) {
-    return undefined;
+    return null;
   }
 
   const salt = formatString(forSalt);

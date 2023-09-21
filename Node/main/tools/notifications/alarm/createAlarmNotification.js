@@ -30,7 +30,7 @@ async function createAlarmNotificationForFamily(familyId, reminderId, reminderEx
     // We are potentially overriding a job, so we must cancel it first
     await deleteAlarmNotificationsForReminder(familyId, reminderId);
 
-    // If a user updates a reminder, this function is invoked. When a reminder is updated, is reminderExecutionDate can be undefined
+    // If a user updates a reminder, this function is invoked. When a reminder is updated, is reminderExecutionDate can be null
     // Therefore we want to delete the old alarm notifications for that reminder and (if it has a reminderExecutionDate) create new alarm notifications
     if (areAllDefined(formattedReminderExecutionDate) === false) {
       return;

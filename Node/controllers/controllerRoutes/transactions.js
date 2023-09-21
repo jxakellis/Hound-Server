@@ -7,10 +7,10 @@ async function getTransactions(req, res) {
     const { familyId } = req.params;
     const result = await getAllTransactions(req.databaseConnection, familyId);
 
-    return res.sendResponseForStatusBodyError(200, result, undefined);
+    return res.sendResponseForStatusBodyError(200, result, null);
   }
   catch (error) {
-    return res.sendResponseForStatusBodyError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, null, error);
   }
 }
 
@@ -22,10 +22,10 @@ async function createTransactions(req, res) {
     // TODO NOW invoke create transactions from ASR url then return the active subscription
     const result = await createTransactionsForAppStoreReceiptURL(req.databaseConnection, userId, familyId, appStoreReceiptURL);
 
-    return res.sendResponseForStatusBodyError(200, result, undefined);
+    return res.sendResponseForStatusBodyError(200, result, null);
   }
   catch (error) {
-    return res.sendResponseForStatusBodyError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, null, error);
   }
 }
 

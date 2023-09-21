@@ -29,10 +29,10 @@ async function getUser(req, res) {
       throw new ValidationError('No user found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.USER);
     }
 
-    return res.sendResponseForStatusBodyError(200, result, undefined);
+    return res.sendResponseForStatusBodyError(200, result, null);
   }
   catch (error) {
-    return res.sendResponseForStatusBodyError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, null, error);
   }
 }
 
@@ -89,10 +89,10 @@ async function createUser(req, res) {
       userConfigurationSilentModeEndUTCMinute,
     );
 
-    return res.sendResponseForStatusBodyError(200, result, undefined);
+    return res.sendResponseForStatusBodyError(200, result, null);
   }
   catch (error) {
-    return res.sendResponseForStatusBodyError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, null, error);
   }
 }
 
@@ -140,10 +140,10 @@ async function updateUser(req, res) {
       userConfigurationSilentModeEndUTCMinute,
     );
 
-    return res.sendResponseForStatusBodyError(200, undefined, undefined);
+    return res.sendResponseForStatusBodyError(200, null, null);
   }
   catch (error) {
-    return res.sendResponseForStatusBodyError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, null, error);
   }
 }
 
@@ -156,10 +156,10 @@ async function deleteUser(req, res) {
       userId,
     );
 
-    return res.sendResponseForStatusBodyError(200, undefined, undefined);
+    return res.sendResponseForStatusBodyError(200, null, null);
   }
   catch (error) {
-    return res.sendResponseForStatusBodyError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, null, error);
   }
 }
 

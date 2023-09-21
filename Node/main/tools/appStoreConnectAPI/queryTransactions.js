@@ -10,10 +10,10 @@ const { formatString, formatBoolean } = require('../format/formatObject');
  * Queries Apple Store Server API with the transactionId to get all records of transactions associated with that transactionId. DESC from most recently to oldest.
  * https://github.com/agisboye/app-store-server-api
  * @param {*} transactionId The transactionId used to query Apple's servers to find linked transactions.
- * @returns An array of decodedTransactions linked to transactionId or undefined
+ * @returns An array of decodedTransactions linked to transactionId or null
  */
 async function queryTransactionsFromAppStoreServerAPI(transactionId) {
-  return queryTransactionsFromAppStoreServerAPIWithPreviousResponse(transactionId, undefined);
+  return queryTransactionsFromAppStoreServerAPIWithPreviousResponse(transactionId, null);
 }
 
 /**
@@ -23,11 +23,11 @@ async function queryTransactionsFromAppStoreServerAPI(transactionId) {
  * https://github.com/agisboye/app-store-server-api
  * @param {*} transactionId The transactionId used to query Apple's servers to find linked transactions.
  * @param {*} previousResponse The previousResponse from a previous invocation of queryTransactionsFromAppStoreServerAPI, used internally for response.hasMore
- * @returns An array of decodedTransactions linked to transactionId or undefined
+ * @returns An array of decodedTransactions linked to transactionId or null
  */
 async function queryTransactionsFromAppStoreServerAPIWithPreviousResponse(transactionId, previousResponse) {
   if (areAllDefined(transactionId) === false) {
-    return undefined;
+    return null;
   }
 
   // Query Apple's servers to attempt to get the transaction history linked to a transactionId from an AppStoreReceiptURL
@@ -35,25 +35,25 @@ async function queryTransactionsFromAppStoreServerAPIWithPreviousResponse(transa
   try {
     response = await api.getTransactionHistory(transactionId, {
       sort: SortParameter.Descending,
-      revision: areAllDefined(previousResponse) ? previousResponse.revision : undefined,
+      revision: areAllDefined(previousResponse) ? previousResponse.revision : null,
     });
   }
   catch (error) {
     console.log('getTransactionHistory error', error);
     logServerError('queryTransactionsFromAppStoreServerAPIWithPreviousResponse getTransactionHistory', error);
-    return undefined;
+    return null;
   }
 
   console.log('appAppleId', response.appAppleId);
 
   if (formatString(response.bundleId) !== global.CONSTANT.SERVER.APP_BUNDLE_ID) {
     console.log('bundleId error', response.bundleId);
-    return undefined;
+    return null;
   }
 
   if (formatString(response.environment) !== global.CONSTANT.SERVER.ENVIRONMENT) {
     console.log('environment error', response.bundleId);
-    return undefined;
+    return null;
   }
 
   // Decoding not only reveals the contents of the transactions but also verifies that they were signed by Apple.
@@ -64,7 +64,7 @@ async function queryTransactionsFromAppStoreServerAPIWithPreviousResponse(transa
   catch (error) {
     console.log('decodeTransactions error', response.bundleId);
     logServerError('queryTransactionsFromAppStoreServerAPIWithPreviousResponse decodeTransactions', error);
-    return undefined;
+    return null;
   }
 
   // The response contains at most 20 entries. You can check to see if there are more.

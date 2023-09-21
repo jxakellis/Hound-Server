@@ -48,10 +48,10 @@ async function validateSignedPayload(signedPayload) {
   return [notification, data, renewalInfo, transactionInfo];
 }
 
-/// Takes a signedPayload from an App Store Server Notificatio. Returns payload if successfully decoded, otherwise returns undefined.
+/// Takes a signedPayload from an App Store Server Notificatio. Returns payload if successfully decoded, otherwise returns null.
 async function validateNotificationSignedPayload(signedPayload) {
   if (areAllDefined(signedPayload) === false) {
-    return undefined;
+    return null;
   }
 
   let payload;
@@ -60,24 +60,24 @@ async function validateNotificationSignedPayload(signedPayload) {
   }
   catch (error) {
     logServerError('validateNotificationSignedPayload', error);
-    return undefined;
+    return null;
   }
 
   if (areAllDefined(payload) === false) {
-    return undefined;
+    return null;
   }
 
   if (formatString(payload.data.bundleId) !== global.CONSTANT.SERVER.APP_BUNDLE_ID) {
-    return undefined;
+    return null;
   }
 
   return payload;
 }
 
-/// Takes a signedTransactionInfo from the payload of an App Store Server Notification. Returns payload if successfully decoded, otherwise returns undefined.
+/// Takes a signedTransactionInfo from the payload of an App Store Server Notification. Returns payload if successfully decoded, otherwise returns null.
 async function validateTransactionSignedPayload(signedTransactionInfo) {
   if (areAllDefined(signedTransactionInfo) === false) {
-    return undefined;
+    return null;
   }
 
   let payload;
@@ -86,24 +86,24 @@ async function validateTransactionSignedPayload(signedTransactionInfo) {
   }
   catch (error) {
     logServerError('validateTransactionSignedPayload', error);
-    return undefined;
+    return null;
   }
 
   if (areAllDefined(payload) === false) {
-    return undefined;
+    return null;
   }
 
   if (formatString(payload.bundleId) !== global.CONSTANT.SERVER.APP_BUNDLE_ID) {
-    return undefined;
+    return null;
   }
 
   return payload;
 }
 
-/// Takes a signedRenewalInfo from the payload of an App Store Server Notification. Returns payload if successfully decoded, otherwise returns undefined.
+/// Takes a signedRenewalInfo from the payload of an App Store Server Notification. Returns payload if successfully decoded, otherwise returns null.
 async function validateRenewalInfoSignedPayload(signedRenewalInfo) {
   if (areAllDefined(signedRenewalInfo) === false) {
-    return undefined;
+    return null;
   }
 
   let payload;
@@ -112,11 +112,11 @@ async function validateRenewalInfoSignedPayload(signedRenewalInfo) {
   }
   catch (error) {
     logServerError('validateRenewalInfoSignedPayload', error);
-    return undefined;
+    return null;
   }
 
   if (areAllDefined(payload) === false) {
-    return undefined;
+    return null;
   }
 
   // renewalInfo has no bundleId

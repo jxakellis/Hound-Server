@@ -10,13 +10,13 @@ const { createTerminateNotification } = require('../main/tools/notifications/ale
 alertRouter.post('/:alertType', async (req, res) => {
   const { alertType } = req.params;
   if (areAllDefined(alertType) === false) {
-    return res.sendResponseForStatusBodyError(400, undefined, new ValidationError('No alert type provided', global.CONSTANT.ERROR.VALUE.INVALID));
+    return res.sendResponseForStatusBodyError(400, null, new ValidationError('No alert type provided', global.CONSTANT.ERROR.VALUE.INVALID));
   }
   // the user has terminated the app
   if (alertType === global.CONSTANT.NOTIFICATION.CATEGORY.USER.TERMINATE) {
     createTerminateNotification(req.params.userId);
   }
-  return res.sendResponseForStatusBodyError(200, undefined, undefined);
+  return res.sendResponseForStatusBodyError(200, null, null);
 });
 // no body
 

@@ -1,10 +1,13 @@
 /* eslint-disable max-classes-per-file */
 const { areAllDefined } = require('../validate/validateDefined');
+const { formatString } = require('../format/formatObject');
 
 class GeneralError extends Error {
   constructor(message, code) {
-    super(message);
-    this.message = message;
+    // Remove all newlines, remove all carriage returns, and make all >1 length spaces into 1 length spaces
+    const formattedMessage = formatString(message).replace('/\r?\n|\r/g', '').replace(/\s+/g, ' ');
+    super(formattedMessage);
+    this.message = formattedMessage;
     this.code = code;
     this.name = this.constructor.name;
   }
@@ -12,8 +15,10 @@ class GeneralError extends Error {
 
 class DatabaseError extends Error {
   constructor(message, code) {
-    super(message);
-    this.message = message;
+    // Remove all newlines, remove all carriage returns, and make all >1 length spaces into 1 length spaces
+    const formattedMessage = formatString(message).replace('/\r?\n|\r/g', '').replace(/\s+/g, ' ');
+    super(formattedMessage);
+    this.message = formattedMessage;
     this.code = code;
     this.name = this.constructor.name;
   }
@@ -21,8 +26,10 @@ class DatabaseError extends Error {
 
 class ValidationError extends Error {
   constructor(message, code) {
-    super(message);
-    this.message = message;
+    // Remove all newlines, remove all carriage returns, and make all >1 length spaces into 1 length spaces
+    const formattedMessage = formatString(message).replace('/\r?\n|\r/g', '').replace(/\s+/g, ' ');
+    super(formattedMessage);
+    this.message = formattedMessage;
     this.code = code;
     this.name = this.constructor.name;
   }
@@ -30,8 +37,10 @@ class ValidationError extends Error {
 
 class ExternalServerError extends Error {
   constructor(message, code) {
-    super(message);
-    this.message = message;
+    // Remove all newlines, remove all carriage returns, and make all >1 length spaces into 1 length spaces
+    const formattedMessage = formatString(message).replace('/\r?\n|\r/g', '').replace(/\s+/g, ' ');
+    super(formattedMessage);
+    this.message = formattedMessage;
     this.code = code;
     this.name = this.constructor.name;
   }

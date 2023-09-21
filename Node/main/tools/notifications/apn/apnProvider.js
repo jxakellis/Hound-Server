@@ -11,7 +11,7 @@ const options = {
     keyId,
     teamId,
   },
-  production: undefined,
+  production: null,
   requestTimeout: 2000,
 };
 

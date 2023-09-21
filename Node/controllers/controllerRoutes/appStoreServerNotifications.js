@@ -6,12 +6,12 @@ async function createAppStoreServerNotification(req, res) {
   try {
     const { signedPayload } = req.body;
     await createASSNForSignedPayload(req.databaseConnection, signedPayload);
-    return res.sendResponseForStatusBodyError(200, undefined, undefined);
+    return res.sendResponseForStatusBodyError(200, null, null);
   }
   catch (error) {
     // Errors shouldn't occur when dealing with App Store Server Notifications
     logServerError('createAppStoreServerNotification', error);
-    return res.sendResponseForStatusBodyError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, null, error);
   }
 }
 

@@ -18,10 +18,10 @@ async function getFamily(req, res) {
     const { familyId } = req.params;
     const result = await getAllFamilyInformationForFamilyId(req.databaseConnection, familyId, req.familyActiveSubscription);
 
-    return res.sendResponseForStatusBodyError(200, result, undefined);
+    return res.sendResponseForStatusBodyError(200, result, null);
   }
   catch (error) {
-    return res.sendResponseForStatusBodyError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, null, error);
   }
 }
 
@@ -30,10 +30,10 @@ async function createFamily(req, res) {
     const { userId } = req.params;
     const result = await createFamilyForUserId(req.databaseConnection, userId);
 
-    return res.sendResponseForStatusBodyError(200, result, undefined);
+    return res.sendResponseForStatusBodyError(200, result, null);
   }
   catch (error) {
-    return res.sendResponseForStatusBodyError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, null, error);
   }
 }
 
@@ -42,10 +42,10 @@ async function updateFamily(req, res) {
     const { userId, familyId } = req.params;
     const { familyCode, familyIsLocked } = req.body;
     await updateFamilyForUserIdFamilyId(req.databaseConnection, userId, familyId, familyCode, familyIsLocked);
-    return res.sendResponseForStatusBodyError(200, undefined, undefined);
+    return res.sendResponseForStatusBodyError(200, null, null);
   }
   catch (error) {
-    return res.sendResponseForStatusBodyError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, null, error);
   }
 }
 
@@ -59,10 +59,10 @@ async function deleteFamily(req, res) {
     else {
       await deleteFamilyLeaveFamilyForUserIdFamilyId(req.databaseConnection, userId, familyId, req.familyActiveSubscription);
     }
-    return res.sendResponseForStatusBodyError(200, undefined, undefined);
+    return res.sendResponseForStatusBodyError(200, null, null);
   }
   catch (error) {
-    return res.sendResponseForStatusBodyError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, null, error);
   }
 }
 

@@ -29,10 +29,10 @@ async function getReminders(req, res) {
     // look for multiple reminders
       : await getAllRemindersForDogId(req.databaseConnection, dogId, userConfigurationPreviousDogManagerSynchronization);
 
-    return res.sendResponseForStatusBodyError(200, result, undefined);
+    return res.sendResponseForStatusBodyError(200, result, null);
   }
   catch (error) {
-    return res.sendResponseForStatusBodyError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, null, error);
   }
 }
 
@@ -54,10 +54,10 @@ async function createReminder(req, res) {
       );
     }
 
-    return res.sendResponseForStatusBodyError(200, result, undefined);
+    return res.sendResponseForStatusBodyError(200, result, null);
   }
   catch (error) {
-    return res.sendResponseForStatusBodyError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, null, error);
   }
 }
 
@@ -79,10 +79,10 @@ async function updateReminder(req, res) {
         result[i].reminderExecutionDate,
       );
     }
-    return res.sendResponseForStatusBodyError(200, undefined, undefined);
+    return res.sendResponseForStatusBodyError(200, null, null);
   }
   catch (error) {
-    return res.sendResponseForStatusBodyError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, null, error);
   }
 }
 
@@ -101,10 +101,10 @@ async function deleteReminder(req, res) {
       await deleteReminderForFamilyIdDogIdReminderId(req.databaseConnection, familyId, dogId, reminderId);
     }
 
-    return res.sendResponseForStatusBodyError(200, undefined, undefined);
+    return res.sendResponseForStatusBodyError(200, null, null);
   }
   catch (error) {
-    return res.sendResponseForStatusBodyError(400, undefined, error);
+    return res.sendResponseForStatusBodyError(400, null, error);
   }
 }
 

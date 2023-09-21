@@ -5,6 +5,8 @@ const {
 const { areAllDefined } = require('../../main/tools/validate/validateDefined');
 const { ValidationError } = require('../../main/tools/general/errors');
 
+const { extractTransactionIdFromAppStoreReceiptURL } = require('../../main/tools/appStoreConnectAPI/extractTransactionId');
+const { queryTransactionsFromAppStoreServerAPI } = require('../../main/tools/appStoreConnectAPI/queryTransactions');
 const { getFamilyHeadUserIdForFamilyId } = require('../getFor/getForFamily');
 
 // TODO NOW TEST this code
@@ -116,20 +118,10 @@ async function createTransactionForTransactionInfo(
     transactionReason,
     webOrderLineItemId,
   ) === false) {
-    throw new ValidationError(`databaseConnection,
-userId, 
-familyId, 
-autoRenewProductId, 
-environment, 
-inAppOwnershipType, 
-originalTransactionId, 
-productId, 
-purchaseDate, 
-quantity, 
-subscriptionGroupIdentifier, 
-transactionId, 
-transactionReason,
-or webOrderLineItemId is missing`, global.CONSTANT.ERROR.VALUE.MISSING);
+    throw new ValidationError(`databaseConnection, userId, familyId, 
+    autoRenewProductId, environment, inAppOwnershipType, originalTransactionId, 
+    productId, purchaseDate, quantity, subscriptionGroupIdentifier, 
+    transactionId, transactionReason, or webOrderLineItemId is missing`, global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   if (environment !== global.CONSTANT.SERVER.ENVIRONMENT) {
@@ -192,16 +184,76 @@ or webOrderLineItemId is missing`, global.CONSTANT.ERROR.VALUE.MISSING);
   );
 }
 
-async function createTransactionForAppStoreReceiptURL(databaseConnection, appStoreReceiptURL) {
+async function createTransactionForAppStoreReceiptURL(databaseConnection, userId, familyId, appStoreReceiptURL) {
+  if (areAllDefined(databaseConnection, userId, familyId, appStoreReceiptURL) === false) {
+    throw new ValidationError('databaseConnection, userId, familyId, or appStoreReceiptURL missing', global.CONSTANT.ERROR.VALUE.MISSING);
+  }
 
-  // TODO NOW
-  // validate databaseconnection and asrurl
+  const transactionId = formatNumber(extractTransactionIdFromAppStoreReceiptURL(appStoreReceiptURL));
 
-  // extract transactionId and confirm its real number
+  if (areAllDefined(transactionId) === false) {
+    throw new ValidationError('transactionId couldn\'t be constructed with extractTransactionIdFromAppStoreReceiptURL', global.CONSTANT.ERROR.VALUE.INVALID);
+  }
 
-  // query for all transactions w ASC api linked to transactionId
+  const transactions = await queryTransactionsFromAppStoreServerAPI(transactionId);
 
-  // attempt to insert every transaction
+  if (areAllDefined(transactionId) === false) {
+    throw new ValidationError('transactions couldn\'t be queried with queryTransactionsFromAppStoreServerAPI', global.CONSTANT.ERROR.VALUE.INVALID);
+  }
+
+  // First, we find the corresponding transaction to our original transactionId
+  const targetTransaction = transactions.find((transaction) => formatNumber(transaction.transactionId) === transactionId);
+
+  // The create transaction for our target transaction must succeed.
+  await createTransactionForTransactionInfo(
+    databaseConnection,
+    userId,
+    familyId,
+    targetTransaction.environment,
+    targetTransaction.expiresDate,
+    targetTransaction.inAppOwnershipType,
+    targetTransaction.transactionId,
+    targetTransaction.offerIdentifier,
+    targetTransaction.offerType,
+    targetTransaction.originalTransactionId,
+    targetTransaction.productId,
+    targetTransaction.purchaseDate,
+    targetTransaction.quantity,
+    targetTransaction.subscriptionGroupIdentifier,
+    targetTransaction.transactionReason,
+    targetTransaction.webOrderLineItemId,
+  );
+
+  // The create transaction for our other transactions should hopefully succeed but can fail
+  // Filter out the target transaction from the transactions array
+  const nonTargetTransactions = transactions.filter((transaction) => formatNumber(transaction.transactionId) !== transactionId);
+
+  // Create an array of Promises
+  const transactionPromises = nonTargetTransactions.map((transaction) => createTransactionForTransactionInfo(
+    databaseConnection,
+    userId,
+    familyId,
+    transaction.environment,
+    transaction.expiresDate,
+    transaction.inAppOwnershipType,
+    transaction.transactionId,
+    transaction.offerIdentifier,
+    transaction.offerType,
+    transaction.originalTransactionId,
+    transaction.productId,
+    transaction.purchaseDate,
+    transaction.quantity,
+    transaction.subscriptionGroupIdentifier,
+    transaction.transactionReason,
+    transaction.webOrderLineItemId,
+  ).catch((error) => {
+    // Log or handle the error here, it won't propagate further
+    console.error(`Failed to create transaction for transactionId ${transaction.transactionId}:`, error);
+    return null;
+  }));
+
+  // Execute all Promises concurrently
+  await Promise.allSettled(transactionPromises);
 }
 
 module.exports = { createTransactionForTransactionInfo, createTransactionForAppStoreReceiptURL };

@@ -22,7 +22,7 @@ function formatEmail(string) {
   let userEmail = formatString(string, maximumEmailLengthWithAngleBrackets);
 
   if (areAllDefined(userEmail) === false) {
-    return undefined;
+    return null;
   }
 
   userEmail = userEmail.replace('mailto:', '');
@@ -30,12 +30,12 @@ function formatEmail(string) {
   userEmail = userEmail.replace('>', '');
 
   if (userEmail.length < minimumEmailLength || userEmail.length > maximumEmailLengthWithoutAngleBrackets) {
-    return undefined;
+    return null;
   }
 
   const isValid = emailRegex.test(userEmail);
   if (isValid === false) {
-    return undefined;
+    return null;
   }
 
   // Further checking of some things regex can't handle
@@ -43,7 +43,7 @@ function formatEmail(string) {
 
   const username = emailParts[0];
   if (username.length < minimumUsernameLength || username.length > maximumUsernameLength) {
-    return undefined;
+    return null;
   }
 
   // requirements for length of the components to domain are vague
@@ -53,19 +53,19 @@ function formatEmail(string) {
 }
 
 /**
- * Converts provided date into format needed for database. If any check fails, returns undefined. Otherwise, returns correctly formatted date.
+ * Converts provided date into format needed for database. If any check fails, returns null. Otherwise, returns correctly formatted date.
  */
 function formatDate(forDate) {
   // check if parameter is defined
   if (areAllDefined(forDate) === false) {
-    return undefined;
+    return null;
   }
   // parameter is a string, try to convert into a date
   if (typeof forDate === 'string' || typeof forDate === 'number') {
     const date = new Date(forDate);
-    // if not a date object or the date object is an invalid date (e.g. Date('nonDateFoo')), then we return undefined
+    // if not a date object or the date object is an invalid date (e.g. Date('nonDateFoo')), then we return null
     if (Object.prototype.toString.call(date) !== '[object Date]' || Number.isNaN(date) === true) {
-      return undefined;
+      return null;
     }
     try {
       date.toISOString().slice(0, 19).replace('T', ' ');
@@ -74,26 +74,26 @@ function formatDate(forDate) {
     }
     catch (error) {
       // unable to convert format; incorrect format
-      return undefined;
+      return null;
     }
   }
   // if the date parameter is a date object and its date is valid (not 'Invalid Date'), then return
   else if (Object.prototype.toString.call(forDate) === '[object Date]' && Number.isNaN(forDate) === false) {
     return forDate;
   }
-  // unrecognized type, return undefined
+  // unrecognized type, return null
   else {
-    return undefined;
+    return null;
   }
 }
 
 /**
- * Converts the provided string into a boolean. "true", "1", or 1 retuns true; "false", "0", or 0 returns false; all other values return undefined
+ * Converts the provided string into a boolean. "true", "1", or 1 retuns true; "false", "0", or 0 returns false; all other values return null
  * This is needed as Boolean("string") always converts to true unless the string provided is ""
  */
 function formatBoolean(boolean) {
   if (areAllDefined(boolean) === false) {
-    return undefined;
+    return null;
   }
   if (typeof boolean === 'boolean') {
     // already a boolean object
@@ -112,7 +112,7 @@ function formatBoolean(boolean) {
     case 'no':
       return false;
     default:
-      return undefined;
+      return null;
   }
 }
 
@@ -120,11 +120,11 @@ function formatBoolean(boolean) {
  * Converts the provided string into a number.
  * Any finite number will successfully convert into a number.
  * This is needed as Number("foo") converts into NaN with type of number.
- * This result circumvents the typeof bar === 'undefined' logic as its type is number even though its value is null/NaN/undefined.
+ * This result circumvents the typeof bar === 'null' logic as its type is number even though its value is null/NaN/null.
 */
 function formatNumber(forNumber) {
   if (areAllDefined(forNumber) === false) {
-    return undefined;
+    return null;
   }
   // forcible convert into a number. If it can't convert, then NaN is typically resolved
   const number = Number(forNumber);
@@ -142,13 +142,13 @@ false
 false
 > Number.isFinite(null);
 false
-> Number.isFinite(undefined);
+> Number.isFinite(null);
 false
    */
 
   // if potentialNumber isn't finite, then we don't want it as a number.
   if (Number.isFinite(number) === false) {
-    return undefined;
+    return null;
   }
   // potential number was cast and is finite, so its a number we can use
   return number;
@@ -156,18 +156,18 @@ false
 
 function formatArray(array) {
   if (areAllDefined(array) === false) {
-    return undefined;
+    return null;
   }
   if (Array.isArray(array) === false) {
-    return undefined;
+    return null;
   }
   return array;
 }
 
 function formatSHA256Hash(forString) {
-  let string = formatString(forString);
+  let string = formatString(forString, null);
   if (areAllDefined(string) === false) {
-    return undefined;
+    return null;
   }
 
   // OUTPUT IS CASE INSENSITIVE
@@ -176,33 +176,34 @@ function formatSHA256Hash(forString) {
   const regex = /^[A-Fa-f0-9]{64}$/g;
   const isValid = regex.test(string);
   if (isValid === false) {
-    return undefined;
+    return null;
   }
   return string;
 }
 
 function formatBase64EncodedString(forString) {
-  const string = formatString(forString);
+  const string = formatString(forString, null);
+
   if (areAllDefined(string) === false) {
-    return undefined;
+    return null;
   }
 
   // OUTPUT IS CASE SENSITIVE
   const regex = /^(?:[A-Za-z\d+/]{4})*(?:[A-Za-z\d+/]{3}=|[A-Za-z\d+/]{2}==)?$/;
   const isValid = regex.test(string);
   if (isValid === false) {
-    return undefined;
+    return null;
   }
   return string;
 }
 
 function formatString(string, length) {
   if (areAllDefined(string) === false) {
-    return undefined;
+    return null;
   }
 
   if (typeof string !== 'string') {
-    return undefined;
+    return null;
   }
 
   if (areAllDefined(length) === false) {

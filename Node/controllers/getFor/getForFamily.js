@@ -135,7 +135,7 @@ async function getFamilyHeadUserIdForFamilyId(databaseConnection, familyId) {
   );
 
   if (areAllDefined(result) === false) {
-    return undefined;
+    return null;
   }
 
   return result.userId;
@@ -163,7 +163,7 @@ async function getFamilyIdForUserId(databaseConnection, userId) {
   );
 
   if (areAllDefined(result) === false) {
-    return undefined;
+    return null;
   }
 
   return result.familyId;

@@ -449,7 +449,7 @@ const generateFamilyCode = () => {
 // Generate a verified unique code for a family to use that consists of A-Z and 0-9 (excludes I, L, O, and 0 due to how similar they look)
 async function generateVerifiedFamilyCode(databaseConnection) {
   if (areAllDefined(databaseConnection) === false) {
-    return undefined;
+    return null;
   }
 
   let uniqueFamilyCode;
