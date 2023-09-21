@@ -9,6 +9,8 @@ const { extractTransactionIdFromAppStoreReceiptURL } = require('../../main/tools
 const { queryTransactionsFromAppStoreServerAPI } = require('../../main/tools/appStoreConnectAPI/queryTransactions');
 const { getFamilyHeadUserIdForFamilyId } = require('../getFor/getForFamily');
 
+// TODO FUTURE migrate from expirationDate to expiresDate
+
 // TODO NOW TEST this code
 /**
  * 1. Formats the parameters provided
@@ -21,7 +23,7 @@ const { getFamilyHeadUserIdForFamilyId } = require('../getFor/getForFamily');
  * @param {*} userId
  * @param {*} familyId
  * @param {*} forEnvironment
- * @param {*} forExpirationDate
+ * @param {*} forExpiresDate
  * @param {*} forInAppOwnershipType
  * @param {*} forTransactionId
  * @param {*} forOfferIdentifier
@@ -39,7 +41,7 @@ async function createTransactionForTransactionInfo(
   userId,
   familyId,
   forEnvironment,
-  forExpirationDate,
+  forExpiresDate,
   forInAppOwnershipType,
   forTransactionId,
   forOfferIdentifier,
@@ -65,7 +67,7 @@ async function createTransactionForTransactionInfo(
   // The server environment, either Sandbox or Production.
   const environment = formatString(forEnvironment, 10);
   // The UNIX time, in milliseconds, the subscription expires or renews.
-  const expirationDate = formatDate(formatNumber(forExpirationDate));
+  const expiresDate = formatDate(formatNumber(forExpiresDate));
   // A string that describes whether the transaction was purchased by the user, or is available to them through Family Sharing.
   const inAppOwnershipType = formatString(forInAppOwnershipType, 13);
   // isAutoRenewing; NOT INCLUDED AT THIS STAGE
@@ -105,7 +107,7 @@ async function createTransactionForTransactionInfo(
     familyId,
     autoRenewProductId,
     environment,
-    expirationDate,
+    expiresDate,
     inAppOwnershipType,
     // offerIdentifier is optionally defined
     // offerType is optionally defined
@@ -119,7 +121,7 @@ async function createTransactionForTransactionInfo(
     webOrderLineItemId,
   ) === false) {
     throw new ValidationError(`databaseConnection, userId, familyId, 
-    autoRenewProductId, environment, inAppOwnershipType, originalTransactionId, 
+    autoRenewProductId, environment, expiresDate, inAppOwnershipType, originalTransactionId, 
     productId, purchaseDate, quantity, subscriptionGroupIdentifier, 
     transactionId, transactionReason, or webOrderLineItemId is missing`, global.CONSTANT.ERROR.VALUE.MISSING);
   }
@@ -176,7 +178,7 @@ async function createTransactionForTransactionInfo(
     [
       userId, familyId,
       numberOfFamilyMembers, numberOfDogs,
-      autoRenewProductId, environment, expirationDate, inAppOwnershipType,
+      autoRenewProductId, environment, expiresDate, inAppOwnershipType,
       offerIdentifier, offerType, originalTransactionId, productId,
       purchaseDate, quantity, subscriptionGroupIdentifier, transactionId,
       transactionReason, webOrderLineItemId,
@@ -185,6 +187,7 @@ async function createTransactionForTransactionInfo(
 }
 
 async function createTransactionForAppStoreReceiptURL(databaseConnection, userId, familyId, appStoreReceiptURL) {
+  // TODO NOW TEST this works
   if (areAllDefined(databaseConnection, userId, familyId, appStoreReceiptURL) === false) {
     throw new ValidationError('databaseConnection, userId, familyId, or appStoreReceiptURL missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }

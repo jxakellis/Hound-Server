@@ -1,6 +1,6 @@
 const { getAllTransactions, getActiveTransaction } = require('../getFor/getForTransactions');
 
-const { g } = require('../../main/tools/appStoreConnectAPI/queryTransactions');
+const { createTransactionForAppStoreReceiptURL } = require('../createFor/createForTransactions');
 
 async function getTransactions(req, res) {
   try {
@@ -19,8 +19,10 @@ async function createTransactions(req, res) {
     const { userId, familyId } = req.params;
     const { appStoreReceiptURL } = req.body;
 
-    // TODO NOW invoke create transactions from ASR url then return the active subscription
-    const result = await createTransactionsForAppStoreReceiptURL(req.databaseConnection, userId, familyId, appStoreReceiptURL);
+    await createTransactionForAppStoreReceiptURL(req.databaseConnection, userId, familyId, appStoreReceiptURL);
+
+    // After we have updated the stored transactions, we want to return the new active subscription to the user.
+    const result = await getActiveTransaction(req.databaseConnection, familyId);
 
     return res.sendResponseForStatusBodyError(200, result, null);
   }
