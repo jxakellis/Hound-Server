@@ -32,7 +32,7 @@ async function queryTransactionsFromAppStoreServerAPIWithPreviousResponse(transa
 
   // Query Apple's servers to attempt to get the transaction history linked to a transactionId from an AppStoreReceiptURL
   let response;
-  const queryProperties = areAllDefined(previousResponse)
+  const queryProperties = areAllDefined(previousResponse) && areAllDefined(previousResponse.revision)
     ? {
       sort: SortParameter.Descending,
       // must be undefined, not null
@@ -40,6 +40,7 @@ async function queryTransactionsFromAppStoreServerAPIWithPreviousResponse(transa
     }
     : { sort: SortParameter.Descending };
   try {
+    console.log(transactionId, queryProperties);
     response = await api.getTransactionHistory(transactionId, queryProperties);
   }
   catch (error) {
@@ -75,7 +76,7 @@ async function queryTransactionsFromAppStoreServerAPIWithPreviousResponse(transa
   if (formatBoolean(response.hasMore) === true) {
     console.log('hasMore');
     const nextTransactions = await queryTransactionsFromAppStoreServerAPIWithPreviousResponse(transactionId, response);
-    return transactions + areAllDefined(nextTransactions) ? nextTransactions : [];
+    return transactions.concat(areAllDefined(nextTransactions) ? nextTransactions : []);
   }
 
   console.log('returning transactions', transactions);
