@@ -10,12 +10,4 @@ const api = new AppStoreServerAPI(
   global.CONSTANT.SERVER.IS_PRODUCTION_DATABASE ? Environment.Production : Environment.Sandbox,
 );
 
-console.log(
-  key,
-  keyId,
-  issuerId,
-  global.CONSTANT.SERVER.APP_BUNDLE_ID,
-  global.CONSTANT.SERVER.IS_PRODUCTION_DATABASE ? Environment.Production : Environment.Sandbox,
-);
-
 module.exports = { api };

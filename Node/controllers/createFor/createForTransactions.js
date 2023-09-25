@@ -51,10 +51,6 @@ async function createTransactionForTransactionInfo(
   forTransactionReason,
   forWebOrderLineItemId,
 ) {
-  console.log('createTransactionForTransactionInfo');
-  // TODO NOW TEST this function
-  // TODO NOW TEST that the offer code is recieve from both server and reciept
-  console.log(`createTransactionForTransactionInfo did recieve ${forOfferIdentifier}`);
   // userId
 
   // https://developer.apple.com/documentation/appstoreservernotifications/jwstransactiondecodedpayload
@@ -185,18 +181,12 @@ async function createTransactionForTransactionInfo(
 }
 
 async function createTransactionForAppStoreReceiptURL(databaseConnection, userId, appStoreReceiptURL) {
-  console.log('createTransactionForAppStoreReceiptURL');
   // TODO NOW TEST this function
   if (areAllDefined(databaseConnection, userId, appStoreReceiptURL) === false) {
     throw new ValidationError('databaseConnection, userId, or appStoreReceiptURL missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
-  console.log('appStoreReceiptURL', appStoreReceiptURL);
-  console.log('extractTransactionIdFromAppStoreReceiptURL', extractTransactionIdFromAppStoreReceiptURL(appStoreReceiptURL));
-
   const transactionId = formatNumber(extractTransactionIdFromAppStoreReceiptURL(appStoreReceiptURL));
-
-  console.log('transactionId', transactionId);
 
   if (areAllDefined(transactionId) === false) {
     throw new ValidationError('transactionId couldn\'t be constructed with extractTransactionIdFromAppStoreReceiptURL', global.CONSTANT.ERROR.VALUE.INVALID);
@@ -204,16 +194,12 @@ async function createTransactionForAppStoreReceiptURL(databaseConnection, userId
 
   const transactions = await queryTransactionsFromAppStoreServerAPI(transactionId);
 
-  console.log('transactions', transactions);
-
   if (areAllDefined(transactions) === false) {
     throw new ValidationError('transactions couldn\'t be queried with queryTransactionsFromAppStoreServerAPI', global.CONSTANT.ERROR.VALUE.INVALID);
   }
 
   // First, we find the corresponding transaction to our original transactionId
   const targetTransaction = transactions.find((transaction) => formatNumber(transaction.transactionId) === transactionId);
-
-  console.log('targetTransaction', targetTransaction);
 
   // The create transaction for our target transaction must succeed.
   await createTransactionForTransactionInfo(
@@ -237,8 +223,6 @@ async function createTransactionForAppStoreReceiptURL(databaseConnection, userId
   // The create transaction for our other transactions should hopefully succeed but can fail
   // Filter out the target transaction from the transactions array
   const nonTargetTransactions = transactions.filter((transaction) => formatNumber(transaction.transactionId) !== transactionId);
-
-  console.log('nonTargetTransactions', nonTargetTransactions);
 
   // Create an array of Promises
   const transactionPromises = nonTargetTransactions.map((transaction) => createTransactionForTransactionInfo(

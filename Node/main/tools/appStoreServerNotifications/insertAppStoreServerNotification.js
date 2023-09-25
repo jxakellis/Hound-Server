@@ -17,7 +17,6 @@ const { ValidationError } = require('../general/errors');
  * @throws If data is missing or databaseQuery fails
  */
 async function insertAppStoreServerNotification(databaseConnection, notification, data, renewalInfo, transactionInfo) {
-  console.log('insertAppStoreServerNotification');
   // TODO NOW TEST this function
   if (areAllDefined(databaseConnection, notification, data, renewalInfo, transactionInfo) === false) {
     throw new ValidationError('databaseConnection, notification, data, renewalInfo, or transactionInfo missing', global.CONSTANT.ERROR.VALUE.MISSING);
@@ -77,7 +76,6 @@ async function insertAppStoreServerNotification(databaseConnection, notification
   // The UNIX time, in milliseconds, that the App Store signed the JSON Web Signature data.
   const renewalInfoSignedDate = formatDate(formatNumber(renewalInfo.signedDate));
 
-  console.log('transactionInfo.appAccountToken', transactionInfo.appAccountToken);
   // https://developer.apple.com/documentation/appstoreservernotifications/jwstransactiondecodedpayload
   // A UUID that associates the transaction with a user on your own service. If your app doesn’t provide an appAccountToken, this string is empty. For more information, see appAccountToken(_:).
   const transactionInfoAppAccountToken = formatString(transactionInfo.appAccountToken, 36);
@@ -131,7 +129,6 @@ async function insertAppStoreServerNotification(databaseConnection, notification
 
   // If the ASSN already exists, we don't want to try and reinsert it, so we ignore it.
   if (areAllDefined(existingAppStoreServerNotification) === true) {
-    console.log('already exists', existingAppStoreServerNotification);
     return false;
   }
 

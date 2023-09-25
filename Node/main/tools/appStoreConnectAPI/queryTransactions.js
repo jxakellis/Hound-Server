@@ -24,7 +24,6 @@ async function queryTransactionsFromAppStoreServerAPI(transactionId) {
  * @returns An array of decodedTransactions linked to transactionId or null
  */
 async function queryTransactionsFromAppStoreServerAPIWithPreviousResponse(transactionId, previousResponse) {
-  console.log('queryTransactionsFromAppStoreServerAPIWithPreviousResponse');
   // TODO NOW TEST this function
   if (areAllDefined(transactionId) === false) {
     return null;
@@ -40,24 +39,18 @@ async function queryTransactionsFromAppStoreServerAPIWithPreviousResponse(transa
     }
     : { sort: SortParameter.Descending };
   try {
-    console.log(transactionId, queryProperties);
     response = await api.getTransactionHistory(transactionId, queryProperties);
   }
   catch (error) {
-    console.log('getTransactionHistory error', error);
     logServerError('queryTransactionsFromAppStoreServerAPIWithPreviousResponse getTransactionHistory', error);
     return null;
   }
 
-  console.log('appAppleId', response.appAppleId);
-
   if (formatString(response.bundleId) !== global.CONSTANT.SERVER.APP_BUNDLE_ID) {
-    console.log('bundleId error', response.bundleId);
     return null;
   }
 
   if (formatString(response.environment) !== global.CONSTANT.SERVER.ENVIRONMENT) {
-    console.log('environment error', response.bundleId);
     return null;
   }
 
@@ -67,19 +60,16 @@ async function queryTransactionsFromAppStoreServerAPIWithPreviousResponse(transa
     transactions = await decodeTransactions(response.signedTransactions);
   }
   catch (error) {
-    console.log('decodeTransactions error', response.bundleId);
     logServerError('queryTransactionsFromAppStoreServerAPIWithPreviousResponse decodeTransactions', error);
     return null;
   }
 
   // The response contains at most 20 entries. You can check to see if there are more.
   if (formatBoolean(response.hasMore) === true) {
-    console.log('hasMore');
     const nextTransactions = await queryTransactionsFromAppStoreServerAPIWithPreviousResponse(transactionId, response);
     return transactions.concat(areAllDefined(nextTransactions) ? nextTransactions : []);
   }
 
-  console.log('returning transactions', transactions);
   return transactions;
 }
 
