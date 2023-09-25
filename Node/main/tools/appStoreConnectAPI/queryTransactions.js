@@ -4,8 +4,6 @@ const { areAllDefined } = require('../validate/validateDefined');
 const { logServerError } = require('../logging/logServerError');
 const { formatString, formatBoolean } = require('../format/formatObject');
 
-// TODO NOW TEST this code
-
 /**
  * Queries Apple Store Server API with the transactionId to get all records of transactions associated with that transactionId. DESC from most recently to oldest.
  * https://github.com/agisboye/app-store-server-api
@@ -26,6 +24,8 @@ async function queryTransactionsFromAppStoreServerAPI(transactionId) {
  * @returns An array of decodedTransactions linked to transactionId or null
  */
 async function queryTransactionsFromAppStoreServerAPIWithPreviousResponse(transactionId, previousResponse) {
+  console.log('queryTransactionsFromAppStoreServerAPIWithPreviousResponse');
+  // TODO NOW TEST this function
   if (areAllDefined(transactionId) === false) {
     return null;
   }

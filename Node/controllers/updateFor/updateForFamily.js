@@ -6,12 +6,12 @@ const { areAllDefined } = require('../../main/tools/validate/validateDefined');
 const { ValidationError } = require('../../main/tools/general/errors');
 const { createFamilyMemberJoinNotification } = require('../../main/tools/notifications/alert/createFamilyNotification');
 
-const { getAllFamilyMembersForFamilyId, getFamilyMemberUserIdForUserId } = require('../getFor/getForFamily');
+const { getAllFamilyMembersForFamilyId, isUserIdInFamily } = require('../getFor/getForFamily');
 const { getActiveTransaction } = require('../getFor/getForTransactions');
 
 const { createFamilyLockedNotification } = require('../../main/tools/notifications/alert/createFamilyNotification');
 
-// TODO NOW add logic for a family to allow it to switch family heads. this will mean checking the active subscription to make sure it is not renewing, similar to deleting a family. 
+// TODO NOW add logic for a family to allow it to switch family heads. this will mean checking the active subscription to make sure it is not renewing, similar to deleting a family.
 // ^^ also check other logic, since in the past a family always had the same userId for its family head, but now that could switch, so verify that functions are compatible with that (e.g. retrieving transactions, reassigning transctions, transaction metrics)
 
 /**
@@ -72,10 +72,9 @@ async function addFamilyMember(databaseConnection, userId, forFamilyCode) {
   }
 
   // the familyCode is valid and linked to an UNLOCKED family
+  const isUserInFamily = await isUserIdInFamily(databaseConnection, userId);
 
-  const isFamilyMember = await getFamilyMemberUserIdForUserId(databaseConnection, userId);
-
-  if (isFamilyMember.length !== 0) {
+  if (isUserInFamily === true) {
     // user is already in a family
     throw new ValidationError('You are already in a family', global.CONSTANT.ERROR.FAMILY.JOIN.IN_FAMILY_ALREADY);
   }

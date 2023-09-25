@@ -4,7 +4,7 @@ const { ValidationError } = require('../../main/tools/general/errors');
 const { hash } = require('../../main/tools/format/hash');
 const { areAllDefined } = require('../../main/tools/validate/validateDefined');
 
-const { getFamilyMemberUserIdForUserId } = require('../getFor/getForFamily');
+const { isUserIdInFamily } = require('../getFor/getForFamily');
 
 const { reassignActiveSubscriptionsToNewFamilyForUserIdFamilyId } = require('../updateFor/updateForTransactions');
 
@@ -24,10 +24,10 @@ async function createFamilyForUserId(databaseConnection, userId) {
   }
 
   // check if the user is already in a family
-  const existingFamilyResult = await getFamilyMemberUserIdForUserId(databaseConnection, userId);
+  const isUserInFamily = await isUserIdInFamily(databaseConnection, userId);
 
   // validate that the user is not in a family
-  if (existingFamilyResult.length !== 0) {
+  if (isUserInFamily === true) {
     throw new ValidationError('User is already in a family', global.CONSTANT.ERROR.FAMILY.JOIN.IN_FAMILY_ALREADY);
   }
 

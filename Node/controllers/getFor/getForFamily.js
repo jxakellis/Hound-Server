@@ -6,6 +6,13 @@ const { ValidationError } = require('../../main/tools/general/errors');
  *  If the query is successful, returns the userId, familyCode, familyIsLocked, familyMembers, previousFamilyMembers, and familyActiveSubscription for the familyId.
  *  If a problem is encountered, creates and throws custom error
  */
+/**
+ * @param {*} databaseConnection
+ * @param {*} familyId
+ * @param {*} familyActiveSubscription
+ * @returns A key-value pairing of {userId (of familyHead), familyCode, familyIsLocked, familyMembers (array), previousFamilyMembers (array), familyActiveSubscription (object)}
+ * @throws If an error is encountered
+ */
 async function getAllFamilyInformationForFamilyId(databaseConnection, familyId, familyActiveSubscription) {
   // validate that a familyId was passed, assume that its in the correct format
   if (areAllDefined(databaseConnection, familyId) === false) {
@@ -39,6 +46,12 @@ async function getAllFamilyInformationForFamilyId(databaseConnection, familyId, 
   return result;
 }
 
+/**
+ * @param {*} databaseConnection
+ * @param {*} familyId
+ * @returns An array of familyMembers (userId, userFirstName, userLastName), representing each user currently in the family
+ * @throws If an error is encountered
+ */
 async function getAllFamilyMembersForFamilyId(databaseConnection, familyId) {
   // validate that a familyId was passed, assume that its in the correct format
   if (areAllDefined(databaseConnection, familyId) === false) {
@@ -59,6 +72,12 @@ async function getAllFamilyMembersForFamilyId(databaseConnection, familyId) {
   return result;
 }
 
+/**
+ * @param {*} databaseConnection
+ * @param {*} familyId
+ * @returns An array of previousFamilyMembers (userId, userFirstName, userLastName), representing the most recent record of each user that has left the family
+ * @throws If an error is encountered
+ */
 async function getAllPreviousFamilyMembersForFamilyId(databaseConnection, familyId) {
   // validate that a familyId was passed, assume that its in the correct format
   if (areAllDefined(databaseConnection, familyId) === false) {
@@ -95,30 +114,33 @@ async function getAllPreviousFamilyMembersForFamilyId(databaseConnection, family
 }
 
 /**
- *  If the query is successful, returns the family member for the userId. This function is used to determine if a user is in a family
- *  If a problem is encountered, creates and throws custom error
+ * @param {*} databaseConnection
+ * @param {*} userId
+ * @returns true if the userId is in any family, false if not
+ * @throws If an error is encountered
  */
-async function getFamilyMemberUserIdForUserId(databaseConnection, userId) {
-  // validate that a userId was passed, assume that its in the correct format
+async function isUserIdInFamily(databaseConnection, userId) {
   if (areAllDefined(databaseConnection, userId) === false) {
     throw new ValidationError('databaseConnection or userId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
-  const result = await databaseQuery(
+  const [result] = await databaseQuery(
     databaseConnection,
-    `SELECT userId
+    `SELECT 1
     FROM familyMembers fm
     WHERE userId = ?
     LIMIT 1`,
     [userId],
   );
 
-  return result;
+  return areAllDefined(result);
 }
 
 /**
- *  If the query is successful, returns the userId of the family head
- *  If a problem is encountered, creates and throws custom error
+ * @param {*} databaseConnection
+ * @param {*} familyId
+ * @returns userId of family's head or null
+ * @throws If an error is encountered
  */
 async function getFamilyHeadUserIdForFamilyId(databaseConnection, familyId) {
   if (areAllDefined(databaseConnection, familyId) === false) {
@@ -142,8 +164,10 @@ async function getFamilyHeadUserIdForFamilyId(databaseConnection, familyId) {
 }
 
 /**
- * If the query is successful, returns the familyId for the userId.
- *  If a problem is encountered, creates and throws custom error
+ * @param {*} databaseConnection
+ * @param {*} userId the userId of a family member of some family
+ * @returns familyId of the user's family or null
+ * @throws If an error is encountered
  */
 async function getFamilyIdForUserId(databaseConnection, userId) {
   if (areAllDefined(databaseConnection, userId) === false) {
@@ -170,5 +194,5 @@ async function getFamilyIdForUserId(databaseConnection, userId) {
 }
 
 module.exports = {
-  getAllFamilyInformationForFamilyId, getAllFamilyMembersForFamilyId, getFamilyMemberUserIdForUserId, getFamilyHeadUserIdForFamilyId, getFamilyIdForUserId,
+  getAllFamilyInformationForFamilyId, getAllFamilyMembersForFamilyId, isUserIdInFamily, getFamilyHeadUserIdForFamilyId, getFamilyIdForUserId,
 };

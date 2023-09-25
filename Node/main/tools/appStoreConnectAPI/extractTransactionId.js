@@ -7,8 +7,7 @@ const IN_APP_TYPE_ID = 17;
 const TRANSACTION_IDENTIFIER_TYPE_ID = 1703;
 const ORIGINAL_TRANSACTION_IDENTIFIER_TYPE_ID = 1705;
 
-// TODO NOW verify that this extracts the transactionId we are looking for
-// TODO NOW once we extract the transactionId, invoke getTransactions to get all of the transactions associated with the id. This will query repeadly if hasMore is present.
+// TODO NOW TEST that this extracts the transactionId we are looking for
 /**
      * Extracts a transaction id from an encoded App Receipt. Throws if the receipt does not match the expected format.
      * *NO validation* is performed on the receipt, and any data returned should only be used to call the App Store Server API.

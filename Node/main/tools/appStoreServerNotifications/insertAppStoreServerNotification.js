@@ -13,9 +13,12 @@ const { ValidationError } = require('../general/errors');
  * @param {*} data
  * @param {*} renewalInfo
  * @param {*} transactionInfo
+ * @returns true if an App Store Server Notification was inserted, false if it already existed and wasn't inserted
  * @throws If data is missing or databaseQuery fails
  */
 async function insertAppStoreServerNotification(databaseConnection, notification, data, renewalInfo, transactionInfo) {
+  console.log('insertAppStoreServerNotification');
+  // TODO NOW TEST this function
   if (areAllDefined(databaseConnection, notification, data, renewalInfo, transactionInfo) === false) {
     throw new ValidationError('databaseConnection, notification, data, renewalInfo, or transactionInfo missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
@@ -116,6 +119,21 @@ async function insertAppStoreServerNotification(databaseConnection, notification
   // The unique identifier of subscription purchase events across devices, including subscription renewals.
   const transactionInfoWebOrderLineItemId = formatNumber(transactionInfo.webOrderLineItemId);
 
+  const [existingAppStoreServerNotification] = await databaseQuery(
+    databaseConnection,
+    `SELECT 1
+    FROM appStoreServerNotifications
+    WHERE notificationUUID = ?
+    LIMIT 1`,
+    [notificationUUID],
+  );
+
+  // If the ASSN already exists, we don't want to try and reinsert it, so we ignore it.
+  if (areAllDefined(existingAppStoreServerNotification) === true) {
+    console.log('already exists', existingAppStoreServerNotification);
+    return false;
+  }
+
   // We attempt to insert the ASSN.
   // If we encounter a duplicate key error, which should only arise if the notificationUUID already exists in the database, we perform a NO-OP update statement to catch and disregard the error.
   await databaseQuery(
@@ -158,6 +176,8 @@ async function insertAppStoreServerNotification(databaseConnection, notification
       transactionInfoTransactionId, transactionInfoType, transactionInfoWebOrderLineItemId,
     ],
   );
+
+  return true;
 }
 
 module.exports = {

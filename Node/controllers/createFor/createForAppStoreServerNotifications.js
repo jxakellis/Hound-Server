@@ -49,8 +49,12 @@ async function createASSNForSignedPayload(databaseConnection, signedPayload) {
 
   requestLogger.debug(`App Store Server Notification ${notificationUUID} of type ${notificationType} with subtype ${subtype} for transaction ${transactionInfo.transactionId}`);
 
-  // TODO NOW if ASSN already exists, then we end our logic here, if it didn't then that means we got new info and we continue
-  await insertAppStoreServerNotification(databaseConnection, notification, data, renewalInfo, transactionInfo);
+  const didInsertAppStoreServerNotification = await insertAppStoreServerNotification(databaseConnection, notification, data, renewalInfo, transactionInfo);
+
+  // If the ASSN already existed in our database, then the function returns false. This means the ASSN has already been processed and we shouldn't attempt to process it again.
+  if (didInsertAppStoreServerNotification === false) {
+    return;
+  }
 
   // Check if the notification type indicates we need to create or update an entry for transactions table
   if (notificationType === 'CONSUMPTION_REQUEST'
@@ -86,7 +90,6 @@ async function createASSNForSignedPayload(databaseConnection, signedPayload) {
     return;
   }
 
-  // TODO NOW revise use of functions below. their logic was changed and parameters were reordered etc
   const familyId = await getFamilyIdForUserId(databaseConnection, userId);
 
   // Check if a new transaction was created, warrenting an insert into the transactions table

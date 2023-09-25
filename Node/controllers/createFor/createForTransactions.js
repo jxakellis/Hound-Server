@@ -11,7 +11,6 @@ const { getFamilyHeadUserIdForFamilyId } = require('../getFor/getForFamily');
 
 // TODO FUTURE migrate from expirationDate to expiresDate
 
-// TODO NOW TEST this code
 /**
  * 1. Formats the parameters provided
  * 2. Validates the parameters
@@ -54,6 +53,8 @@ async function createTransactionForTransactionInfo(
   forTransactionReason,
   forWebOrderLineItemId,
 ) {
+  console.log('createTransactionForTransactionInfo');
+  // TODO NOW TEST this function
   // TODO NOW TEST that the offer code is recieve from both server and reciept
   console.log(`createTransactionForTransactionInfo did recieve ${forOfferIdentifier}`);
   // userId
@@ -187,7 +188,8 @@ async function createTransactionForTransactionInfo(
 }
 
 async function createTransactionForAppStoreReceiptURL(databaseConnection, userId, familyId, appStoreReceiptURL) {
-  // TODO NOW TEST this works
+  console.log('createTransactionForAppStoreReceiptURL');
+  // TODO NOW TEST this function
   if (areAllDefined(databaseConnection, userId, familyId, appStoreReceiptURL) === false) {
     throw new ValidationError('databaseConnection, userId, familyId, or appStoreReceiptURL missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
@@ -206,6 +208,8 @@ async function createTransactionForAppStoreReceiptURL(databaseConnection, userId
 
   // First, we find the corresponding transaction to our original transactionId
   const targetTransaction = transactions.find((transaction) => formatNumber(transaction.transactionId) === transactionId);
+
+  console.log('targetTransaction', targetTransaction);
 
   // The create transaction for our target transaction must succeed.
   await createTransactionForTransactionInfo(
@@ -230,6 +234,8 @@ async function createTransactionForAppStoreReceiptURL(databaseConnection, userId
   // The create transaction for our other transactions should hopefully succeed but can fail
   // Filter out the target transaction from the transactions array
   const nonTargetTransactions = transactions.filter((transaction) => formatNumber(transaction.transactionId) !== transactionId);
+
+  console.log('nonTargetTransactions', nonTargetTransactions);
 
   // Create an array of Promises
   const transactionPromises = nonTargetTransactions.map((transaction) => createTransactionForTransactionInfo(
