@@ -76,6 +76,7 @@ async function createTransactionForTransactionInfo(
   // isUpgraded; A Boolean value that indicates whether the user upgraded to another subscription.
   // The identifier that contains the offer code or the promotional offer identifier.
   const offerIdentifier = formatString(forOfferIdentifier, 64);
+  // TODO FUTURE go thru ASSN with a sql query and find past offerTypes to add to new column offerType in transactions
   // A value that represents the promotional offer type. The offer types 2 and 3 have an offerIdentifier.
   const offerType = formatNumber(forOfferType);
   // originalPurchaseDate; The UNIX time, in milliseconds, that represents the purchase date of the original transaction identifier.
