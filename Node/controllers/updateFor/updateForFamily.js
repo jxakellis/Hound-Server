@@ -80,7 +80,7 @@ async function addFamilyMember(databaseConnection, userId, forFamilyCode) {
   }
 
   // Don't use .familyActiveSubscription property: the property wasn't assigned to the request due to the user not being in a family (only assigned with familyId is path param)
-  const familyActiveSubscription = await getActiveTransaction(databaseConnection, familyId);
+  const familyActiveSubscription = await getActiveTransaction(databaseConnection, userId);
   const familyMembers = await getAllFamilyMembersForFamilyId(databaseConnection, familyId);
 
   // the family is either at the limit of family members is exceeds the limit, therefore no new users can join
@@ -105,8 +105,8 @@ async function addFamilyMember(databaseConnection, userId, forFamilyCode) {
     await databaseQuery(
       databaseConnection,
       `INSERT INTO affiliateTransactions
-      (userId, familyId, transactionId, offerIdentifier)
-      SELECT userId, familyId, transactionId, offerIdentifier
+      (userId, transactionId, offerIdentifier)
+      SELECT userId, transactionId, offerIdentifier
       FROM transactions t
       WHERE transactionId = ?
       LIMIT 1`,

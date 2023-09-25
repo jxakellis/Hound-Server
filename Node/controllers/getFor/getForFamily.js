@@ -142,18 +142,23 @@ async function isUserIdInFamily(databaseConnection, userId) {
  * @returns userId of family's head or null
  * @throws If an error is encountered
  */
-async function getFamilyHeadUserIdForFamilyId(databaseConnection, familyId) {
-  if (areAllDefined(databaseConnection, familyId) === false) {
-    throw new ValidationError('databaseConnection or familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
+async function getFamilyHeadUserId(databaseConnection, userId) {
+  if (areAllDefined(databaseConnection, userId) === false) {
+    throw new ValidationError('databaseConnection or userId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   const [result] = await databaseQuery(
     databaseConnection,
-    `SELECT userId
-    FROM families f
-    WHERE familyId = ?
+    `WITH targetFamilyMember AS (
+      SELECT familyId
+      FROM familyMembers
+      WHERE userId = ?
+    )
+    SELECT f.userId
+    FROM targetFamilyMember tfm 
+    JOIN families f ON tfm.familyId = f.familyId
     LIMIT 1`,
-    [familyId],
+    [userId],
   );
 
   if (areAllDefined(result) === false) {
@@ -169,7 +174,7 @@ async function getFamilyHeadUserIdForFamilyId(databaseConnection, familyId) {
  * @returns familyId of the user's family or null
  * @throws If an error is encountered
  */
-async function getFamilyIdForUserId(databaseConnection, userId) {
+async function getFamilyId(databaseConnection, userId) {
   if (areAllDefined(databaseConnection, userId) === false) {
     throw new ValidationError('databaseConnection or userId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
@@ -194,5 +199,5 @@ async function getFamilyIdForUserId(databaseConnection, userId) {
 }
 
 module.exports = {
-  getAllFamilyInformationForFamilyId, getAllFamilyMembersForFamilyId, isUserIdInFamily, getFamilyHeadUserIdForFamilyId, getFamilyIdForUserId,
+  getAllFamilyInformationForFamilyId, getAllFamilyMembersForFamilyId, isUserIdInFamily, getFamilyHeadUserId, getFamilyId,
 };

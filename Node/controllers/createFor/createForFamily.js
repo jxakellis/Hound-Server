@@ -6,8 +6,6 @@ const { areAllDefined } = require('../../main/tools/validate/validateDefined');
 
 const { isUserIdInFamily } = require('../getFor/getForFamily');
 
-const { reassignActiveSubscriptionsToNewFamilyForUserIdFamilyId } = require('../updateFor/updateForTransactions');
-
 /**
  *  Queries the database to create a family. If the query is successful, then returns the familyId.
  *  If a problem is encountered, creates and throws custom error
@@ -52,8 +50,6 @@ async function createFamilyForUserId(databaseConnection, userId) {
   ];
 
   await Promise.all(promises);
-
-  await reassignActiveSubscriptionsToNewFamilyForUserIdFamilyId(databaseConnection, userId, familyId);
 
   return familyId;
 }

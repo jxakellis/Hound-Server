@@ -3,17 +3,21 @@ const { formatBoolean } = require('../../main/tools/format/formatObject');
 const { areAllDefined } = require('../../main/tools/validate/validateDefined');
 const { ValidationError } = require('../../main/tools/general/errors');
 
-// Omitted columns: originalTransactionId, userId, familyId, subscriptionGroupIdentifier, quantity, webOrderLineItemId, inAppOwnershipType
+const { getFamilyHeadUserId } = require('./getForFamily');
+
+// Omitted columns: originalTransactionId, userId, subscriptionGroupIdentifier, quantity, webOrderLineItemId, inAppOwnershipType
 const transactionsColumns = 'transactionId, productId, purchaseDate, expirationDate, numberOfFamilyMembers, numberOfDogs, isAutoRenewing, autoRenewProductId, isRevoked, offerIdentifier';
 
 /**
- *  If the query is successful, returns the most recent subscription for the familyId (if no most recent subscription, fills in default subscription details).
+ *  If the query is successful, returns the most recent subscription for the userId's family (if no most recent subscription, fills in default subscription details).
  *  If a problem is encountered, creates and throws custom error
  */
-async function getActiveTransaction(databaseConnection, familyId) {
-  if (areAllDefined(databaseConnection, familyId) === false) {
-    throw new ValidationError('databaseConnection or familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
+async function getActiveTransaction(databaseConnection, familyMemberUserId) {
+  if (areAllDefined(databaseConnection, familyMemberUserId) === false) {
+    throw new ValidationError('databaseConnection or familyMemberUserId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
+
+  const familyHeadUserId = await getFamilyHeadUserId(databaseConnection, familyMemberUserId);
 
   // find the family's most recent subscription
   let [familySubscription] = await databaseQuery(
@@ -36,14 +40,14 @@ async function getActiveTransaction(databaseConnection, familyId) {
                 ELSE 0
             END AS productIdCorrespondingRank
         FROM transactions t
-        WHERE isRevoked = 0 AND (TIMESTAMPDIFF(MICROSECOND, CURRENT_TIMESTAMP(), expirationDate) >= 0) AND familyId = ?
+        WHERE isRevoked = 0 AND (TIMESTAMPDIFF(MICROSECOND, CURRENT_TIMESTAMP(), expirationDate) >= 0) AND userId = ?
     )
     SELECT ${transactionsColumns}
     FROM mostRecentlyPurchasedForEachProductId AS mrp
     WHERE mrp.rowNumberByProductId = 1
     ORDER BY mrp.productIdCorrespondingRank DESC
     LIMIT 1`,
-    [familyId],
+    [familyHeadUserId],
   );
 
   // since we found no family subscription, assign the family to the default subscription
@@ -63,25 +67,26 @@ async function getActiveTransaction(databaseConnection, familyId) {
  *  If the query is successful, returns the subscription history and active subscription for the familyId.
  *  If a problem is encountered, creates and throws custom error
  */
-async function getAllTransactions(databaseConnection, familyId) {
-  // validate that a familyId was passed, assume that its in the correct format
-  if (areAllDefined(databaseConnection, familyId) === false) {
-    throw new ValidationError('databaseConnection or familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
+async function getAllTransactions(databaseConnection, familyMemberUserId) {
+  if (areAllDefined(databaseConnection, familyMemberUserId) === false) {
+    throw new ValidationError('databaseConnection or familyMemberUserId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
+
+  const familyHeadUserId = await getFamilyHeadUserId(databaseConnection, familyMemberUserId);
 
   // find all of the family's subscriptions
   const transactionsHistory = await databaseQuery(
     databaseConnection,
     `SELECT ${transactionsColumns}
     FROM transactions t
-    WHERE familyId = ?
+    WHERE userId = ?
     ORDER BY purchaseDate DESC, expirationDate DESC
     LIMIT 18446744073709551615`,
-    [familyId],
+    [familyHeadUserId],
   );
 
   // Don't use .familyActiveSubscription property: Want to make sure this function always returns the most updated/accurate information
-  const familyActiveSubscription = await getActiveTransaction(databaseConnection, familyId);
+  const familyActiveSubscription = await getActiveTransaction(databaseConnection, familyMemberUserId);
 
   for (let i = 0; i < transactionsHistory.length; i += 1) {
     const subscription = transactionsHistory[i];

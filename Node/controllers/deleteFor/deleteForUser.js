@@ -2,7 +2,7 @@ const { ValidationError } = require('../../main/tools/general/errors');
 const { databaseQuery } = require('../../main/tools/database/databaseQuery');
 const { areAllDefined } = require('../../main/tools/validate/validateDefined');
 
-const { getFamilyIdForUserId } = require('../getFor/getForFamily');
+const { getFamilyId } = require('../getFor/getForFamily');
 
 const { getActiveTransaction } = require('../getFor/getForTransactions');
 const { deleteFamilyLeaveFamilyForUserIdFamilyId } = require('./deleteForFamily');
@@ -19,12 +19,12 @@ async function deleteUserForUserId(databaseConnection, userId) {
 
   // Deleting the user from our database is a multi-step process. We need to delete the user from the family first, then delete the user from the database
   // Otherwise, the family function will malfunction because the user is missing from users
-  const familyId = await getFamilyIdForUserId(databaseConnection, userId);
+  const familyId = await getFamilyId(databaseConnection, userId);
 
   // The user is in a family, either attempt to delete the family or have the user leave the family
   if (areAllDefined(familyId) === true) {
     // Since the path for delete user doesn't have familyId attached (as it predicates the family path), no active subscription is attached
-    const familyActiveSubscription = await getActiveTransaction(databaseConnection, familyId);
+    const familyActiveSubscription = await getActiveTransaction(databaseConnection, userId);
 
     // This step is reversible but sends a non-reversible notification at the end, so we save it for the very end so the notif is only sent if everything else is successful
     await deleteFamilyLeaveFamilyForUserIdFamilyId(databaseConnection, userId, familyId, familyActiveSubscription);

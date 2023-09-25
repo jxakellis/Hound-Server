@@ -10,14 +10,14 @@ const { getAllFamilyMembersForFamilyId } = require('../../../controllers/getFor/
  */
 async function attachActiveSubscription(req, res, next) {
   try {
-    const { familyId } = req.params;
+    const { userId } = req.params;
 
-    // validate that a familyId was passed, assume that its in the correct format
-    if (areAllDefined(familyId) === false) {
-      throw new ValidationError('familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
+    // validate that a userId was passed, assume that its in the correct format
+    if (areAllDefined(userId) === false) {
+      throw new ValidationError('userId missing', global.CONSTANT.ERROR.VALUE.MISSING);
     }
 
-    const familyActiveSubscription = await getActiveTransaction(req.databaseConnection, familyId);
+    const familyActiveSubscription = await getActiveTransaction(req.databaseConnection, userId);
 
     req.familyActiveSubscription = familyActiveSubscription;
 

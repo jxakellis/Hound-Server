@@ -9,7 +9,7 @@ const { validateSignedPayload } = require('../../main/tools/appStoreConnectAPI/v
 const { insertAppStoreServerNotification } = require('../../main/tools/appStoreServerNotifications/insertAppStoreServerNotification');
 
 const { getTransactionOwner } = require('../getFor/getForTransactions');
-const { getFamilyIdForUserId } = require('../getFor/getForFamily');
+const { getFamilyId } = require('../getFor/getForFamily');
 
 const { createTransactionForTransactionInfo } = require('./createForTransactions');
 
@@ -90,7 +90,7 @@ async function createASSNForSignedPayload(databaseConnection, signedPayload) {
     return;
   }
 
-  const familyId = await getFamilyIdForUserId(databaseConnection, userId);
+  const familyId = await getFamilyId(databaseConnection, userId);
 
   // Check if a new transaction was created, warrenting an insert into the transactions table
   if (notificationType === 'DID_RENEW' || notificationType === 'OFFER_REDEEMED' || notificationType === 'SUBSCRIBED') {
@@ -101,7 +101,6 @@ async function createASSNForSignedPayload(databaseConnection, signedPayload) {
     await createTransactionForTransactionInfo(
       databaseConnection,
       userId,
-      familyId,
       transactionInfo.environment,
       transactionInfo.expiresDate,
       transactionInfo.inAppOwnershipType,

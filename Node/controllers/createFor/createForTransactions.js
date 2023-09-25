@@ -7,7 +7,7 @@ const { ValidationError } = require('../../main/tools/general/errors');
 
 const { extractTransactionIdFromAppStoreReceiptURL } = require('../../main/tools/appStoreConnectAPI/extractTransactionId');
 const { queryTransactionsFromAppStoreServerAPI } = require('../../main/tools/appStoreConnectAPI/queryTransactions');
-const { getFamilyHeadUserIdForFamilyId } = require('../getFor/getForFamily');
+const { getFamilyHeadUserId } = require('../getFor/getForFamily');
 
 // TODO FUTURE migrate from expirationDate to expiresDate
 
@@ -20,7 +20,6 @@ const { getFamilyHeadUserIdForFamilyId } = require('../getFor/getForFamily');
  * 4c. Transaction unsuccessfully inserted due to non-duplicate key error, throws error
  * @param {*} databaseConnection
  * @param {*} userId
- * @param {*} familyId
  * @param {*} forEnvironment
  * @param {*} forExpiresDate
  * @param {*} forInAppOwnershipType
@@ -38,7 +37,6 @@ const { getFamilyHeadUserIdForFamilyId } = require('../getFor/getForFamily');
 async function createTransactionForTransactionInfo(
   databaseConnection,
   userId,
-  familyId,
   forEnvironment,
   forExpiresDate,
   forInAppOwnershipType,
@@ -58,7 +56,6 @@ async function createTransactionForTransactionInfo(
   // TODO NOW TEST that the offer code is recieve from both server and reciept
   console.log(`createTransactionForTransactionInfo did recieve ${forOfferIdentifier}`);
   // userId
-  // familyId
 
   // https://developer.apple.com/documentation/appstoreservernotifications/jwstransactiondecodedpayload
   // appAccountToken; A UUID that associates the transaction with a user on your own service. If your app doesn’t provide an appAccountToken, this string is empty. For more information, see appAccountToken(_:).
@@ -106,7 +103,6 @@ async function createTransactionForTransactionInfo(
   if (areAllDefined(
     databaseConnection,
     userId,
-    familyId,
     autoRenewProductId,
     environment,
     expiresDate,
@@ -122,7 +118,7 @@ async function createTransactionForTransactionInfo(
     transactionReason,
     webOrderLineItemId,
   ) === false) {
-    throw new ValidationError(`databaseConnection, userId, familyId, 
+    throw new ValidationError(`databaseConnection, userId, 
     autoRenewProductId, environment, expiresDate, inAppOwnershipType, originalTransactionId, 
     productId, purchaseDate, quantity, subscriptionGroupIdentifier, 
     transactionId, transactionReason, or webOrderLineItemId is missing`, global.CONSTANT.ERROR.VALUE.MISSING);
@@ -148,7 +144,7 @@ async function createTransactionForTransactionInfo(
     throw new ValidationError('numberOfFamilyMembers or numberOfDogs missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
-  const familyHeadUserId = await getFamilyHeadUserIdForFamilyId(databaseConnection, familyId);
+  const familyHeadUserId = await getFamilyHeadUserId(databaseConnection, userId);
 
   if (familyHeadUserId !== userId) {
     throw new ValidationError('You are not the family head. Only the family head can modify the family subscription', global.CONSTANT.ERROR.PERMISSION.INVALID.FAMILY);
@@ -160,7 +156,7 @@ async function createTransactionForTransactionInfo(
     databaseConnection,
     `INSERT INTO transactions
     (
-      userId, familyId,
+      userId,
       numberOfFamilyMembers, numberOfDogs,
       autoRenewProductId, environment, expirationDate, inAppOwnershipType,
       offerIdentifier, offerType, originalTransactionId, productId,
@@ -169,7 +165,7 @@ async function createTransactionForTransactionInfo(
     )
     VALUES
     (
-      ?, ?,
+      ?,
       ?, ?,
       ?, ?, ?, ?,
       ?, ?, ?, ?, 
@@ -178,7 +174,7 @@ async function createTransactionForTransactionInfo(
     )
     ON DUPLICATE KEY UPDATE transactionId=transactionId`,
     [
-      userId, familyId,
+      userId,
       numberOfFamilyMembers, numberOfDogs,
       autoRenewProductId, environment, expiresDate, inAppOwnershipType,
       offerIdentifier, offerType, originalTransactionId, productId,
@@ -188,11 +184,11 @@ async function createTransactionForTransactionInfo(
   );
 }
 
-async function createTransactionForAppStoreReceiptURL(databaseConnection, userId, familyId, appStoreReceiptURL) {
+async function createTransactionForAppStoreReceiptURL(databaseConnection, userId, appStoreReceiptURL) {
   console.log('createTransactionForAppStoreReceiptURL');
   // TODO NOW TEST this function
-  if (areAllDefined(databaseConnection, userId, familyId, appStoreReceiptURL) === false) {
-    throw new ValidationError('databaseConnection, userId, familyId, or appStoreReceiptURL missing', global.CONSTANT.ERROR.VALUE.MISSING);
+  if (areAllDefined(databaseConnection, userId, appStoreReceiptURL) === false) {
+    throw new ValidationError('databaseConnection, userId, or appStoreReceiptURL missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   const transactionId = formatNumber(extractTransactionIdFromAppStoreReceiptURL(appStoreReceiptURL));
@@ -216,7 +212,6 @@ async function createTransactionForAppStoreReceiptURL(databaseConnection, userId
   await createTransactionForTransactionInfo(
     databaseConnection,
     userId,
-    familyId,
     targetTransaction.environment,
     targetTransaction.expiresDate,
     targetTransaction.inAppOwnershipType,
@@ -242,7 +237,6 @@ async function createTransactionForAppStoreReceiptURL(databaseConnection, userId
   const transactionPromises = nonTargetTransactions.map((transaction) => createTransactionForTransactionInfo(
     databaseConnection,
     userId,
-    familyId,
     transaction.environment,
     transaction.expiresDate,
     transaction.inAppOwnershipType,

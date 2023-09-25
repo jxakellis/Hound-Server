@@ -3,7 +3,7 @@ const { databaseQuery } = require('../../main/tools/database/databaseQuery');
 const { formatSHA256Hash } = require('../../main/tools/format/formatObject');
 const { areAllDefined } = require('../../main/tools/validate/validateDefined');
 
-const { getFamilyHeadUserIdForFamilyId } = require('../getFor/getForFamily');
+const { getFamilyHeadUserId } = require('../getFor/getForFamily');
 
 const { createFamilyMemberLeaveNotification } = require('../../main/tools/notifications/alert/createFamilyNotification');
 const { createUserKickedNotification } = require('../../main/tools/notifications/alert/createUserKickedNotification');
@@ -18,7 +18,7 @@ async function deleteFamilyLeaveFamilyForUserIdFamilyId(databaseConnection, user
     throw new ValidationError('databaseConnection, userId, or familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
-  const familyHeadUserId = await getFamilyHeadUserIdForFamilyId(databaseConnection, familyId);
+  const familyHeadUserId = await getFamilyHeadUserId(databaseConnection, userId);
 
   if (familyHeadUserId === userId) {
     await deleteFamily(databaseConnection, familyId, familyActiveSubscription);
@@ -173,7 +173,7 @@ async function kickFamilyMemberForUserIdFamilyId(databaseConnection, userId, fam
   if (userId === kickedUserId) {
     throw new ValidationError("You can't kick yourself from your own family", global.CONSTANT.ERROR.VALUE.INVALID);
   }
-  const familyHeadUserId = await getFamilyHeadUserIdForFamilyId(databaseConnection, familyId);
+  const familyHeadUserId = await getFamilyHeadUserId(databaseConnection, userId);
 
   // check to see if the user is the family head, as only the family head has permissions to kick
   if (familyHeadUserId !== userId) {

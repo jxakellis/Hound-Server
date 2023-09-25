@@ -4,8 +4,8 @@ const { createTransactionForAppStoreReceiptURL } = require('../createFor/createF
 
 async function getTransactions(req, res) {
   try {
-    const { familyId } = req.params;
-    const result = await getAllTransactions(req.databaseConnection, familyId);
+    const { userId } = req.params;
+    const result = await getAllTransactions(req.databaseConnection, userId);
 
     return res.sendResponseForStatusBodyError(200, result, null);
   }
@@ -22,7 +22,7 @@ async function createTransactions(req, res) {
     await createTransactionForAppStoreReceiptURL(req.databaseConnection, userId, familyId, appStoreReceiptURL);
 
     // After we have updated the stored transactions, we want to return the new active subscription to the user.
-    const result = await getActiveTransaction(req.databaseConnection, familyId);
+    const result = await getActiveTransaction(req.databaseConnection, userId);
 
     return res.sendResponseForStatusBodyError(200, result, null);
   }
