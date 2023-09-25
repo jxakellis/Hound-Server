@@ -10,6 +10,7 @@ const { queryTransactionsFromAppStoreServerAPI } = require('../../main/tools/app
 const { getFamilyHeadUserId } = require('../getFor/getForFamily');
 
 // TODO FUTURE migrate from expirationDate to expiresDate
+// TODO NOW investigate manually updating isAutoRenewing. if a user downgrades a subscription, then we still display the wrong renewal info for about 10 seconds until the ASSN comes thru. see if we can manually update these values by performing some operations
 
 /**
  * 1. Formats the parameters provided
