@@ -32,12 +32,15 @@ async function queryTransactionsFromAppStoreServerAPIWithPreviousResponse(transa
 
   // Query Apple's servers to attempt to get the transaction history linked to a transactionId from an AppStoreReceiptURL
   let response;
-  try {
-    response = await api.getTransactionHistory(transactionId, {
+  const queryProperties = areAllDefined(previousResponse)
+    ? {
       sort: SortParameter.Descending,
       // must be undefined, not null
-      revision: areAllDefined(previousResponse) ? previousResponse.revision : undefined,
-    });
+      revision: previousResponse.revision,
+    }
+    : { sort: SortParameter.Descending };
+  try {
+    response = await api.getTransactionHistory(transactionId, queryProperties);
   }
   catch (error) {
     console.log('getTransactionHistory error', error);
