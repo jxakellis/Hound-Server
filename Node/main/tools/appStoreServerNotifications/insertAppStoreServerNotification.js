@@ -77,6 +77,7 @@ async function insertAppStoreServerNotification(databaseConnection, notification
   // The UNIX time, in milliseconds, that the App Store signed the JSON Web Signature data.
   const renewalInfoSignedDate = formatDate(formatNumber(renewalInfo.signedDate));
 
+  console.log('transactionInfo.appAccountToken', transactionInfo.appAccountToken);
   // https://developer.apple.com/documentation/appstoreservernotifications/jwstransactiondecodedpayload
   // A UUID that associates the transaction with a user on your own service. If your app doesn’t provide an appAccountToken, this string is empty. For more information, see appAccountToken(_:).
   const transactionInfoAppAccountToken = formatString(transactionInfo.appAccountToken, 36);
