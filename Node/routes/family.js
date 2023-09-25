@@ -27,6 +27,7 @@ familyRouter.use('/:familyId/dogs', dogsRouter);
 const { transactionsRouter } = require('./transactions');
 
 familyRouter.use('/:familyId/subscriptions', transactionsRouter);
+familyRouter.use('/:familyId/transactions', transactionsRouter);
 
 // gets family with familyId then return information from families and familyMembers table
 familyRouter.get('/:familyId', getFamily);
