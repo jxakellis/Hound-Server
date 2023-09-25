@@ -35,7 +35,8 @@ async function queryTransactionsFromAppStoreServerAPIWithPreviousResponse(transa
   try {
     response = await api.getTransactionHistory(transactionId, {
       sort: SortParameter.Descending,
-      revision: areAllDefined(previousResponse) ? previousResponse.revision : null,
+      // must be undefined, not null
+      revision: areAllDefined(previousResponse) ? previousResponse.revision : undefined,
     });
   }
   catch (error) {
