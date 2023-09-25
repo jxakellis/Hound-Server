@@ -5,7 +5,8 @@ const { hash } = require('../../main/tools/format/hash');
 
 const { updateUserForUserIdentifierHashedUserIdentifier } = require('../updateFor/updateForUser');
 
-const userColumns = 'u.userId, u.userAppAccountToken, u.userAppAccountToken AS applicationUsename, u.userNotificationToken, u.userFirstName, u.userLastName, u.userEmail';
+// TODO FUTURE when users have migrated, remove userApplicationUsername
+const userColumns = 'u.userId, u.userAppAccountToken, u.userAppAccountToken AS userApplicationUsername, u.userNotificationToken, u.userFirstName, u.userLastName, u.userEmail';
 const userConfigurationColumns = `uc.userConfigurationIsNotificationEnabled, uc.userConfigurationIsLoudNotificationEnabled, 
 uc.userConfigurationIsLogNotificationEnabled, uc.userConfigurationIsReminderNotificationEnabled, uc.userConfigurationSnoozeLength, 
 uc.userConfigurationNotificationSound, uc.userConfigurationLogsInterfaceScale, uc.userConfigurationRemindersInterfaceScale, 
