@@ -19,7 +19,7 @@ function extractTransactionIdFromAppStoreReceiptURL(appStoreReceiptURL) {
   // Decoding the receipt from base64 to a hex string.
   const receiptInfo = ASN1HEX.getVbyList(Buffer.from(appStoreReceiptURL, 'base64').toString('hex'), 0, [1, 0, 2, 1, 0]);
 
-  console.log('2');
+  console.log('2', receiptInfo);
   let index = 0;
   // Looping through receipt sections using their structure.
   while (ASN1HEX.getVbyList(receiptInfo, 0, [index, 0])) {
