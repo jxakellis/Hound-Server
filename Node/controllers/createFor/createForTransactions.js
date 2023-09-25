@@ -191,7 +191,12 @@ async function createTransactionForAppStoreReceiptURL(databaseConnection, userId
     throw new ValidationError('databaseConnection, userId, or appStoreReceiptURL missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
+  console.log('appStoreReceiptURL', appStoreReceiptURL);
+  console.log('extractTransactionIdFromAppStoreReceiptURL', extractTransactionIdFromAppStoreReceiptURL(appStoreReceiptURL));
+
   const transactionId = formatNumber(extractTransactionIdFromAppStoreReceiptURL(appStoreReceiptURL));
+
+  console.log('transactionId', transactionId);
 
   if (areAllDefined(transactionId) === false) {
     throw new ValidationError('transactionId couldn\'t be constructed with extractTransactionIdFromAppStoreReceiptURL', global.CONSTANT.ERROR.VALUE.INVALID);
@@ -199,7 +204,9 @@ async function createTransactionForAppStoreReceiptURL(databaseConnection, userId
 
   const transactions = await queryTransactionsFromAppStoreServerAPI(transactionId);
 
-  if (areAllDefined(transactionId) === false) {
+  console.log('transactions', transactions);
+
+  if (areAllDefined(transactions) === false) {
     throw new ValidationError('transactions couldn\'t be queried with queryTransactionsFromAppStoreServerAPI', global.CONSTANT.ERROR.VALUE.INVALID);
   }
 
