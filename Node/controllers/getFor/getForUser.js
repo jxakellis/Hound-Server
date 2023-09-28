@@ -5,7 +5,7 @@ const { hash } = require('../../main/tools/format/hash');
 
 const { updateUserForUserIdentifierHashedUserIdentifier } = require('../updateFor/updateForUser');
 
-// TODO FUTURE when users have migrated, remove userApplicationUsername
+// TODO FUTURE depreciate userApplicationUsername (last used in 3.0.0)
 const userColumns = 'u.userId, u.userAppAccountToken, u.userAppAccountToken AS userApplicationUsername, u.userNotificationToken, u.userFirstName, u.userLastName, u.userEmail';
 const userConfigurationColumns = `uc.userConfigurationIsNotificationEnabled, uc.userConfigurationIsLoudNotificationEnabled, 
 uc.userConfigurationIsLogNotificationEnabled, uc.userConfigurationIsReminderNotificationEnabled, uc.userConfigurationSnoozeLength, 

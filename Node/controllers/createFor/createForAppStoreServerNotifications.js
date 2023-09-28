@@ -102,6 +102,8 @@ async function createASSNForSignedPayload(databaseConnection, signedPayload) {
     await createTransactionForTransactionInfo(
       databaseConnection,
       userId,
+      renewalInfo.autoRenewProductId,
+      renewalInfo.autoRenewStatus,
       transactionInfo.environment,
       transactionInfo.expiresDate,
       transactionInfo.inAppOwnershipType,
@@ -112,6 +114,7 @@ async function createASSNForSignedPayload(databaseConnection, signedPayload) {
       transactionInfo.productId,
       transactionInfo.purchaseDate,
       transactionInfo.quantity,
+      transactionInfo.revocationReason,
       transactionInfo.subscriptionGroupIdentifier,
       transactionInfo.transactionReason,
       transactionInfo.webOrderLineItemId,

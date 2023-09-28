@@ -1,6 +1,6 @@
 const { databaseQuery } = require('../../main/tools/database/databaseQuery');
 const {
-  formatBoolean, formatString,
+  formatBoolean, formatString, formatNumber,
 } = require('../../main/tools/format/formatObject');
 const { areAllDefined, atLeastOneDefined } = require('../../main/tools/validate/validateDefined');
 const { ValidationError } = require('../../main/tools/general/errors');
@@ -34,7 +34,7 @@ async function disableOldTransactionsAutoRenewStatus(databaseConnection, userId)
     JOIN (
       SELECT transactionId, autoRenewProductId, autoRenewStatus
       FROM transactions
-      WHERE isRevoked = 0 AND userId = ?
+      WHERE revocationReason IS NULL AND userId = ?
       ORDER BY purchaseDate DESC
       LIMIT 1
     ) mrt
@@ -94,11 +94,11 @@ async function updateSubscriptionRevocation(databaseConnection, userId, transact
   }
 
   // If revocation reason is defined, then that means the transaction was revoked
-  // Otherwise, if revocationReason is null then leave isRevoked as null so it doesn't overwrite the pre existing isRevoked
-  const isRevoked = areAllDefined(forRevocationReason) ? true : null;
+  // Otherwise, if revocationReason is null then leave revocationReason as null so it doesn't overwrite the pre existing revocationReason
+  const revocationReason = formatNumber(forRevocationReason);
 
-  if (areAllDefined(isRevoked) === false) {
-    throw new ValidationError('isRevoked missing', global.CONSTANT.ERROR.VALUE.MISSING);
+  if (areAllDefined(revocationReason) === false) {
+    throw new ValidationError('revocationReason missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   const familyHeadUserId = await getFamilyHeadUserId(databaseConnection, userId);
@@ -111,16 +111,16 @@ async function updateSubscriptionRevocation(databaseConnection, userId, transact
   Once a transaction is performed, certain values shouldn't be changed
   MUTABLE autoRenewStatus
   MUTABLE autoRenewProductId
-  MUTABLE isRevoked
+  MUTABLE revocationReason
   IMMUTABLE other
   */
 
   await databaseQuery(
     databaseConnection,
     `UPDATE transactions
-    SET isRevoked = ?
+    SET revocationReason = ?
     WHERE transactionId = ?`,
-    [isRevoked, transactionId],
+    [revocationReason, transactionId],
   );
 }
 

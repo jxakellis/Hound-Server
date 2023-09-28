@@ -10,6 +10,8 @@ const { querySubscriptionStatusesFromAppStoreAPI } = require('../../main/tools/a
 const { getFamilyHeadUserId } = require('../getFor/getForFamily');
 const { disableOldTransactionsAutoRenewStatus } = require('../updateFor/updateForTransactions');
 
+// TODO FUTURE depreciate numberOfDogs (last used 3.0.0)
+
 /**
  * 1. Formats the parameters provided
  * 2. Validates the parameters
@@ -38,7 +40,6 @@ async function createTransactionForTransactionInfo(
   userId,
   forAutoRenewProductId,
   forAutoRenewStatus,
-
   forEnvironment,
   forExpiresDate,
   forInAppOwnershipType,
@@ -54,7 +55,7 @@ async function createTransactionForTransactionInfo(
   forTransactionReason,
   forWebOrderLineItemId,
 ) {
-  // TODO NOW accept autoRenewStatus, autoRenewalStatus, and isrevoked since we have the data from both assn and get subscription statuses
+  // TODO NOW TEST function w new parameters
   // userId
 
   // https://developer.apple.com/documentation/appstoreservernotifications/jwstransactiondecodedpayload
@@ -70,12 +71,9 @@ async function createTransactionForTransactionInfo(
   const expiresDate = formatDate(formatNumber(forExpiresDate));
   // A string that describes whether the transaction was purchased by the user, or is available to them through Family Sharing.
   const inAppOwnershipType = formatString(forInAppOwnershipType, 13);
-  // If revocationReason is defined, it's the reason that the App Store refunded the transaction or revoked it from Family Sharing.
-  const isRevoked = areAllDefined(forRevocationReason) ? true : null;
   // isUpgraded; A Boolean value that indicates whether the user upgraded to another subscription.
   // The identifier that contains the offer code or the promotional offer identifier.
   const offerIdentifier = formatString(forOfferIdentifier, 64);
-  // TODO FUTURE go thru ASSN with a sql query and find past offerTypes to add to new column offerType in transactions
   // A value that represents the promotional offer type. The offer types 2 and 3 have an offerIdentifier.
   const offerType = formatNumber(forOfferType);
   // originalPurchaseDate; The UNIX time, in milliseconds, that represents the purchase date of the original transaction identifier.
@@ -88,7 +86,8 @@ async function createTransactionForTransactionInfo(
   // The number of consumable products the user purchased.
   const quantity = formatNumber(forQuantity);
   // revocationDate; The UNIX time, in milliseconds, that the App Store refunded the transaction or revoked it from Family Sharing.
-  // revocationReason; The reason that the App Store refunded the transaction or revoked it from Family Sharing.
+  // The reason that the App Store refunded the transaction or revoked it from Family Sharing.
+  const revocationReason = formatNumber(forRevocationReason);
   // signedDate; The UNIX time, in milliseconds, that the App Store signed the JSON Web Signature (JWS) data.
   // storefront; The three-letter code that represents the country or region associated with the App Store storefront for the purchase.
   // storefrontId; An Apple-defined value that uniquely identifies the App Store storefront associated with the purchase.
@@ -106,6 +105,7 @@ async function createTransactionForTransactionInfo(
     databaseConnection,
     userId,
     autoRenewProductId,
+    autoRenewStatus,
     environment,
     expiresDate,
     inAppOwnershipType,
@@ -115,13 +115,14 @@ async function createTransactionForTransactionInfo(
     productId,
     purchaseDate,
     quantity,
+    // revocationReason is optionally defined
     subscriptionGroupIdentifier,
     transactionId,
     transactionReason,
     webOrderLineItemId,
   ) === false) {
     throw new ValidationError(`databaseConnection, userId, 
-    autoRenewProductId, environment, expiresDate, inAppOwnershipType, originalTransactionId, 
+    autoRenewProductId, autoRenewStatus, environment, expiresDate, inAppOwnershipType, originalTransactionId, 
     productId, purchaseDate, quantity, subscriptionGroupIdentifier, 
     transactionId, transactionReason, or webOrderLineItemId is missing`, global.CONSTANT.ERROR.VALUE.MISSING);
   }
@@ -160,27 +161,27 @@ async function createTransactionForTransactionInfo(
     (
       userId,
       numberOfFamilyMembers, numberOfDogs,
-      autoRenewProductId, environment, expiresDate, inAppOwnershipType,
+      autoRenewProductId, autoRenewStatus, environment, expiresDate, inAppOwnershipType,
       offerIdentifier, offerType, originalTransactionId, productId,
-      purchaseDate, quantity, subscriptionGroupIdentifier, transactionId,
+      purchaseDate, quantity, revocationReason, subscriptionGroupIdentifier, transactionId,
       transactionReason, webOrderLineItemId
     )
     VALUES
     (
       ?,
       ?, ?,
-      ?, ?, ?, ?,
+      ?, ?, ?, ?, ?,
       ?, ?, ?, ?, 
-      ?, ?, ?, ?,
+      ?, ?, ?, ?, ?,
       ?, ?
     )
     ON DUPLICATE KEY UPDATE transactionId=transactionId`,
     [
       userId,
       numberOfFamilyMembers, numberOfDogs,
-      autoRenewProductId, environment, expiresDate, inAppOwnershipType,
+      autoRenewProductId, autoRenewStatus, environment, expiresDate, inAppOwnershipType,
       offerIdentifier, offerType, originalTransactionId, productId,
-      purchaseDate, quantity, subscriptionGroupIdentifier, transactionId,
+      purchaseDate, quantity, revocationReason, subscriptionGroupIdentifier, transactionId,
       transactionReason, webOrderLineItemId,
     ],
   );
@@ -189,7 +190,7 @@ async function createTransactionForTransactionInfo(
 }
 
 async function createTransactionForAppStoreReceiptURL(databaseConnection, userId, appStoreReceiptURL) {
-  // TODO NOW redo the interior of this function. we only have subscriptions, so instead of looking for transactions w query transactions, query subscriptions. then we have the necessary renewal info to add accurate transactions
+  // TODO NOW TEST function with new interior that only gets subscriptions
   if (areAllDefined(databaseConnection, userId, appStoreReceiptURL) === false) {
     throw new ValidationError('databaseConnection, userId, or appStoreReceiptURL missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
@@ -217,6 +218,8 @@ async function createTransactionForAppStoreReceiptURL(databaseConnection, userId
   await createTransactionForTransactionInfo(
     databaseConnection,
     userId,
+    targetSubscription[0].autoRenewProductId,
+    targetSubscription[0].autoRenewStatus,
     targetSubscription[1].environment,
     targetSubscription[1].expiresDate,
     targetSubscription[1].inAppOwnershipType,
@@ -227,6 +230,7 @@ async function createTransactionForAppStoreReceiptURL(databaseConnection, userId
     targetSubscription[1].productId,
     targetSubscription[1].purchaseDate,
     targetSubscription[1].quantity,
+    targetSubscription[1].revocationReason,
     targetSubscription[1].subscriptionGroupIdentifier,
     targetSubscription[1].transactionReason,
     targetSubscription[1].webOrderLineItemId,
@@ -240,6 +244,8 @@ async function createTransactionForAppStoreReceiptURL(databaseConnection, userId
   const subscriptionPromises = nonTargetSubscriptions.map((nonTargetSubscription) => createTransactionForTransactionInfo(
     databaseConnection,
     userId,
+    nonTargetSubscription[0].autoRenewProductId,
+    nonTargetSubscription[0].autoRenewStatus,
     nonTargetSubscription[1].environment,
     nonTargetSubscription[1].expiresDate,
     nonTargetSubscription[1].inAppOwnershipType,
@@ -250,6 +256,7 @@ async function createTransactionForAppStoreReceiptURL(databaseConnection, userId
     nonTargetSubscription[1].productId,
     nonTargetSubscription[1].purchaseDate,
     nonTargetSubscription[1].quantity,
+    nonTargetSubscription[1].revocationReason,
     nonTargetSubscription[1].subscriptionGroupIdentifier,
     nonTargetSubscription[1].transactionReason,
     nonTargetSubscription[1].webOrderLineItemId,

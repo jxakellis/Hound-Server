@@ -1,17 +1,17 @@
 const { databaseQuery } = require('../../main/tools/database/databaseQuery');
-const { formatBoolean } = require('../../main/tools/format/formatObject');
+const { formatBoolean, formatNumber } = require('../../main/tools/format/formatObject');
 const { areAllDefined } = require('../../main/tools/validate/validateDefined');
 const { ValidationError } = require('../../main/tools/general/errors');
 
 const { getFamilyHeadUserId } = require('./getForFamily');
 
-// TODO FUTURE depreciate isAutoRenewing
+// TODO FUTURE depreciate isAutoRenewing (last used 3.0.0)
 // Omitted columns: originalTransactionId, userId, subscriptionGroupIdentifier, quantity, webOrderLineItemId, inAppOwnershipType
 const transactionsColumns = `
 transactionId, productId, purchaseDate,
 expiresDate, expiresDate AS expirationDate,
 numberOfFamilyMembers, numberOfDogs, autoRenewStatus, autoRenewStatus AS isAutoRenewing
-autoRenewProductId, isRevoked, offerIdentifier
+autoRenewProductId, revocationReason, offerIdentifier
 `;
 
 /**
@@ -46,7 +46,7 @@ async function getActiveTransaction(databaseConnection, familyMemberUserId) {
                 ELSE 0
             END AS productIdCorrespondingRank
         FROM transactions t
-        WHERE isRevoked = 0 AND (TIMESTAMPDIFF(MICROSECOND, CURRENT_TIMESTAMP(), expiresDate) >= 0) AND userId = ?
+        WHERE revocationReason IS NULL AND (TIMESTAMPDIFF(MICROSECOND, CURRENT_TIMESTAMP(), expiresDate) >= 0) AND userId = ?
     )
     SELECT ${transactionsColumns}
     FROM mostRecentlyPurchasedForEachProductId AS mrp
@@ -64,9 +64,9 @@ async function getActiveTransaction(databaseConnection, familyMemberUserId) {
   familySubscription.isActive = true;
   familySubscription.autoRenewProductId = formatBoolean(familySubscription.autoRenewProductId) ?? familySubscription.productId;
   familySubscription.autoRenewStatus = formatBoolean(familySubscription.autoRenewStatus) ?? true;
-  // TODO FUTURE depreciate isAutoRenewing
+  // TODO FUTURE depreciate isAutoRenewing (last used 3.0.0)
   familySubscription.isAutoRenewing = familySubscription.autoRenewStatus;
-  familySubscription.isRevoked = formatBoolean(familySubscription.autoRenewStatus) ?? false;
+  familySubscription.revocationReason = formatNumber(familySubscription.revocationReason) ?? null;
 
   return familySubscription;
 }
@@ -87,7 +87,7 @@ async function getAllTransactions(databaseConnection, familyMemberUserId) {
     databaseConnection,
     `SELECT ${transactionsColumns}
     FROM transactions t
-    WHERE isRevoked = 0 AND userId = ?
+    WHERE revocationReason IS NULL AND userId = ?
     ORDER BY purchaseDate DESC, expiresDate DESC
     LIMIT 18446744073709551615`,
     [familyHeadUserId],
@@ -138,7 +138,7 @@ async function getTransactionOwner(databaseConnection, appAccountToken, transact
 
   // If the user supplied an originalTransactionId, search with this first to attempt to find the userId for the most recent associated transaction
   if (areAllDefined(originalTransactionId) === true) {
-    // ALLOW TRANSACTIONS WITH isRevoked = 0 FOR MATCHING PURPOSES
+    // ALLOW TRANSACTIONS WITH revocationReason IS NOT NULL FOR MATCHING PURPOSES
     const [transaction] = await databaseQuery(
       databaseConnection,
       `SELECT userId
@@ -156,7 +156,7 @@ async function getTransactionOwner(databaseConnection, appAccountToken, transact
 
   // If the user supplied an transactionId, attempt to find the userId for the most recent associated transaction
   if (areAllDefined(transactionId) === true) {
-    // ALLOW TRANSACTIONS WITH isRevoked = 0 FOR MATCHING PURPOSES
+    // ALLOW TRANSACTIONS WITH revocationReason IS NOT NULL FOR MATCHING PURPOSES
     const [transaction] = await databaseQuery(
       databaseConnection,
       `SELECT userId

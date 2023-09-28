@@ -131,7 +131,6 @@ function sendAPN(userNotificationConfiguration, category, forAlertTitle, forAler
     },
   };
 
-  // TODO FUTURE, once 3.0.0 is finished and deployed, remove old notification sounds from database.
   // if there is a sound for the reminder alarm alert, then we add it to the rawPayload
   if (
     (category === global.CONSTANT.NOTIFICATION.CATEGORY.REMINDER.ALARM)
