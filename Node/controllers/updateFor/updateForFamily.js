@@ -104,12 +104,9 @@ async function addFamilyMember(databaseConnection, userId, forFamilyCode) {
     // A new family member joined a family with a subscription that has an offer code, insert record into affiliate program table
     await databaseQuery(
       databaseConnection,
-      `INSERT INTO affiliateTransactions
-      (userId, transactionId, offerIdentifier)
-      SELECT userId, transactionId, offerIdentifier
-      FROM transactions t
-      WHERE transactionId = ?
-      LIMIT 1`,
+      `UPDATE transactions
+      SET didUtilizeOfferIdentifier = 1
+      WHERE transactionId = ?`,
       [transactionId],
     );
   }

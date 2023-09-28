@@ -1,16 +1,14 @@
 const { databaseQuery } = require('../../main/tools/database/databaseQuery');
 const {
-  formatDate, formatNumber, formatString,
+  formatDate, formatNumber, formatString, formatBoolean,
 } = require('../../main/tools/format/formatObject');
 const { areAllDefined } = require('../../main/tools/validate/validateDefined');
 const { ValidationError } = require('../../main/tools/general/errors');
 
 const { extractTransactionIdFromAppStoreReceiptURL } = require('../../main/tools/appStoreConnectAPI/extractTransactionId');
-const { queryTransactionsFromAppStoreServerAPI } = require('../../main/tools/appStoreConnectAPI/queryTransactions');
+const { querySubscriptionStatusesFromAppStoreAPI } = require('../../main/tools/appStoreConnectAPI/queryTransactions');
 const { getFamilyHeadUserId } = require('../getFor/getForFamily');
-
-// TODO FUTURE migrate from expirationDate to expiresDate
-// TODO NOW investigate manually updating isAutoRenewing. if a user downgrades a subscription, then we still display the wrong renewal info for about 10 seconds until the ASSN comes thru. see if we can manually update these values by performing some operations
+const { disableOldTransactionsAutoRenewStatus } = require('../updateFor/updateForTransactions');
 
 /**
  * 1. Formats the parameters provided
@@ -38,6 +36,9 @@ const { getFamilyHeadUserId } = require('../getFor/getForFamily');
 async function createTransactionForTransactionInfo(
   databaseConnection,
   userId,
+  forAutoRenewProductId,
+  forAutoRenewStatus,
+
   forEnvironment,
   forExpiresDate,
   forInAppOwnershipType,
@@ -48,16 +49,20 @@ async function createTransactionForTransactionInfo(
   forProductId,
   forPurchaseDate,
   forQuantity,
+  forRevocationReason,
   forSubscriptionGroupIdentifier,
   forTransactionReason,
   forWebOrderLineItemId,
 ) {
+  // TODO NOW accept autoRenewStatus, autoRenewalStatus, and isrevoked since we have the data from both assn and get subscription statuses
   // userId
 
   // https://developer.apple.com/documentation/appstoreservernotifications/jwstransactiondecodedpayload
   // appAccountToken; A UUID that associates the transaction with a user on your own service. If your app doesn’t provide an appAccountToken, this string is empty. For more information, see appAccountToken(_:).
   // The product identifier of the subscription that will renew when the current subscription expires. autoRenewProductId == productId when a subscription is created
-  const autoRenewProductId = formatString(forProductId, 60);
+  const autoRenewProductId = formatString(forAutoRenewProductId, 60);
+  // The renewal status for an auto-renewable subscription.
+  const autoRenewStatus = formatBoolean(forAutoRenewStatus);
   // bundleId; The bundle identifier of the app.
   // The server environment, either Sandbox or Production.
   const environment = formatString(forEnvironment, 10);
@@ -65,8 +70,8 @@ async function createTransactionForTransactionInfo(
   const expiresDate = formatDate(formatNumber(forExpiresDate));
   // A string that describes whether the transaction was purchased by the user, or is available to them through Family Sharing.
   const inAppOwnershipType = formatString(forInAppOwnershipType, 13);
-  // isAutoRenewing; NOT INCLUDED AT THIS STAGE
-  // isRevoked; NOT INCLUDED AT THIS STAGE
+  // If revocationReason is defined, it's the reason that the App Store refunded the transaction or revoked it from Family Sharing.
+  const isRevoked = areAllDefined(forRevocationReason) ? true : null;
   // isUpgraded; A Boolean value that indicates whether the user upgraded to another subscription.
   // The identifier that contains the offer code or the promotional offer identifier.
   const offerIdentifier = formatString(forOfferIdentifier, 64);
@@ -155,7 +160,7 @@ async function createTransactionForTransactionInfo(
     (
       userId,
       numberOfFamilyMembers, numberOfDogs,
-      autoRenewProductId, environment, expirationDate, inAppOwnershipType,
+      autoRenewProductId, environment, expiresDate, inAppOwnershipType,
       offerIdentifier, offerType, originalTransactionId, productId,
       purchaseDate, quantity, subscriptionGroupIdentifier, transactionId,
       transactionReason, webOrderLineItemId
@@ -179,10 +184,12 @@ async function createTransactionForTransactionInfo(
       transactionReason, webOrderLineItemId,
     ],
   );
+
+  await disableOldTransactionsAutoRenewStatus(databaseConnection, userId);
 }
 
 async function createTransactionForAppStoreReceiptURL(databaseConnection, userId, appStoreReceiptURL) {
-  // TODO NOW TEST this function
+  // TODO NOW redo the interior of this function. we only have subscriptions, so instead of looking for transactions w query transactions, query subscriptions. then we have the necessary renewal info to add accurate transactions
   if (areAllDefined(databaseConnection, userId, appStoreReceiptURL) === false) {
     throw new ValidationError('databaseConnection, userId, or appStoreReceiptURL missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
@@ -193,63 +200,67 @@ async function createTransactionForAppStoreReceiptURL(databaseConnection, userId
     throw new ValidationError('transactionId couldn\'t be constructed with extractTransactionIdFromAppStoreReceiptURL', global.CONSTANT.ERROR.VALUE.INVALID);
   }
 
-  const transactions = await queryTransactionsFromAppStoreServerAPI(transactionId);
+  const subscriptions = await querySubscriptionStatusesFromAppStoreAPI(transactionId);
 
-  if (areAllDefined(transactions) === false) {
-    throw new ValidationError('transactions couldn\'t be queried with queryTransactionsFromAppStoreServerAPI', global.CONSTANT.ERROR.VALUE.INVALID);
+  if (areAllDefined(subscriptions) === false) {
+    throw new ValidationError('subscriptions couldn\'t be queried with querySubscriptionStatusesFromAppStoreAPI', global.CONSTANT.ERROR.VALUE.INVALID);
   }
 
   // First, we find the corresponding transaction to our original transactionId
-  const targetTransaction = transactions.find((transaction) => formatNumber(transaction.transactionId) === transactionId);
+  const targetSubscription = subscriptions.find((subscription) => formatNumber(subscription[1].transactionId) === transactionId);
+
+  if (areAllDefined(targetSubscription) === false) {
+    throw new ValidationError(`Couldn't find a targetSubscription for transactionId ${transactionId}`, global.CONSTANT.ERROR.VALUE.MISSING);
+  }
 
   // The create transaction for our target transaction must succeed.
   await createTransactionForTransactionInfo(
     databaseConnection,
     userId,
-    targetTransaction.environment,
-    targetTransaction.expiresDate,
-    targetTransaction.inAppOwnershipType,
-    targetTransaction.transactionId,
-    targetTransaction.offerIdentifier,
-    targetTransaction.offerType,
-    targetTransaction.originalTransactionId,
-    targetTransaction.productId,
-    targetTransaction.purchaseDate,
-    targetTransaction.quantity,
-    targetTransaction.subscriptionGroupIdentifier,
-    targetTransaction.transactionReason,
-    targetTransaction.webOrderLineItemId,
+    targetSubscription[1].environment,
+    targetSubscription[1].expiresDate,
+    targetSubscription[1].inAppOwnershipType,
+    targetSubscription[1].transactionId,
+    targetSubscription[1].offerIdentifier,
+    targetSubscription[1].offerType,
+    targetSubscription[1].originalTransactionId,
+    targetSubscription[1].productId,
+    targetSubscription[1].purchaseDate,
+    targetSubscription[1].quantity,
+    targetSubscription[1].subscriptionGroupIdentifier,
+    targetSubscription[1].transactionReason,
+    targetSubscription[1].webOrderLineItemId,
   );
 
   // The create transaction for our other transactions should hopefully succeed but can fail
   // Filter out the target transaction from the transactions array
-  const nonTargetTransactions = transactions.filter((transaction) => formatNumber(transaction.transactionId) !== transactionId);
+  const nonTargetSubscriptions = subscriptions.filter((subscription) => formatNumber(subscription[1].transactionId) !== transactionId);
 
   // Create an array of Promises
-  const transactionPromises = nonTargetTransactions.map((transaction) => createTransactionForTransactionInfo(
+  const subscriptionPromises = nonTargetSubscriptions.map((nonTargetSubscription) => createTransactionForTransactionInfo(
     databaseConnection,
     userId,
-    transaction.environment,
-    transaction.expiresDate,
-    transaction.inAppOwnershipType,
-    transaction.transactionId,
-    transaction.offerIdentifier,
-    transaction.offerType,
-    transaction.originalTransactionId,
-    transaction.productId,
-    transaction.purchaseDate,
-    transaction.quantity,
-    transaction.subscriptionGroupIdentifier,
-    transaction.transactionReason,
-    transaction.webOrderLineItemId,
+    nonTargetSubscription[1].environment,
+    nonTargetSubscription[1].expiresDate,
+    nonTargetSubscription[1].inAppOwnershipType,
+    nonTargetSubscription[1].transactionId,
+    nonTargetSubscription[1].offerIdentifier,
+    nonTargetSubscription[1].offerType,
+    nonTargetSubscription[1].originalTransactionId,
+    nonTargetSubscription[1].productId,
+    nonTargetSubscription[1].purchaseDate,
+    nonTargetSubscription[1].quantity,
+    nonTargetSubscription[1].subscriptionGroupIdentifier,
+    nonTargetSubscription[1].transactionReason,
+    nonTargetSubscription[1].webOrderLineItemId,
   ).catch((error) => {
     // Log or handle the error here, it won't propagate further
-    console.error(`Failed to create transaction for transactionId ${transaction.transactionId}:`, error);
+    console.error(`Failed to create transaction for transactionId ${nonTargetSubscription.transactionId}:`, error);
     return null;
   }));
 
   // Execute all Promises concurrently
-  await Promise.allSettled(transactionPromises);
+  await Promise.allSettled(subscriptionPromises);
 }
 
 module.exports = { createTransactionForTransactionInfo, createTransactionForAppStoreReceiptURL };

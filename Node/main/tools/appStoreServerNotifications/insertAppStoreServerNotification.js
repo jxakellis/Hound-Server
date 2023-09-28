@@ -17,7 +17,6 @@ const { ValidationError } = require('../general/errors');
  * @throws If data is missing or databaseQuery fails
  */
 async function insertAppStoreServerNotification(databaseConnection, notification, data, renewalInfo, transactionInfo) {
-  // TODO NOW TEST this function
   if (areAllDefined(databaseConnection, notification, data, renewalInfo, transactionInfo) === false) {
     throw new ValidationError('databaseConnection, notification, data, renewalInfo, or transactionInfo missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }

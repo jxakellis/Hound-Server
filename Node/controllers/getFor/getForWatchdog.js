@@ -25,12 +25,6 @@ async function getDatabaseStatusForWatchdog(databaseConnection) {
       FROM dogs d
       LIMIT 1`,
     ),
-    databaseQuery(
-      databaseConnection,
-      `SELECT 1
-      FROM transactions t
-      LIMIT 1`,
-    ),
   ];
 
   await Promise.all(promises);

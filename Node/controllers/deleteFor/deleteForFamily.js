@@ -68,7 +68,7 @@ async function deleteFamily(databaseConnection, familyId, familyActiveSubscripti
       */
 
   if (familyActiveSubscription.productId !== global.CONSTANT.SUBSCRIPTION.DEFAULT_SUBSCRIPTION_PRODUCT_ID
-        && familyActiveSubscription.isAutoRenewing !== false) {
+        && familyActiveSubscription.autoRenewStatus !== false) {
     throw new ValidationError('Family still has an auto-renewing, active subscription', global.CONSTANT.ERROR.FAMILY.LEAVE.SUBSCRIPTION_ACTIVE);
   }
 

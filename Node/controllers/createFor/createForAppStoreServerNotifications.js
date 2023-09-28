@@ -9,7 +9,6 @@ const { validateSignedPayload } = require('../../main/tools/appStoreConnectAPI/v
 const { insertAppStoreServerNotification } = require('../../main/tools/appStoreServerNotifications/insertAppStoreServerNotification');
 
 const { getTransactionOwner } = require('../getFor/getForTransactions');
-const { getFamilyId } = require('../getFor/getForFamily');
 
 const { createTransactionForTransactionInfo } = require('./createForTransactions');
 
@@ -21,7 +20,7 @@ const { updateSubscriptionAutoRenewal, updateSubscriptionRevocation } = require(
  * 2. Logs the ASSN (if already logged then prematurely returns)
  * 3. Checks to see if the ASSN is a transaction we can process (e.g. SUBSCRIBED and not CONSUMPTION_REQUEST)
  * 4. Attempts to link the notification to a user account (if can't link then prematurely returns)
- * 5. Inserts or updates transaction records to reflect the information (e.g. insert transaction, change isAutoRenewing flag...)
+ * 5. Inserts or updates transaction records to reflect the information (e.g. insert transaction, change autoRenewStatus flag...)
  * @param {*} databaseConnection
  * @param {*} signedPayload
  */
@@ -53,6 +52,10 @@ async function createASSNForSignedPayload(databaseConnection, signedPayload) {
 
   // If the ASSN already existed in our database, then the function returns false. This means the ASSN has already been processed and we shouldn't attempt to process it again.
   if (didInsertAppStoreServerNotification === false) {
+    return;
+  }
+
+  if (formatString(transactionInfo.type) !== 'Auto-Renewable Subscription') {
     return;
   }
 
@@ -90,8 +93,6 @@ async function createASSNForSignedPayload(databaseConnection, signedPayload) {
     return;
   }
 
-  const familyId = await getFamilyId(databaseConnection, userId);
-
   // Check if a new transaction was created, warrenting an insert into the transactions table
   if (notificationType === 'DID_RENEW' || notificationType === 'OFFER_REDEEMED' || notificationType === 'SUBSCRIBED') {
     // DID_RENEW: A notification type that along with its subtype indicates that the subscription successfully renewed.
@@ -126,7 +127,6 @@ async function createASSNForSignedPayload(databaseConnection, signedPayload) {
     await updateSubscriptionRevocation(
       databaseConnection,
       userId,
-      familyId,
       transactionInfo.transactionId,
       transactionInfo.revocationReason,
     );
@@ -140,7 +140,6 @@ async function createASSNForSignedPayload(databaseConnection, signedPayload) {
     await updateSubscriptionAutoRenewal(
       databaseConnection,
       userId,
-      familyId,
       transactionInfo.transactionId,
       renewalInfo.autoRenewStatus,
       renewalInfo.autoRenewProductId,
