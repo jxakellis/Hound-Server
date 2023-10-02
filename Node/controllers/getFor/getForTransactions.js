@@ -62,7 +62,7 @@ async function getActiveTransaction(databaseConnection, familyMemberUserId) {
   }
 
   familySubscription.isActive = true;
-  familySubscription.autoRenewProductId = formatBoolean(familySubscription.autoRenewProductId) ?? familySubscription.productId;
+  familySubscription.autoRenewProductId = familySubscription.autoRenewProductId ?? familySubscription.productId;
   familySubscription.autoRenewStatus = formatBoolean(familySubscription.autoRenewStatus) ?? true;
   // TODO FUTURE depreciate isAutoRenewing (last used 3.0.0)
   familySubscription.isAutoRenewing = familySubscription.autoRenewStatus;
