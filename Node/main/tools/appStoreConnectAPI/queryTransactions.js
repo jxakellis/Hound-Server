@@ -44,6 +44,8 @@ async function querySubscriptionStatusesFromAppStoreAPI(transactionId) {
     return null;
   }
 
+  console.log('\n\n\nstatus response', statusResponse, '\n\n\n');
+
   // We will have a potentially large amount of signedRenewal/TransactionInfos to decode. Therefore, we want to gather them all then do Promise.all.
   const renewalInfoPromises = [];
   const transactionInfoPromises = [];
