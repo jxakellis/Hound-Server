@@ -61,9 +61,9 @@ async function createTransactionForTransactionInfo(
   // https://developer.apple.com/documentation/appstoreservernotifications/jwstransactiondecodedpayload
   // appAccountToken; A UUID that associates the transaction with a user on your own service. If your app doesn’t provide an appAccountToken, this string is empty. For more information, see appAccountToken(_:).
   // The product identifier of the subscription that will renew when the current subscription expires. autoRenewProductId == productId when a subscription is created
-  const autoRenewProductId = formatString(forAutoRenewProductId, 60);
+  const autoRenewProductId = formatString(forAutoRenewProductId ?? forProductId, 60);
   // The renewal status for an auto-renewable subscription.
-  const autoRenewStatus = formatBoolean(forAutoRenewStatus);
+  const autoRenewStatus = formatBoolean(forAutoRenewStatus) ?? true;
   // bundleId; The bundle identifier of the app.
   // The server environment, either Sandbox or Production.
   const environment = formatString(forEnvironment, 10);
@@ -100,6 +100,8 @@ async function createTransactionForTransactionInfo(
   // type; The type of the in-app purchase.
   // The unique identifier of subscription purchase events across devices, including subscription renewals.
   const webOrderLineItemId = formatNumber(forWebOrderLineItemId);
+
+  console.log('createTransactionForTransactionInfo', transactionId, autoRenewProductId, autoRenewStatus);
 
   if (areAllDefined(
     databaseConnection,
@@ -203,12 +205,10 @@ async function createTransactionForAppStoreReceiptURL(databaseConnection, userId
     throw new ValidationError('transactionId couldn\'t be constructed with extractTransactionIdFromAppStoreReceiptURL', global.CONSTANT.ERROR.VALUE.INVALID);
   }
 
-  const results = await queryAllSubscriptionsForTransactionId(transactionId);
-  console.log('results', results);
-  const subscriptions = null; // = await querySubscriptionStatusesFromAppStoreAPI(transactionId);
+  const subscriptions = await queryAllSubscriptionsForTransactionId(transactionId);
   console.log('subscriptions', subscriptions);
 
-  if (areAllDefined(subscriptions) === false) {
+  if (areAllDefined(subscriptions) === false || subscriptions.length === 0) {
     throw new ValidationError('subscriptions couldn\'t be queried with querySubscriptionStatusesFromAppStoreAPI', global.CONSTANT.ERROR.VALUE.INVALID);
   }
 
@@ -216,31 +216,29 @@ async function createTransactionForAppStoreReceiptURL(databaseConnection, userId
   const targetSubscription = subscriptions.find((subscription) => formatNumber(subscription[1].transactionId) === transactionId);
   console.log('\n\n\ntargetSubscription', targetSubscription);
 
-  if (areAllDefined(targetSubscription) === false) {
-    throw new ValidationError(`Couldn't find a targetSubscription for transactionId ${transactionId}`, global.CONSTANT.ERROR.VALUE.MISSING);
+  if (areAllDefined(targetSubscription)) {
+    // The create transaction for our target transaction must succeed.
+    await createTransactionForTransactionInfo(
+      databaseConnection,
+      userId,
+      targetSubscription.autoRenewProductId,
+      targetSubscription.autoRenewStatus,
+      targetSubscription.environment,
+      targetSubscription.expiresDate,
+      targetSubscription.inAppOwnershipType,
+      targetSubscription.transactionId,
+      targetSubscription.offerIdentifier,
+      targetSubscription.offerType,
+      targetSubscription.originalTransactionId,
+      targetSubscription.productId,
+      targetSubscription.purchaseDate,
+      targetSubscription.quantity,
+      targetSubscription.revocationReason,
+      targetSubscription.subscriptionGroupIdentifier,
+      targetSubscription.transactionReason,
+      targetSubscription.webOrderLineItemId,
+    );
   }
-
-  // The create transaction for our target transaction must succeed.
-  await createTransactionForTransactionInfo(
-    databaseConnection,
-    userId,
-    targetSubscription[0].autoRenewProductId,
-    targetSubscription[0].autoRenewStatus,
-    targetSubscription[1].environment,
-    targetSubscription[1].expiresDate,
-    targetSubscription[1].inAppOwnershipType,
-    targetSubscription[1].transactionId,
-    targetSubscription[1].offerIdentifier,
-    targetSubscription[1].offerType,
-    targetSubscription[1].originalTransactionId,
-    targetSubscription[1].productId,
-    targetSubscription[1].purchaseDate,
-    targetSubscription[1].quantity,
-    targetSubscription[1].revocationReason,
-    targetSubscription[1].subscriptionGroupIdentifier,
-    targetSubscription[1].transactionReason,
-    targetSubscription[1].webOrderLineItemId,
-  );
 
   // The create transaction for our other transactions should hopefully succeed but can fail
   // Filter out the target transaction from the transactions array
@@ -250,22 +248,22 @@ async function createTransactionForAppStoreReceiptURL(databaseConnection, userId
   const subscriptionPromises = nonTargetSubscriptions.map((nonTargetSubscription) => createTransactionForTransactionInfo(
     databaseConnection,
     userId,
-    nonTargetSubscription[0].autoRenewProductId,
-    nonTargetSubscription[0].autoRenewStatus,
-    nonTargetSubscription[1].environment,
-    nonTargetSubscription[1].expiresDate,
-    nonTargetSubscription[1].inAppOwnershipType,
-    nonTargetSubscription[1].transactionId,
-    nonTargetSubscription[1].offerIdentifier,
-    nonTargetSubscription[1].offerType,
-    nonTargetSubscription[1].originalTransactionId,
-    nonTargetSubscription[1].productId,
-    nonTargetSubscription[1].purchaseDate,
-    nonTargetSubscription[1].quantity,
-    nonTargetSubscription[1].revocationReason,
-    nonTargetSubscription[1].subscriptionGroupIdentifier,
-    nonTargetSubscription[1].transactionReason,
-    nonTargetSubscription[1].webOrderLineItemId,
+    nonTargetSubscription.autoRenewProductId,
+    nonTargetSubscription.autoRenewStatus,
+    nonTargetSubscription.environment,
+    nonTargetSubscription.expiresDate,
+    nonTargetSubscription.inAppOwnershipType,
+    nonTargetSubscription.transactionId,
+    nonTargetSubscription.offerIdentifier,
+    nonTargetSubscription.offerType,
+    nonTargetSubscription.originalTransactionId,
+    nonTargetSubscription.productId,
+    nonTargetSubscription.purchaseDate,
+    nonTargetSubscription.quantity,
+    nonTargetSubscription.revocationReason,
+    nonTargetSubscription.subscriptionGroupIdentifier,
+    nonTargetSubscription.transactionReason,
+    nonTargetSubscription.webOrderLineItemId,
   ).catch((error) => {
     // Log or handle the error here, it won't propagate further
     console.error(`Failed to create transaction for transactionId ${nonTargetSubscription.transactionId}:`, error);

@@ -12,7 +12,7 @@ const { formatString, formatBoolean, formatNumber } = require('../format/formatO
  * https://github.com/agisboye/app-store-server-api
  * @param {*} transactionId The transactionId used to query Apple's servers to find linked transactions.
  * @param {*} previousResponse The previousResponse from a previous invocation of queryTransactionHistoryFromAppStoreServerAPI, used internally for response.hasMore
- * @returns An array of decodedTransactions linked to transactionId or []
+ * @returns [ { ...transactionInfo } ] of all transactions linked to transactionId or []
  */
 async function queryTransactionHistoryFromAppStoreServerAPI(transactionId, previousResponse) {
   if (areAllDefined(transactionId) === false) {
@@ -69,9 +69,10 @@ async function queryTransactionHistoryFromAppStoreServerAPI(transactionId, previ
 /**
  * Internal function.
  * Queries Apple Store Server API with the transactionId to get all records of subscriptions associated with that transactionId.
+ * NOTE: It appears this endpoint only returns ONE subscription (the most recent one).
  * https://developer.apple.com/documentation/appstoreserverapi/get_all_subscription_statuses
  * @param {*} transactionId The transactionId used to query Apple's servers to find linked subscriptions.
- * @returns [ {...renewalInfo} ] linked to the transactionId or []
+ * @returns [ { ...transactionInfo, ...renewalInfo } ] of all subscriptioned linked to the transactionId or []
  */
 async function querySubscriptionStatusesFromAppStoreAPI(transactionId) {
   if (areAllDefined(transactionId) === false) {
@@ -140,18 +141,24 @@ async function querySubscriptionStatusesFromAppStoreAPI(transactionId) {
     return [];
   }
 
-  const combinedResults = decodedRenewalInfos.map(
+  // Combines renewalInfo with a transactionInfo (allowing renewalInfo to override) into one key-value object
+  const results = decodedRenewalInfos.map(
     (renewalInfo, index) => ({
-      transactionId: decodedTransactionInfos[index].transactionId,
+      ...decodedTransactionInfos[index],
       ...renewalInfo,
     }),
   );
 
-  console.log('\n', 'combinedResults', combinedResults, '\n');
-
-  return combinedResults;
+  return results;
 }
 
+/**
+ * Queries Apple Store Server API with the transactionId to get all records of transactions associated with that transactionId. DESC from most recently to oldest.
+ * Always includes all the transactionInfo for a given transaction, however only includes renewalInfo for the most recent transaction
+ * https://github.com/agisboye/app-store-server-api
+ * @param {*} transactionId The transactionId used to query Apple's servers to find linked transactions.
+ * @returns [ { ...renewalInfo, ...transactionInfo } ] of all transactions linked to transactionId or []
+ */
 async function queryAllSubscriptionsForTransactionId(transactionId) {
   console.log('\n\n', 'getAllSubscriptionsForTransaction', '\n\n');
 
