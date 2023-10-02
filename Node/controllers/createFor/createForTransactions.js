@@ -61,10 +61,9 @@ async function createTransactionForTransactionInfo(
   // https://developer.apple.com/documentation/appstoreservernotifications/jwstransactiondecodedpayload
   // appAccountToken; A UUID that associates the transaction with a user on your own service. If your app doesn’t provide an appAccountToken, this string is empty. For more information, see appAccountToken(_:).
   // The product identifier of the subscription that will renew when the current subscription expires. autoRenewProductId == productId when a subscription is created
-  console.log(forTransactionId, forAutoRenewProductId, forProductId, forAutoRenewProductId ?? forProductId);
-  const autoRenewProductId = formatString(forAutoRenewProductId ?? forProductId, 60);
+  const autoRenewProductId = formatString(forAutoRenewProductId, 60);
   // The renewal status for an auto-renewable subscription.
-  const autoRenewStatus = formatBoolean(forAutoRenewStatus) ?? true;
+  const autoRenewStatus = formatBoolean(forAutoRenewStatus);
   // bundleId; The bundle identifier of the app.
   // The server environment, either Sandbox or Production.
   const environment = formatString(forEnvironment, 10);
@@ -102,11 +101,13 @@ async function createTransactionForTransactionInfo(
   // The unique identifier of subscription purchase events across devices, including subscription renewals.
   const webOrderLineItemId = formatNumber(forWebOrderLineItemId);
 
+  console.log('transactionId ', forTransactionId, 'forAutoRenewProductId', forAutoRenewProductId, 'autoRenewProductId', autoRenewProductId, 'productId', productId);
+
   if (areAllDefined(
     databaseConnection,
     userId,
-    autoRenewProductId,
-    autoRenewStatus,
+    // autoRenewProductId is optionally defined
+    // autoRenewStatus is optionally defined
     environment,
     expiresDate,
     inAppOwnershipType,
@@ -155,14 +156,17 @@ async function createTransactionForTransactionInfo(
   }
 
   // We attempt to insert the transaction.
-  // If we encounter a duplicate key error, which should only arise if the transactionId already exists in the database, we perform a NO-OP update statement to catch and disregard the error.
+  // If we encounter a duplicate key error, attempt to update values that could have possible been updated since the transaction was last created
+  // We only update these values if they have been provided a value, as its possible to invoke this function with null, e.g. autoRenewProductId, and then we defaul it to a value, e.g. productId
   await databaseQuery(
     databaseConnection,
     `INSERT INTO transactions
     (
       userId,
       numberOfFamilyMembers, numberOfDogs,
-      autoRenewProductId, autoRenewStatus, environment, expiresDate, inAppOwnershipType,
+      autoRenewProductId,
+      autoRenewStatus,
+      environment, expiresDate, inAppOwnershipType,
       offerIdentifier, offerType, originalTransactionId, productId,
       purchaseDate, quantity, revocationReason, subscriptionGroupIdentifier, transactionId,
       transactionReason, webOrderLineItemId
@@ -171,22 +175,28 @@ async function createTransactionForTransactionInfo(
     (
       ?,
       ?, ?,
-      ?, ?, ?, ?, ?,
+      ?,
+      ?,
+      ?, ?, ?,
       ?, ?, ?, ?, 
       ?, ?, ?, ?, ?,
       ?, ?
     )
     ON DUPLICATE KEY UPDATE
-      autoRenewProductId = CASE WHEN VALUES(autoRenewProductId) != productId THEN VALUES(autoRenewProductId) ELSE autoRenewProductId END,
-      autoRenewStatus = CASE WHEN VALUES(autoRenewStatus) = 0 THEN VALUES(autoRenewStatus) ELSE autoRenewStatus END,
+      autoRenewProductId = CASE WHEN ? IS NOT NULL THEN ? ELSE autoRenewProductId END,
+      autoRenewStatus = CASE WHEN ? IS NOT NULL THEN ? ELSE autoRenewStatus END,
       revocationReason = VALUES(revocationReason)`,
     [
       userId,
       numberOfFamilyMembers, numberOfDogs,
-      autoRenewProductId, autoRenewStatus, environment, expiresDate, inAppOwnershipType,
+      autoRenewProductId ?? productId,
+      autoRenewStatus ?? true,
+      environment, expiresDate, inAppOwnershipType,
       offerIdentifier, offerType, originalTransactionId, productId,
       purchaseDate, quantity, revocationReason, subscriptionGroupIdentifier, transactionId,
       transactionReason, webOrderLineItemId,
+      autoRenewProductId, autoRenewProductId,
+      autoRenewStatus, autoRenewStatus,
     ],
   );
 
