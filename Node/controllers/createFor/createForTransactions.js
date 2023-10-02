@@ -211,61 +211,29 @@ async function createTransactionForAppStoreReceiptURL(databaseConnection, userId
     throw new ValidationError('subscriptions couldn\'t be queried with querySubscriptionStatusesFromAppStoreAPI', global.CONSTANT.ERROR.VALUE.INVALID);
   }
 
-  // First, we find the corresponding transaction to our original transactionId
-  const targetSubscription = subscriptions.find((subscription) => formatNumber(subscription.transactionId) === transactionId);
-  console.log('\n\ntargetSubscription', targetSubscription);
-
-  if (areAllDefined(targetSubscription)) {
-    // The create transaction for our target transaction must succeed.
-    await createTransactionForTransactionInfo(
-      databaseConnection,
-      userId,
-      targetSubscription.autoRenewProductId,
-      targetSubscription.autoRenewStatus,
-      targetSubscription.environment,
-      targetSubscription.expiresDate,
-      targetSubscription.inAppOwnershipType,
-      targetSubscription.transactionId,
-      targetSubscription.offerIdentifier,
-      targetSubscription.offerType,
-      targetSubscription.originalTransactionId,
-      targetSubscription.productId,
-      targetSubscription.purchaseDate,
-      targetSubscription.quantity,
-      targetSubscription.revocationReason,
-      targetSubscription.subscriptionGroupIdentifier,
-      targetSubscription.transactionReason,
-      targetSubscription.webOrderLineItemId,
-    );
-  }
-
-  // The create transaction for our other transactions should hopefully succeed but can fail
-  // Filter out the target transaction from the transactions array
-  const nonTargetSubscriptions = subscriptions.filter((subscription) => formatNumber(subscription.transactionId) !== transactionId);
-
   // Create an array of Promises
-  const subscriptionPromises = nonTargetSubscriptions.map((nonTargetSubscription) => createTransactionForTransactionInfo(
+  const subscriptionPromises = subscriptions.map((subscription) => createTransactionForTransactionInfo(
     databaseConnection,
     userId,
-    nonTargetSubscription.autoRenewProductId,
-    nonTargetSubscription.autoRenewStatus,
-    nonTargetSubscription.environment,
-    nonTargetSubscription.expiresDate,
-    nonTargetSubscription.inAppOwnershipType,
-    nonTargetSubscription.transactionId,
-    nonTargetSubscription.offerIdentifier,
-    nonTargetSubscription.offerType,
-    nonTargetSubscription.originalTransactionId,
-    nonTargetSubscription.productId,
-    nonTargetSubscription.purchaseDate,
-    nonTargetSubscription.quantity,
-    nonTargetSubscription.revocationReason,
-    nonTargetSubscription.subscriptionGroupIdentifier,
-    nonTargetSubscription.transactionReason,
-    nonTargetSubscription.webOrderLineItemId,
+    subscription.autoRenewProductId,
+    subscription.autoRenewStatus,
+    subscription.environment,
+    subscription.expiresDate,
+    subscription.inAppOwnershipType,
+    subscription.transactionId,
+    subscription.offerIdentifier,
+    subscription.offerType,
+    subscription.originalTransactionId,
+    subscription.productId,
+    subscription.purchaseDate,
+    subscription.quantity,
+    subscription.revocationReason,
+    subscription.subscriptionGroupIdentifier,
+    subscription.transactionReason,
+    subscription.webOrderLineItemId,
   ).catch((error) => {
     // Log or handle the error here, it won't propagate further
-    console.error(`Failed to create transaction for transactionId ${nonTargetSubscription.transactionId}:`, error);
+    console.error(`Failed to create transaction for transactionId ${subscription.transactionId}:`, error);
     return null;
   }));
 
