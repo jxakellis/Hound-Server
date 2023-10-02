@@ -154,10 +154,10 @@ async function querySubscriptionStatusesFromAppStoreAPI(transactionId) {
 
 /**
  * Queries Apple Store Server API with the transactionId to get all records of transactions associated with that transactionId. DESC from most recently to oldest.
- * Always includes all the transactionInfo for a given transaction, however only includes renewalInfo for the most recent transaction
+ * Always includes all the transactionInfo for a given transaction, however only includes renewalInfo for the most recent transaction.
  * https://github.com/agisboye/app-store-server-api
  * @param {*} transactionId The transactionId used to query Apple's servers to find linked transactions.
- * @returns [ { ...renewalInfo, ...transactionInfo } ] of all transactions linked to transactionId or []
+ * @returns [ { ...renewalInfo, ...transactionInfo } ] of all transactions linked to transactionId or [].
  */
 async function queryAllSubscriptionsForTransactionId(transactionId) {
   // Get all transactions linked to the given transactionId.
@@ -181,6 +181,7 @@ async function queryAllSubscriptionsForTransactionId(transactionId) {
     // Find the index of the corresponding transaction in the original transactions array.
     const subscriptionTransactionIndex = transactions.findIndex((transaction) => formatNumber(transaction.transactionId) === subscriptionTransactionId);
 
+    // If we got an index, that means that there is a record in transations for the subscription's transactionId.
     if (subscriptionTransactionIndex !== -1) {
       // Spread in the new properties to the matched transaction
       transactions[subscriptionTransactionIndex] = {
