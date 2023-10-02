@@ -4,17 +4,7 @@ const {
 const { api } = require('./api');
 const { areAllDefined } = require('../validate/validateDefined');
 const { logServerError } = require('../logging/logServerError');
-const { formatString, formatBoolean } = require('../format/formatObject');
-
-/**
- * Queries Apple Store Server API with the transactionId to get all records of transactions associated with that transactionId. DESC from most recently to oldest.
- * https://github.com/agisboye/app-store-server-api
- * @param {*} transactionId The transactionId used to query Apple's servers to find linked transactions.
- * @returns An array of decodedTransactions linked to transactionId or null
- */
-async function queryTransactionsFromAppStoreServerAPI(transactionId) {
-  return queryTransactionsFromAppStoreServerAPIWithPreviousResponse(transactionId, null);
-}
+const { formatString, formatBoolean, formatNumber } = require('../format/formatObject');
 
 /**
  * Internal function.
@@ -22,10 +12,10 @@ async function queryTransactionsFromAppStoreServerAPI(transactionId) {
  * Queries Apple Store Server API with the transactionId to get all records of transactions associated with that transactionId. DESC from most recently to oldest.
  * https://github.com/agisboye/app-store-server-api
  * @param {*} transactionId The transactionId used to query Apple's servers to find linked transactions.
- * @param {*} previousResponse The previousResponse from a previous invocation of queryTransactionsFromAppStoreServerAPI, used internally for response.hasMore
+ * @param {*} previousResponse The previousResponse from a previous invocation of queryTransactionHistoryFromAppStoreServerAPI, used internally for response.hasMore
  * @returns An array of decodedTransactions linked to transactionId or null
  */
-async function queryTransactionsFromAppStoreServerAPIWithPreviousResponse(transactionId, previousResponse) {
+async function queryTransactionHistoryFromAppStoreServerAPI(transactionId, previousResponse) {
   if (areAllDefined(transactionId) === false) {
     return null;
   }
@@ -43,7 +33,7 @@ async function queryTransactionsFromAppStoreServerAPIWithPreviousResponse(transa
     response = await api.getTransactionHistory(transactionId, queryProperties);
   }
   catch (error) {
-    logServerError('queryTransactionsFromAppStoreServerAPIWithPreviousResponse getTransactionHistory', error);
+    logServerError('queryTransactionHistoryFromAppStoreServerAPI getTransactionHistory', error);
     return null;
   }
 
@@ -61,14 +51,16 @@ async function queryTransactionsFromAppStoreServerAPIWithPreviousResponse(transa
     transactions = await decodeTransactions(response.signedTransactions);
   }
   catch (error) {
-    logServerError('queryTransactionsFromAppStoreServerAPIWithPreviousResponse decodeTransactions', error);
+    logServerError('queryTransactionHistoryFromAppStoreServerAPI decodeTransactions', error);
     return null;
   }
+
+  // Only include transactions that are subscriptions
   transactions = transactions.filter((transaction) => transaction.type === 'Auto-Renewable Subscription');
 
   // The response contains at most 20 entries. You can check to see if there are more.
   if (formatBoolean(response.hasMore) === true) {
-    const nextTransactions = await queryTransactionsFromAppStoreServerAPIWithPreviousResponse(transactionId, response);
+    const nextTransactions = await queryTransactionHistoryFromAppStoreServerAPI(transactionId, response);
     return transactions.concat(areAllDefined(nextTransactions) ? nextTransactions : []);
   }
 
@@ -102,9 +94,6 @@ async function querySubscriptionStatusesFromAppStoreAPI(transactionId) {
     logServerError('querySubscriptionStatusesFromAppStoreAPI getSubscriptionStatuses', error);
     return null;
   }
-
-  const transactions = await queryTransactionsFromAppStoreServerAPI(transactionId);
-  console.log('\n\n\n', 'queryTransactionsFromAppStoreServerAPI transactions', transactions, '\n\n\n');
 
   console.log('2');
 
@@ -183,4 +172,46 @@ async function querySubscriptionStatusesFromAppStoreAPI(transactionId) {
   return combinedResults;
 }
 
-module.exports = { querySubscriptionStatusesFromAppStoreAPI };
+async function queryAllSubscriptionsForTransactionId(transactionId) {
+  console.log('\n\n', 'getAllSubscriptionsForTransaction', '\n\n');
+  // First, get all transactions linked to the given transactionId.
+  const transactions = await queryTransactionHistoryFromAppStoreServerAPI(transactionId);
+  console.log('got transactions', transactions);
+
+  // Create an empty array to store the resulting subscription statuses.
+  const subscriptions = [];
+
+  // Use the reduce function to chain promises sequentially.
+  // We start with an initial promise that's already resolved (`Promise.resolve()`).
+  const promiseChain = transactions.reduce(
+    // For each transaction, chain a new promise.
+    (promise, transaction) => promise.then(() => {
+      // Check if the current transaction ID has already been queried.
+      const alreadyQueried = subscriptions.some((subscription) => formatNumber(subscription.transactionId) === formatNumber(transaction.transactionId));
+      console.log('alreadyQueried for ', transaction.transactionId, alreadyQueried, 'subscriptions length ', subscriptions.length);
+
+      // If it hasn't been queried yet, make a server call.
+      if (!alreadyQueried) {
+        return querySubscriptionStatusesFromAppStoreAPI(transaction.transactionId).then((subscriptionStatuses) => {
+          // Once the server responds, add the results to the subscriptions array.
+          console.log('got response for ', transaction.transactionId, subscriptionStatuses);
+          if (areAllDefined(subscriptionStatuses)) {
+            subscriptions.push(...subscriptionStatuses);
+          }
+        });
+      }
+
+      // If the transaction ID has already been queried, just return a resolved promise to keep the chain going.
+      return Promise.resolve();
+    }),
+    Promise.resolve(),
+  ); // This is the initial promise that kicks off the chain.
+
+  // Wait for the entire promise chain to complete.
+  await promiseChain;
+
+  // Return the populated subscriptions array.
+  return subscriptions;
+}
+
+module.exports = { queryAllSubscriptionsForTransactionId };

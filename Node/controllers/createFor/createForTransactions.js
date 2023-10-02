@@ -6,7 +6,7 @@ const { areAllDefined } = require('../../main/tools/validate/validateDefined');
 const { ValidationError } = require('../../main/tools/general/errors');
 
 const { extractTransactionIdFromAppStoreReceiptURL } = require('../../main/tools/appStoreConnectAPI/extractTransactionId');
-const { querySubscriptionStatusesFromAppStoreAPI } = require('../../main/tools/appStoreConnectAPI/queryTransactions');
+const { queryAllSubscriptionsForTransactionId } = require('../../main/tools/appStoreConnectAPI/queryTransactions');
 const { getFamilyHeadUserId } = require('../getFor/getForFamily');
 const { disableOldTransactionsAutoRenewStatus } = require('../updateFor/updateForTransactions');
 
@@ -203,7 +203,9 @@ async function createTransactionForAppStoreReceiptURL(databaseConnection, userId
     throw new ValidationError('transactionId couldn\'t be constructed with extractTransactionIdFromAppStoreReceiptURL', global.CONSTANT.ERROR.VALUE.INVALID);
   }
 
-  const subscriptions = await querySubscriptionStatusesFromAppStoreAPI(transactionId);
+  const results = await queryAllSubscriptionsForTransactionId(transactionId);
+  console.log('results', results);
+  const subscriptions = null; // = await querySubscriptionStatusesFromAppStoreAPI(transactionId);
   console.log('subscriptions', subscriptions);
 
   if (areAllDefined(subscriptions) === false) {
