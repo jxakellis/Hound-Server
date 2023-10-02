@@ -213,7 +213,7 @@ async function createTransactionForAppStoreReceiptURL(databaseConnection, userId
   }
 
   // First, we find the corresponding transaction to our original transactionId
-  const targetSubscription = subscriptions.find((subscription) => formatNumber(subscription[1].transactionId) === transactionId);
+  const targetSubscription = subscriptions.find((subscription) => formatNumber(subscription.transactionId) === transactionId);
   console.log('\n\n\ntargetSubscription', targetSubscription);
 
   if (areAllDefined(targetSubscription)) {
@@ -242,7 +242,7 @@ async function createTransactionForAppStoreReceiptURL(databaseConnection, userId
 
   // The create transaction for our other transactions should hopefully succeed but can fail
   // Filter out the target transaction from the transactions array
-  const nonTargetSubscriptions = subscriptions.filter((subscription) => formatNumber(subscription[1].transactionId) !== transactionId);
+  const nonTargetSubscriptions = subscriptions.filter((subscription) => formatNumber(subscription.transactionId) !== transactionId);
 
   // Create an array of Promises
   const subscriptionPromises = nonTargetSubscriptions.map((nonTargetSubscription) => createTransactionForTransactionInfo(
