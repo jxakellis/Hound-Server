@@ -191,17 +191,20 @@ async function createTransactionForTransactionInfo(
 
 async function createTransactionForAppStoreReceiptURL(databaseConnection, userId, appStoreReceiptURL) {
   // TODO NOW TEST function with new interior that only gets subscriptions
+  console.log('createTransactionForAppStoreReceiptURL');
   if (areAllDefined(databaseConnection, userId, appStoreReceiptURL) === false) {
     throw new ValidationError('databaseConnection, userId, or appStoreReceiptURL missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   const transactionId = formatNumber(extractTransactionIdFromAppStoreReceiptURL(appStoreReceiptURL));
+  console.log('transactionId', transactionId);
 
   if (areAllDefined(transactionId) === false) {
     throw new ValidationError('transactionId couldn\'t be constructed with extractTransactionIdFromAppStoreReceiptURL', global.CONSTANT.ERROR.VALUE.INVALID);
   }
 
   const subscriptions = await querySubscriptionStatusesFromAppStoreAPI(transactionId);
+  console.log('subscriptions', subscriptions);
 
   if (areAllDefined(subscriptions) === false) {
     throw new ValidationError('subscriptions couldn\'t be queried with querySubscriptionStatusesFromAppStoreAPI', global.CONSTANT.ERROR.VALUE.INVALID);
@@ -209,6 +212,7 @@ async function createTransactionForAppStoreReceiptURL(databaseConnection, userId
 
   // First, we find the corresponding transaction to our original transactionId
   const targetSubscription = subscriptions.find((subscription) => formatNumber(subscription[1].transactionId) === transactionId);
+  console.log('\n\n\ntargetSubscription', targetSubscription);
 
   if (areAllDefined(targetSubscription) === false) {
     throw new ValidationError(`Couldn't find a targetSubscription for transactionId ${transactionId}`, global.CONSTANT.ERROR.VALUE.MISSING);

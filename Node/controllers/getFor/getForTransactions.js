@@ -10,7 +10,7 @@ const { getFamilyHeadUserId } = require('./getForFamily');
 const transactionsColumns = `
 transactionId, productId, purchaseDate,
 expiresDate, expiresDate AS expirationDate,
-numberOfFamilyMembers, numberOfDogs, autoRenewStatus, autoRenewStatus AS isAutoRenewing
+numberOfFamilyMembers, numberOfDogs, autoRenewStatus, autoRenewStatus AS isAutoRenewing,
 autoRenewProductId, revocationReason, offerIdentifier
 `;
 
