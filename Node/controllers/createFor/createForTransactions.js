@@ -176,7 +176,10 @@ async function createTransactionForTransactionInfo(
       ?, ?, ?, ?, ?,
       ?, ?
     )
-    ON DUPLICATE KEY UPDATE transactionId=transactionId`,
+    ON DUPLICATE KEY UPDATE
+      autoRenewProductId = CASE WHEN VALUES(autoRenewProductId) != productId THEN VALUES(autoRenewProductId) ELSE autoRenewProductId END,
+      autoRenewStatus = CASE WHEN VALUES(autoRenewStatus) = 0 THEN VALUES(autoRenewStatus) ELSE autoRenewStatus END,
+      revocationReason = VALUES(revocationReason)`,
     [
       userId,
       numberOfFamilyMembers, numberOfDogs,
