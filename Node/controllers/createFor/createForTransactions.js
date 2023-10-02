@@ -55,7 +55,6 @@ async function createTransactionForTransactionInfo(
   forTransactionReason,
   forWebOrderLineItemId,
 ) {
-  // TODO NOW TEST function w new parameters
   // userId
 
   // https://developer.apple.com/documentation/appstoreservernotifications/jwstransactiondecodedpayload
@@ -100,8 +99,6 @@ async function createTransactionForTransactionInfo(
   // type; The type of the in-app purchase.
   // The unique identifier of subscription purchase events across devices, including subscription renewals.
   const webOrderLineItemId = formatNumber(forWebOrderLineItemId);
-
-  console.log('transactionId ', forTransactionId, 'forAutoRenewProductId', forAutoRenewProductId, 'autoRenewProductId', autoRenewProductId, 'productId', productId);
 
   if (areAllDefined(
     databaseConnection,
@@ -204,21 +201,17 @@ async function createTransactionForTransactionInfo(
 }
 
 async function createTransactionForAppStoreReceiptURL(databaseConnection, userId, appStoreReceiptURL) {
-  // TODO NOW TEST function with new interior that only gets subscriptions
-  console.log('createTransactionForAppStoreReceiptURL');
   if (areAllDefined(databaseConnection, userId, appStoreReceiptURL) === false) {
     throw new ValidationError('databaseConnection, userId, or appStoreReceiptURL missing', global.CONSTANT.ERROR.VALUE.MISSING);
   }
 
   const transactionId = formatNumber(extractTransactionIdFromAppStoreReceiptURL(appStoreReceiptURL));
-  console.log('transactionId', transactionId);
 
   if (areAllDefined(transactionId) === false) {
     throw new ValidationError('transactionId couldn\'t be constructed with extractTransactionIdFromAppStoreReceiptURL', global.CONSTANT.ERROR.VALUE.INVALID);
   }
 
   const subscriptions = await queryAllSubscriptionsForTransactionId(transactionId);
-  console.log('subscriptions', subscriptions);
 
   if (areAllDefined(subscriptions) === false || subscriptions.length === 0) {
     throw new ValidationError('subscriptions couldn\'t be queried with querySubscriptionStatusesFromAppStoreAPI', global.CONSTANT.ERROR.VALUE.INVALID);

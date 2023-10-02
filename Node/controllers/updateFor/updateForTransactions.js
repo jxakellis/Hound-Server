@@ -25,7 +25,6 @@ async function disableOldTransactionsAutoRenewStatus(databaseConnection, userId)
   if (familyHeadUserId !== userId) {
     throw new ValidationError('You are not the family head. Only the family head can modify the family subscription', global.CONSTANT.ERROR.PERMISSION.INVALID.FAMILY);
   }
-  // TODO NOW TEST that this correctly disables the autoRenewStatus for all not-the-most-recent tranactions
 
   await databaseQuery(
     databaseConnection,

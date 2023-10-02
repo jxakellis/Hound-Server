@@ -19,8 +19,6 @@ async function createTransactions(req, res) {
     const { userId } = req.params;
     const { appStoreReceiptURL } = req.body;
 
-    console.log(appStoreReceiptURL);
-
     await createTransactionForAppStoreReceiptURL(req.databaseConnection, userId, appStoreReceiptURL);
 
     // After we have updated the stored transactions, we want to return the new active subscription to the user.

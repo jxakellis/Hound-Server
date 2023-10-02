@@ -101,7 +101,7 @@ async function addFamilyMember(databaseConnection, userId, forFamilyCode) {
   const { offerIdentifier, transactionId } = familyActiveSubscription;
 
   if (areAllDefined(offerIdentifier, transactionId) === true) {
-    // A new family member joined a family with a subscription that has an offer code, insert record into affiliate program table
+    // A new family member joined a family with a subscription that has an offer code, keep track that offer identifer was utilized
     await databaseQuery(
       databaseConnection,
       `UPDATE transactions

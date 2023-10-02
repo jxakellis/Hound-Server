@@ -56,8 +56,6 @@ async function getActiveTransaction(databaseConnection, familyMemberUserId) {
     [familyHeadUserId],
   );
 
-  console.log('raw family subscription', familySubscription);
-
   // since we found no family subscription, assign the family to the default subscription
   if (areAllDefined(familySubscription) === false) {
     familySubscription = global.CONSTANT.SUBSCRIPTION.SUBSCRIPTIONS.find((subscription) => subscription.productId === global.CONSTANT.SUBSCRIPTION.DEFAULT_SUBSCRIPTION_PRODUCT_ID);
