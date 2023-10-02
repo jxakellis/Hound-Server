@@ -160,11 +160,8 @@ async function querySubscriptionStatusesFromAppStoreAPI(transactionId) {
  * @returns [ { ...renewalInfo, ...transactionInfo } ] of all transactions linked to transactionId or []
  */
 async function queryAllSubscriptionsForTransactionId(transactionId) {
-  console.log('\n\n', 'getAllSubscriptionsForTransaction', '\n\n');
-
   // Get all transactions linked to the given transactionId.
   const transactions = await queryTransactionHistoryFromAppStoreServerAPI(transactionId);
-  console.log('got transactions', transactions);
 
   // If there are no transactions, return an empty array.
   if (areAllDefined(transactions) === false || transactions.length === 0) {
@@ -173,7 +170,6 @@ async function queryAllSubscriptionsForTransactionId(transactionId) {
 
   // Use the transactionId of the first transaction to query the subscription status.
   const subscriptions = await querySubscriptionStatusesFromAppStoreAPI(transactions[0].transactionId);
-  console.log('\n\ngot subscriptions', subscriptions, '\n\n');
 
   if (areAllDefined(subscriptions) === false || subscriptions.length === 0) {
     return transactions;
@@ -193,8 +189,6 @@ async function queryAllSubscriptionsForTransactionId(transactionId) {
       };
     }
   });
-
-  console.log('\n\n end transactions', transactions, '\n');
 
   return transactions;
 }

@@ -61,6 +61,7 @@ async function createTransactionForTransactionInfo(
   // https://developer.apple.com/documentation/appstoreservernotifications/jwstransactiondecodedpayload
   // appAccountToken; A UUID that associates the transaction with a user on your own service. If your app doesn’t provide an appAccountToken, this string is empty. For more information, see appAccountToken(_:).
   // The product identifier of the subscription that will renew when the current subscription expires. autoRenewProductId == productId when a subscription is created
+  console.log(forTransactionId, forAutoRenewProductId, forProductId, forAutoRenewProductId ?? forProductId);
   const autoRenewProductId = formatString(forAutoRenewProductId ?? forProductId, 60);
   // The renewal status for an auto-renewable subscription.
   const autoRenewStatus = formatBoolean(forAutoRenewStatus) ?? true;
@@ -100,8 +101,6 @@ async function createTransactionForTransactionInfo(
   // type; The type of the in-app purchase.
   // The unique identifier of subscription purchase events across devices, including subscription renewals.
   const webOrderLineItemId = formatNumber(forWebOrderLineItemId);
-
-  console.log('createTransactionForTransactionInfo', transactionId, autoRenewProductId, autoRenewStatus);
 
   if (areAllDefined(
     databaseConnection,
@@ -214,7 +213,7 @@ async function createTransactionForAppStoreReceiptURL(databaseConnection, userId
 
   // First, we find the corresponding transaction to our original transactionId
   const targetSubscription = subscriptions.find((subscription) => formatNumber(subscription.transactionId) === transactionId);
-  console.log('\n\n\ntargetSubscription', targetSubscription);
+  console.log('\n\ntargetSubscription', targetSubscription);
 
   if (areAllDefined(targetSubscription)) {
     // The create transaction for our target transaction must succeed.
