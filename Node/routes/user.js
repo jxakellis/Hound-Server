@@ -10,7 +10,7 @@ const {
 
 const { validateUserId } = require('../main/tools/validate/validateId');
 
-// TODO FUTURE pass userId and userIdentifier through as headers. Don't pass through familyId (find it ourselves)
+// TODO FUTURE we pass userId, userIdentifier, familyId, and appVersion through as headers in >= 3.0.1. Once users updated, depreciate old way of using them as param paths.
 
 userRouter.param('userId', validateUserId);
 // If userId is successfully validated, then we add it to the request
