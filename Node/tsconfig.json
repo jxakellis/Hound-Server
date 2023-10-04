@@ -1,14 +1,50 @@
 {
-    "compilerOptions": {
-      "target": "es6",
-      "module": "commonjs",
-      "outDir": "./dist",
-      "strict": true,
-      "allowJs": true,
-      "esModuleInterop": true,
-      "skipLibCheck": true,
-      "forceConsistentCasingInFileNames": true
-    },
-    "include": ["**/*.ts", "**/*.js"],
-    "exclude": ["node_modules"]
+  "compilerOptions": {
+    // The ECMAScript target version for the emitted JS files.
+    "target": "es6",
+
+    // Specifies the module code generation: "None", "CommonJS", "AMD", "System", "UMD", "ES6", "ES2015", "ESNext"
+    "module": "ESNext",
+
+    // Determines how module resolution works, "node" works in the Node.js-style module resolution.
+    "moduleResolution": "node",
+
+    // Specifies the location where the compiled JS files will be.
+    "outDir": "./dist",
+
+    // Enable all strict type checking options.
+    "strict": true,
+
+    // Allow default imports from modules with no default export.
+    "esModuleInterop": true,
+
+    // Skip type checking of all declaration files (*.d.ts).
+    "skipLibCheck": false,
+
+    // Disallow inconsistently-cased references to the same file.
+    "forceConsistentCasingInFileNames": true,
+
+    // Enable strict null checks where variables can't be null unless explicitly declared.
+    "strictNullChecks": true,
+
+    // Disallow indexing objects unless they are explicitly declared as indexable.
+    "noPropertyAccessFromIndexSignature": true,
+
+    // Emit more detailed error messages.
+    "extendedDiagnostics": true,
+
+    // Disallow unreachable code.
+    "allowUnreachableCode": false,
+
+    // Disallow unused labels.
+    "allowUnusedLabels": false,
+
+    "noImplicitAny": true
+  },
+  
+  // Specifies the root files and patterns to include in the compilation.
+  "include": ["**/*.ts", "**/*.js"],
+
+  // Excludes specific files and folders from the compilation.
+  "exclude": ["node_modules"]
 }
