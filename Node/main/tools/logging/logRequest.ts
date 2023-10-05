@@ -1,11 +1,11 @@
 import express from 'express';
 import { requestLogger } from './loggers';
 import { logServerError } from './logServerError';
-import { databaseConnectionForLogging } from '../database/createDatabaseConnections';
-import { databaseQuery } from '../database/databaseQuery';
+import { databaseConnectionForLogging } from '../../database/createDatabaseConnections';
+import { databaseQuery } from '../../database/databaseQuery';
 import { areAllDefined } from '../validate/validateDefined';
 import { formatString, formatNumber, formatSHA256Hash } from '../format/formatObject';
-import { ValidationError } from '../general/errors';
+import { ValidationError } from '../../server/globalErrors';
 
 // Outputs request to the console and logs to database
 async function logRequest(req: express.Request, res: express.Response, next: NextFunction) {

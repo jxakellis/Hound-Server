@@ -2,7 +2,7 @@ import {
   decodeNotificationPayload, decodeTransaction, decodeRenewalInfo,
   DecodedNotificationPayload, NotificationData, JWSTransactionDecodedPayload, JWSRenewalInfoDecodedPayload,
 } from 'app-store-server-api';
-import { HoundError, ErrorType } from '../general/errors';
+import { HoundError, ErrorType } from '../../server/globalErrors';
 import { logServerError } from '../logging/logServerError';
 import { formatString } from '../format/formatObject';
 import { ERROR, SERVER } from '../../server/globalConstants';
@@ -64,11 +64,16 @@ async function validateRenewalInfoSignedPayload(signedRenewalInfo: string): Prom
 * @returns Extracted and validated components from signedPayload
 * @throws If validation fails due to invalid payload or values
 */
-async function validateSignedPayload(signedPayload: string): Promise<(DecodedNotificationPayload | NotificationData | JWSTransactionDecodedPayload | JWSRenewalInfoDecodedPayload)[]> {
+async function validateSignedPayload(signedPayload: string): Promise<{
+  notification: DecodedNotificationPayload;
+  data: NotificationData;
+  renewalInfo: JWSRenewalInfoDecodedPayload;
+  transactionInfo: JWSTransactionDecodedPayload;
+}> {
   const notification = await validateNotificationSignedPayload(signedPayload);
 
   if (notification === null || notification === undefined) {
-    throw new HoundError('notification missing', ERROR.VALUE.MISSING, ErrorType.Validation);
+    throw new HoundError('notification missing', ErrorType.Validation, ERROR.VALUE.MISSING);
   }
 
   // The object that contains the app metadata and signed renewal and transaction information.
@@ -78,34 +83,36 @@ async function validateSignedPayload(signedPayload: string): Promise<(DecodedNot
   const renewalInfo = await validateRenewalInfoSignedPayload(data.signedRenewalInfo);
 
   if (transactionInfo === undefined || renewalInfo === undefined) {
-    throw new HoundError('transactionInfo or renewalInfo missing', ERROR.VALUE.MISSING, ErrorType.Validation);
+    throw new HoundError('transactionInfo or renewalInfo missing', ErrorType.Validation, ERROR.VALUE.MISSING);
   }
 
   if (data.environment !== SERVER.ENVIRONMENT) {
     throw new HoundError(
       `data.environment must be '${SERVER.ENVIRONMENT}', not '${data.environment}'`,
-      ERROR.VALUE.INVALID,
       ErrorType.Validation,
+      ERROR.VALUE.INVALID,
     );
   }
 
   if (renewalInfo.environment !== SERVER.ENVIRONMENT) {
     throw new HoundError(
       `renewalInfo.environment must be '${SERVER.ENVIRONMENT}', not '${renewalInfo.environment}'`,
-      ERROR.VALUE.INVALID,
       ErrorType.Validation,
+      ERROR.VALUE.INVALID,
     );
   }
 
   if (transactionInfo.environment !== SERVER.ENVIRONMENT) {
     throw new HoundError(
       `transactionInfo.environment must be '${SERVER.ENVIRONMENT}', not '${transactionInfo.environment}'`,
-      ERROR.VALUE.INVALID,
       ErrorType.Validation,
+      ERROR.VALUE.INVALID,
     );
   }
 
-  return [notification, data, renewalInfo, transactionInfo];
+  return {
+    notification, data, renewalInfo, transactionInfo,
+  };
 }
 
 export {

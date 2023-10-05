@@ -1,5 +1,5 @@
-import { Queryable, databaseQuery } from '../database/databaseQuery';
-import { AppStoreServerNotificationsRowType, appStoreServerNotificationsRowColumns } from '../types/AppStoreServerNotificationsRow';
+import { Queryable, databaseQuery } from '../../database/databaseQuery';
+import { AppStoreServerNotificationsRowType, appStoreServerNotificationsRowColumns } from '../../types/AppStoreServerNotificationsRow';
 
 // TODO NOW find all uses of [] to index and use .safeIndex to get possible undefined
 

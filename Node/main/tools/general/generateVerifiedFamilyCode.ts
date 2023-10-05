@@ -1,4 +1,4 @@
-import { Queryable, databaseQuery } from '../database/databaseQuery';
+import { Queryable, databaseQuery } from '../../database/databaseQuery';
 
 const familyCodeLength = 8;
 

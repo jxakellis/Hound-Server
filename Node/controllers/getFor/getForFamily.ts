@@ -1,6 +1,5 @@
-const { databaseQuery } from '../../main/tools/database/databaseQuery';
-const { areAllDefined } from '../../main/tools/validate/validateDefined';
-const { ValidationError } from '../../main/tools/general/errors';
+import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
+import { HoundError, ErrorType } from '../../main/server/globalErrors';
 
 /**
  *  If the query is successful, returns the userId, familyCode, familyIsLocked, familyMembers, previousFamilyMembers, and familyActiveSubscription for the familyId.
@@ -13,7 +12,7 @@ const { ValidationError } from '../../main/tools/general/errors';
  * @returns A key-value pairing of {userId (of familyHead), familyCode, familyIsLocked, familyMembers (array), previousFamilyMembers (array), familyActiveSubscription (object)}
  * @throws If an error is encountered
  */
-async function getAllFamilyInformationForFamilyId(databaseConnection, familyId, familyActiveSubscription) {
+async function getAllFamilyInformationForFamilyId(databaseConnection: Queryable, familyId: string, familyActiveSubscription: any) {
   // validate that a familyId was passed, assume that its in the correct format
   if (areAllDefined(databaseConnection, familyId) === false) {
     throw new ValidationError('databaseConnection or familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);

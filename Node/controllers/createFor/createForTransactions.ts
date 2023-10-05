@@ -1,18 +1,17 @@
-const { databaseQuery } from '../../main/tools/database/databaseQuery';
-const {
+import { databaseQuery } from '../../main/database/databaseQuery';
+import {
   formatDate, formatNumber, formatString, formatBoolean,
-} = require('../../main/tools/format/formatObject';
-const { areAllDefined } from '../../main/tools/validate/validateDefined';
-const { ValidationError } from '../../main/tools/general/errors';
+} from '../../main/tools/format/formatObject';
+import { ValidationError } from '../../main/server/globalErrors';
 
-const { extractTransactionIdFromAppStoreReceiptURL } from '../../main/tools/appStoreConnectAPI/extractTransactionId';
-const { queryAllSubscriptionsForTransactionId } from '../../main/tools/appStoreConnectAPI/queryTransactions';
-const { getFamilyHeadUserId } from '../getFor/getForFamily';
-const { disableOldTransactionsAutoRenewStatus } from '../updateFor/updateForTransactions';
+import { extractTransactionIdFromAppStoreReceiptURL } from '../../main/tools/appStoreConnectAPI/extractTransactionId';
+import { queryAllSubscriptionsForTransactionId } from '../../main/tools/appStoreConnectAPI/queryTransactions';
+import { getFamilyHeadUserId } from '../getFor/getForFamily';
 
 // TODO FUTURE depreciate numberOfDogs (last used 3.0.0)
 
 /**
+ * TODO NOW update documentation. incorrect
  * 1. Formats the parameters provided
  * 2. Validates the parameters
  * 3. Attempts to insert the transaction
@@ -35,7 +34,7 @@ const { disableOldTransactionsAutoRenewStatus } from '../updateFor/updateForTran
  * @param {*} forTransactionReason
  * @param {*} forWebOrderLineItemId
  */
-async function createTransactionForTransactionInfo(
+async function createUpdateTransaction(
   databaseConnection,
   userId,
   forAutoRenewProductId,
@@ -197,7 +196,32 @@ async function createTransactionForTransactionInfo(
     ],
   );
 
-  await disableOldTransactionsAutoRenewStatus(databaseConnection, userId);
+  /*
+  * Find the most recent transaction, with the most up-to-date autoRenewStatus, for a userId
+  * If the transaction is the most recent, leave its autoRenewStatus alone
+  * If the transaction isn't the most recent, then it cannot possibly be renewing.
+  * Upgrades make new transactions (so new transaction is now renewing) and downgrades update existing transactions (so existing transaction is still renewing)
+  */
+  
+  await databaseQuery(
+    databaseConnection,
+    `
+    UPDATE transactions t
+    JOIN (
+      SELECT transactionId, autoRenewProductId, autoRenewStatus
+      FROM transactions
+      WHERE revocationReason IS NULL AND userId = ?
+      ORDER BY purchaseDate DESC
+      LIMIT 1
+      ) mrt
+      ON t.userId = ?
+      SET t.autoRenewStatus =
+      CASE
+      WHEN t.transactionId = mrt.transactionId THEN mrt.autoRenewStatus
+      ELSE 0
+      END`,
+      [userId, userId],
+      );
 }
 
 async function createTransactionForAppStoreReceiptURL(databaseConnection, userId, appStoreReceiptURL) {
@@ -218,7 +242,7 @@ async function createTransactionForAppStoreReceiptURL(databaseConnection, userId
   }
 
   // Create an array of Promises
-  const subscriptionPromises = subscriptions.map((subscription) => createTransactionForTransactionInfo(
+  const subscriptionPromises = subscriptions.map((subscription) => createUpdateTransaction(
     databaseConnection,
     userId,
     subscription.autoRenewProductId,
@@ -247,4 +271,4 @@ async function createTransactionForAppStoreReceiptURL(databaseConnection, userId
   await Promise.allSettled(subscriptionPromises);
 }
 
-export { createTransactionForTransactionInfo, createTransactionForAppStoreReceiptURL };
+export { createUpdateTransaction, createTransactionForAppStoreReceiptURL };

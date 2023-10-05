@@ -1,9 +1,9 @@
-const { ValidationError } from '../../main/tools/general/errors';
+const { ValidationError } from '../../main/server/globalErrors';
 const { areAllDefined } from '../../main/tools/validate/validateDefined';
-const { databaseQuery } from '../../main/tools/database/databaseQuery';
+const { databaseQuery } from '../../main/database/databaseQuery';
 const {
   formatArray,
-} = require('../../main/tools/format/formatObject';
+} from ''../../main/tools/format/formatObject';
 
 const { deleteAlarmNotificationsForReminder } from '../../main/tools/notifications/alarm/deleteAlarmNotification';
 

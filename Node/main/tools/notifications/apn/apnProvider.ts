@@ -1,7 +1,7 @@
 const apn = require('@parse/node-apn';
 const {
   key, keyId, teamId,
-} = require('../../../secrets/applePushNotificationsService';
+} from ''../../../secrets/applePushNotificationsService';
 
 // use key.p8, keyId, and teamId
 // https://github.com/parse-community/node-apn/blob/650993dcfc210485def7b4ce6ddf68e6c6a32878/doc/provider.markdown

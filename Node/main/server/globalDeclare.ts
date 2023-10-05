@@ -1,4 +1,4 @@
-import { PoolConnection } from 'mysql2/promise';
+import { PoolConnection } from 'mysql2';
 
 declare global {
     interface Error {
@@ -9,13 +9,12 @@ declare global {
 declare module 'express-serve-static-core' {
     export interface Request {
         databaseConnection?: PoolConnection
-        hasActiveDatabaseConnection?: boolean;
-        hasActiveDatabaseTransaction?: boolean;
+        hasActiveDatabaseTransaction: boolean;
         requestId?: number;
     }
     export interface Response {
       sendResponseForStatusBodyError(status: number, body?: unknown, error?: Error): Promise<void>;
-      hasSentResponse?: boolean;
+      hasSentResponse: boolean;
       responseId?: number;
     }
 }

@@ -1,9 +1,9 @@
-const { databaseQuery } from '../../main/tools/database/databaseQuery';
+const { databaseQuery } from '../../main/database/databaseQuery';
 const {
   formatBoolean, formatDate,
-} = require('../../main/tools/format/formatObject';
+} from ''../../main/tools/format/formatObject';
 const { areAllDefined, atLeastOneDefined } from '../../main/tools/validate/validateDefined';
-const { ValidationError } from '../../main/tools/general/errors';
+const { ValidationError } from '../../main/server/globalErrors';
 
 const { getAllLogsForDogId } from './getForLogs';
 const { getAllRemindersForDogId } from './getForReminders';

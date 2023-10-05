@@ -1,9 +1,9 @@
-const { databaseQuery } from '../../main/tools/database/databaseQuery';
+const { databaseQuery } from '../../main/database/databaseQuery';
 const {
   formatNumber, formatDate, formatBoolean, formatArray, formatString,
-} = require('../../main/tools/format/formatObject';
+} from ''../../main/tools/format/formatObject';
 const { areAllDefined } from '../../main/tools/validate/validateDefined';
-const { ValidationError } from '../../main/tools/general/errors';
+const { ValidationError } from '../../main/server/globalErrors';
 
 /**
  *  Queries the database to create a single reminder. If the query is successful, then returns the reminder with created reminderId added to it.

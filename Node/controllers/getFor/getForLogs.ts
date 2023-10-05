@@ -1,7 +1,7 @@
-const { databaseQuery } from '../../main/tools/database/databaseQuery';
+const { databaseQuery } from '../../main/database/databaseQuery';
 const { formatDate } from '../../main/tools/format/formatObject';
 const { areAllDefined } from '../../main/tools/validate/validateDefined';
-const { ValidationError } from '../../main/tools/general/errors';
+const { ValidationError } from '../../main/server/globalErrors';
 
 // OMITTED (not necessary): dogId and logLastModified
 const dogLogsColumns = 'logId, userId, logDate, logNote, logAction, logCustomActionName, logIsDeleted';

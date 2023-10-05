@@ -1,9 +1,6 @@
-import type { PoolConnection, Pool } from 'mysql2';
-import { poolLogger } from '../logging/loggers';
-import { HoundError, ErrorType } from '../general/errors';
-
-// Create a type alias for anything that can be queried
-type Queryable = PoolConnection | Pool;
+import { poolLogger } from '../tools/logging/loggers';
+import { HoundError, ErrorType } from '../server/globalErrors';
+import { Queryable } from '../types/Queryable';
 
 /**
  * Queries the database with the given sqlString. If a databaseConnection is provided, then uses that databaseConnection, otherwise uses the databaseConnectionForGeneral

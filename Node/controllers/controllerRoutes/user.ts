@@ -1,6 +1,6 @@
 import express from 'express';
 const { areAllDefined } from '../../main/tools/validate/validateDefined';
-const { ValidationError } from '../../main/tools/general/errors';
+const { ValidationError } from '../../main/server/globalErrors';
 
 const { getUserForUserIdentifier } from '../getFor/getForUser';
 

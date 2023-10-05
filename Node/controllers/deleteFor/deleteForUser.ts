@@ -1,5 +1,5 @@
-const { ValidationError } from '../../main/tools/general/errors';
-const { databaseQuery } from '../../main/tools/database/databaseQuery';
+const { ValidationError } from '../../main/server/globalErrors';
+const { databaseQuery } from '../../main/database/databaseQuery';
 const { areAllDefined } from '../../main/tools/validate/validateDefined';
 
 const { getFamilyId } from '../getFor/getForFamily';

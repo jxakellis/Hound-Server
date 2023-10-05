@@ -2,7 +2,7 @@ import express from 'express';
 const { databaseQuery } from '../database/databaseQuery';
 const {
   formatSHA256Hash, formatString, formatArray, formatNumber, formatBoolean,
-} = require('../format/formatObject';
+} from ''../format/formatObject';
 const { areAllDefined } from './validateDefined';
 const { ValidationError } from '../general/errors';
 const { hash } from '../format/hash';

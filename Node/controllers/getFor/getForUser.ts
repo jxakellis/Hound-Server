@@ -1,6 +1,6 @@
-const { databaseQuery } from '../../main/tools/database/databaseQuery';
+const { databaseQuery } from '../../main/database/databaseQuery';
 const { areAllDefined } from '../../main/tools/validate/validateDefined';
-const { ValidationError } from '../../main/tools/general/errors';
+const { ValidationError } from '../../main/server/globalErrors';
 const { hash } from '../../main/tools/format/hash';
 
 const { updateUserForUserIdentifierHashedUserIdentifier } from '../updateFor/updateForUser';

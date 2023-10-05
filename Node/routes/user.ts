@@ -6,7 +6,7 @@ const { addUserIdToLogRequest } from '../main/tools/logging/logRequest';
 
 const {
   getUser, createUser, updateUser, deleteUser,
-} = require('../controllers/controllerRoutes/user';
+} from ''../controllers/controllerRoutes/user';
 
 const { validateUserId } from '../main/tools/validate/validateId';
 

@@ -1,10 +1,10 @@
-const { databaseQuery } from '../../main/tools/database/databaseQuery';
+const { databaseQuery } from '../../main/database/databaseQuery';
 const {
   formatNumber, formatBoolean, formatSHA256Hash, formatString,
-} = require('../../main/tools/format/formatObject';
+} from ''../../main/tools/format/formatObject';
 const { hash } from '../../main/tools/format/hash';
 const { atLeastOneDefined, areAllDefined } from '../../main/tools/validate/validateDefined';
-const { ValidationError } from '../../main/tools/general/errors';
+const { ValidationError } from '../../main/server/globalErrors';
 
 /**
  *  Queries the database to update a user. If the query is successful, then returns

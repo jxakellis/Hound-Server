@@ -6,7 +6,7 @@ const { addFamilyIdToLogRequest } from '../main/tools/logging/logRequest';
 
 const {
   getFamily, createFamily, updateFamily, deleteFamily,
-} = require('../controllers/controllerRoutes/family';
+} from ''../controllers/controllerRoutes/family';
 
 const { validateFamilyId } from '../main/tools/validate/validateId';
 

@@ -1,10 +1,10 @@
-import { serverLogger } from '../logging/loggers';
+import { serverLogger } from '../tools/logging/loggers';
 import {
   databaseConnectionForGeneral, databaseConnectionForLogging, databaseConnectionForAlarms, databaseConnectionPoolForRequests,
 } from './createDatabaseConnections';
-import { testDatabaseConnection } from './testDatabaseConnection';
+import { testDatabaseConnections } from './testDatabaseConnection';
 import { Queryable, databaseQuery } from './databaseQuery';
-import { SERVER } from '../../server/globalConstants';
+import { SERVER } from '../server/globalConstants';
 import { StatusResult } from '../types/StatusResult';
 
 /// Uses an existing database databaseConnection to find the number of active databaseConnections to said database
@@ -53,10 +53,12 @@ async function configureDatabaseConnections(): Promise<void> {
   await Promise.all(promises);
 
   // Test to make sure all connections (or pools) can access a basic table
-  await testDatabaseConnection(databaseConnectionForGeneral);
-  await testDatabaseConnection(databaseConnectionForLogging);
-  await testDatabaseConnection(databaseConnectionForAlarms);
-  await testDatabaseConnection(databaseConnectionPoolForRequests);
+  await testDatabaseConnections(
+    databaseConnectionForGeneral,
+    databaseConnectionForLogging,
+    databaseConnectionForAlarms,
+    databaseConnectionPoolForRequests,
+  );
 
   // Once all databaseConnections verified, find the number of active threads to the MySQL server
   serverLogger.info(`Currently ${await findNumberOfThreadsConnectedToDatabase(databaseConnectionForGeneral)} threads connected to MariaDB Database Server`);

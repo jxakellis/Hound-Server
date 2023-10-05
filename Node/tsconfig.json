@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
     // The ECMAScript target version for the emitted JS files.
-    "target": "es6",
+    "target": "es2022",
 
     // Specifies the module code generation: "None", "CommonJS", "AMD", "System", "UMD", "ES6", "ES2015", "ESNext"
-    "module": "ESNext",
+    "module": "es2022",
 
     // Determines how module resolution works, "node" works in the Node.js-style module resolution.
     "moduleResolution": "node",

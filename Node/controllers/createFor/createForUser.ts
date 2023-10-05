@@ -1,10 +1,10 @@
 const crypto = require('crypto';
 
-const { databaseQuery } from '../../main/tools/database/databaseQuery';
-const { ValidationError } from '../../main/tools/general/errors';
+const { databaseQuery } from '../../main/database/databaseQuery';
+const { ValidationError } from '../../main/server/globalErrors';
 const {
   formatNumber, formatEmail, formatBoolean, formatString,
-} = require('../../main/tools/format/formatObject';
+} from ''../../main/tools/format/formatObject';
 const { hash } from '../../main/tools/format/hash';
 const { areAllDefined } from '../../main/tools/validate/validateDefined';
 

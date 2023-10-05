@@ -2,19 +2,19 @@ import express from 'express';
 
 import { parseFormData, parseJSON } from '../tools/general/parseBody';
 import { logRequest, addAppVersionToLogRequest } from '../tools/logging/logRequest';
-import { configureRequestAndResponse } from '../tools/general/configureRequestAndResponse';
+import { configureRequestAndResponse } from './configureRequestAndResponse';
 import { validateAppVersion } from '../tools/validate/validateId';
 import { watchdogRouter } from '../../routes/watchdog';
 import { appStoreServerNotificationsRouter } from '../../routes/appStoreServerNotifications';
 import { userRouter } from '../../routes/user';
-import { HoundError, ErrorType } from '../tools/general/errors';
+import { HoundError, ErrorType } from './globalErrors';
 import { ERROR } from './globalConstants';
 
 const serverToServerPath = '/appStoreServerNotifications';
 const watchdogPath = '/watchdog';
 const userPath = '/app/:appVersion';
 
-function configureAppForRequests(app: express.Application): void {
+function configureApp(app: express.Application): void {
   // Setup defaults and custom res.status method
   app.use(configureRequestAndResponse);
 
@@ -42,7 +42,7 @@ function configureAppForRequests(app: express.Application): void {
   app.use(`${userPath}/user`, userRouter);
 
   // Throw back the request if an unknown path is used
-  app.use('*', async (req: express.Request, res: express.Response) => res.sendResponseForStatusBodyError(404, null, new HoundError('Path not found', ERROR.VALUE.INVALID, ErrorType.General)));
+  app.use('*', async (req: express.Request, res: express.Response) => res.sendResponseForStatusBodyError(404, null, new HoundError('Path not found', ErrorType.General, ERROR.VALUE.INVALID)));
 }
 
-export { configureAppForRequests };
+export { configureApp };

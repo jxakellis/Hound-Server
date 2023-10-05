@@ -4,7 +4,7 @@ const transactionsRouter = express.Router({ mergeParams: true });
 
 const {
   getTransactions, createTransactions,
-} = require('../controllers/controllerRoutes/transactions';
+} from ''../controllers/controllerRoutes/transactions';
 
 //
 transactionsRouter.get('/', getTransactions);

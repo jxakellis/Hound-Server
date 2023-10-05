@@ -26,7 +26,8 @@ module.exports = {
     "@typescript-eslint/explicit-function-return-type": 1,
     "no-shadow": "off",
     "no-extend-native": "off",
-    "@typescript-eslint/no-shadow": ["error"]
+    "@typescript-eslint/no-shadow": ["error"],
+    "@typescript-eslint/no-explicit-any": ["warn"]
   },
   settings: {
     "import/resolver": {

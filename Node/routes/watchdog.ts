@@ -4,7 +4,7 @@ const watchdogRouter = express.Router({ mergeParams: true });
 
 const {
   getWatchdog,
-} = require('../controllers/controllerRoutes/watchdog';
+} from ''../controllers/controllerRoutes/watchdog';
 
 watchdogRouter.get('/', getWatchdog);
 // no body

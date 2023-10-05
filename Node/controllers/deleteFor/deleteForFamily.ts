@@ -1,5 +1,5 @@
-const { ValidationError } from '../../main/tools/general/errors';
-const { databaseQuery } from '../../main/tools/database/databaseQuery';
+const { ValidationError } from '../../main/server/globalErrors';
+const { databaseQuery } from '../../main/database/databaseQuery';
 const { formatSHA256Hash } from '../../main/tools/format/formatObject';
 const { areAllDefined } from '../../main/tools/validate/validateDefined';
 

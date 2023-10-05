@@ -8,7 +8,7 @@ dogsRouter.use('/', validateSubscription);
 
 const {
   getDogs, createDog, updateDog, deleteDog,
-} = require('../controllers/controllerRoutes/dogs';
+} from ''../controllers/controllerRoutes/dogs';
 const { validateDogId } from '../main/tools/validate/validateId';
 
 // validation that params are formatted correctly and have adequate permissions

@@ -4,7 +4,7 @@ const logsRouter = express.Router({ mergeParams: true });
 
 const {
   getLogs, createLog, updateLog, deleteLog,
-} = require('../controllers/controllerRoutes/logs';
+} from ''../controllers/controllerRoutes/logs';
 const { validateLogId } from '../main/tools/validate/validateId';
 
 // validation that params are formatted correctly and have adequate permissions

@@ -2,7 +2,7 @@ import express from 'express';
 
 const alertRouter = express.Router({ mergeParams: true });
 
-const { ValidationError } from '../main/tools/general/errors';
+const { ValidationError } from '../main/server/globalErrors';
 const { areAllDefined } from '../main/tools/validate/validateDefined';
 const { createTerminateNotification } from '../main/tools/notifications/alert/createTerminateNotification';
 

@@ -1,53 +1,59 @@
+import https from 'https';
+import { IncomingMessage, ServerResponse } from 'http';
+
 import { serverLogger } from '../tools/logging/loggers';
-const { configureDatabaseConnections } from '../tools/database/configureDatabaseConnection';
-const { databaseQuery } from '../tools/database/databaseQuery';
-const { testDatabaseConnections } from '../tools/database/testDatabaseConnection';
-const {
+import { configureDatabaseConnections } from '../database/configureDatabaseConnection';
+import { databaseQuery } from '../database/databaseQuery';
+import { testDatabaseConnections } from '../database/testDatabaseConnection';
+import {
   databaseConnectionForGeneral, databaseConnectionForLogging, databaseConnectionForAlarms, databaseConnectionPoolForRequests,
-} = require('../tools/database/createDatabaseConnections';
-const { logServerError } from '../tools/logging/logServerError';
-const { restoreAlarmNotificationsForAllFamilies } from '../tools/notifications/alarm/restoreAlarmNotification';
+} from '../database/createDatabaseConnections';
+import { logServerError } from '../tools/logging/logServerError';
+import { restoreAlarmNotificationsForAllFamilies } from '../tools/notifications/alarm/restoreAlarmNotification';
+import { SERVER } from './globalConstants';
 
-const configureServerForRequests = (server) => new Promise((resolve) => {
-// We can only create an HTTPS server on the AWS instance. Otherwise we create a HTTP server.
-  server.listen(global.CONSTANT.SERVER.SERVER_PORT, async () => {
-    serverLogger.info(`Running HTTPS server on port ${global.CONSTANT.SERVER.SERVER_PORT}; ${global.CONSTANT.SERVER.ENVIRONMENT} database`);
+async function configureServer(server: https.Server<typeof IncomingMessage, typeof ServerResponse>): Promise<NodeJS.Timeout> {
+  return new Promise((resolve) => {
+    // We can only create an HTTPS server on the AWS instance. Otherwise we create a HTTP server.
+    server.listen(SERVER.SERVER_PORT, async () => {
+      serverLogger.info(`Running HTTPS server on port ${SERVER.SERVER_PORT}; ${SERVER.ENVIRONMENT} database`);
 
-    await configureDatabaseConnections();
+      await configureDatabaseConnections();
 
-    await restoreAlarmNotificationsForAllFamilies();
+      await restoreAlarmNotificationsForAllFamilies();
 
-    // Invoke this interval every DATABASE_MAINTENANCE_INTERVAL, tests database connections and delete certain things
-    const databaseMaintenanceIntervalObject = setInterval(() => {
-      serverLogger.info(`Performing ${global.CONSTANT.SERVER.DATABASE_MAINTENANCE_INTERVAL / 1000} second maintenance`);
+      // Invoke this interval every DATABASE_MAINTENANCE_INTERVAL, tests database connections and delete certain things
+      const databaseMaintenanceIntervalObject = setInterval(() => {
+        serverLogger.info(`Performing ${SERVER.DATABASE_MAINTENANCE_INTERVAL / 1000} second maintenance`);
 
-      // Keep the latest DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES previousRequests, then delete any entries that are older
-      databaseQuery(
-        databaseConnectionForGeneral,
-        `DELETE pr
-        FROM previousRequests pr
-        JOIN (SELECT requestId FROM previousRequests pr ORDER BY requestDate DESC LIMIT 1 OFFSET ?) prl ON pr.requestId < prl.requestId`,
-        [global.CONSTANT.SERVER.DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES],
-      )
-        .catch((error) => logServerError('DELETE previousRequests for databaseMaintenanceIntervalObject', error));
+        // Keep the latest DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES previousRequests, then delete any entries that are older
+        databaseQuery(
+          databaseConnectionForGeneral,
+          `DELETE pr
+          FROM previousRequests pr
+          JOIN (SELECT requestId FROM previousRequests pr ORDER BY requestDate DESC LIMIT 1 OFFSET ?) prl ON pr.requestId < prl.requestId`,
+          [SERVER.DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES],
+        )
+          .catch((error) => logServerError('DELETE previousRequests for databaseMaintenanceIntervalObject', error));
 
-      // Keep the latest DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES previousResponses, then delete any entries that are older
-      databaseQuery(
-        databaseConnectionForGeneral,
-        `DELETE pr
-        FROM previousResponses pr
-        JOIN (SELECT requestId FROM previousRequests pr ORDER BY requestDate DESC LIMIT 1 OFFSET ?) prl ON pr.requestId < prl.requestId`,
-        [global.CONSTANT.SERVER.DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES],
-      )
-        .catch((error) => logServerError('DELETE previousResponses for databaseMaintenanceIntervalObject', error));
+        // Keep the latest DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES previousResponses, then delete any entries that are older
+        databaseQuery(
+          databaseConnectionForGeneral,
+          `DELETE pr
+            FROM previousResponses pr
+            JOIN (SELECT requestId FROM previousRequests pr ORDER BY requestDate DESC LIMIT 1 OFFSET ?) prl ON pr.requestId < prl.requestId`,
+          [SERVER.DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES],
+        )
+          .catch((error) => logServerError('DELETE previousResponses for databaseMaintenanceIntervalObject', error));
 
-      // Ensure that the database connections are valid and can query the database
-      testDatabaseConnections(databaseConnectionForGeneral, databaseConnectionForLogging, databaseConnectionForAlarms, databaseConnectionPoolForRequests)
-        .catch((error) => logServerError('testDatabaseConnections for databaseMaintenanceIntervalObject', error));
-    }, global.CONSTANT.SERVER.DATABASE_MAINTENANCE_INTERVAL);
+        // Ensure that the database connections are valid and can query the database
+        testDatabaseConnections(databaseConnectionForGeneral, databaseConnectionForLogging, databaseConnectionForAlarms, databaseConnectionPoolForRequests)
+          .catch((error) => logServerError('testDatabaseConnections for databaseMaintenanceIntervalObject', error));
+      }, SERVER.DATABASE_MAINTENANCE_INTERVAL);
 
-    resolve(databaseMaintenanceIntervalObject);
+      resolve(databaseMaintenanceIntervalObject);
+    });
   });
-});
+}
 
-export { configureServerForRequests };
+export { configureServer };

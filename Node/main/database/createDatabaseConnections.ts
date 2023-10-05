@@ -1,4 +1,4 @@
-import mysql2 from 'mysql2';
+import mysql2, { PoolConnection } from 'mysql2';
 import {
   developmentHoundUser,
   developmentHoundHost,
@@ -8,9 +8,15 @@ import {
   productionHoundHost,
   productionHoundPassword,
   productionHoundDatabase,
-} from '../../secrets/databaseConnection';
+} from '../secrets/databaseConnection';
 
-import { SERVER } from '../../server/globalConstants';
+// TODO NOW rewrite logic for createDatabaseConnection.
+// when we create the databaseConnections here, automatically setup testing and configuration for them.
+// however, these can always throw errors and we want those errors to be encapsulated in something.
+// make a function that creates and establishes all of our connections and sets up testing for them
+
+import { SERVER } from '../server/globalConstants';
+import { HoundError, ErrorType } from '../server/globalErrors';
 
 const user = SERVER.IS_PRODUCTION_DATABASE ? productionHoundUser : developmentHoundUser;
 const host = SERVER.IS_PRODUCTION_DATABASE ? productionHoundHost : developmentHoundHost;
@@ -49,6 +55,23 @@ const databaseConnectionPoolForRequests = mysql2.createPool({
   connectTimeout: 10000,
 });
 
+async function getPoolConnection(): Promise<PoolConnection> {
+  return new Promise((resolve, reject) => {
+    databaseConnectionPoolForRequests.getConnection(
+      (error, connection) => {
+        if (error !== undefined || connection === undefined) {
+          // error when trying to do query to database
+          reject(new HoundError(error.message, ErrorType.Database, error.code));
+        }
+        else {
+          // database queried successfully
+          resolve(connection);
+        }
+      },
+    );
+  });
+}
+
 export {
-  databaseConnectionForGeneral, databaseConnectionForLogging, databaseConnectionForAlarms, databaseConnectionPoolForRequests,
+  databaseConnectionForGeneral, databaseConnectionForLogging, databaseConnectionForAlarms, databaseConnectionPoolForRequests, getPoolConnection,
 };
