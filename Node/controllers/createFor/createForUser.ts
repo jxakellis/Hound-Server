@@ -3,7 +3,7 @@ const crypto = require('crypto';
 const { databaseQuery } from '../../main/database/databaseQuery';
 const { ValidationError } from '../../main/server/globalErrors';
 const {
-  formatNumber, formatEmail, formatBoolean, formatString,
+  formatNumber, formatEmail, formatBoolean, formatUnknownString,
 } from ''../../main/tools/format/formatObject';
 const { hash } from '../../main/tools/format/hash';
 const { areAllDefined } from '../../main/tools/validate/validateDefined';
@@ -52,11 +52,11 @@ async function createUserForUserIdentifier(
 
   const userId = hash(userIdentifier);
   // userIdentifier
-  const userAppAccountToken = formatString(crypto.randomUUID(), 36);
+  const userAppAccountToken = formatUnknownString(crypto.randomUUID(), 36);
   const userEmail = formatEmail(forUserEmail);
-  const userFirstName = formatString(forUserFirstName, 32);
-  const userLastName = formatString(forUserLastName, 32);
-  const userNotificationToken = formatString(forUserNotificationToken, 100);
+  const userFirstName = formatUnknownString(forUserFirstName, 32);
+  const userLastName = formatUnknownString(forUserLastName, 32);
+  const userNotificationToken = formatUnknownString(forUserNotificationToken, 100);
 
   if (areAllDefined(
     userId,

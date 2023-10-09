@@ -16,7 +16,7 @@ class HoundError extends Error {
   }
 }
 
-function convertErrorToJSON(error: Error): {message: string, code: string, type: string} {
+function convertErrorToJSON(error?: Error): {message: string, code: string, type: string} {
   if (error instanceof HoundError) {
     return {
       // Remove all newlines, remove all carriage returns, and make all >1 length spaces into 1 length spaces

@@ -13,10 +13,6 @@ import { HoundError, ErrorType } from '../../main/server/globalErrors';
  * @throws If an error is encountered
  */
 async function getAllFamilyInformationForFamilyId(databaseConnection: Queryable, familyId: string, familyActiveSubscription: any) {
-  // validate that a familyId was passed, assume that its in the correct format
-  if (areAllDefined(databaseConnection, familyId) === false) {
-    throw new ValidationError('databaseConnection or familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
-  }
   // family id is validated, therefore we know familyMembers is >= 1 for familyId
   // find which family member is the head
   const promises = [

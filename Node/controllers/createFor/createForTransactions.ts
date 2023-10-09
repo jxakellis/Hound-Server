@@ -1,6 +1,6 @@
 import { databaseQuery } from '../../main/database/databaseQuery';
 import {
-  formatDate, formatNumber, formatString, formatBoolean,
+  formatDate, formatNumber, formatUnknownString, formatBoolean,
 } from '../../main/tools/format/formatObject';
 import { ValidationError } from '../../main/server/globalErrors';
 
@@ -59,26 +59,26 @@ async function createUpdateTransaction(
   // https://developer.apple.com/documentation/appstoreservernotifications/jwstransactiondecodedpayload
   // appAccountToken; A UUID that associates the transaction with a user on your own service. If your app doesn’t provide an appAccountToken, this string is empty. For more information, see appAccountToken(_:).
   // The product identifier of the subscription that will renew when the current subscription expires. autoRenewProductId == productId when a subscription is created
-  const autoRenewProductId = formatString(forAutoRenewProductId, 60);
+  const autoRenewProductId = formatUnknownString(forAutoRenewProductId, 60);
   // The renewal status for an auto-renewable subscription.
   const autoRenewStatus = formatBoolean(forAutoRenewStatus);
   // bundleId; The bundle identifier of the app.
   // The server environment, either Sandbox or Production.
-  const environment = formatString(forEnvironment, 10);
+  const environment = formatUnknownString(forEnvironment, 10);
   // The UNIX time, in milliseconds, the subscription expires or renews.
   const expiresDate = formatDate(formatNumber(forExpiresDate));
   // A string that describes whether the transaction was purchased by the user, or is available to them through Family Sharing.
-  const inAppOwnershipType = formatString(forInAppOwnershipType, 13);
+  const inAppOwnershipType = formatUnknownString(forInAppOwnershipType, 13);
   // isUpgraded; A Boolean value that indicates whether the user upgraded to another subscription.
   // The identifier that contains the offer code or the promotional offer identifier.
-  const offerIdentifier = formatString(forOfferIdentifier, 64);
+  const offerIdentifier = formatUnknownString(forOfferIdentifier, 64);
   // A value that represents the promotional offer type. The offer types 2 and 3 have an offerIdentifier.
   const offerType = formatNumber(forOfferType);
   // originalPurchaseDate; The UNIX time, in milliseconds, that represents the purchase date of the original transaction identifier.
   // The transaction identifier of the original purchase.
   const originalTransactionId = formatNumber(forOriginalTransactionId);
   // The product identifier of the in-app purchase.
-  const productId = formatString(forProductId, 60);
+  const productId = formatUnknownString(forProductId, 60);
   // The UNIX time, in milliseconds, that the App Store charged the user’s account for a purchase, restored product, subscription, or subscription renewal after a lapse.
   const purchaseDate = formatDate(formatNumber(forPurchaseDate));
   // The number of consumable products the user purchased.
@@ -94,7 +94,7 @@ async function createUpdateTransaction(
   // The unique identifier of the transaction.
   const transactionId = formatNumber(forTransactionId);
   // The reason for the purchase transaction, which indicates whether it’s a customer’s purchase or a renewal for an auto-renewable subscription that the system initiates.
-  const transactionReason = formatString(forTransactionReason, 8);
+  const transactionReason = formatUnknownString(forTransactionReason, 8);
   // type; The type of the in-app purchase.
   // The unique identifier of subscription purchase events across devices, including subscription renewals.
   const webOrderLineItemId = formatNumber(forWebOrderLineItemId);
@@ -202,7 +202,7 @@ async function createUpdateTransaction(
   * If the transaction isn't the most recent, then it cannot possibly be renewing.
   * Upgrades make new transactions (so new transaction is now renewing) and downgrades update existing transactions (so existing transaction is still renewing)
   */
-  
+
   await databaseQuery(
     databaseConnection,
     `
@@ -220,8 +220,8 @@ async function createUpdateTransaction(
       WHEN t.transactionId = mrt.transactionId THEN mrt.autoRenewStatus
       ELSE 0
       END`,
-      [userId, userId],
-      );
+    [userId, userId],
+  );
 }
 
 async function createTransactionForAppStoreReceiptURL(databaseConnection, userId, appStoreReceiptURL) {

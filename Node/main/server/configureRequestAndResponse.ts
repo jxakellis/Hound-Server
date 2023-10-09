@@ -63,7 +63,7 @@ function configureRequestAndResponseConstants(req: express.Request, res: express
   res.responseId = undefined;
   res.hasSentResponse = false;
 
-  res.sendResponseForStatusBodyError = async function sendResponseForStatusBodyError(status: number, body?: unknown, error?: Error): Promise<void> {
+  res.sendResponseForStatusBodyError = async function sendResponseForStatusBodyError(status: number, body?: { [key: string]: unknown }, error?: object): Promise<void> {
     // Check to see if the request has an active databaseConnection
     // If it does, then we attempt to COMMIT or ROLLBACK (and if they fail, the functions release() anyways)
     // if there is no active transaction, then we attempt to release the databaseConnection
@@ -94,13 +94,20 @@ function configureRequestAndResponseConstants(req: express.Request, res: express
 
     // If we user provided an error, then we convert that error to JSON and use it as the body
 
-    const response: ResponseBodyType = {
-      ...(error !== undefined
-        ? convertErrorToJSON(error)
-        : { result: body ?? '' }),
-    };
+    let response: ResponseBodyType;
+    if (error !== undefined) {
+      if (error instanceof Error) {
+        response = convertErrorToJSON(error);
+      }
+      else {
+        response = convertErrorToJSON(undefined);
+      }
+    }
+    else {
+      response = { result: body ?? '' };
+    }
 
-    await logResponse(req, res, status, response);
+    await logResponse(req, res, status, JSON.stringify(response));
 
     if (req.originalUrl !== '/watchdog') {
       // need to update watchdog so it recognizes pattern of requestId and responseId. currently can only recognize {"result":""} as success
@@ -130,7 +137,7 @@ async function configureRequestAndResponse(req: express.Request, res: express.Re
     catch (transactionError) {
       return res.sendResponseForStatusBodyError(
         500,
-        null,
+        undefined,
         new HoundError("Couldn't begin a transaction with databaseConnection", ErrorType.Database, ERROR.GENERAL.POOL_TRANSACTION_FAILED),
       );
     }
@@ -138,7 +145,7 @@ async function configureRequestAndResponse(req: express.Request, res: express.Re
   catch (databaseConnectionError) {
     return res.sendResponseForStatusBodyError(
       500,
-      null,
+      undefined,
       new HoundError("Couldn't get a connection from databaseConnectionPoolForRequests", ErrorType.Database, ERROR.GENERAL.POOL_CONNECTION_FAILED),
     );
   }

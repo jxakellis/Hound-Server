@@ -1,5 +1,5 @@
 const { databaseQuery } from '../../main/database/databaseQuery';
-const { formatString } from '../../main/tools/format/formatObject';
+const { formatUnknownString } from '../../main/tools/format/formatObject';
 const { areAllDefined } from '../../main/tools/validate/validateDefined';
 const { ValidationError } from '../../main/server/globalErrors';
 
@@ -8,7 +8,7 @@ const { ValidationError } from '../../main/server/globalErrors';
  *  If a problem is encountered, creates and throws custom error
  */
 async function updateDogForDogId(databaseConnection, dogId, forDogName) {
-  const dogName = formatString(forDogName, 32);
+  const dogName = formatUnknownString(forDogName, 32);
 
   // if dogName null, then there is nothing to update
   if (areAllDefined(databaseConnection, dogId, dogName) === false) {

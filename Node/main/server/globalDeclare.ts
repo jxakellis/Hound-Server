@@ -13,7 +13,7 @@ declare module 'express-serve-static-core' {
         requestId?: number;
     }
     export interface Response {
-      sendResponseForStatusBodyError(status: number, body?: unknown, error?: Error): Promise<void>;
+      sendResponseForStatusBodyError(status: number, body?: { [key: string]: unknown }, error?: object): Promise<void>;
       hasSentResponse: boolean;
       responseId?: number;
     }
@@ -25,6 +25,7 @@ declare global {
     }
 }
 
+// eslint-disable-next-line no-extend-native
 Array.prototype.safeIndex = function safeIndex<T>(index: number): T | undefined {
   return this[index];
 };

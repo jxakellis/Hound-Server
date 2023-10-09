@@ -5,7 +5,7 @@ import { Queryable, databaseQuery } from '../../database/databaseQuery';
 import {
   formatDate, formatNumber, formatBoolean,
 } from '../format/formatObject';
-import { AppStoreServerNotificationsRowType, appStoreServerNotificationsRowColumns } from '../../types/AppStoreServerNotificationsRow';
+import { AppStoreServerNotificationsRow, appStoreServerNotificationsColumnsWithASSNPrefix, appStoreServerNotificationsColumnsWithoutASSNPrefix } from '../../types/AppStoreServerNotificationsRow';
 
 /**
  * Extracts data from parameters provided and attempts to insert a corresponding notification into the appStoreServerNotification table.
@@ -121,10 +121,10 @@ async function insertAppStoreServerNotification(
   // The unique identifier of subscription purchase events across devices, including subscription renewals.
   const transactionInfoWebOrderLineItemId = transactionInfo.webOrderLineItemId;
 
-  const existingAppStoreServerNotification = (await databaseQuery<AppStoreServerNotificationsRowType>(
+  const existingAppStoreServerNotification = (await databaseQuery<AppStoreServerNotificationsRow[]>(
     databaseConnection,
-    `SELECT ${appStoreServerNotificationsRowColumns}
-    FROM appStoreServerNotifications
+    `SELECT ${appStoreServerNotificationsColumnsWithASSNPrefix}
+    FROM appStoreServerNotifications assn
     WHERE notificationUUID = ?
     LIMIT 1`,
     [notificationUUID],
@@ -141,7 +141,7 @@ async function insertAppStoreServerNotification(
     databaseConnection,
     `INSERT INTO appStoreServerNotifications
     (
-      ${appStoreServerNotificationsRowColumns}
+      ${appStoreServerNotificationsColumnsWithoutASSNPrefix}
     ) 
     VALUES (
       ?, ?, ?, ?, ?, ?, ?,

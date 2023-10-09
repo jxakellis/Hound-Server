@@ -1,6 +1,6 @@
 const { databaseQuery } from '../../main/database/databaseQuery';
 const { ValidationError } from '../../main/server/globalErrors';
-const { formatDate, formatString } from '../../main/tools/format/formatObject';
+const { formatDate, formatUnknownString } from '../../main/tools/format/formatObject';
 const { areAllDefined } from '../../main/tools/validate/validateDefined';
 
 /**
@@ -9,8 +9,8 @@ const { areAllDefined } from '../../main/tools/validate/validateDefined';
  */
 async function createLogForUserIdDogId(databaseConnection, userId, dogId, forLogDate, logAction, forLogCustomActionName, forLogNote) {
   const logDate = formatDate(forLogDate);
-  const logCustomActionName = formatString(forLogCustomActionName, 32);
-  const logNote = formatString(forLogNote, 500);
+  const logCustomActionName = formatUnknownString(forLogCustomActionName, 32);
+  const logNote = formatUnknownString(forLogNote, 500);
 
   if (areAllDefined(databaseConnection, userId, dogId, logDate, logAction, logCustomActionName, logNote) === false) {
     throw new ValidationError('databaseConnection, userId, dogId, logDate, logAction, logCustomActionName, or logNote missing', global.CONSTANT.ERROR.VALUE.MISSING);

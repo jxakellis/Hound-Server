@@ -14,20 +14,23 @@ module.exports = {
   },
   plugins: ['@typescript-eslint'], // Use the TypeScript plugin
   rules: {
+    // Custom
     'max-len': ['error', { code: 200, ignoreComments: true }],
     'brace-style': ['error', 'stroustrup', { allowSingleLine: false }],
-    'no-console': 'off',
-    'no-multi-str': 'off',
-    'no-continue': 'off',
-    '@typescript-eslint/no-use-before-define': ['error', { functions: false, classes: true, variables: true }], // Use the TypeScript version of the rule
+    '@typescript-eslint/no-use-before-define': ['error', { functions: false, classes: true, variables: true }],
+    // Error
+    '@typescript-eslint/no-unsafe-member-access': ['error'],
+    // Warn
+    "@typescript-eslint/explicit-function-return-type": ['warn'],
+    "@typescript-eslint/no-shadow": ['warn'],
+    "@typescript-eslint/no-explicit-any": ['warn'],
+    'no-console': ['warn'],
+    // Off
     'import/extensions': 'off',
     'import/prefer-default-export': 'off',
-    '@typescript-eslint/no-unsafe-member-access': 2,
-    "@typescript-eslint/explicit-function-return-type": 1,
+    // no-shadow is disabled in favor of enabling @typescript-eslint/no-shadow
     "no-shadow": "off",
-    "no-extend-native": "off",
-    "@typescript-eslint/no-shadow": ["error"],
-    "@typescript-eslint/no-explicit-any": ["warn"]
+    "dot-notation": "off",
   },
   settings: {
     "import/resolver": {

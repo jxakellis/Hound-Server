@@ -1,24 +1,18 @@
-const { alertLogger } from '../../logging/loggers';
-const { databaseConnectionForGeneral } from '../../database/createDatabaseConnections';
-const { formatBoolean } from '../../format/formatObject';
-const { areAllDefined } from '../../validate/validateDefined';
+import { alertLogger } from '../../logging/loggers';
+import { databaseConnectionForGeneral } from '../../../database/createDatabaseConnections';
+import { formatBoolean } from '../../format/formatObject';
 
-const { logServerError } from '../../logging/logServerError';
-const { getUserFirstNameLastNameForUserId } from '../../../../controllers/getFor/getForUser';
-const { sendNotificationForFamilyExcludingUser } from '../apn/sendNotification';
-const { formatIntoAbreviatedFullName } from '../../format/formatName';
+import { logServerError } from '../../logging/logServerError';
+import { getUserFirstNameLastNameForUserId } from '../../../../controllers/getFor/getForUser';
+import { sendNotificationForFamilyExcludingUser } from '../apn/sendNotification';
+import { formatIntoName } from '../../format/formatName';
 
 /**
  * Sends an alert to all of the family members that a new member has joined
  */
-async function createFamilyMemberJoinNotification(userId, familyId) {
+async function createFamilyMemberJoinNotification(userId: string, familyId: string) {
   try {
     alertLogger.debug(`createFamilyMemberJoinNotification ${userId}, ${familyId}`);
-
-    // make sure all params are defined
-    if (areAllDefined(userId, familyId) === false) {
-      return;
-    }
 
     const abreviatedFullName = await abreviatedFullNameForUserId(userId);
 
@@ -115,11 +109,7 @@ async function createFamilyLockedNotification(userId, familyId, newIsLocked) {
 /**
  * Helper function for createFamilyMemberJoinNotification, createFamilyMemberLeaveNotification, createFamilyLockedNotification, and createFamilyPausedNotification
  */
-async function abreviatedFullNameForUserId(userId) {
-  if (areAllDefined(userId) === false) {
-    return null;
-  }
-
+async function abreviatedFullNameForUserId(userId: string) {
   const result = await getUserFirstNameLastNameForUserId(databaseConnectionForGeneral, userId);
 
   if (areAllDefined(result) === false) {

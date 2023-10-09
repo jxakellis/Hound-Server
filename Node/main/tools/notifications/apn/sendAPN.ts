@@ -1,72 +1,101 @@
-const { apnLogger } from '../../logging/loggers';
+import { apnLogger } from '../../logging/loggers';
 
-const { logServerError } from '../../logging/logServerError';
-const { formatString, formatBoolean, formatNumber } from '../../format/formatObject';
-const { areAllDefined } from '../../validate/validateDefined';
+import { logServerError } from '../../logging/logServerError';
+import { formatKnownString } from '../../format/formatObject';
 
-const { apn, productionAPNProvider, developmentAPNProvider } from './apnProvider';
+import { apn, productionAPNProvider, developmentAPNProvider } from './apnProvider';
+import { NOTIFICATION } from '../../../server/globalConstants';
+import { UserConfigurationRowWithNotificationToken } from '../../../types/CompositeRow';
+
+function sendDevelopmentAPN(notification: apn.Notification, notificationToken: string): void {
+  developmentAPNProvider.send(notification, notificationToken)
+    .then((response) => {
+      // response.sent: Array of device tokens to which the notification was sent succesfully
+      if (response.sent.length !== 0) {
+        apnLogger.debug(`sendDevelopmentAPN Response Successful: ${JSON.stringify(response.sent)}`);
+      }
+      // response.failed: Array of objects containing the device token (`device`) and either an `error`, or a `status` and `response` from the API
+      if (response.failed.length !== 0) {
+        apnLogger.debug(`sendDevelopmentAPN Response Rejected: ${JSON.stringify(response.failed)}`);
+      }
+    })
+    .catch((error) => {
+      logServerError('sendDevelopmentAPN Response', error);
+    });
+}
 
 /**
- * Creates a notification object from the provided information
- * Sends notification object with provided token to Apple's production APN server, if .failed response then sends to development APN server
- * Takes an array of notificationTokens that identifies all the recipients of the notification
- * Takes a string that will be the title of the notification
- * Takes a string that will be the body of the notification
- */
+    * Takes a constructed notification object and a token string, then attempts to send the contents to Apple's production APN server
+    * If a .failed response is recieved
+    */
+function sendProductionAPN(notification: apn.Notification, notificationToken: string): void {
+  productionAPNProvider.send(notification, notificationToken)
+    .then((response) => {
+      // response.sent: Array of device tokens to which the notification was sent succesfully
+      if (response.sent.length !== 0) {
+        apnLogger.debug(`sendProductionAPN Response Successful: ${JSON.stringify(response.sent)}`);
+        return;
+      }
+      // response.failed: Array of objects containing the device token (`device`) and either an `error`, or a `status` and `response` from the API
+      if (response.failed.length !== 0) {
+        apnLogger.debug(`sendProductionAPN Response Rejected: ${JSON.stringify(response.failed)}`);
+        sendDevelopmentAPN(notification, notificationToken);
+      }
+    })
+    .catch((error) => {
+      logServerError('sendProductionAPN Response', error);
+    });
+}
+
+/**
+* Creates a notification object from the provided information
+* Sends notification object with provided token to Apple's production APN server, if .failed response then sends to development APN server
+* Takes an array of notificationTokens that identifies all the recipients of the notification
+* Takes a string that will be the title of the notification
+* Takes a string that will be the body of the notification
+*/
 // (token, category, sound, alertTitle, alertBody)
-function sendAPN(userNotificationConfiguration, category, forAlertTitle, forAlertBody, customPayload) {
-  if (areAllDefined(userNotificationConfiguration) === false) {
+function sendAPN(
+  userNotificationConfiguration: UserConfigurationRowWithNotificationToken,
+  category: string,
+  forAlertTitle: string,
+  forAlertBody: string,
+  customPayload: { [key: string]: unknown },
+): void {
+  const { userNotificationToken } = userNotificationConfiguration;
+
+  if (userNotificationToken === undefined) {
     return;
   }
 
-  const userNotificationToken = formatString(userNotificationConfiguration.userNotificationToken);
-  const userConfigurationIsLogNotificationEnabled = formatBoolean(userNotificationConfiguration.userConfigurationIsLogNotificationEnabled);
-  const userConfigurationIsReminderNotificationEnabled = formatBoolean(userNotificationConfiguration.userConfigurationIsReminderNotificationEnabled);
-  const userConfigurationNotificationSound = formatString(userNotificationConfiguration.userConfigurationNotificationSound);
-  const userConfigurationIsSilentModeEnabled = formatBoolean(userNotificationConfiguration.userConfigurationIsSilentModeEnabled);
-  const userConfigurationSilentModeStartUTCHour = formatNumber(userNotificationConfiguration.userConfigurationSilentModeStartUTCHour);
-  const userConfigurationSilentModeEndUTCHour = formatNumber(userNotificationConfiguration.userConfigurationSilentModeEndUTCHour);
-  const userConfigurationSilentModeStartUTCMinute = formatNumber(userNotificationConfiguration.userConfigurationSilentModeStartUTCMinute);
-  const userConfigurationSilentModeEndUTCMinute = formatNumber(userNotificationConfiguration.userConfigurationSilentModeEndUTCMinute);
-  const alertTitle = formatString(forAlertTitle, global.CONSTANT.NOTIFICATION.LENGTH.ALERT_TITLE_LIMIT);
-  const alertBody = formatString(forAlertBody, global.CONSTANT.NOTIFICATION.LENGTH.ALERT_BODY_LIMIT);
+  const userConfigurationNotificationSound = userNotificationConfiguration.userConfigurationIsLoudNotificationEnabled
+    // loud notification is enabled therefore the Hound app itself plays an audio file (APN shouldn't specify a notification sound)
+    ? undefined
+    // loud notification is disabled therefore the notification itself plays a sound (APN needs to specify a notification sound)
+    : userNotificationConfiguration.userConfigurationNotificationSound.toLowerCase();
+
+  const alertTitle = formatKnownString(forAlertTitle, NOTIFICATION.LENGTH.ALERT_TITLE_LIMIT);
+  const alertBody = formatKnownString(forAlertBody, NOTIFICATION.LENGTH.ALERT_BODY_LIMIT);
 
   apnLogger.debug(`sendAPN ${userNotificationConfiguration}, ${category}, ${alertTitle}, ${alertBody}`);
 
-  // userConfigurationNotificationSound optional, depends on userConfigurationIsLoudNotificationEnabled
-  if (areAllDefined(
-    userNotificationToken,
-    userConfigurationIsLogNotificationEnabled,
-    userConfigurationIsReminderNotificationEnabled,
-    // userConfigurationNotificationSound,
-    userConfigurationIsSilentModeEnabled,
-    userConfigurationSilentModeStartUTCHour,
-    userConfigurationSilentModeEndUTCHour,
-    userConfigurationSilentModeStartUTCMinute,
-    userConfigurationSilentModeEndUTCMinute,
-    category,
-    alertTitle,
-    alertBody,
-    customPayload,
-  ) === false) {
+  if (category === NOTIFICATION.CATEGORY.LOG.CREATED && userNotificationConfiguration.userConfigurationIsLogNotificationEnabled === false) {
     return;
   }
 
-  if (category === global.CONSTANT.NOTIFICATION.CATEGORY.LOG.CREATED && userConfigurationIsLogNotificationEnabled === false) {
-    return;
-  }
-
-  if (category === global.CONSTANT.NOTIFICATION.CATEGORY.REMINDER.ALARM && userConfigurationIsReminderNotificationEnabled === false) {
+  if (category === NOTIFICATION.CATEGORY.REMINDER.ALARM && userNotificationConfiguration.userConfigurationIsReminderNotificationEnabled === false) {
     return;
   }
 
   // Check that we aren't inside of userConfigurationSilentMode hours. If we are inside the silent mode hours, then return as we don't want to send notifications during silent mode
-  if (userConfigurationIsSilentModeEnabled === true) {
+  if (userNotificationConfiguration.userConfigurationIsSilentModeEnabled === true) {
     const date = new Date();
     // 2:30:45 PM -> 14.5125
     const currentUTCHour = date.getUTCHours() + (date.getUTCMinutes() / 60) + (date.getUTCSeconds() / 3600);
-    const userConfigurationSilentModeStart = userConfigurationSilentModeStartUTCHour + (userConfigurationSilentModeStartUTCMinute / 60);
-    const userConfigurationSilentModeEnd = userConfigurationSilentModeEndUTCHour + (userConfigurationSilentModeEndUTCMinute / 60);
+    const userConfigurationSilentModeStart = userNotificationConfiguration.userConfigurationSilentModeStartUTCHour
+    + (userNotificationConfiguration.userConfigurationSilentModeStartUTCMinute / 60);
+    const userConfigurationSilentModeEnd = userNotificationConfiguration.userConfigurationSilentModeEndUTCHour
+    + (userNotificationConfiguration.userConfigurationSilentModeEndUTCMinute / 60);
 
     // Two ways the silent mode start and end could be setup:
     // One the same day: 8.5 -> 20.5 (silent mode during day time)
@@ -82,8 +111,6 @@ function sendAPN(userNotificationConfiguration, category, forAlertTitle, forAler
       return;
     }
   }
-
-  // the tokens array is defined and has at least one element
 
   const notification = new apn.Notification();
 
@@ -105,6 +132,7 @@ function sendAPN(userNotificationConfiguration, category, forAlertTitle, forAler
 
   /// Raw Payload takes after apple's definition of the APS body
   notification.rawPayload = {
+    ...customPayload,
     aps: {
       // The notification’s type
       // This string must correspond to the identifier of one of the UNNotificationCategory objects you register at launch time.
@@ -118,7 +146,7 @@ function sendAPN(userNotificationConfiguration, category, forAlertTitle, forAler
       'mutable-content': 1,
       // A string that indicates the importance and delivery timing of a notification
       // The string values “passive”, “active”, “time-sensitive”, or “critical” correspond to the
-      'interruption-level': global.CONSTANT.NOTIFICATION.CATEGORY.REMINDER.ALARM ? 'time-sensitive' : 'active',
+      'interruption-level': NOTIFICATION.CATEGORY.REMINDER.ALARM ? 'time-sensitive' : 'active',
       // The number to display in a badge on your app’s icon. Specify 0 to remove the current badge, if any.
       badge: 0,
       // alert Dictionary
@@ -128,22 +156,10 @@ function sendAPN(userNotificationConfiguration, category, forAlertTitle, forAler
         // The content of the alert message.
         body: alertBody,
       },
+      sound: category === NOTIFICATION.CATEGORY.REMINDER.ALARM && userConfigurationNotificationSound !== undefined
+        ? `${userConfigurationNotificationSound}30.wav`
+        : undefined,
     },
-  };
-
-  // if there is a sound for the reminder alarm alert, then we add it to the rawPayload
-  if (
-    (category === global.CONSTANT.NOTIFICATION.CATEGORY.REMINDER.ALARM)
-  && areAllDefined(userConfigurationNotificationSound, notification)
-  && areAllDefined(notification.rawPayload)
-  && areAllDefined(notification.rawPayload.aps)) {
-    notification.rawPayload.aps.sound = `${userConfigurationNotificationSound}30.wav`;
-  }
-
-  // add customPayload into rawPayload
-  notification.rawPayload = {
-    ...customPayload,
-    ...notification.rawPayload,
   };
 
   // aps Dictionary Keys
@@ -155,54 +171,6 @@ function sendAPN(userNotificationConfiguration, category, forAlertTitle, forAler
   // sound Dictionary Keys
   // https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification#2990112
   sendProductionAPN(notification, userNotificationToken);
-}
-
-/**
- * Takes a constructed notification object and a token string, then attempts to send the contents to Apple's production APN server
- * If a .failed response is recieved
- */
-function sendProductionAPN(notification, token) {
-  if (areAllDefined(notification, token) === false) {
-    return;
-  }
-
-  productionAPNProvider.send(notification, token)
-    .then((response) => {
-      // response.sent: Array of device tokens to which the notification was sent succesfully
-      if (response.sent.length !== 0) {
-        apnLogger.debug(`sendProductionAPN Response Successful: ${JSON.stringify(response.sent)}`);
-        return;
-      }
-      // response.failed: Array of objects containing the device token (`device`) and either an `error`, or a `status` and `response` from the API
-      if (response.failed.length !== 0) {
-        apnLogger.debug(`sendProductionAPN Response Rejected: ${JSON.stringify(response.failed)}`);
-        sendDevelopmentAPN(notification, token);
-      }
-    })
-    .catch((error) => {
-      logServerError('sendProductionAPN Response', error);
-    });
-}
-
-function sendDevelopmentAPN(notification, token) {
-  if (areAllDefined(notification, token) === false) {
-    return;
-  }
-
-  developmentAPNProvider.send(notification, token)
-    .then((response) => {
-      // response.sent: Array of device tokens to which the notification was sent succesfully
-      if (response.sent.length !== 0) {
-        apnLogger.debug(`sendDevelopmentAPN Response Successful: ${JSON.stringify(response.sent)}`);
-      }
-      // response.failed: Array of objects containing the device token (`device`) and either an `error`, or a `status` and `response` from the API
-      if (response.failed.length !== 0) {
-        apnLogger.debug(`sendDevelopmentAPN Response Rejected: ${JSON.stringify(response.failed)}`);
-      }
-    })
-    .catch((error) => {
-      logServerError('sendDevelopmentAPN Response', error);
-    });
 }
 
 export {

@@ -1,6 +1,6 @@
 const { databaseQuery } from '../../main/database/databaseQuery';
 const {
-  formatNumber, formatBoolean, formatSHA256Hash, formatString,
+  formatNumber, formatBoolean, formatSHA256Hash, formatUnknownString,
 } from ''../../main/tools/format/formatObject';
 const { hash } from '../../main/tools/format/hash';
 const { atLeastOneDefined, areAllDefined } from '../../main/tools/validate/validateDefined';
@@ -233,7 +233,7 @@ async function updateUserForUserIdentifierHashedUserIdentifier(
   forHashedUserIdentifier,
 ) {
   // unhashedUserIdentifier: unhashed, 44-length apple identifier or 64-length sha-256 hash of apple identifier
-  const unhashedUserIdentifier = formatString(forUnhashedUserIdentifier);
+  const unhashedUserIdentifier = formatUnknownString(forUnhashedUserIdentifier);
   const hashedUserIdentifier = formatSHA256Hash(forHashedUserIdentifier);
 
   if (areAllDefined(databaseConnection, unhashedUserIdentifier, hashedUserIdentifier) === false) {

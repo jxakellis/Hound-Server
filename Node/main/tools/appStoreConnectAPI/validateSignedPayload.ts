@@ -4,7 +4,7 @@ import {
 } from 'app-store-server-api';
 import { HoundError, ErrorType } from '../../server/globalErrors';
 import { logServerError } from '../logging/logServerError';
-import { formatString } from '../format/formatObject';
+import { formatUnknownString } from '../format/formatObject';
 import { ERROR, SERVER } from '../../server/globalConstants';
 
 /// Takes a signedPayload from an App Store Server Notificatio. Returns payload if successfully decoded, otherwise returns null.
@@ -18,7 +18,7 @@ async function validateNotificationSignedPayload(signedPayload: string): Promise
     return undefined;
   }
 
-  if (formatString(payload.data.bundleId) !== SERVER.APP_BUNDLE_ID) {
+  if (formatUnknownString(payload.data.bundleId) !== SERVER.APP_BUNDLE_ID) {
     return undefined;
   }
 

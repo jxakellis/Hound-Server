@@ -9,7 +9,7 @@ const { getAllFamilyMembersForFamilyId } from '../../../controllers/getFor/getFo
  * Uses getActiveTransaction to either get the family's paid subscription or the default free subscription
  * Attached the information to the req (under req.familyActiveSubscription.xxx)
  */
-async function attachActiveSubscription(req: express.Request, res: express.Response, next: NextFunction) {
+async function attachActiveSubscription(req: express.Request, res: express.Response, next: express.NextFunction) {
   try {
     const { userId } = req.params;
 
@@ -33,7 +33,7 @@ async function attachActiveSubscription(req: express.Request, res: express.Respo
  * Checks the family's subscription to see if it's expired
  * If the request's method isn't GET or DELETE and the subscription is expired, returns 400 status
  */
-async function validateSubscription(req: express.Request, res: express.Response, next: NextFunction) {
+async function validateSubscription(req: express.Request, res: express.Response, next: express.NextFunction) {
   try {
     const { userId, familyId } = req.params;
     const { numberOfFamilyMembers, numberOfDogs } = req.familyActiveSubscription;

@@ -1,7 +1,7 @@
 import express from 'express';
 const { databaseQuery } from '../database/databaseQuery';
 const {
-  formatSHA256Hash, formatString, formatArray, formatNumber, formatBoolean,
+  formatSHA256Hash, formatUnknownString, formatArray, formatNumber, formatBoolean,
 } from ''../format/formatObject';
 const { areAllDefined } from './validateDefined';
 const { ValidationError } from '../general/errors';
@@ -12,8 +12,8 @@ const { updateUserForUserIdentifierHashedUserIdentifier } from '../../../control
 /**
  * Checks to see that the appVersion of the requester is compatible
  */
-async function validateAppVersion(req: express.Request, res: express.Response, next: NextFunction) {
-  const appVersion = formatString(req.params.appVersion);
+async function validateAppVersion(req: express.Request, res: express.Response, next: express.NextFunction) {
+  const appVersion = formatUnknownString(req.params.appVersion);
 
   if (areAllDefined(appVersion) === false) {
     return res.sendResponseForStatusBodyError(400, null, new ValidationError('appVersion missing', global.CONSTANT.ERROR.VALUE.MISSING));
@@ -36,12 +36,12 @@ async function validateAppVersion(req: express.Request, res: express.Response, n
 /**
  * Checks to see that userId and userIdentifier are defined, are valid, and exist in the database.
  */
-async function validateUserId(req: express.Request, res: express.Response, next: NextFunction) {
+async function validateUserId(req: express.Request, res: express.Response, next: express.NextFunction) {
   // later on use a token here to validate that they have permission to use the userId
 
   const userId = formatSHA256Hash(req.params.userId);
   // unhashedUserIdentifier: unhashed, 44-length apple identifier or 64-length sha-256 hash of apple identifier
-  const userIdentifier = formatString(req.query.userIdentifier);
+  const userIdentifier = formatUnknownString(req.query.userIdentifier);
 
   if (areAllDefined(userIdentifier, userId) === false) {
     return res.sendResponseForStatusBodyError(400, null, new ValidationError('userId or userIdentifier missing', global.CONSTANT.ERROR.VALUE.INVALID));
@@ -99,7 +99,7 @@ async function validateUserId(req: express.Request, res: express.Response, next:
 /**
  * Checks to see that familyId is defined, is a number, and exists in the database
  */
-async function validateFamilyId(req: express.Request, res: express.Response, next: NextFunction) {
+async function validateFamilyId(req: express.Request, res: express.Response, next: express.NextFunction) {
   // userId should be validated already
   const { userId } = req.params;
   const familyId = formatSHA256Hash(req.params.familyId);
@@ -141,7 +141,7 @@ async function validateFamilyId(req: express.Request, res: express.Response, nex
  * Checks to see that dogId is defined, a number, and exists in the database under familyId provided. Dog can be deleted.
  * If it does then the user owns the dog and invokes next().
  */
-async function validateDogId(req: express.Request, res: express.Response, next: NextFunction) {
+async function validateDogId(req: express.Request, res: express.Response, next: express.NextFunction) {
   // familyId should be validated already
 
   const { familyId } = req.params;
@@ -191,7 +191,7 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
  * Checks to see that logId is defined, a number. and exists in the database under dogId provided. Log can be deleted.
  * If it does then the dog owns that log and invokes next().
  */
-async function validateLogId(req: express.Request, res: express.Response, next: NextFunction) {
+async function validateLogId(req: express.Request, res: express.Response, next: express.NextFunction) {
   // dogId should be validated already
 
   const { dogId } = req.params;
@@ -241,7 +241,7 @@ async function validateLogId(req: express.Request, res: express.Response, next: 
  * Checks to see that reminderId is defined, a number, and exists in the database under the dogId provided. Reminder can be deleted
  * If it does then the dog owns that reminder and invokes next().
  */
-async function validateParamsReminderId(req: express.Request, res: express.Response, next: NextFunction) {
+async function validateParamsReminderId(req: express.Request, res: express.Response, next: express.NextFunction) {
   // dogId should be validated already
 
   const { dogId } = req.params;
@@ -287,7 +287,7 @@ async function validateParamsReminderId(req: express.Request, res: express.Respo
   }
 }
 
-async function validateBodyReminderId(req: express.Request, res: express.Response, next: NextFunction) {
+async function validateBodyReminderId(req: express.Request, res: express.Response, next: express.NextFunction) {
   // dogId should be validated already
 
   const { dogId } = req.params;

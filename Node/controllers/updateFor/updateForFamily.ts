@@ -1,6 +1,6 @@
 const { databaseQuery } from '../../main/database/databaseQuery';
 const {
-  formatBoolean, formatSHA256Hash, formatString,
+  formatBoolean, formatSHA256Hash, formatUnknownString,
 } from ''../../main/tools/format/formatObject';
 const { areAllDefined } from '../../main/tools/validate/validateDefined';
 const { ValidationError } from '../../main/server/globalErrors';
@@ -19,7 +19,7 @@ const { createFamilyLockedNotification } from '../../main/tools/notifications/al
  *  If a problem is encountered, creates and throws custom error
  */
 async function updateFamilyForUserIdFamilyId(databaseConnection, userId, familyId, forFamilyCode, forIsLocked) {
-  const familyCode = formatString(forFamilyCode);
+  const familyCode = formatUnknownString(forFamilyCode);
   const familyIsLocked = formatBoolean(forIsLocked);
   if (areAllDefined(databaseConnection, userId) === false) {
     throw new ValidationError('databaseConnection or userId missing', global.CONSTANT.ERROR.VALUE.MISSING);
@@ -42,7 +42,7 @@ async function updateFamilyForUserIdFamilyId(databaseConnection, userId, familyI
  */
 async function addFamilyMember(databaseConnection, userId, forFamilyCode) {
   // make sure familyCode was provided
-  let familyCode = formatString(forFamilyCode);
+  let familyCode = formatUnknownString(forFamilyCode);
 
   if (areAllDefined(databaseConnection, userId, familyCode) === false) {
     throw new ValidationError('databaseConnection, userId, or familyCode missing', global.CONSTANT.ERROR.VALUE.MISSING);

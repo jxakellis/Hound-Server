@@ -5,11 +5,11 @@ import {
 import { testDatabaseConnections } from './testDatabaseConnection';
 import { Queryable, databaseQuery } from './databaseQuery';
 import { SERVER } from '../server/globalConstants';
-import { StatusResult } from '../types/StatusResult';
+import { StatusResultRow } from '../types/StatusResultRow';
 
 /// Uses an existing database databaseConnection to find the number of active databaseConnections to said database
 async function findNumberOfThreadsConnectedToDatabase(databaseConnection: Queryable): Promise<number> {
-  const [threadsConnected] = await databaseQuery<StatusResult>(
+  const [threadsConnected] = await databaseQuery<StatusResultRow[]>(
     databaseConnection,
     `SHOW STATUS
     WHERE variable_name = ?`,

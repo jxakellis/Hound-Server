@@ -2,42 +2,46 @@ import express from 'express';
 import { requestLogger } from './loggers';
 import { logServerError } from './logServerError';
 import { databaseConnectionForLogging } from '../../database/createDatabaseConnections';
-import { databaseQuery } from '../../database/databaseQuery';
-import { areAllDefined } from '../validate/validateDefined';
-import { formatString, formatNumber, formatSHA256Hash } from '../format/formatObject';
-import { ValidationError } from '../../server/globalErrors';
+import { ResultSetHeader, databaseQuery } from '../../database/databaseQuery';
+import { formatUnknownString, formatNumber, formatSHA256Hash } from '../format/formatObject';
+import { HoundError, ErrorType } from '../../server/globalErrors';
+import { ERROR } from '../../server/globalConstants';
 
 // Outputs request to the console and logs to database
-async function logRequest(req: express.Request, res: express.Response, next: NextFunction) {
-  const ip = formatString(req.ip, 32);
+async function logRequest(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
+  const ip = formatUnknownString(req.ip, 32);
 
-  const method = formatString(req.method, 6);
+  const method = formatUnknownString(req.method, 6);
 
-  const originalUrl = formatString(req.originalUrl, 500);
+  const originalUrl = formatUnknownString(req.originalUrl, 500);
 
-  const body = formatString(JSON.stringify(req.body), 2000);
+  const body = formatUnknownString(JSON.stringify(req.body), 2000);
 
   requestLogger.debug(`Request for ${method} ${originalUrl}`);
 
-  if (areAllDefined(method) === false) {
-    return res.sendResponseForStatusBodyError(400, null, new ValidationError('method missing', global.CONSTANT.ERROR.VALUE.MISSING));
+  if (method === undefined) {
+    return res.sendResponseForStatusBodyError(400, null, new HoundError('method missing', ErrorType.Validation, ERROR.VALUE.MISSING));
   }
 
   if (method !== 'GET' && method !== 'POST' && method !== 'PUT' && method !== 'DELETE') {
-    return res.sendResponseForStatusBodyError(400, null, new ValidationError('method invalid', global.CONSTANT.ERROR.VALUE.INVALID));
+    return res.sendResponseForStatusBodyError(400, null, new HoundError('method invalid', ErrorType.Validation, ERROR.VALUE.INVALID));
+  }
+
+  if (originalUrl === undefined) {
+    return res.sendResponseForStatusBodyError(400, null, new HoundError('originalUrl missing', ErrorType.Validation, ERROR.VALUE.MISSING));
   }
 
   // Inserts request information into the previousRequests table.
-  if (areAllDefined(req.requestId) === false) {
+  if (req.requestId !== undefined) {
     try {
-      const result = await databaseQuery(
+      const result = await databaseQuery<ResultSetHeader>(
         databaseConnectionForLogging,
         `INSERT INTO previousRequests
         (requestIP, requestDate, requestMethod, requestOriginalURL, requestBody)
         VALUES (?, CURRENT_TIMESTAMP(), ?, ?, ?)`,
         [ip, method, originalUrl, body],
       );
-      const requestId = formatNumber(result.insertId);
+      const requestId = result.insertId;
       req.requestId = requestId;
     }
     catch (error) {
@@ -48,12 +52,12 @@ async function logRequest(req: express.Request, res: express.Response, next: Nex
   return next();
 }
 
-async function addAppVersionToLogRequest(req: express.Request, res: express.Response, next: NextFunction) {
+async function addAppVersionToLogRequest(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   const requestId = formatNumber(req.requestId);
-  const appVersion = formatString(req.params.appVersion);
+  const appVersion = formatUnknownString(req.params['appVersion']);
 
   // We are going to be modifying a pre-existing requestId and the appVersion should exist if this function is invoked
-  if (areAllDefined(requestId, appVersion) === false) {
+  if (requestId === undefined || appVersion === undefined) {
     return next();
   }
 
@@ -73,12 +77,12 @@ async function addAppVersionToLogRequest(req: express.Request, res: express.Resp
   return next();
 }
 
-async function addUserIdToLogRequest(req: express.Request, res: express.Response, next: NextFunction) {
+async function addUserIdToLogRequest(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   const requestId = formatNumber(req.requestId);
-  const userId = formatSHA256Hash(req.params.userId);
+  const userId = formatSHA256Hash(req.params['userId']);
 
   // We are going to be modifying a pre-existing requestId and the userId should exist if this function is invoked
-  if (areAllDefined(requestId, userId) === false) {
+  if (requestId === undefined || userId === undefined) {
     return next();
   }
 
@@ -98,12 +102,12 @@ async function addUserIdToLogRequest(req: express.Request, res: express.Response
   return next();
 }
 
-async function addFamilyIdToLogRequest(req: express.Request, res: express.Response, next: NextFunction) {
+async function addFamilyIdToLogRequest(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   const requestId = formatNumber(req.requestId);
-  const familyId = formatSHA256Hash(req.params.familyId);
+  const familyId = formatSHA256Hash(req.params['familyId']);
 
   // We are going to be modifying a pre-existing requestId and the userId should exist if this function is invoked
-  if (areAllDefined(requestId, familyId) === false) {
+  if (requestId === undefined || familyId === undefined) {
     return next();
   }
 

@@ -5,7 +5,7 @@ import { schedule } from './schedule';
 /**
  * Cancels jobs scheduled with the provided familyId and reminderId
  */
-async function cancelJobForFamilyForReminder(familyId: string, reminderId: number) {
+async function cancelJobForFamilyForReminder(familyId: string, reminderId: number): Promise<void> {
   // attempt to locate job that has the userId and reminderId
   const jobKey = `Family${familyId}Reminder${reminderId}`;
   const job = schedule.scheduledJobs[jobKey];

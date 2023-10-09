@@ -42,7 +42,7 @@ function configureApp(app: express.Application): void {
   app.use(`${userPath}/user`, userRouter);
 
   // Throw back the request if an unknown path is used
-  app.use('*', async (req: express.Request, res: express.Response) => res.sendResponseForStatusBodyError(404, null, new HoundError('Path not found', ErrorType.General, ERROR.VALUE.INVALID)));
+  app.use('*', async (req: express.Request, res: express.Response) => res.sendResponseForStatusBodyError(404, undefined, new HoundError('Path not found', ErrorType.General, ERROR.VALUE.INVALID)));
 }
 
 export { configureApp };

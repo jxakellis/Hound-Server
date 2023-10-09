@@ -1,35 +1,22 @@
-const { databaseQuery } from '../../main/database/databaseQuery';
-const { areAllDefined } from '../../main/tools/validate/validateDefined';
-const { ValidationError } from '../../main/server/globalErrors';
-const { hash } from '../../main/tools/format/hash';
+import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
+import { hash } from '../../main/tools/format/hash';
+import { PrivateCombinedUsersInformationRow } from '../../main/types/CompositeRow';
+import { userConfigurationColumnsWithUCPrefix } from '../../main/types/UserConfigurationRow';
+import { PublicUsersRow, privateUsersColumnsWithUPrefix, publicUsersColumnsWithUPrefix } from '../../main/types/UsersRow';
 
-const { updateUserForUserIdentifierHashedUserIdentifier } from '../updateFor/updateForUser';
-
-// TODO FUTURE depreciate userApplicationUsername (last used in 3.0.0)
-const userColumns = 'u.userId, u.userAppAccountToken, u.userAppAccountToken AS userApplicationUsername, u.userNotificationToken, u.userFirstName, u.userLastName, u.userEmail';
-const userConfigurationColumns = `uc.userConfigurationIsNotificationEnabled, uc.userConfigurationIsLoudNotificationEnabled, 
-uc.userConfigurationIsLogNotificationEnabled, uc.userConfigurationIsReminderNotificationEnabled, uc.userConfigurationSnoozeLength, 
-uc.userConfigurationNotificationSound, uc.userConfigurationLogsInterfaceScale, uc.userConfigurationRemindersInterfaceScale, 
-uc.userConfigurationInterfaceStyle, uc.userConfigurationIsSilentModeEnabled, uc.userConfigurationSilentModeStartUTCHour, 
-uc.userConfigurationSilentModeEndUTCHour, uc.userConfigurationSilentModeStartUTCMinute, uc.userConfigurationSilentModeEndUTCMinute`;
-const userInformationColumns = `${userColumns}, fm.familyId, ${userConfigurationColumns}`;
-const userNameColumns = 'u.userFirstName, u.userLastName';
+import { updateUserForUserIdentifierHashedUserIdentifier } from '../updateFor/updateForUser';
 
 /**
 * If the query is successful, returns the user for the userIdentifier.
  *  If a problem is encountered, creates and throws custom error
  */
-async function getUserForUserIdentifier(databaseConnection, userIdentifier) {
-  if (areAllDefined(databaseConnection, userIdentifier) === false) {
-    throw new ValidationError('databaseConnection or userIdentifier missing', global.CONSTANT.ERROR.VALUE.MISSING);
-  }
-
+async function getPrivateCombinedUsersInformation(databaseConnection: Queryable, userIdentifier: string): Promise<PrivateCombinedUsersInformationRow | undefined> {
   // userIdentifier method of finding corresponding user(s)
   // have to specifically reference the columns, otherwise fm.userId will override u.userId.
   // Therefore setting userId to null (if there is no family member) even though the userId isn't null.
-  let [userInformation] = await databaseQuery(
+  const result1 = await databaseQuery<PrivateCombinedUsersInformationRow[]>(
     databaseConnection,
-    `SELECT ${userInformationColumns}
+    `SELECT ${privateUsersColumnsWithUPrefix}, fm.familyId, ${userConfigurationColumnsWithUCPrefix}
     FROM users u 
     JOIN userConfiguration uc ON u.userId = uc.userId
     LEFT JOIN familyMembers fm ON u.userId = fm.userId
@@ -37,16 +24,17 @@ async function getUserForUserIdentifier(databaseConnection, userIdentifier) {
     LIMIT 1`,
     [userIdentifier],
   );
+  let userInformation = result1.safeIndex(0);
 
   const hashedUserIdentifier = hash(userIdentifier);
-  if (areAllDefined(userInformation) === false && areAllDefined(hashedUserIdentifier) === true) {
+  if (userInformation === undefined) {
     // If we can't find a user for a userIdentifier, hash that userIdentifier and then try again.
     // This is because we switched from hashing the Apple provided userIdentifier to directly storing it.
     // If query is successful, change saved userIdentifier and return result
 
-    [userInformation] = await databaseQuery(
+    const result2 = await databaseQuery<PrivateCombinedUsersInformationRow[]>(
       databaseConnection,
-      `SELECT ${userInformationColumns} 
+      `SELECT ${privateUsersColumnsWithUPrefix}, fm.familyId, ${userConfigurationColumnsWithUCPrefix}
       FROM users u
       JOIN userConfiguration uc ON u.userId = uc.userId 
       LEFT JOIN familyMembers fm ON u.userId = fm.userId
@@ -54,8 +42,9 @@ async function getUserForUserIdentifier(databaseConnection, userIdentifier) {
       LIMIT 1`,
       [hashedUserIdentifier],
     );
+    userInformation = result2.safeIndex(0);
 
-    if (areAllDefined(userInformation) === true) {
+    if (userInformation !== undefined) {
       await updateUserForUserIdentifierHashedUserIdentifier(
         databaseConnection,
         userIdentifier,
@@ -68,23 +57,19 @@ async function getUserForUserIdentifier(databaseConnection, userIdentifier) {
   return userInformation;
 }
 
-async function getUserFirstNameLastNameForUserId(databaseConnection, userId) {
-  if (areAllDefined(databaseConnection, userId) === false) {
-    throw new ValidationError('databaseConnection or userId missing', global.CONSTANT.ERROR.VALUE.MISSING);
-  }
-
-  const [userInformation] = await databaseQuery(
+async function getPublicUser(databaseConnection: Queryable, userId: string): Promise<PublicUsersRow | undefined> {
+  const result = await databaseQuery<PublicUsersRow[]>(
     databaseConnection,
-    `SELECT ${userNameColumns}
+    `SELECT ${publicUsersColumnsWithUPrefix}
     FROM users u
     WHERE u.userId = ?
     LIMIT 1`,
     [userId],
   );
 
-  return userInformation;
+  return result.safeIndex(0);
 }
 
 export {
-  getUserForUserIdentifier, getUserFirstNameLastNameForUserId,
+  getPrivateCombinedUsersInformation, getPublicUser,
 };

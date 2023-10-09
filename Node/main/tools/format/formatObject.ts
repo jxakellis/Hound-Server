@@ -19,11 +19,19 @@ const maximumUsernameLength = 64;
  * @param maximumLength - Optional maximum length for the string.
  * @returns The string if valid, truncated if necessary, undefined otherwise.
  */
-function formatString(string?: unknown, maximumLength?: number): string | undefined {
+function formatUnknownString(string?: unknown, maximumLength?: number): string | undefined {
   if (typeof string !== 'string') {
     return undefined;
   }
 
+  if (maximumLength !== undefined && !Number.isNaN(maximumLength)) {
+    return string.substring(0, maximumLength);
+  }
+
+  return string;
+}
+
+function formatKnownString(string: string, maximumLength?: number): string {
   if (maximumLength !== undefined && !Number.isNaN(maximumLength)) {
     return string.substring(0, maximumLength);
   }
@@ -38,7 +46,7 @@ function formatString(string?: unknown, maximumLength?: number): string | undefi
  * @returns Formatted email if valid, undefined otherwise.
  */
 function formatEmail(email?: string): string | undefined {
-  let userEmail = formatString(email, maximumEmailLengthWithAngleBrackets);
+  let userEmail = formatUnknownString(email, maximumEmailLengthWithAngleBrackets);
 
   if (!userEmail) {
     return undefined;
@@ -156,7 +164,7 @@ function formatArray(array?: unknown): unknown[] | undefined {
  * @returns Formatted hash string if valid, undefined otherwise.
  */
 function formatSHA256Hash(forString?: unknown): string | undefined {
-  const string = formatString(forString);
+  const string = formatUnknownString(forString);
 
   if (string === undefined) {
     return undefined;
@@ -177,7 +185,7 @@ function formatSHA256Hash(forString?: unknown): string | undefined {
  * @returns Formatted Base64 string if valid, undefined otherwise.
  */
 function formatBase64EncodedString(forString?: unknown): string | undefined {
-  const string = formatString(forString);
+  const string = formatUnknownString(forString);
 
   if (string === undefined) {
     return undefined;
@@ -192,6 +200,8 @@ function formatBase64EncodedString(forString?: unknown): string | undefined {
 }
 
 export {
+  formatUnknownString,
+  formatKnownString,
   formatEmail,
   formatDate,
   formatBoolean,
@@ -199,5 +209,4 @@ export {
   formatArray,
   formatSHA256Hash,
   formatBase64EncodedString,
-  formatString,
 };

@@ -25,7 +25,7 @@ import { ERROR } from '../../main/server/globalConstants';
 * @param {*} databaseConnection
 * @param {*} signedPayload
 */
-async function createASSNForSignedPayload(databaseConnection: Queryable, signedPayload: string) {
+async function createASSNForSignedPayload(databaseConnection: Queryable, signedPayload: string): Promise<void> {
   const {
     notification, data, renewalInfo, transactionInfo,
   } = await validateSignedPayload(signedPayload);

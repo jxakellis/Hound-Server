@@ -3,7 +3,7 @@ import {
 } from 'app-store-server-api';
 import { api } from './api';
 import { logServerError } from '../logging/logServerError';
-import { formatString, formatBoolean } from '../format/formatObject';
+import { formatUnknownString, formatBoolean } from '../format/formatObject';
 import { SERVER } from '../../server/globalConstants';
 
 /**
@@ -79,11 +79,11 @@ async function querySubscriptionStatusesFromAppStoreAPI(transactionId: string): 
     logServerError('querySubscriptionStatusesFromAppStoreAPI getSubscriptionStatuses', error);
     return [];
   }
-  if (formatString(statusResponse.bundleId) !== SERVER.APP_BUNDLE_ID) {
+  if (formatUnknownString(statusResponse.bundleId) !== SERVER.APP_BUNDLE_ID) {
     return [];
   }
 
-  if (formatString(statusResponse.environment) !== SERVER.ENVIRONMENT) {
+  if (formatUnknownString(statusResponse.environment) !== SERVER.ENVIRONMENT) {
     return [];
   }
 

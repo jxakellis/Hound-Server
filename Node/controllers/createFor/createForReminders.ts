@@ -1,6 +1,6 @@
 const { databaseQuery } from '../../main/database/databaseQuery';
 const {
-  formatNumber, formatDate, formatBoolean, formatArray, formatString,
+  formatNumber, formatDate, formatBoolean, formatArray, formatUnknownString,
 } from ''../../main/tools/format/formatObject';
 const { areAllDefined } from '../../main/tools/validate/validateDefined';
 const { ValidationError } from '../../main/server/globalErrors';
@@ -31,7 +31,7 @@ async function createReminderForDogIdReminder(databaseConnection, dogId, reminde
 
   // general reminder components
   const { reminderAction, reminderType } = reminder; // required
-  const reminderCustomActionName = formatString(reminder.reminderCustomActionName, 32); // required
+  const reminderCustomActionName = formatUnknownString(reminder.reminderCustomActionName, 32); // required
   const reminderIsEnabled = formatBoolean(reminder.reminderIsEnabled); // required
   const reminderExecutionBasis = formatDate(reminder.reminderExecutionBasis); // required
   const reminderExecutionDate = formatDate(reminder.reminderExecutionDate); // optional

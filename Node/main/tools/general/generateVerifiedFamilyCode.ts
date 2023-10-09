@@ -1,4 +1,4 @@
-import { Queryable, databaseQuery } from '../../database/databaseQuery';
+import { Queryable, RowDataPacket, databaseQuery } from '../../database/databaseQuery';
 
 const familyCodeLength = 8;
 
@@ -453,7 +453,7 @@ async function generateVerifiedFamilyCode(databaseConnection: Queryable): Promis
     const potentialFamilyCode = generateFamilyCode();
     // Necessary to disable no-await-in-loop as we can't use Promise.all() for a while loop. We have a unknown amount of promises
     // eslint-disable-next-line no-await-in-loop
-    const result = await databaseQuery(
+    const result = await databaseQuery<RowDataPacket[]>(
       databaseConnection,
       `SELECT 1
       FROM families f

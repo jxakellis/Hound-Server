@@ -1,5 +1,5 @@
 const { databaseQuery } from '../../main/database/databaseQuery';
-const { formatString } from '../../main/tools/format/formatObject';
+const { formatUnknownString } from '../../main/tools/format/formatObject';
 const { areAllDefined } from '../../main/tools/validate/validateDefined';
 const { ValidationError } from '../../main/server/globalErrors';
 
@@ -8,7 +8,7 @@ const { ValidationError } from '../../main/server/globalErrors';
  *  If a problem is encountered, creates and throws custom error
  */
 async function createDogForFamilyId(databaseConnection, familyId, forDogName) {
-  const dogName = formatString(forDogName, 32);
+  const dogName = formatUnknownString(forDogName, 32);
 
   if (areAllDefined(databaseConnection, familyId, dogName) === false) {
     throw new ValidationError('databaseConnection, familyId, or dogName missing', global.CONSTANT.ERROR.VALUE.MISSING);
