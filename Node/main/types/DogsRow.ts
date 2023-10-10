@@ -13,10 +13,11 @@ d.dogIsDeleted
 const dogsColumnsWithoutPrefix = dogsColumnsWithDPrefix.replace(prefix, '');
 
 type DogsRow = {
+    // NOTE: database booleans (tinyint(1)) are returned as 0 or 1 numbers, not booleans. therefore, we have to use number instead of boolean
     dogId: number
     dogName: string
     dogLastModified: Date
-    dogIsDeleted: boolean
+    dogIsDeleted: number
     logs?: DogLogsRow[]
     reminders?: DogRemindersRow[]
 };

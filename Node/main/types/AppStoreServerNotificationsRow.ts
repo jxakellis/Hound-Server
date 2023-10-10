@@ -48,8 +48,8 @@ assn.transactionInfoWebOrderLineItemId
 const appStoreServerNotificationsColumnsWithoutASSNPrefix = appStoreServerNotificationsColumnsWithASSNPrefix.replace('assn.', '');
 
 // TODO NOW IMPORTANT, when we retrieve a date from the database and it gets loaded into the data structure for our type, it might not be a date object. instead it might be a string object that needs to be converted
-// TODO NOW IMPORTANT, when we retrieve a number or boolean from the database, make sure it is actually the correct type when we get it (e.g. a boolean isnt the string/number 1)
 type AppStoreServerNotificationsRow = {
+    // NOTE: database booleans (tinyint(1)) are returned as 0 or 1 numbers, not booleans. therefore, we have to use number instead of boolean
     notificationType?: string,
     subtype?: string,
     notificationUUID: string,
@@ -65,7 +65,7 @@ type AppStoreServerNotificationsRow = {
     renewalInfoEnvironment?: string,
     renewalInfoExpirationIntent?: number,
     renewalInfoGracePeriodExpiresDate?: Date,
-    renewalInfoIsInBillingRetryPeriod?: boolean,
+    renewalInfoIsInBillingRetryPeriod?: number,
     renewalInfoOfferIdentifier?: string,
     renewalInfoOfferType?: number,
     renewalInfoOriginalTransactionId?: number,
@@ -79,7 +79,7 @@ type AppStoreServerNotificationsRow = {
     transactionInfoEnvironment?: string,
     transactionInfoExpiresDate: Date,
     transactionInfoInAppOwnershipType?: string,
-    transactionInfoIsUpgraded?: boolean,
+    transactionInfoIsUpgraded?: number,
     transactionInfoOfferIdentifier?: string,
     transactionInfoOfferType?: number,
     transactionInfoOriginalPurchaseDate?: Date,

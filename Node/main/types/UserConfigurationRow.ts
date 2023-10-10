@@ -21,18 +21,19 @@ uc.userConfigurationSilentModeEndUTCMinute
 const userConfigurationColumnsWithoutPrefix = userConfigurationColumnsWithUCPrefix.replace(prefix, '');
 
 type UserConfigurationRow = {
+    // NOTE: database booleans (tinyint(1)) are returned as 0 or 1 numbers, not booleans. therefore, we have to use number instead of boolean
     userId: string
-    userConfigurationIsNotificationEnabled: boolean
-    userConfigurationIsLoudNotificationEnabled: boolean
-    userConfigurationIsLogNotificationEnabled: boolean
-    userConfigurationIsReminderNotificationEnabled: boolean
+    userConfigurationIsNotificationEnabled: number
+    userConfigurationIsLoudNotificationEnabled: number
+    userConfigurationIsLogNotificationEnabled: number
+    userConfigurationIsReminderNotificationEnabled: number
     userConfigurationInterfaceStyle: number
     userConfigurationSnoozeLength: number
     userConfigurationNotificationSound: string
     userConfigurationLogsInterfaceScale: string
     userConfigurationRemindersInterfaceScale: string
     userConfigurationPreviousDogManagerSynchronization: Date
-    userConfigurationIsSilentModeEnabled: boolean
+    userConfigurationIsSilentModeEnabled: number
     userConfigurationSilentModeStartUTCHour: number
     userConfigurationSilentModeEndUTCHour: number
     userConfigurationSilentModeStartUTCMinute: number

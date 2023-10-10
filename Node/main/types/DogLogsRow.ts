@@ -12,6 +12,7 @@ dl.logIsDeleted
 const dogLogsColumnsWithoutPrefix = dogLogsColumnsWithDLPrefix.replace('dl.', '');
 
 type DogLogsRow = {
+    // NOTE: database booleans (tinyint(1)) are returned as 0 or 1 numbers, not booleans. therefore, we have to use number instead of boolean
     logId: number
     userId: string
     logDate: Date
@@ -19,7 +20,7 @@ type DogLogsRow = {
     logAction: string
     logCustomActionName: string
     logLastModified: Date
-    logIsDeleted: boolean
+    logIsDeleted: number
 };
 
 export {

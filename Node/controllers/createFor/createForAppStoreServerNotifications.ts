@@ -51,7 +51,6 @@ async function createASSNForSignedPayload(databaseConnection: Queryable, signedP
   }
 
   // New notificationTypes could be added
-  // TODO NOW new notification types / subtypes could be added so check to see if notif type is a known type, otherwise return
   switch (notificationType) {
     case NotificationType.DidRenew:
     case NotificationType.OfferRedeemed:
@@ -78,11 +77,13 @@ async function createASSNForSignedPayload(databaseConnection: Queryable, signedP
     // EXPIRED: A notification type that along with its subtype indicates that a subscription expired.
       break;
     default:
-    // CONSUMPTION_REQUEST: Indicates that the customer initiated a refund request for a consumable in-app purchase, and the App Store is requesting that you provide consumption data.
-    // GRACE_PERIOD_EXPIRED: Indicates that the billing grace period has ended without renewing the subscription, so you can turn off access to service or content.
-    // PRICE_INCREASE: A notification type that along with its subtype indicates that the system has informed the user of an auto-renewable subscription price increase.
-    // RENEWAL_EXTENDED: Indicates that the App Store extended the subscription renewal date that the developer requested.
-    // TEST: A notification type that the App Store server sends when you request it by calling the Request a Test Notification endpoint.
+      // RENEWAL_EXTENDED: A notification type that indicates the App Store extended the subscription renewal date for a specific subscription. You request subscription-renewal-date extensions by calling Extend a Subscription Renewal Date or Extend Subscription Renewal Dates for All Active Subscribers in the App Store Server API.
+      // RENEWAL_EXTENSION: A notification type that, along with its subtype, indicates that the App Store is attempting to extend the subscription renewal date that you request by calling Extend Subscription Renewal Dates for All Active Subscribers.
+      // CONSUMPTION_REQUEST: Indicates that the customer initiated a refund request for a consumable in-app purchase, and the App Store is requesting that you provide consumption data.
+      // GRACE_PERIOD_EXPIRED: Indicates that the billing grace period has ended without renewing the subscription, so you can turn off access to service or content.
+      // PRICE_INCREASE: A notification type that along with its subtype indicates that the system has informed the user of an auto-renewable subscription price increase.
+      // RENEWAL_EXTENDED: Indicates that the App Store extended the subscription renewal date that the developer requested.
+      // TEST: A notification type that the App Store server sends when you request it by calling the Request a Test Notification endpoint.
       return;
   }
 

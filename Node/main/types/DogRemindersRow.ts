@@ -32,26 +32,27 @@ dr.oneTimeDate
 const dogRemindersColumnsWithoutPrefix = dogRemindersColumnsWithDRPrefix.replace(prefix, '');
 
 type DogRemindersRow = {
+    // NOTE: database booleans (tinyint(1)) are returned as 0 or 1 numbers, not booleans. therefore, we have to use number instead of boolean
     reminderId: number
     reminderAction: string
     reminderCustomActionName: string
     reminderType: string
-    reminderIsEnabled: boolean
+    reminderIsEnabled: number
     reminderExecutionBasis: Date
     reminderExecutionDate?: Date
     reminderLastModified: Date
-    reminderIsDeleted: boolean
+    reminderIsDeleted: number
     snoozeExecutionInterval?: number
     countdownExecutionInterval: number
     weeklyUTCHour: number
     weeklyUTCMinute: number
-    weeklySunday: boolean
-    weeklyMonday: boolean
-    weeklyTuesday: boolean
-    weeklyWednesday: boolean
-    weeklyThursday: boolean
-    weeklyFriday: boolean
-    weeklySaturday: boolean
+    weeklySunday: number
+    weeklyMonday: number
+    weeklyTuesday: number
+    weeklyWednesday: number
+    weeklyThursday: number
+    weeklyFriday: number
+    weeklySaturday: number
     weeklySkippedDate?: Date
     monthlyUTCDay: number
     monthlyUTCHour: number

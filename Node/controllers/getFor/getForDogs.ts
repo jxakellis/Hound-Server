@@ -4,6 +4,8 @@ import { DogsRow, dogsColumnsWithDPrefix } from '../../main/types/DogsRow';
 import { getAllLogsForDogId } from './getForLogs';
 import { getAllRemindersForDogId } from './getForReminders';
 
+// TODO NOW once we have added type to all of our databaseQueries, check for LEFT JOINS. If a left join fails, all of the data receieved by it will be optional
+
 /**
  *  If the query is successful, returns the dog for the dogId.
  *  If a problem is encountered, creates and throws custom error

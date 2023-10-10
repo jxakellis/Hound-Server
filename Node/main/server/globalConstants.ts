@@ -1,6 +1,7 @@
 // Steps out of GitHub repo directory until in parent directory, then looks for file that indicates the server should be production
 // /server/ -> ../ -> /main/ -> ../ -> /Node/ -> ../ -> /Hound-Server/ -> ../ -> /PARENT_DIR/
 import * as fs from 'fs';
+import { TransactionsRow } from '../types/TransactionsRow';
 
 const IS_PRODUCTION_DATABASE = fs.existsSync(`${__dirname}/../../../../productionIndicator.txt`);
 
@@ -97,50 +98,125 @@ const NOTIFICATION = {
   },
 };
 
+const DEFAULT_SUBSCRIPTION_USER_ID = '0123456789012345678901234567890123456789012345678901234567890123';
+const DEFAULT_SUBSCRIPTION_PURCHASE_DATE = new Date('0000-01-01T00:00:00+0000');
+const DEFAULT_SUBSCRIPTION_EXPIRES_DATE = new Date('3000-01-01T00:00:00+0000');
 const DEFAULT_SUBSCRIPTION_PRODUCT_ID = 'com.jonathanxakellis.hound.default';
 const DEFAULT_SUBSCRIPTION_NUMBER_OF_FAMILY_MEMBERS = 1;
+
+const SUBSCRIPTIONS: TransactionsRow[] = [
+  {
+    userId: DEFAULT_SUBSCRIPTION_USER_ID,
+    transactionId: -1,
+    productId: DEFAULT_SUBSCRIPTION_PRODUCT_ID,
+    purchaseDate: DEFAULT_SUBSCRIPTION_PURCHASE_DATE,
+    expiresDate: DEFAULT_SUBSCRIPTION_EXPIRES_DATE,
+    expirationDate: DEFAULT_SUBSCRIPTION_EXPIRES_DATE,
+    numberOfFamilyMembers: DEFAULT_SUBSCRIPTION_NUMBER_OF_FAMILY_MEMBERS,
+    numberOfDogs: LIMIT.NUMBER_OF_DOGS_PER_FAMILY,
+    autoRenewStatus: 1,
+    isAutoRenewing: 1,
+    autoRenewProductId: DEFAULT_SUBSCRIPTION_PRODUCT_ID,
+    revocationReason: undefined,
+    offerIdentifier: undefined,
+  },
+  {
+    userId: DEFAULT_SUBSCRIPTION_USER_ID,
+    transactionId: -1,
+    productId: 'com.jonathanxakellis.hound.twofamilymemberstwodogs.monthly',
+    purchaseDate: DEFAULT_SUBSCRIPTION_PURCHASE_DATE,
+    expiresDate: DEFAULT_SUBSCRIPTION_EXPIRES_DATE,
+    expirationDate: DEFAULT_SUBSCRIPTION_EXPIRES_DATE,
+    numberOfFamilyMembers: 2,
+    numberOfDogs: LIMIT.NUMBER_OF_DOGS_PER_FAMILY,
+    autoRenewStatus: 1,
+    isAutoRenewing: 1,
+    autoRenewProductId: 'com.jonathanxakellis.hound.twofamilymemberstwodogs.monthly',
+    revocationReason: undefined,
+    offerIdentifier: undefined,
+  },
+  {
+    userId: DEFAULT_SUBSCRIPTION_USER_ID,
+    transactionId: -1,
+    productId: 'com.jonathanxakellis.hound.fourfamilymembersfourdogs.monthly',
+    purchaseDate: DEFAULT_SUBSCRIPTION_PURCHASE_DATE,
+    expiresDate: DEFAULT_SUBSCRIPTION_EXPIRES_DATE,
+    expirationDate: DEFAULT_SUBSCRIPTION_EXPIRES_DATE,
+    numberOfFamilyMembers: 4,
+    numberOfDogs: LIMIT.NUMBER_OF_DOGS_PER_FAMILY,
+    autoRenewStatus: 1,
+    isAutoRenewing: 1,
+    autoRenewProductId: 'com.jonathanxakellis.hound.fourfamilymembersfourdogs.monthly',
+    revocationReason: undefined,
+    offerIdentifier: undefined,
+  },
+  {
+    userId: DEFAULT_SUBSCRIPTION_USER_ID,
+    transactionId: -1,
+    productId: 'com.jonathanxakellis.hound.sixfamilymemberssixdogs.monthly',
+    purchaseDate: DEFAULT_SUBSCRIPTION_PURCHASE_DATE,
+    expiresDate: DEFAULT_SUBSCRIPTION_EXPIRES_DATE,
+    expirationDate: DEFAULT_SUBSCRIPTION_EXPIRES_DATE,
+    numberOfFamilyMembers: 6,
+    numberOfDogs: LIMIT.NUMBER_OF_DOGS_PER_FAMILY,
+    autoRenewStatus: 1,
+    isAutoRenewing: 1,
+    autoRenewProductId: 'com.jonathanxakellis.hound.sixfamilymemberssixdogs.monthly',
+    revocationReason: undefined,
+    offerIdentifier: undefined,
+  },
+  {
+    userId: DEFAULT_SUBSCRIPTION_USER_ID,
+    transactionId: -1,
+    productId: 'com.jonathanxakellis.hound.sixfamilymembers.onemonth',
+    purchaseDate: DEFAULT_SUBSCRIPTION_PURCHASE_DATE,
+    expiresDate: DEFAULT_SUBSCRIPTION_EXPIRES_DATE,
+    expirationDate: DEFAULT_SUBSCRIPTION_EXPIRES_DATE,
+    numberOfFamilyMembers: 6,
+    numberOfDogs: LIMIT.NUMBER_OF_DOGS_PER_FAMILY,
+    autoRenewStatus: 1,
+    isAutoRenewing: 1,
+    autoRenewProductId: 'com.jonathanxakellis.hound.sixfamilymembers.onemonth',
+    revocationReason: undefined,
+    offerIdentifier: undefined,
+  },
+  {
+    userId: DEFAULT_SUBSCRIPTION_USER_ID,
+    transactionId: -1,
+    productId: 'com.jonathanxakellis.hound.sixfamilymembers.sixmonth',
+    purchaseDate: DEFAULT_SUBSCRIPTION_PURCHASE_DATE,
+    expiresDate: DEFAULT_SUBSCRIPTION_EXPIRES_DATE,
+    expirationDate: DEFAULT_SUBSCRIPTION_EXPIRES_DATE,
+    numberOfFamilyMembers: 6,
+    numberOfDogs: LIMIT.NUMBER_OF_DOGS_PER_FAMILY,
+    autoRenewStatus: 1,
+    isAutoRenewing: 1,
+    autoRenewProductId: 'com.jonathanxakellis.hound.sixfamilymembers.sixmonth',
+    revocationReason: undefined,
+    offerIdentifier: undefined,
+  },
+  {
+    userId: DEFAULT_SUBSCRIPTION_USER_ID,
+    transactionId: -1,
+    productId: 'com.jonathanxakellis.hound.sixfamilymembers.oneyear',
+    purchaseDate: DEFAULT_SUBSCRIPTION_PURCHASE_DATE,
+    expiresDate: DEFAULT_SUBSCRIPTION_EXPIRES_DATE,
+    expirationDate: DEFAULT_SUBSCRIPTION_EXPIRES_DATE,
+    numberOfFamilyMembers: 6,
+    numberOfDogs: LIMIT.NUMBER_OF_DOGS_PER_FAMILY,
+    autoRenewStatus: 1,
+    isAutoRenewing: 1,
+    autoRenewProductId: 'com.jonathanxakellis.hound.sixfamilymembers.oneyear',
+    revocationReason: undefined,
+    offerIdentifier: undefined,
+  },
+];
 
 const SUBSCRIPTION = {
   DEFAULT_SUBSCRIPTION_PRODUCT_ID,
   DEFAULT_SUBSCRIPTION_NUMBER_OF_FAMILY_MEMBERS,
   // The in app purchase offerings for subscriptions (default indicates free / no payment)
-  SUBSCRIPTIONS: [
-    {
-      productId: DEFAULT_SUBSCRIPTION_PRODUCT_ID,
-      numberOfFamilyMembers: DEFAULT_SUBSCRIPTION_NUMBER_OF_FAMILY_MEMBERS,
-      numberOfDogs: LIMIT.NUMBER_OF_DOGS_PER_FAMILY,
-    },
-    {
-      productId: 'com.jonathanxakellis.hound.twofamilymemberstwodogs.monthly',
-      numberOfFamilyMembers: 2,
-      numberOfDogs: LIMIT.NUMBER_OF_DOGS_PER_FAMILY,
-    },
-    {
-      productId: 'com.jonathanxakellis.hound.fourfamilymembersfourdogs.monthly',
-      numberOfFamilyMembers: 4,
-      numberOfDogs: LIMIT.NUMBER_OF_DOGS_PER_FAMILY,
-    },
-    {
-      productId: 'com.jonathanxakellis.hound.sixfamilymemberssixdogs.monthly',
-      numberOfFamilyMembers: 6,
-      numberOfDogs: LIMIT.NUMBER_OF_DOGS_PER_FAMILY,
-    },
-    {
-      productId: 'com.jonathanxakellis.hound.sixfamilymembers.onemonth',
-      numberOfFamilyMembers: 6,
-      numberOfDogs: LIMIT.NUMBER_OF_DOGS_PER_FAMILY,
-    },
-    {
-      productId: 'com.jonathanxakellis.hound.sixfamilymembers.sixmonth',
-      numberOfFamilyMembers: 6,
-      numberOfDogs: LIMIT.NUMBER_OF_DOGS_PER_FAMILY,
-    },
-    {
-      productId: 'com.jonathanxakellis.hound.sixfamilymembers.oneyear',
-      numberOfFamilyMembers: 6,
-      numberOfDogs: LIMIT.NUMBER_OF_DOGS_PER_FAMILY,
-    },
-  ],
+  SUBSCRIPTIONS,
 };
 
 const ERROR = {

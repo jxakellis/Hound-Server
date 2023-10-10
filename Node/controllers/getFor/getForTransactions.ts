@@ -1,32 +1,19 @@
-import { databaseQuery } from '../../main/database/databaseQuery';
-import { formatBoolean, formatNumber } from '../../main/tools/format/formatObject';
-import { areAllDefined } from '../../main/tools/validate/validateDefined';
-import { ValidationError } from '../../main/server/globalErrors';
+import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
+import { SUBSCRIPTION } from '../../main/server/globalConstants';
+import { TransactionsRow, transactionsColumnsWithTPrefix, transactionsColumnsWithoutPrefix } from '../../main/types/TransactionsRow';
+import { PublicUsersRow, publicUsersColumnsWithUPrefix } from '../../main/types/UsersRow';
 
 import { getFamilyHeadUserId } from './getForFamily';
-
-// TODO FUTURE depreciate isAutoRenewing (last used 3.0.0)
-// Omitted columns: originalTransactionId, userId, subscriptionGroupIdentifier, quantity, webOrderLineItemId, inAppOwnershipType
-const transactionsColumns = `
-transactionId, productId, purchaseDate,
-expiresDate, expiresDate AS expirationDate,
-numberOfFamilyMembers, numberOfDogs, autoRenewStatus, autoRenewStatus AS isAutoRenewing,
-autoRenewProductId, revocationReason, offerIdentifier
-`;
 
 /**
  *  If the query is successful, returns the most recent subscription for the userId's family (if no most recent subscription, fills in default subscription details).
  *  If a problem is encountered, creates and throws custom error
  */
-async function getActiveTransaction(databaseConnection, familyMemberUserId) {
-  if (areAllDefined(databaseConnection, familyMemberUserId) === false) {
-    throw new ValidationError('databaseConnection or familyMemberUserId missing', global.CONSTANT.ERROR.VALUE.MISSING);
-  }
-
+async function getActiveTransaction(databaseConnection: Queryable, familyMemberUserId: string): Promise<TransactionsRow | undefined> {
   const familyHeadUserId = await getFamilyHeadUserId(databaseConnection, familyMemberUserId);
 
   // find the family's most recent subscription
-  let [familySubscription] = await databaseQuery(
+  const familySubscriptionResult = await databaseQuery<TransactionsRow[]>(
     databaseConnection,
     // For mrp, we only select transactions that aren't expired, then
     // For mrp, for each productId, we give a rowNumber of 1 to the row that has the greatest (most recent) purchaseDate, then
@@ -48,7 +35,7 @@ async function getActiveTransaction(databaseConnection, familyMemberUserId) {
         FROM transactions t
         WHERE revocationReason IS NULL AND (TIMESTAMPDIFF(MICROSECOND, CURRENT_TIMESTAMP(), expiresDate) >= 0) AND userId = ?
     )
-    SELECT ${transactionsColumns}
+    SELECT ${transactionsColumnsWithoutPrefix}
     FROM mostRecentlyPurchasedForEachProductId AS mrp
     WHERE mrp.rowNumberByProductId = 1
     ORDER BY mrp.productIdCorrespondingRank DESC
@@ -56,17 +43,14 @@ async function getActiveTransaction(databaseConnection, familyMemberUserId) {
     [familyHeadUserId],
   );
 
+  const familySubscription = familySubscriptionResult.safeIndex(0) ?? SUBSCRIPTION.SUBSCRIPTIONS.find((subscription) => subscription.productId === SUBSCRIPTION.DEFAULT_SUBSCRIPTION_PRODUCT_ID);
+
   // since we found no family subscription, assign the family to the default subscription
-  if (areAllDefined(familySubscription) === false) {
-    familySubscription = global.CONSTANT.SUBSCRIPTION.SUBSCRIPTIONS.find((subscription) => subscription.productId === global.CONSTANT.SUBSCRIPTION.DEFAULT_SUBSCRIPTION_PRODUCT_ID);
+  if (familySubscription === undefined) {
+    return undefined;
   }
 
   familySubscription.isActive = true;
-  familySubscription.autoRenewProductId = familySubscription.autoRenewProductId ?? familySubscription.productId;
-  familySubscription.autoRenewStatus = formatBoolean(familySubscription.autoRenewStatus) ?? true;
-  // TODO FUTURE depreciate isAutoRenewing (last used 3.0.0)
-  familySubscription.isAutoRenewing = familySubscription.autoRenewStatus;
-  familySubscription.revocationReason = formatNumber(familySubscription.revocationReason) ?? null;
 
   return familySubscription;
 }
@@ -75,17 +59,13 @@ async function getActiveTransaction(databaseConnection, familyMemberUserId) {
  *  If the query is successful, returns the subscription history and active subscription for the familyId.
  *  If a problem is encountered, creates and throws custom error
  */
-async function getAllTransactions(databaseConnection, familyMemberUserId) {
-  if (areAllDefined(databaseConnection, familyMemberUserId) === false) {
-    throw new ValidationError('databaseConnection or familyMemberUserId missing', global.CONSTANT.ERROR.VALUE.MISSING);
-  }
-
+async function getAllTransactions(databaseConnection: Queryable, familyMemberUserId: string): Promise<TransactionsRow[]> {
   const familyHeadUserId = await getFamilyHeadUserId(databaseConnection, familyMemberUserId);
 
   // find all of the family's subscriptions
-  const transactionsHistory = await databaseQuery(
+  const transactionsHistory = await databaseQuery<TransactionsRow[]>(
     databaseConnection,
-    `SELECT ${transactionsColumns}
+    `SELECT ${transactionsColumnsWithTPrefix}
     FROM transactions t
     WHERE revocationReason IS NULL AND userId = ?
     ORDER BY purchaseDate DESC, expiresDate DESC
@@ -96,9 +76,11 @@ async function getAllTransactions(databaseConnection, familyMemberUserId) {
   // Don't use .familyActiveSubscription property: Want to make sure this function always returns the most updated/accurate information
   const familyActiveSubscription = await getActiveTransaction(databaseConnection, familyMemberUserId);
 
-  for (let i = 0; i < transactionsHistory.length; i += 1) {
-    const subscription = transactionsHistory[i];
-    subscription.isActive = subscription.transactionId === familyActiveSubscription.transactionId;
+  if (familyActiveSubscription !== undefined) {
+    for (let i = 0; i < transactionsHistory.length; i += 1) {
+      const subscription = transactionsHistory[i];
+      subscription.isActive = subscription.transactionId === familyActiveSubscription.transactionId;
+    }
   }
 
   return transactionsHistory;
@@ -116,32 +98,30 @@ async function getAllTransactions(databaseConnection, familyMemberUserId) {
  * @param {*} originalTransactionId
  * @returns
  */
-async function getTransactionOwner(databaseConnection, appAccountToken, transactionId, originalTransactionId) {
-  if (areAllDefined(databaseConnection) === false) {
-    return null;
-  }
-
-  if (areAllDefined(appAccountToken) === true) {
-    const [user] = await databaseQuery(
+async function getTransactionOwner(databaseConnection: Queryable, appAccountToken?: string, transactionId?: number, originalTransactionId?: number): Promise<string | undefined> {
+  if (appAccountToken !== undefined) {
+    const result = await databaseQuery<PublicUsersRow[]>(
       databaseConnection,
-      `SELECT userId 
+      `SELECT ${publicUsersColumnsWithUPrefix} 
       FROM users u
       WHERE u.userAppAccountToken = ?
       LIMIT 1`,
       [appAccountToken],
     );
 
-    if (areAllDefined(user) === true) {
+    const user = result.safeIndex(0);
+
+    if (user !== undefined) {
       return user.userId;
     }
   }
 
   // If the user supplied an originalTransactionId, search with this first to attempt to find the userId for the most recent associated transaction
-  if (areAllDefined(originalTransactionId) === true) {
+  if (originalTransactionId !== undefined) {
     // ALLOW TRANSACTIONS WITH revocationReason IS NOT NULL FOR MATCHING PURPOSES
-    const [transaction] = await databaseQuery(
+    const result = await databaseQuery<TransactionsRow[]>(
       databaseConnection,
-      `SELECT userId
+      `SELECT ${transactionsColumnsWithTPrefix}
         FROM transactions t
         WHERE originalTransactionId = ?
         ORDER BY purchaseDate DESC
@@ -149,17 +129,19 @@ async function getTransactionOwner(databaseConnection, appAccountToken, transact
       [originalTransactionId],
     );
 
-    if (areAllDefined(transaction) === true) {
+    const transaction = result.safeIndex(0);
+
+    if (transaction !== undefined) {
       return transaction.userId;
     }
   }
 
   // If the user supplied an transactionId, attempt to find the userId for the most recent associated transaction
-  if (areAllDefined(transactionId) === true) {
+  if (transactionId !== undefined) {
     // ALLOW TRANSACTIONS WITH revocationReason IS NOT NULL FOR MATCHING PURPOSES
-    const [transaction] = await databaseQuery(
+    const result = await databaseQuery<TransactionsRow[]>(
       databaseConnection,
-      `SELECT userId
+      `SELECT ${transactionsColumnsWithTPrefix}
         FROM transactions t
         WHERE transactionId = ?
         ORDER BY purchaseDate DESC
@@ -167,12 +149,14 @@ async function getTransactionOwner(databaseConnection, appAccountToken, transact
       [transactionId],
     );
 
-    if (areAllDefined(transaction) === true) {
+    const transaction = result.safeIndex(0);
+
+    if (transaction !== undefined) {
       return transaction.userId;
     }
   }
 
-  return null;
+  return undefined;
 }
 
 export {

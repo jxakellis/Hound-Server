@@ -14,6 +14,7 @@ u.userNotificationToken
 const privateUsersColumnsWithoutPrefix = privateUsersColumnsWithUPrefix.replace(prefix, '');
 
 type PrivateUsersRow = {
+    // NOTE: database booleans (tinyint(1)) are returned as 0 or 1 numbers, not booleans. therefore, we have to use number instead of boolean
     userId: string
     userAppAccountToken: string
     userEmail?: string
@@ -31,6 +32,7 @@ u.userLastName
 const publicUsersColumnsWithoutPrefix = publicUsersColumnsWithUPrefix.replace(prefix, '');
 
 type PublicUsersRow = {
+    // NOTE: database booleans (tinyint(1)) are returned as 0 or 1 numbers, not booleans. therefore, we have to use number instead of boolean
     userId: string
     userFirstName?: string
     userLastName?: string

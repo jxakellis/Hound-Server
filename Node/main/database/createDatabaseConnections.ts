@@ -23,12 +23,15 @@ const host = SERVER.IS_PRODUCTION_DATABASE ? productionHoundHost : developmentHo
 const password = SERVER.IS_PRODUCTION_DATABASE ? productionHoundPassword : developmentHoundPassword;
 const database = SERVER.IS_PRODUCTION_DATABASE ? productionHoundDatabase : developmentHoundDatabase;
 const connectTimeout = 30000;
-const databaseConnectionConfiguration = {
+const databaseConnectionConfiguration: mysql2.ConnectionOptions = {
   user,
   host,
   password,
   database,
   connectTimeout,
+  supportBigNumbers: true,
+  bigNumberStrings: false,
+  dateStrings: false,
 };
 
 const databaseConnectionForGeneral = mysql2.createConnection(databaseConnectionConfiguration);
