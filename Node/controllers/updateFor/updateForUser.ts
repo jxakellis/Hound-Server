@@ -1,55 +1,18 @@
-const { databaseQuery } from '../../main/database/databaseQuery';
-const {
-  formatNumber, formatBoolean, formatSHA256Hash, formatUnknownString,
-} from ''../../main/tools/format/formatObject';
-const { hash } from '../../main/tools/format/hash';
-const { atLeastOneDefined, areAllDefined } from '../../main/tools/validate/validateDefined';
-const { ValidationError } from '../../main/server/globalErrors';
+import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
+import { hash } from '../../main/format/hash';
+import { UserConfigurationRow } from '../../main/types/UserConfigurationRow';
 
 /**
  *  Queries the database to update a user. If the query is successful, then returns
  *  If a problem is encountered, creates and throws custom error
  */
 async function updateUserForUserId(
-  databaseConnection,
-  userId,
-  userNotificationToken,
-  forUserConfigurationIsNotificationEnabled,
-  forUserConfigurationIsLoudNotification,
-  forUserConfigurationIsLogNotificationEnabled,
-  forUserConfigurationIsReminderNotificationEnabled,
-  forUserConfigurationInterfaceStyle,
-  forUserConfigurationSnoozeLength,
-  userConfigurationNotificationSound,
-  userConfigurationLogsInterfaceScale,
-  userConfigurationRemindersInterfaceScale,
-  forUserConfigurationSilentModeIsEnabled,
-  forUserConfigurationSilentModeStartUTCHour,
-  forUserConfigurationSilentModeEndUTCHour,
-  forUserConfigurationSilentModeStartUTCMinute,
-  forUserConfigurationSilentModeEndUTCMinute,
-) {
-  if (areAllDefined(databaseConnection, userId) === false) {
-    throw new ValidationError('databaseConnection or userId missing', global.CONSTANT.ERROR.VALUE.MISSING);
-  }
-  const userConfigurationIsNotificationEnabled = formatBoolean(forUserConfigurationIsNotificationEnabled);
-  const userConfigurationIsLoudNotificationEnabled = formatBoolean(forUserConfigurationIsLoudNotification);
-  const userConfigurationIsLogNotificationEnabled = formatBoolean(forUserConfigurationIsLogNotificationEnabled);
-  const userConfigurationIsReminderNotificationEnabled = formatBoolean(forUserConfigurationIsReminderNotificationEnabled);
-  const userConfigurationInterfaceStyle = formatNumber(forUserConfigurationInterfaceStyle);
-  const userConfigurationSnoozeLength = formatNumber(forUserConfigurationSnoozeLength);
-  // userConfigurationNotificationSound
-  // userConfigurationLogsInterfaceScale
-  // userConfigurationRemindersInterfaceScale
-  const userConfigurationIsSilentModeEnabled = formatBoolean(forUserConfigurationSilentModeIsEnabled);
-  const userConfigurationSilentModeStartUTCHour = formatNumber(forUserConfigurationSilentModeStartUTCHour);
-  const userConfigurationSilentModeEndUTCHour = formatNumber(forUserConfigurationSilentModeEndUTCHour);
-  const userConfigurationSilentModeStartUTCMinute = formatNumber(forUserConfigurationSilentModeStartUTCMinute);
-  const userConfigurationSilentModeEndUTCMinute = formatNumber(forUserConfigurationSilentModeEndUTCMinute);
-
-  // checks to see that all needed components are provided
-  if (atLeastOneDefined(
-    userNotificationToken,
+  databaseConnection: Queryable,
+  userId: string,
+  userConfiguration: Partial<UserConfigurationRow>,
+  userNotificationToken?: string,
+): Promise<void> {
+  const {
     userConfigurationIsNotificationEnabled,
     userConfigurationIsLoudNotificationEnabled,
     userConfigurationIsLogNotificationEnabled,
@@ -64,26 +27,10 @@ async function updateUserForUserId(
     userConfigurationSilentModeEndUTCHour,
     userConfigurationSilentModeStartUTCMinute,
     userConfigurationSilentModeEndUTCMinute,
-  ) === false) {
-    throw new ValidationError('No userNotificationToken, \
-userConfigurationIsNotificationEnabled, \
-userConfigurationIsLoudNotificationEnabled, \
-userConfigurationIsLogNotificationEnabled, \
-userConfigurationIsReminderNotificationEnabled, \
-userConfigurationInterfaceStyle, \
-userConfigurationSnoozeLength, \
-userConfigurationNotificationSound, \
-userConfigurationLogsInterfaceScale, \
-userConfigurationRemindersInterfaceScale, \
-userConfigurationIsSilentModeEnabled, \
-userConfigurationSilentModeStartUTCHour, \
-userConfigurationSilentModeEndUTCHour, \
-userConfigurationSilentModeStartUTCMinute, \
-or userConfigurationSilentModeEndUTCMinute, provided', global.CONSTANT.ERROR.VALUE.MISSING);
-  }
+  } = userConfiguration;
 
   const promises = [];
-  if (areAllDefined(userNotificationToken)) {
+  if (userNotificationToken !== undefined) {
     promises.push(databaseQuery(
       databaseConnection,
       `UPDATE users
@@ -92,7 +39,7 @@ or userConfigurationSilentModeEndUTCMinute, provided', global.CONSTANT.ERROR.VAL
       [userNotificationToken, userId],
     ));
   }
-  if (areAllDefined(userConfigurationIsNotificationEnabled)) {
+  if (userConfigurationIsNotificationEnabled !== undefined) {
     promises.push(databaseQuery(
       databaseConnection,
       `UPDATE userConfiguration
@@ -101,7 +48,7 @@ or userConfigurationSilentModeEndUTCMinute, provided', global.CONSTANT.ERROR.VAL
       [userConfigurationIsNotificationEnabled, userId],
     ));
   }
-  if (areAllDefined(userConfigurationIsLoudNotificationEnabled)) {
+  if (userConfigurationIsLoudNotificationEnabled !== undefined) {
     promises.push(databaseQuery(
       databaseConnection,
       `UPDATE userConfiguration
@@ -110,7 +57,7 @@ or userConfigurationSilentModeEndUTCMinute, provided', global.CONSTANT.ERROR.VAL
       [userConfigurationIsLoudNotificationEnabled, userId],
     ));
   }
-  if (areAllDefined(userConfigurationIsLogNotificationEnabled)) {
+  if (userConfigurationIsLogNotificationEnabled !== undefined) {
     promises.push(databaseQuery(
       databaseConnection,
       `UPDATE userConfiguration
@@ -119,7 +66,7 @@ or userConfigurationSilentModeEndUTCMinute, provided', global.CONSTANT.ERROR.VAL
       [userConfigurationIsLogNotificationEnabled, userId],
     ));
   }
-  if (areAllDefined(userConfigurationIsReminderNotificationEnabled)) {
+  if (userConfigurationIsReminderNotificationEnabled !== undefined) {
     promises.push(databaseQuery(
       databaseConnection,
       `UPDATE userConfiguration
@@ -128,7 +75,7 @@ or userConfigurationSilentModeEndUTCMinute, provided', global.CONSTANT.ERROR.VAL
       [userConfigurationIsReminderNotificationEnabled, userId],
     ));
   }
-  if (areAllDefined(userConfigurationInterfaceStyle)) {
+  if (userConfigurationInterfaceStyle !== undefined) {
     promises.push(databaseQuery(
       databaseConnection,
       `UPDATE userConfiguration
@@ -137,7 +84,7 @@ or userConfigurationSilentModeEndUTCMinute, provided', global.CONSTANT.ERROR.VAL
       [userConfigurationInterfaceStyle, userId],
     ));
   }
-  if (areAllDefined(userConfigurationSnoozeLength)) {
+  if (userConfigurationSnoozeLength !== undefined) {
     promises.push(databaseQuery(
       databaseConnection,
       `UPDATE userConfiguration
@@ -146,7 +93,7 @@ or userConfigurationSilentModeEndUTCMinute, provided', global.CONSTANT.ERROR.VAL
       [userConfigurationSnoozeLength, userId],
     ));
   }
-  if (areAllDefined(userConfigurationNotificationSound)) {
+  if (userConfigurationNotificationSound !== undefined) {
     promises.push(databaseQuery(
       databaseConnection,
       `UPDATE userConfiguration
@@ -155,7 +102,7 @@ or userConfigurationSilentModeEndUTCMinute, provided', global.CONSTANT.ERROR.VAL
       [userConfigurationNotificationSound, userId],
     ));
   }
-  if (areAllDefined(userConfigurationLogsInterfaceScale)) {
+  if (userConfigurationLogsInterfaceScale !== undefined) {
     promises.push(databaseQuery(
       databaseConnection,
       `UPDATE userConfiguration
@@ -164,7 +111,7 @@ or userConfigurationSilentModeEndUTCMinute, provided', global.CONSTANT.ERROR.VAL
       [userConfigurationLogsInterfaceScale, userId],
     ));
   }
-  if (areAllDefined(userConfigurationRemindersInterfaceScale)) {
+  if (userConfigurationRemindersInterfaceScale !== undefined) {
     promises.push(databaseQuery(
       databaseConnection,
       `UPDATE userConfiguration
@@ -173,7 +120,7 @@ or userConfigurationSilentModeEndUTCMinute, provided', global.CONSTANT.ERROR.VAL
       [userConfigurationRemindersInterfaceScale, userId],
     ));
   }
-  if (areAllDefined(userConfigurationIsSilentModeEnabled)) {
+  if (userConfigurationIsSilentModeEnabled !== undefined) {
     promises.push(databaseQuery(
       databaseConnection,
       `UPDATE userConfiguration
@@ -182,7 +129,7 @@ or userConfigurationSilentModeEndUTCMinute, provided', global.CONSTANT.ERROR.VAL
       [userConfigurationIsSilentModeEnabled, userId],
     ));
   }
-  if (areAllDefined(userConfigurationSilentModeStartUTCHour)) {
+  if (userConfigurationSilentModeStartUTCHour !== undefined) {
     promises.push(databaseQuery(
       databaseConnection,
       `UPDATE userConfiguration
@@ -191,7 +138,7 @@ or userConfigurationSilentModeEndUTCMinute, provided', global.CONSTANT.ERROR.VAL
       [userConfigurationSilentModeStartUTCHour, userId],
     ));
   }
-  if (areAllDefined(userConfigurationSilentModeEndUTCHour)) {
+  if (userConfigurationSilentModeEndUTCHour !== undefined) {
     promises.push(databaseQuery(
       databaseConnection,
       `UPDATE userConfiguration
@@ -200,7 +147,7 @@ or userConfigurationSilentModeEndUTCMinute, provided', global.CONSTANT.ERROR.VAL
       [userConfigurationSilentModeEndUTCHour, userId],
     ));
   }
-  if (areAllDefined(userConfigurationSilentModeStartUTCMinute)) {
+  if (userConfigurationSilentModeStartUTCMinute !== undefined) {
     promises.push(databaseQuery(
       databaseConnection,
       `UPDATE userConfiguration
@@ -209,7 +156,7 @@ or userConfigurationSilentModeEndUTCMinute, provided', global.CONSTANT.ERROR.VAL
       [userConfigurationSilentModeStartUTCMinute, userId],
     ));
   }
-  if (areAllDefined(userConfigurationSilentModeEndUTCMinute)) {
+  if (userConfigurationSilentModeEndUTCMinute !== undefined) {
     promises.push(databaseQuery(
       databaseConnection,
       `UPDATE userConfiguration
@@ -228,18 +175,11 @@ or userConfigurationSilentModeEndUTCMinute, provided', global.CONSTANT.ERROR.VAL
  * If we receive a userIdentifier that is unhashed, we update our records.
  */
 async function updateUserForUserIdentifierHashedUserIdentifier(
-  databaseConnection,
-  forUnhashedUserIdentifier,
-  forHashedUserIdentifier,
-) {
+  databaseConnection: Queryable,
+  unhashedUserIdentifier: string,
+  hashedUserIdentifier: string,
+): Promise<void> {
   // unhashedUserIdentifier: unhashed, 44-length apple identifier or 64-length sha-256 hash of apple identifier
-  const unhashedUserIdentifier = formatUnknownString(forUnhashedUserIdentifier);
-  const hashedUserIdentifier = formatSHA256Hash(forHashedUserIdentifier);
-
-  if (areAllDefined(databaseConnection, unhashedUserIdentifier, hashedUserIdentifier) === false) {
-    throw new ValidationError('databaseConnection, unhashedUserIdentifier, or hashedUserIdentifier missing', global.CONSTANT.ERROR.VALUE.MISSING);
-  }
-
   if (hash(unhashedUserIdentifier) !== hashedUserIdentifier) {
     return;
   }

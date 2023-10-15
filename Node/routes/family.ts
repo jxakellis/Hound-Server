@@ -10,9 +10,7 @@ const {
 
 const { validateFamilyId } from '../main/tools/validate/validateId';
 
-familyRouter.param('familyId', validateFamilyId);
-// If familyId is successfully validated, then we add it to the request
-familyRouter.param('familyId', addFamilyIdToLogRequest);
+familyRouter.param('familyId', validateFamilyId, addFamilyIdToLogRequest);
 
 const { attachActiveSubscription } from '../main/tools/validate/validateSubscription';
 

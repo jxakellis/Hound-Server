@@ -1,52 +1,26 @@
-const { ValidationError } from '../../main/server/globalErrors';
-const { databaseQuery } from '../../main/database/databaseQuery';
-const { formatSHA256Hash } from '../../main/tools/format/formatObject';
-const { areAllDefined } from '../../main/tools/validate/validateDefined';
+import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
 
-const { getFamilyHeadUserId } from '../getFor/getForFamily';
+import { getFamilyHeadUserId } from '../getFor/getForFamily';
 
-const { createFamilyMemberLeaveNotification } from '../../main/tools/notifications/alert/createFamilyNotification';
-const { createUserKickedNotification } from '../../main/tools/notifications/alert/createUserKickedNotification';
-
-/**
-*  Depending on whether the user is a family member or a family head,
-*  queries the database to remove the user from their current family or delete the family.
-*/
-async function deleteFamilyLeaveFamilyForUserIdFamilyId(databaseConnection, userId, familyId, familyActiveSubscription) {
-  // familyKickUserId is optional at this point
-  if (areAllDefined(databaseConnection, userId, familyId) === false) {
-    throw new ValidationError('databaseConnection, userId, or familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
-  }
-
-  const familyHeadUserId = await getFamilyHeadUserId(databaseConnection, userId);
-
-  if (familyHeadUserId === userId) {
-    await deleteFamily(databaseConnection, familyId, familyActiveSubscription);
-  }
-  else {
-    await leaveFamily(databaseConnection, userId, familyId);
-  }
-
-  // If user is family member, we can send a notification to remaining members that they left
-  // If user is the family head, sendNotification will find no userNotificationTokens (as the family has been deleted),
-  // ultimately send no APN.
-  createFamilyMemberLeaveNotification(userId, familyId);
-}
+import { createFamilyMemberLeaveNotification } from '../../main/tools/notifications/alert/createFamilyNotification';
+import { createUserKickedNotification } from '../../main/tools/notifications/alert/createUserKickedNotification';
+import { TransactionsRow } from '../../main/types/TransactionsRow';
+import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
+import { SUBSCRIPTION } from '../../main/server/globalConstants';
+import { previousFamilyMembersColumnsWithoutPrefix } from '../../main/types/PreviousFamilyMembersRow';
+import { FamilyMembersRow, familyMembersColumnsWithFMPrefix } from '../../main/types/FamilyMembersRow';
+import { previousFamiliesColumnsWithoutPrefix } from '../../main/types/PreviousFamiliesRow';
 
 /**
  * Helper function for deleteFamilyLeaveFamilyForUserIdFamilyId
  * User is the head of their family. Therefore, they have an obligation to it.
  * They cannot leave, but they can delete their family (if there are no other family members and their subscription is non-renewing)
  */
-async function deleteFamily(databaseConnection, familyId, familyActiveSubscription) {
-  if (areAllDefined(databaseConnection, familyId, familyActiveSubscription) === false) {
-    throw new ValidationError('databaseConnection, familyId, or familyActiveSubscription missing', global.CONSTANT.ERROR.VALUE.MISSING);
-  }
-
+async function deleteFamily(databaseConnection: Queryable, familyId: string, familyActiveSubscription: TransactionsRow): Promise<void> {
   // find the amount of family members in the family
-  const familyMembers = await databaseQuery(
+  const familyMembers = await databaseQuery<FamilyMembersRow[]>(
     databaseConnection,
-    `SELECT 1
+    `SELECT ${familyMembersColumnsWithFMPrefix}
     FROM familyMembers fm
     WHERE familyId = ?
     LIMIT 18446744073709551615`,
@@ -55,7 +29,7 @@ async function deleteFamily(databaseConnection, familyId, familyActiveSubscripti
 
   if (familyMembers.length > 1) {
     // Cannot destroy family until other members are gone
-    throw new ValidationError('Family still contains multiple members', global.CONSTANT.ERROR.FAMILY.LEAVE.STILL_FAMILY_MEMBERS);
+    throw new HoundError('Family still contains multiple members', 'deleteFamily', ERROR_CODES.FAMILY.LEAVE.STILL_FAMILY_MEMBERS);
   }
 
   /*
@@ -67,9 +41,9 @@ async function deleteFamily(databaseConnection, familyId, familyActiveSubscripti
       Only accept if there is no active subscription or the active subscription isn't auto-renewing
       */
 
-  if (familyActiveSubscription.productId !== global.CONSTANT.SUBSCRIPTION.DEFAULT_SUBSCRIPTION_PRODUCT_ID
-        && familyActiveSubscription.autoRenewStatus !== false) {
-    throw new ValidationError('Family still has an auto-renewing, active subscription', global.CONSTANT.ERROR.FAMILY.LEAVE.SUBSCRIPTION_ACTIVE);
+  if (familyActiveSubscription.productId !== SUBSCRIPTION.DEFAULT_SUBSCRIPTION_PRODUCT_ID
+        && familyActiveSubscription.autoRenewStatus === 1) {
+    throw new HoundError('Family still has an auto-renewing, active subscription', 'deleteFamily', ERROR_CODES.FAMILY.LEAVE.SUBSCRIPTION_ACTIVE);
   }
 
   //  The user has no active subscription or manually stopped their subscription from renewing
@@ -81,7 +55,7 @@ async function deleteFamily(databaseConnection, familyId, familyActiveSubscripti
     databaseQuery(
       databaseConnection,
       `INSERT INTO previousFamilies
-      (familyId, userId, familyCode, familyIsLocked, familyAccountCreationDate, familyAccountDeletionDate)
+      (${previousFamiliesColumnsWithoutPrefix})
       SELECT familyId, userId, familyCode, familyIsLocked, familyAccountCreationDate, CURRENT_TIMESTAMP()
       FROM families f
       WHERE familyId = ?`,
@@ -90,7 +64,7 @@ async function deleteFamily(databaseConnection, familyId, familyActiveSubscripti
     databaseQuery(
       databaseConnection,
       `INSERT INTO previousFamilyMembers
-      (familyId, userId, familyMemberJoinDate, userFirstName, userLastName, familyMemberLeaveDate, familyMemberLeaveReason) 
+      (${previousFamilyMembersColumnsWithoutPrefix}) 
       SELECT fm.familyId, fm.userId, fm.familyMemberJoinDate, u.userFirstName, u.userLastName, CURRENT_TIMESTAMP(), 'familyDeleted' 
       FROM familyMembers fm
       JOIN users u ON fm.userId = u.userId
@@ -133,16 +107,11 @@ async function deleteFamily(databaseConnection, familyId, familyActiveSubscripti
  * Helper function for deleteFamilyLeaveFamilyForUserIdFamilyId
  * User is a member of a family. Therefore, they don't have an obligation to it and can leave.
  */
-async function leaveFamily(databaseConnection, userId, familyId) {
-  if (areAllDefined(databaseConnection, userId, familyId) === false) {
-    throw new ValidationError('databaseConnection, userId, or familyId missing', global.CONSTANT.ERROR.VALUE.MISSING);
-  }
-
-  // keep record of user leaving, do this first so the delete statement doesn't mess with this query
+async function leaveFamily(databaseConnection: Queryable, userId: string): Promise<void> {
   await databaseQuery(
     databaseConnection,
     `INSERT INTO previousFamilyMembers
-    (familyId, userId, familyMemberJoinDate, userFirstName, userLastName, familyMemberLeaveDate, familyMemberLeaveReason) 
+    (${previousFamilyMembersColumnsWithoutPrefix}) 
     SELECT fm.familyId, fm.userId, fm.familyMemberJoinDate, u.userFirstName, u.userLastName, CURRENT_TIMESTAMP(), 'userLeft' 
     FROM familyMembers fm
     JOIN users u ON fm.userId = u.userId
@@ -162,22 +131,16 @@ async function leaveFamily(databaseConnection, userId, familyId) {
 /**
 * Helper method for deleteFamilyLeaveFamilyKickFamilyMemberForUserIdFamilyId, goes through checks to attempt to kick a user from the family
 */
-async function kickFamilyMemberForUserIdFamilyId(databaseConnection, userId, familyId, forKickedUserId) {
-  const kickedUserId = formatSHA256Hash(forKickedUserId);
-
-  // have to specify who to kick from the family
-  if (areAllDefined(databaseConnection, userId, familyId, kickedUserId) === false) {
-    throw new ValidationError('databaseConnection, userId, familyId, or kickedUserId missing', global.CONSTANT.ERROR.VALUE.MISSING);
-  }
+async function kickFamilyMemberForUserIdFamilyId(databaseConnection: Queryable, userId: string, familyId: string, kickedUserId: string): Promise<void> {
   // a user cannot kick themselves
   if (userId === kickedUserId) {
-    throw new ValidationError("You can't kick yourself from your own family", global.CONSTANT.ERROR.VALUE.INVALID);
+    throw new HoundError("You can't kick yourself from your own family", 'kickFamilyMemberForUserIdFamilyId', ERROR_CODES.VALUE.INVALID);
   }
   const familyHeadUserId = await getFamilyHeadUserId(databaseConnection, userId);
 
   // check to see if the user is the family head, as only the family head has permissions to kick
   if (familyHeadUserId !== userId) {
-    throw new ValidationError('You are not the family head. Only the family head can kick family members', global.CONSTANT.ERROR.PERMISSION.INVALID.FAMILY);
+    throw new HoundError('You are not the family head. Only the family head can kick family members', 'kickFamilyMemberForUserIdFamilyId', ERROR_CODES.PERMISSION.INVALID.FAMILY);
   }
 
   // kick the user by deleting them from the family, do this first so the delete statement doesn't mess with this query
@@ -203,6 +166,30 @@ async function kickFamilyMemberForUserIdFamilyId(databaseConnection, userId, fam
   // The alarm notifications retrieve the notification tokens of familyMembers right as they fire, so the user will not be included
   createFamilyMemberLeaveNotification(kickedUserId, familyId);
   createUserKickedNotification(kickedUserId);
+}
+
+/**
+*  Depending on whether the user is a family member or a family head,
+*  queries the database to remove the user from their current family or delete the family.
+*/
+async function deleteFamilyLeaveFamilyForUserIdFamilyId(databaseConnection: Queryable, userId: string, familyId: string, familyActiveSubscription: TransactionsRow): Promise<void> {
+  const familyHeadUserId = await getFamilyHeadUserId(databaseConnection, userId);
+
+  if (familyHeadUserId === undefined) {
+    throw new HoundError('No corresponding familyHeadUserId for userId', 'deleteFamilyLeaveFamilyForUserIdFamilyId', ERROR_CODES.VALUE.MISSING);
+  }
+
+  if (familyHeadUserId === userId) {
+    await deleteFamily(databaseConnection, familyId, familyActiveSubscription);
+  }
+  else {
+    await leaveFamily(databaseConnection, userId);
+  }
+
+  // If user is family member, we can send a notification to remaining members that they left
+  // If user is the family head, sendNotification will find no userNotificationTokens (as the family has been deleted),
+  // ultimately send no APN.
+  createFamilyMemberLeaveNotification(userId, familyId);
 }
 
 export { deleteFamilyLeaveFamilyForUserIdFamilyId, kickFamilyMemberForUserIdFamilyId };

@@ -1,4 +1,4 @@
-import { serverLogger } from '../tools/logging/loggers';
+import { serverLogger } from '../logging/loggers';
 import {
   databaseConnectionForGeneral, databaseConnectionForLogging, databaseConnectionForAlarms, databaseConnectionPoolForRequests,
 } from './createDatabaseConnections';

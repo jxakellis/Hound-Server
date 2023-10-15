@@ -1,21 +1,23 @@
-const { databaseQuery } from '../../main/database/databaseQuery';
-const { formatUnknownString } from '../../main/tools/format/formatObject';
-const { areAllDefined } from '../../main/tools/validate/validateDefined';
-const { ValidationError } from '../../main/server/globalErrors';
+import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
+import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
+import { DogsRow } from '../../main/types/DogsRow';
 
 /**
  *  Queries the database to update a dog. If the query is successful, then returns
  *  If a problem is encountered, creates and throws custom error
  */
-async function updateDogForDogId(databaseConnection, dogId, forDogName) {
-  const dogName = formatUnknownString(forDogName, 32);
+async function updateDogForDogId(databaseConnection: Queryable, dog: Partial<DogsRow>): Promise<void> {
+  const {
+    dogName, dogId,
+  } = dog;
 
-  // if dogName null, then there is nothing to update
-  if (areAllDefined(databaseConnection, dogId, dogName) === false) {
-    throw new ValidationError('databaseConnection, dogId, or dogName missing', global.CONSTANT.ERROR.VALUE.MISSING);
+  if (dogName === undefined) {
+    throw new HoundError('dogName missing', 'updateDogForDogId', ERROR_CODES.VALUE.MISSING);
+  }
+  if (dogId === undefined) {
+    throw new HoundError('dogId missing', 'updateDogForDogId', ERROR_CODES.VALUE.MISSING);
   }
 
-  // updates the dogName for the dogId provided
   await databaseQuery(
     databaseConnection,
     `UPDATE dogs

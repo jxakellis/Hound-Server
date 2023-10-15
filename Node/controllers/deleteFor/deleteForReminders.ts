@@ -1,21 +1,15 @@
-const { ValidationError } from '../../main/server/globalErrors';
-const { areAllDefined } from '../../main/tools/validate/validateDefined';
-const { databaseQuery } from '../../main/database/databaseQuery';
-const {
-  formatArray,
-} from ''../../main/tools/format/formatObject';
+import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
 
-const { deleteAlarmNotificationsForReminder } from '../../main/tools/notifications/alarm/deleteAlarmNotification';
+import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
+
+import { deleteAlarmNotificationsForReminder } from '../../main/tools/notifications/alarm/deleteAlarmNotification';
+import { DogRemindersRow, dogRemindersColumnsWithDRPrefix } from '../../main/types/DogRemindersRow';
 
 /**
  *  Queries the database to delete a single reminder. If the query is successful, then returns
  *  If an error is encountered, creates and throws custom error
  */
-async function deleteReminderForFamilyIdDogIdReminderId(databaseConnection, familyId, dogId, reminderId) {
-  if (areAllDefined(databaseConnection, familyId, dogId, reminderId) === false) {
-    throw new ValidationError('databaseConnection, familyId, dogId, or reminderId missing', global.CONSTANT.ERROR.VALUE.MISSING);
-  }
-
+async function deleteReminderForFamilyIdDogIdReminderId(databaseConnection: Queryable, familyId: string, dogId: number, reminderId: number): Promise<void> {
   await databaseQuery(
     databaseConnection,
     `UPDATE dogReminders
@@ -32,51 +26,41 @@ async function deleteReminderForFamilyIdDogIdReminderId(databaseConnection, fami
  *  Queries the database to delete multiple reminders. If the query is successful, then returns
  *  If a problem is encountered, creates and throws custom error
  */
-async function deleteRemindersForFamilyIdDogIdReminderIds(databaseConnection, familyId, dogId, forReminders) {
-  const reminders = formatArray(forReminders);
-
-  if (areAllDefined(databaseConnection, dogId, reminders) === false) {
-    throw new ValidationError('databaseConnection, dogId, or reminders missing', global.CONSTANT.ERROR.VALUE.MISSING);
-  }
-
+async function deleteRemindersForFamilyIdDogIdReminderIds(databaseConnection: Queryable, familyId: string, dogId: number, reminders: Partial<DogRemindersRow>[]): Promise<void> {
   const promises = [];
   for (let i = 0; i < reminders.length; i += 1) {
-    promises.push(deleteReminderForFamilyIdDogIdReminderId(databaseConnection, familyId, dogId, reminders[i].reminderId));
+    const { reminderId } = reminders[i];
+
+    if (reminderId === undefined) {
+      throw new HoundError('reminderId missing for deleteReminderForFamilyIdDogIdReminderId', 'deleteRemindersForFamilyIdDogIdReminderIds', ERROR_CODES.VALUE.MISSING);
+    }
+
+    promises.push(deleteReminderForFamilyIdDogIdReminderId(databaseConnection, familyId, dogId, reminderId));
   }
   await Promise.all(promises);
-
-  return reminders;
 }
 
 /**
  *  Queries the database to delete all reminders for a dogId. If the query is successful, then returns
  *  If an error is encountered, creates and throws custom error
  */
-async function deleteAllRemindersForFamilyIdDogId(databaseConnection, familyId, dogId) {
-  if (areAllDefined(databaseConnection, familyId, dogId) === false) {
-    throw new ValidationError('databaseConnection, familyId, or dogId missing', global.CONSTANT.ERROR.VALUE.MISSING);
-  }
+async function deleteAllRemindersForFamilyIdDogId(databaseConnection: Queryable, familyId: string, dogId: number): Promise<void> {
+  await databaseQuery(
+    databaseConnection,
+    `UPDATE dogReminders
+    SET reminderIsDeleted = 1, reminderLastModified = CURRENT_TIMESTAMP()
+    WHERE reminderIsDeleted = 0 AND dogId = ?`,
+    [dogId],
+  );
 
-  const promises = [
-    databaseQuery(
-      databaseConnection,
-      `SELECT reminderId
-      FROM dogReminders dr
-      WHERE reminderIsDeleted = 0 AND dogId = ?
-      LIMIT 18446744073709551615`,
-      [dogId],
-    ),
-    // deletes reminders
-    databaseQuery(
-      databaseConnection,
-      `UPDATE dogReminders
-      SET reminderIsDeleted = 1, reminderLastModified = CURRENT_TIMESTAMP()
-      WHERE reminderIsDeleted = 0 AND dogId = ?`,
-      [dogId],
-    ),
-  ];
-
-  const [reminders] = await Promise.all(promises);
+  const reminders = await databaseQuery<DogRemindersRow[]>(
+    databaseConnection,
+    `SELECT ${dogRemindersColumnsWithDRPrefix}
+    FROM dogReminders dr
+    WHERE reminderIsDeleted = 0 AND dogId = ?
+    LIMIT 18446744073709551615`,
+    [dogId],
+  );
 
   // iterate through all reminders provided to update them all
   // if there is a problem, then we return that problem (function that invokes this will roll back requests)

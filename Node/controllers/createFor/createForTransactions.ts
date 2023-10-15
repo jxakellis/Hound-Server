@@ -1,14 +1,12 @@
 import { databaseQuery } from '../../main/database/databaseQuery';
 import {
   formatDate, formatNumber, formatUnknownString, formatBoolean,
-} from '../../main/tools/format/formatObject';
+} from '../../main/format/formatObject';
 import { ValidationError } from '../../main/server/globalErrors';
 
 import { extractTransactionIdFromAppStoreReceiptURL } from '../../main/tools/appStoreConnectAPI/extractTransactionId';
 import { queryAllSubscriptionsForTransactionId } from '../../main/tools/appStoreConnectAPI/queryTransactions';
 import { getFamilyHeadUserId } from '../getFor/getForFamily';
-
-// TODO FUTURE depreciate numberOfDogs (last used 3.0.0)
 
 /**
  * TODO NOW update documentation. incorrect
@@ -122,33 +120,33 @@ async function createUpdateTransaction(
     throw new ValidationError(`databaseConnection, userId, 
     autoRenewProductId, autoRenewStatus, environment, expiresDate, inAppOwnershipType, originalTransactionId, 
     productId, purchaseDate, quantity, subscriptionGroupIdentifier, 
-    transactionId, transactionReason, or webOrderLineItemId is missing`, global.CONSTANT.ERROR.VALUE.MISSING);
+    transactionId, transactionReason, or webOrderLineItemId is missing`, ERROR_CODES.VALUE.MISSING);
   }
 
-  if (environment !== global.CONSTANT.SERVER.ENVIRONMENT) {
-    throw new ValidationError(`environment must be '${global.CONSTANT.SERVER.ENVIRONMENT}', not '${environment}'`, global.CONSTANT.ERROR.VALUE.INVALID);
+  if (environment !== SERVER.ENVIRONMENT) {
+    throw new ValidationError(`environment must be '${SERVER.ENVIRONMENT}', not '${environment}'`, ERROR_CODES.VALUE.INVALID);
   }
 
   if (inAppOwnershipType !== 'PURCHASED') {
-    throw new ValidationError(`inAppOwnershipType must be 'PURCHASED', not '${inAppOwnershipType}'`, global.CONSTANT.ERROR.VALUE.INVALID);
+    throw new ValidationError(`inAppOwnershipType must be 'PURCHASED', not '${inAppOwnershipType}'`, ERROR_CODES.VALUE.INVALID);
   }
 
-  const correspondingProduct = global.CONSTANT.SUBSCRIPTION.SUBSCRIPTIONS.find((subscription) => subscription.productId === productId);
+  const correspondingProduct = SUBSCRIPTION.SUBSCRIPTIONS.find((subscription) => subscription.productId === productId);
 
   if (areAllDefined(correspondingProduct) === false) {
-    throw new ValidationError('correspondingProduct missing', global.CONSTANT.ERROR.VALUE.MISSING);
+    throw new ValidationError('correspondingProduct missing', ERROR_CODES.VALUE.MISSING);
   }
 
   const { numberOfFamilyMembers, numberOfDogs } = correspondingProduct;
 
   if (areAllDefined(numberOfFamilyMembers, numberOfDogs) === false) {
-    throw new ValidationError('numberOfFamilyMembers or numberOfDogs missing', global.CONSTANT.ERROR.VALUE.MISSING);
+    throw new ValidationError('numberOfFamilyMembers or numberOfDogs missing', ERROR_CODES.VALUE.MISSING);
   }
 
   const familyHeadUserId = await getFamilyHeadUserId(databaseConnection, userId);
 
   if (familyHeadUserId !== userId) {
-    throw new ValidationError('You are not the family head. Only the family head can modify the family subscription', global.CONSTANT.ERROR.PERMISSION.INVALID.FAMILY);
+    throw new ValidationError('You are not the family head. Only the family head can modify the family subscription', ERROR_CODES.PERMISSION.INVALID.FAMILY);
   }
 
   // We attempt to insert the transaction.
@@ -226,19 +224,19 @@ async function createUpdateTransaction(
 
 async function createTransactionForAppStoreReceiptURL(databaseConnection, userId, appStoreReceiptURL) {
   if (areAllDefined(databaseConnection, userId, appStoreReceiptURL) === false) {
-    throw new ValidationError('databaseConnection, userId, or appStoreReceiptURL missing', global.CONSTANT.ERROR.VALUE.MISSING);
+    throw new ValidationError('databaseConnection, userId, or appStoreReceiptURL missing', ERROR_CODES.VALUE.MISSING);
   }
 
   const transactionId = formatNumber(extractTransactionIdFromAppStoreReceiptURL(appStoreReceiptURL));
 
   if (areAllDefined(transactionId) === false) {
-    throw new ValidationError('transactionId couldn\'t be constructed with extractTransactionIdFromAppStoreReceiptURL', global.CONSTANT.ERROR.VALUE.INVALID);
+    throw new ValidationError('transactionId couldn\'t be constructed with extractTransactionIdFromAppStoreReceiptURL', ERROR_CODES.VALUE.INVALID);
   }
 
   const subscriptions = await queryAllSubscriptionsForTransactionId(transactionId);
 
   if (areAllDefined(subscriptions) === false || subscriptions.length === 0) {
-    throw new ValidationError('subscriptions couldn\'t be queried with querySubscriptionStatusesFromAppStoreAPI', global.CONSTANT.ERROR.VALUE.INVALID);
+    throw new ValidationError('subscriptions couldn\'t be queried with querySubscriptionStatusesFromAppStoreAPI', ERROR_CODES.VALUE.INVALID);
   }
 
   // Create an array of Promises

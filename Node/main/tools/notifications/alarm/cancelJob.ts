@@ -1,4 +1,4 @@
-import { alarmLogger } from '../../logging/loggers';
+import { alarmLogger } from '../../../logging/loggers';
 
 import { schedule } from './schedule';
 

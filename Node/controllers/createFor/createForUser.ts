@@ -41,7 +41,7 @@ async function createUserForUserIdentifier(
   forUserConfigurationSilentModeEndUTCMinte,
 ) {
   if (areAllDefined(databaseConnection, userIdentifier) === false) {
-    throw new ValidationError('databaseConnection or userIdentifier missing', global.CONSTANT.ERROR.VALUE.MISSING);
+    throw new ValidationError('databaseConnection or userIdentifier missing', ERROR_CODES.VALUE.MISSING);
   }
 
   const existingUser = await getUserForUserIdentifier(databaseConnection, userIdentifier);
@@ -66,7 +66,7 @@ async function createUserForUserIdentifier(
     // userLastName
     // userNotificationToken
   ) === false) {
-    throw new ValidationError('userId missing', global.CONSTANT.ERROR.VALUE.MISSING);
+    throw new ValidationError('userId missing', ERROR_CODES.VALUE.MISSING);
   }
 
   const userConfigurationIsNotificationEnabled = formatBoolean(forUserConfigurationIsNotificationEnabled) ?? false;
@@ -113,7 +113,7 @@ userConfigurationIsSilentModeEnabled,
 userConfigurationSilentModeStartUTCHour,
 userConfigurationSilentModeEndUTCHour,
 userConfigurationSilentModeStartUTCMinute,
-or userConfigurationSilentModeEndUTCMinute missing`, global.CONSTANT.ERROR.VALUE.MISSING);
+or userConfigurationSilentModeEndUTCMinute missing`, ERROR_CODES.VALUE.MISSING);
   }
 
   const promises = [

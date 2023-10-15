@@ -1,6 +1,6 @@
 import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
-import { hash } from '../../main/tools/format/hash';
-import { PrivateCombinedUsersInformationRow } from '../../main/types/CompositeRow';
+import { hash } from '../../main/format/hash';
+import { PrivateCombinedUsersInformation } from '../../main/types/CompositeRow';
 import { userConfigurationColumnsWithUCPrefix } from '../../main/types/UserConfigurationRow';
 import { PublicUsersRow, privateUsersColumnsWithUPrefix, publicUsersColumnsWithUPrefix } from '../../main/types/UsersRow';
 
@@ -10,11 +10,11 @@ import { updateUserForUserIdentifierHashedUserIdentifier } from '../updateFor/up
 * If the query is successful, returns the user for the userIdentifier.
  *  If a problem is encountered, creates and throws custom error
  */
-async function getPrivateCombinedUsersInformation(databaseConnection: Queryable, userIdentifier: string): Promise<PrivateCombinedUsersInformationRow | undefined> {
+async function getPrivateCombinedUsersInformation(databaseConnection: Queryable, userIdentifier: string): Promise<PrivateCombinedUsersInformation | undefined> {
   // userIdentifier method of finding corresponding user(s)
   // have to specifically reference the columns, otherwise fm.userId will override u.userId.
   // Therefore setting userId to null (if there is no family member) even though the userId isn't null.
-  const result1 = await databaseQuery<PrivateCombinedUsersInformationRow[]>(
+  const result1 = await databaseQuery<PrivateCombinedUsersInformation[]>(
     databaseConnection,
     `SELECT ${privateUsersColumnsWithUPrefix}, fm.familyId, ${userConfigurationColumnsWithUCPrefix}
     FROM users u 
@@ -32,7 +32,7 @@ async function getPrivateCombinedUsersInformation(databaseConnection: Queryable,
     // This is because we switched from hashing the Apple provided userIdentifier to directly storing it.
     // If query is successful, change saved userIdentifier and return result
 
-    const result2 = await databaseQuery<PrivateCombinedUsersInformationRow[]>(
+    const result2 = await databaseQuery<PrivateCombinedUsersInformation[]>(
       databaseConnection,
       `SELECT ${privateUsersColumnsWithUPrefix}, fm.familyId, ${userConfigurationColumnsWithUCPrefix}
       FROM users u

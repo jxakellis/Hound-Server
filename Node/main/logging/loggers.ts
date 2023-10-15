@@ -1,6 +1,6 @@
 import pino from 'pino';
 
-import { SERVER } from '../../server/globalConstants';
+import { SERVER } from '../server/globalConstants';
 
 const parentLogger = pino();
 

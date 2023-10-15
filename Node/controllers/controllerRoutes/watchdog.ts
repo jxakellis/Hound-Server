@@ -1,13 +1,28 @@
 import express from 'express';
-const { getDatabaseStatusForWatchdog } from '../getFor/getForWatchdog';
+import { getDatabaseStatusForWatchdog } from '../getFor/getForWatchdog';
 
-async function getWatchdog(req: express.Request, res: express.Response) {
+import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
+
+import { formatBoolean, formatDate, formatUnknownString } from '../../main/format/formatObject';
+
+async function getWatchdog(req: express.Request, res: express.Response): Promise<void> {
   try {
-    await getDatabaseStatusForWatchdog(req.databaseConnection);
-    return res.sendResponseForStatusBodyError(200, null, null);
+    const { databaseConnection } = req.extendedProperties;
+    const { validatedFamilyId } = req.extendedProperties.validatedVariables;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const dogName = formatUnknownString(req.body['dogName']);
+    if (databaseConnection === undefined) {
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('databaseConnection missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+    }
+    if (validatedFamilyId === undefined) {
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('validatedFamilyId missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+    }
+
+    await getDatabaseStatusForWatchdog(req.extendedProperties.databaseConnection);
+    return res.extendedProperties.sendResponseForStatusBodyError(200, undefined, undefined);
   }
   catch (error) {
-    return res.sendResponseForStatusBodyError(400, null, error);
+    return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, error);
   }
 }
 

@@ -11,7 +11,7 @@ const { ValidationError } from '../../main/server/globalErrors';
  */
 async function createReminderForDogIdReminder(databaseConnection, dogId, reminder) {
   if (areAllDefined(databaseConnection, dogId, reminder) === false) {
-    throw new ValidationError('databaseConnection, dogId, or reminder missing', global.CONSTANT.ERROR.VALUE.MISSING);
+    throw new ValidationError('databaseConnection, dogId, or reminder missing', ERROR_CODES.VALUE.MISSING);
   }
 
   // only retrieve enough not deleted reminders that would exceed the limit
@@ -21,12 +21,12 @@ async function createReminderForDogIdReminder(databaseConnection, dogId, reminde
     FROM dogReminders dr
     WHERE reminderIsDeleted = 0 AND dogId = ?
     LIMIT ?`,
-    [dogId, global.CONSTANT.LIMIT.NUMBER_OF_REMINDERS_PER_DOG],
+    [dogId, LIMIT.NUMBER_OF_REMINDERS_PER_DOG],
   );
 
   // make sure that the user isn't creating too many reminders
-  if (reminders.length >= global.CONSTANT.LIMIT.NUMBER_OF_REMINDERS_PER_DOG) {
-    throw new ValidationError(`Dog reminder limit of ${global.CONSTANT.LIMIT.NUMBER_OF_REMINDERS_PER_DOG} exceeded`, global.CONSTANT.ERROR.FAMILY.LIMIT.REMINDER_TOO_LOW);
+  if (reminders.length >= LIMIT.NUMBER_OF_REMINDERS_PER_DOG) {
+    throw new ValidationError(`Dog reminder limit of ${LIMIT.NUMBER_OF_REMINDERS_PER_DOG} exceeded`, ERROR_CODES.FAMILY.LIMIT.REMINDER_TOO_LOW);
   }
 
   // general reminder components
@@ -60,14 +60,14 @@ async function createReminderForDogIdReminder(databaseConnection, dogId, reminde
 
   // check to see that necessary generic reminder components are present
   if (areAllDefined(reminderAction, reminderCustomActionName, reminderType, reminderIsEnabled, reminderExecutionBasis) === false) {
-    throw new ValidationError('reminderAction, reminderCustomActionName, reminderType, reminderIsEnabled, or reminderExecutionBasis missing', global.CONSTANT.ERROR.VALUE.MISSING);
+    throw new ValidationError('reminderAction, reminderCustomActionName, reminderType, reminderIsEnabled, or reminderExecutionBasis missing', ERROR_CODES.VALUE.MISSING);
   }
   else if (reminderType !== 'countdown' && reminderType !== 'weekly' && reminderType !== 'monthly' && reminderType !== 'oneTime') {
-    throw new ValidationError('reminderType invalid', global.CONSTANT.ERROR.VALUE.INVALID);
+    throw new ValidationError('reminderType invalid', ERROR_CODES.VALUE.INVALID);
   }
   // no need to check snooze components as a newly created reminder can't be snoozed yet
   else if (areAllDefined(countdownExecutionInterval) === false) {
-    throw new ValidationError('countdownExecutionInterval missing', global.CONSTANT.ERROR.VALUE.MISSING);
+    throw new ValidationError('countdownExecutionInterval missing', ERROR_CODES.VALUE.MISSING);
   }
   // no need to check weeklySkippedDate validity as newly created reminder can't be skipped yet
   else if (areAllDefined(weeklyUTCHour, weeklyUTCMinute, weeklySunday, weeklyMonday, weeklyTuesday, weeklyWednesday, weeklyThursday, weeklyFriday, weeklySaturday) === false) {
@@ -79,14 +79,14 @@ weeklyTuesday
 weeklyWednesday
 weeklyThursday
 weeklyFriday
-or weeklySaturday missing`, global.CONSTANT.ERROR.VALUE.MISSING);
+or weeklySaturday missing`, ERROR_CODES.VALUE.MISSING);
   }
   // no need to check monthlySkippedDate validity as newly created reminder can't be skipped yet
   else if (areAllDefined(monthlyUTCDay, monthlyUTCHour, monthlyUTCMinute) === false) {
-    throw new ValidationError('monthlyUTCDay, monthlyUTCHour, or monthlyUTCMinute missing', global.CONSTANT.ERROR.VALUE.MISSING);
+    throw new ValidationError('monthlyUTCDay, monthlyUTCHour, or monthlyUTCMinute missing', ERROR_CODES.VALUE.MISSING);
   }
   else if (areAllDefined(oneTimeDate) === false) {
-    throw new ValidationError('oneTimeDate missing', global.CONSTANT.ERROR.VALUE.MISSING);
+    throw new ValidationError('oneTimeDate missing', ERROR_CODES.VALUE.MISSING);
   }
 
   const result = await databaseQuery(
@@ -128,7 +128,7 @@ or weeklySaturday missing`, global.CONSTANT.ERROR.VALUE.MISSING);
 async function createRemindersForDogIdReminders(databaseConnection, dogId, forReminders) {
   const reminders = formatArray(forReminders); // required
   if (areAllDefined(databaseConnection, dogId, reminders) === false) {
-    throw new ValidationError('databaseConnection, dogId, or reminders missing', global.CONSTANT.ERROR.VALUE.MISSING);
+    throw new ValidationError('databaseConnection, dogId, or reminders missing', ERROR_CODES.VALUE.MISSING);
   }
 
   let reminderPromises = [];

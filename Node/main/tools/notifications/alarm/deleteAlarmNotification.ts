@@ -1,24 +1,19 @@
-const { alarmLogger } from '../../logging/loggers';
-const { databaseConnectionForAlarms } from '../../database/createDatabaseConnections';
-const { databaseQuery } from '../../database/databaseQuery';
+import { alarmLogger } from '../../../logging/loggers';
+import { databaseConnectionForAlarms } from '../../../database/createDatabaseConnections';
+import { databaseQuery } from '../../../database/databaseQuery';
 
-const { logServerError } from '../../logging/logServerError';
-const { areAllDefined } from '../../validate/validateDefined';
-const { cancelJobForFamilyForReminder } from './cancelJob';
+import { logServerError } from '../../../logging/logServerError';
+import { cancelJobForFamilyForReminder } from './cancelJob';
+import { DogRemindersRow, dogRemindersColumnsWithDRPrefix } from '../../../types/DogRemindersRow';
 
-async function deleteAlarmNotificationsForFamily(familyId) {
+async function deleteAlarmNotificationsForFamily(familyId: string): Promise<void> {
   try {
     alarmLogger.debug(`deleteAlarmNotificationsForFamily ${familyId}`);
 
-    // make sure reminderId is defined
-    if (areAllDefined(familyId) === false) {
-      return;
-    }
-
     // get all the reminders for the family
-    const reminders = await databaseQuery(
+    const reminders = await databaseQuery<DogRemindersRow[]>(
       databaseConnectionForAlarms,
-      `SELECT reminderId
+      `SELECT ${dogRemindersColumnsWithDRPrefix}
       FROM dogReminders dr
       JOIN dogs d ON dr.dogId = d.dogId
       WHERE d.dogIsDeleted = 0 AND dr.reminderIsDeleted = 0 AND d.familyId = ? 
@@ -39,14 +34,9 @@ async function deleteAlarmNotificationsForFamily(familyId) {
 /**
  * Cancels and deletes any job scheduled with the provided reminderId
  */
-async function deleteAlarmNotificationsForReminder(familyId, reminderId) {
+async function deleteAlarmNotificationsForReminder(familyId: string, reminderId: number): Promise<void> {
   try {
     alarmLogger.debug(`deleteAlarmNotificationsForReminder ${familyId}, ${reminderId}`);
-
-    // make sure reminderId is defined
-    if (areAllDefined(familyId, reminderId) === false) {
-      return;
-    }
 
     cancelJobForFamilyForReminder(familyId, reminderId);
   }

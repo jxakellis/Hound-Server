@@ -1,6 +1,6 @@
 import { databaseConnectionForGeneral } from '../../../database/createDatabaseConnections';
 import { databaseQuery } from '../../../database/databaseQuery';
-import { UserConfigurationRowWithNotificationToken } from '../../../types/CompositeRow';
+import { UserConfigurationWithPartialPrivateUsers } from '../../../types/CompositeRow';
 import { userConfigurationColumnsWithUCPrefix } from '../../../types/UserConfigurationRow';
 
 /**
@@ -8,9 +8,9 @@ import { userConfigurationColumnsWithUCPrefix } from '../../../types/UserConfigu
  *  Returns the userNotificationToken and (optionally) userConfigurationNotificationSound of the user if they have a defined userNotificationToken and are notificationEnabled
  *  If an error is encountered, creates and throws custom error
  */
-async function getUserToken(userId: string): Promise<UserConfigurationRowWithNotificationToken | undefined> {
+async function getUserToken(userId: string): Promise<UserConfigurationWithPartialPrivateUsers | undefined> {
   // retrieve userNotificationToken, userConfigurationNotificationSound, and isLoudNotificaiton of a user with the userId, non-null userNotificationToken, and userConfigurationIsNotificationEnabled
-  const result = await databaseQuery<UserConfigurationRowWithNotificationToken[]>(
+  const result = await databaseQuery<UserConfigurationWithPartialPrivateUsers[]>(
     databaseConnectionForGeneral,
     `SELECT u.userNotificationToken, ${userConfigurationColumnsWithUCPrefix}
     FROM users u
@@ -28,9 +28,9 @@ async function getUserToken(userId: string): Promise<UserConfigurationRowWithNot
  *  Returns the userNotificationToken of users that are in the family, have a defined userNotificationToken, and are notificationEnabled
  * If an error is encountered, creates and throws custom error
  */
-async function getAllFamilyMemberTokens(familyId: string): Promise<UserConfigurationRowWithNotificationToken[]> {
+async function getAllFamilyMemberTokens(familyId: string): Promise<UserConfigurationWithPartialPrivateUsers[]> {
   // retrieve userNotificationToken that fit the criteria
-  const result = await databaseQuery<UserConfigurationRowWithNotificationToken[]>(
+  const result = await databaseQuery<UserConfigurationWithPartialPrivateUsers[]>(
     databaseConnectionForGeneral,
     `SELECT u.userNotificationToken, ${userConfigurationColumnsWithUCPrefix}
     FROM users u
@@ -49,9 +49,9 @@ async function getAllFamilyMemberTokens(familyId: string): Promise<UserConfigura
  *  Returns the userNotificationToken of users that aren't the userId, are in the family, have a defined userNotificationToken, and are notificationEnabled
  * If an error is encountered, creates and throws custom error
  */
-async function getOtherFamilyMemberTokens(userId: string, familyId: string): Promise<UserConfigurationRowWithNotificationToken[]> {
+async function getOtherFamilyMemberTokens(userId: string, familyId: string): Promise<UserConfigurationWithPartialPrivateUsers[]> {
   // retrieve userNotificationToken that fit the criteria
-  const result = await databaseQuery<UserConfigurationRowWithNotificationToken[]>(
+  const result = await databaseQuery<UserConfigurationWithPartialPrivateUsers[]>(
     databaseConnectionForGeneral,
     `SELECT u.userNotificationToken, ${userConfigurationColumnsWithUCPrefix}
     FROM users u

@@ -1,21 +1,22 @@
 import { FamiliesRow } from './FamiliesRow';
+import { FamilyMembersRow } from './FamilyMembersRow';
 import { PreviousFamilyMembersRow } from './PreviousFamilyMembersRow';
 import { TransactionsRow } from './TransactionsRow';
 import { UserConfigurationRow } from './UserConfigurationRow';
 import { PrivateUsersRow, PublicUsersRow } from './UsersRow';
 
-type UserConfigurationRowWithNotificationToken = UserConfigurationRow & { userNotificationToken?: string }
+type UserConfigurationWithPartialPrivateUsers = UserConfigurationRow & Partial<PrivateUsersRow>
 
-type PrivateCombinedUsersInformationRow = PrivateUsersRow & UserConfigurationRow & { familyId?: string }
+type PrivateCombinedUsersInformation = PrivateUsersRow & UserConfigurationRow & Partial<FamilyMembersRow>
 
-type CombinedFamilyInformationRow = FamiliesRow & {
+type FamilyInformation = FamiliesRow & {
     familyMembers: PublicUsersRow[]
     previousFamilyMembers: PreviousFamilyMembersRow[]
     familyActiveSubscription: TransactionsRow
 }
 
 export {
-  UserConfigurationRowWithNotificationToken,
-  PrivateCombinedUsersInformationRow,
-  CombinedFamilyInformationRow,
+  UserConfigurationWithPartialPrivateUsers,
+  PrivateCombinedUsersInformation,
+  FamilyInformation,
 };

@@ -1,11 +1,11 @@
-import { apnLogger } from '../../logging/loggers';
+import { apnLogger } from '../../../logging/loggers';
 
-import { logServerError } from '../../logging/logServerError';
-import { formatKnownString } from '../../format/formatObject';
+import { logServerError } from '../../../logging/logServerError';
+import { formatKnownString } from '../../../format/formatObject';
 
 import { apn, productionAPNProvider, developmentAPNProvider } from './apnProvider';
 import { NOTIFICATION } from '../../../server/globalConstants';
-import { UserConfigurationRowWithNotificationToken } from '../../../types/CompositeRow';
+import { UserConfigurationWithPartialPrivateUsers } from '../../../types/CompositeRow';
 
 function sendDevelopmentAPN(notification: apn.Notification, notificationToken: string): void {
   developmentAPNProvider.send(notification, notificationToken)
@@ -56,7 +56,7 @@ function sendProductionAPN(notification: apn.Notification, notificationToken: st
 */
 // (token, category, sound, alertTitle, alertBody)
 function sendAPN(
-  userNotificationConfiguration: UserConfigurationRowWithNotificationToken,
+  userNotificationConfiguration: UserConfigurationWithPartialPrivateUsers,
   category: string,
   forAlertTitle: string,
   forAlertBody: string,
@@ -79,16 +79,16 @@ function sendAPN(
 
   apnLogger.debug(`sendAPN ${userNotificationConfiguration}, ${category}, ${alertTitle}, ${alertBody}`);
 
-  if (category === NOTIFICATION.CATEGORY.LOG.CREATED && userNotificationConfiguration.userConfigurationIsLogNotificationEnabled === false) {
+  if (category === NOTIFICATION.CATEGORY.LOG.CREATED && userNotificationConfiguration.userConfigurationIsLogNotificationEnabled === 1) {
     return;
   }
 
-  if (category === NOTIFICATION.CATEGORY.REMINDER.ALARM && userNotificationConfiguration.userConfigurationIsReminderNotificationEnabled === false) {
+  if (category === NOTIFICATION.CATEGORY.REMINDER.ALARM && userNotificationConfiguration.userConfigurationIsReminderNotificationEnabled === 1) {
     return;
   }
 
   // Check that we aren't inside of userConfigurationSilentMode hours. If we are inside the silent mode hours, then return as we don't want to send notifications during silent mode
-  if (userNotificationConfiguration.userConfigurationIsSilentModeEnabled === true) {
+  if (userNotificationConfiguration.userConfigurationIsSilentModeEnabled === 1) {
     const date = new Date();
     // 2:30:45 PM -> 14.5125
     const currentUTCHour = date.getUTCHours() + (date.getUTCMinutes() / 60) + (date.getUTCSeconds() / 3600);

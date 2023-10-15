@@ -12,9 +12,7 @@ const { validateUserId } from '../main/tools/validate/validateId';
 
 // TODO FUTURE we pass userId, userIdentifier, familyId, and appVersion through as headers in >= 3.0.1. Once users updated, depreciate old way of using them as param paths.
 
-userRouter.param('userId', validateUserId);
-// If userId is successfully validated, then we add it to the request
-userRouter.param('userId', addUserIdToLogRequest);
+userRouter.param('userId', validateUserId, addUserIdToLogRequest);
 
 // Route for an alert to send to the suer
 const { alertRouter } from './alert';

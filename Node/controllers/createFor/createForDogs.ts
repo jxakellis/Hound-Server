@@ -11,7 +11,7 @@ async function createDogForFamilyId(databaseConnection, familyId, forDogName) {
   const dogName = formatUnknownString(forDogName, 32);
 
   if (areAllDefined(databaseConnection, familyId, dogName) === false) {
-    throw new ValidationError('databaseConnection, familyId, or dogName missing', global.CONSTANT.ERROR.VALUE.MISSING);
+    throw new ValidationError('databaseConnection, familyId, or dogName missing', ERROR_CODES.VALUE.MISSING);
   }
 
   // only retrieve enough not deleted dogs that would exceed the limit
@@ -25,12 +25,12 @@ async function createDogForFamilyId(databaseConnection, familyId, forDogName) {
   );
 
   if (areAllDefined(dogs) === false) {
-    throw new ValidationError('dogs missing', global.CONSTANT.ERROR.VALUE.MISSING);
+    throw new ValidationError('dogs missing', ERROR_CODES.VALUE.MISSING);
   }
 
   // Creating a new dog would exceed the limit
-  if (dogs.length >= global.CONSTANT.LIMIT.NUMBER_OF_DOGS_PER_FAMILY) {
-    throw new ValidationError(`Dog limit of ${global.CONSTANT.LIMIT.NUMBER_OF_DOGS_PER_FAMILY} exceeded`, global.CONSTANT.ERROR.FAMILY.LIMIT.DOG_TOO_LOW);
+  if (dogs.length >= LIMIT.NUMBER_OF_DOGS_PER_FAMILY) {
+    throw new ValidationError(`Dog limit of ${LIMIT.NUMBER_OF_DOGS_PER_FAMILY} exceeded`, ERROR_CODES.FAMILY.LIMIT.DOG_TOO_LOW);
   }
 
   const result = await databaseQuery(

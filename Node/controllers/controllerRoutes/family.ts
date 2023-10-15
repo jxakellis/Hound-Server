@@ -1,13 +1,15 @@
 import express from 'express';
-const { areAllDefined } from '../../main/tools/validate/validateDefined';
 
-const { getAllFamilyInformationForFamilyId } from '../getFor/getForFamily';
+import { getAllFamilyInformationForFamilyId } from '../getFor/getForFamily';
 
-const { createFamilyForUserId } from '../createFor/createForFamily';
+import { createFamilyForUserId } from '../createFor/createForFamily';
 
-const { updateFamilyForUserIdFamilyId } from '../updateFor/updateForFamily';
+import { updateFamilyForUserIdFamilyId } from '../updateFor/updateForFamily';
 
-const { deleteFamilyLeaveFamilyForUserIdFamilyId, kickFamilyMemberForUserIdFamilyId } from '../deleteFor/deleteForFamily';
+import { deleteFamilyLeaveFamilyForUserIdFamilyId, kickFamilyMemberForUserIdFamilyId } from '../deleteFor/deleteForFamily';
+import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
+
+import { formatBoolean, formatDate, formatUnknownString } from '../../main/format/formatObject';
 
 /*
 Known:
@@ -16,54 +18,97 @@ Known:
 */
 async function getFamily(req: express.Request, res: express.Response) {
   try {
-    const { familyId } = req.params;
-    const result = await getAllFamilyInformationForFamilyId(req.databaseConnection, familyId, req.familyActiveSubscription);
+    const { databaseConnection } = req.extendedProperties;
+    const { validatedFamilyId } = req.extendedProperties.validatedVariables;
+    const { familyActiveSubscription } = req.extendedProperties;
+    if (databaseConnection === undefined) {
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('databaseConnection missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+    }
+    if (validatedFamilyId === undefined) {
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('validatedFamilyId missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+    }
+    if (familyActiveSubscription === undefined) {
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('familyActiveSubscription missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+    }
 
-    return res.sendResponseForStatusBodyError(200, result, null);
+    const result = await getAllFamilyInformationForFamilyId(databaseConnection, validatedFamilyId, familyActiveSubscription);
+
+    return res.extendedProperties.sendResponseForStatusBodyError(200, result, null);
   }
   catch (error) {
-    return res.sendResponseForStatusBodyError(400, null, error);
+    return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, error);
   }
 }
 
 async function createFamily(req: express.Request, res: express.Response) {
   try {
-    const { userId } = req.params;
-    const result = await createFamilyForUserId(req.databaseConnection, userId);
+    const { databaseConnection } = req.extendedProperties;
+    const { validatedUserId } = req.extendedProperties.validatedVariables;
 
-    return res.sendResponseForStatusBodyError(200, result, null);
+    if (databaseConnection === undefined) {
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('databaseConnection missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+    }
+    if (validatedUserId === undefined) {
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('validatedUserId missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+    }
+
+    const result = await createFamilyForUserId(databaseConnection, validatedUserId);
+
+    return res.extendedProperties.sendResponseForStatusBodyError(200, result, null);
   }
   catch (error) {
-    return res.sendResponseForStatusBodyError(400, null, error);
+    return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, error);
   }
 }
 
 async function updateFamily(req: express.Request, res: express.Response) {
   try {
-    const { userId, familyId } = req.params;
+    const { databaseConnection } = req.extendedProperties;
+    const { validatedUserId, validatedFamilyId } = req.extendedProperties.validatedVariables;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const dogName = formatUnknownString(req.body['dogName']);
+    if (databaseConnection === undefined) {
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('databaseConnection missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+    }
+    if (validatedFamilyId === undefined) {
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('validatedFamilyId missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+    }
+
+    const { userId, familyId } = req.extendedProperties.validatedVariables;
     const { familyCode, familyIsLocked } = req.body;
-    await updateFamilyForUserIdFamilyId(req.databaseConnection, userId, familyId, familyCode, familyIsLocked);
-    return res.sendResponseForStatusBodyError(200, null, null);
+    await updateFamilyForUserIdFamilyId(req.extendedProperties.databaseConnection, userId, familyId, familyCode, familyIsLocked);
+    return res.extendedProperties.sendResponseForStatusBodyError(200, undefined, undefined);
   }
   catch (error) {
-    return res.sendResponseForStatusBodyError(400, null, error);
+    return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, error);
   }
 }
 
 async function deleteFamily(req: express.Request, res: express.Response) {
   try {
-    const { userId, familyId } = req.params;
+    const { databaseConnection } = req.extendedProperties;
+    const { validatedFamilyId } = req.extendedProperties.validatedVariables;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const dogName = formatUnknownString(req.body['dogName']);
+    if (databaseConnection === undefined) {
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('databaseConnection missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+    }
+    if (validatedFamilyId === undefined) {
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('validatedFamilyId missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+    }
+
+    const { userId, familyId } = req.extendedProperties.validatedVariables;
     const { familyKickUserId } = req.body;
     if (areAllDefined(familyKickUserId) === true) {
-      await kickFamilyMemberForUserIdFamilyId(req.databaseConnection, userId, familyId, familyKickUserId);
+      await kickFamilyMemberForUserIdFamilyId(req.extendedProperties.databaseConnection, userId, familyId, familyKickUserId);
     }
     else {
-      await deleteFamilyLeaveFamilyForUserIdFamilyId(req.databaseConnection, userId, familyId, req.familyActiveSubscription);
+      await deleteFamilyLeaveFamilyForUserIdFamilyId(req.extendedProperties.databaseConnection, userId, familyId, req.extendedProperties.familyActiveSubscription);
     }
-    return res.sendResponseForStatusBodyError(200, null, null);
+    return res.extendedProperties.sendResponseForStatusBodyError(200, undefined, undefined);
   }
   catch (error) {
-    return res.sendResponseForStatusBodyError(400, null, error);
+    return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, error);
   }
 }
 

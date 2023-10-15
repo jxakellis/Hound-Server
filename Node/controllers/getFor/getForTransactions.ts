@@ -12,6 +12,10 @@ import { getFamilyHeadUserId } from './getForFamily';
 async function getActiveTransaction(databaseConnection: Queryable, familyMemberUserId: string): Promise<TransactionsRow | undefined> {
   const familyHeadUserId = await getFamilyHeadUserId(databaseConnection, familyMemberUserId);
 
+  if (familyHeadUserId === undefined) {
+    return undefined;
+  }
+
   // find the family's most recent subscription
   const familySubscriptionResult = await databaseQuery<TransactionsRow[]>(
     databaseConnection,
@@ -59,8 +63,12 @@ async function getActiveTransaction(databaseConnection: Queryable, familyMemberU
  *  If the query is successful, returns the subscription history and active subscription for the familyId.
  *  If a problem is encountered, creates and throws custom error
  */
-async function getAllTransactions(databaseConnection: Queryable, familyMemberUserId: string): Promise<TransactionsRow[]> {
+async function getAllTransactions(databaseConnection: Queryable, familyMemberUserId: string): Promise<TransactionsRow[] | undefined> {
   const familyHeadUserId = await getFamilyHeadUserId(databaseConnection, familyMemberUserId);
+
+  if (familyHeadUserId === undefined) {
+    return undefined;
+  }
 
   // find all of the family's subscriptions
   const transactionsHistory = await databaseQuery<TransactionsRow[]>(

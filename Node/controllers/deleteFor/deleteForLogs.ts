@@ -1,16 +1,10 @@
-const { databaseQuery } from '../../main/database/databaseQuery';
-const { areAllDefined } from '../../main/tools/validate/validateDefined';
-const { ValidationError } from '../../main/server/globalErrors';
+import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
 
 /**
  *  Queries the database to delete a log. If the query is successful, then returns
  *  If an error is encountered, creates and throws custom error
  */
-async function deleteLogForLogId(databaseConnection, dogId, logId) {
-  if (areAllDefined(databaseConnection, dogId, logId) === false) {
-    throw new ValidationError('databaseConnection, dogId, or logId missing', global.CONSTANT.ERROR.VALUE.MISSING);
-  }
-
+async function deleteLogForLogId(databaseConnection: Queryable, dogId: number, logId: number): Promise<void> {
   await databaseQuery(
     databaseConnection,
     `UPDATE dogLogs
@@ -24,11 +18,7 @@ async function deleteLogForLogId(databaseConnection, dogId, logId) {
  *  Queries the database to delete all logs for a dogId. If the query is successful, then returns
  *  If an error is encountered, creates and throws custom error
  */
-async function deleteAllLogsForDogId(databaseConnection, dogId) {
-  if (areAllDefined(databaseConnection, dogId) === false) {
-    throw new ValidationError('databaseConnection or dogId missing', global.CONSTANT.ERROR.VALUE.MISSING);
-  }
-
+async function deleteAllLogsForDogId(databaseConnection: Queryable, dogId: number): Promise<void> {
   await databaseQuery(
     databaseConnection,
     `UPDATE dogLogs

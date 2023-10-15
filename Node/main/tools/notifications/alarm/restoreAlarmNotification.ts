@@ -1,16 +1,18 @@
-const { schedule } from './schedule';
-const { createAlarmNotificationForFamily } from './createAlarmNotification';
+import { schedule } from './schedule';
+import { createAlarmNotificationForFamily } from './createAlarmNotification';
 
-const { logServerError } from '../../logging/logServerError';
-const { databaseConnectionForAlarms } from '../../database/createDatabaseConnections';
-const { databaseQuery } from '../../database/databaseQuery';
+import { logServerError } from '../../../logging/logServerError';
+import { databaseConnectionForAlarms } from '../../../database/createDatabaseConnections';
+import { databaseQuery } from '../../../database/databaseQuery';
+import { DogsRow, dogsColumnsWithDPrefix } from '../../../types/DogsRow';
+import { DogRemindersRow, dogRemindersColumnsWithDRPrefix } from '../../../types/DogRemindersRow';
 
 /**
  * Assumes an empty schedule
  * Restores all of the notifications for the schedule
  * Use if the schedule gets destroyed (e.g. server crashes/restarts)
  */
-async function restoreAlarmNotificationsForAllFamilies() {
+async function restoreAlarmNotificationsForAllFamilies(): Promise<void> {
   try {
     // remove any pending jobs (there shouldn't be any)
     const jobs = Object.values(schedule.scheduledJobs);
@@ -19,9 +21,10 @@ async function restoreAlarmNotificationsForAllFamilies() {
     }
 
     // for ALL reminders get: familyId, reminderId, dogName, reminderExecutionDate, reminderAction, and reminderCustomActionName
-    const remindersWithInfo = await databaseQuery(
+    const remindersWithInfo = await databaseQuery<(
+DogsRow & DogRemindersRow)[]>(
       databaseConnectionForAlarms,
-      `SELECT d.familyId, dr.reminderId, dr.reminderExecutionDate 
+      `SELECT ${dogsColumnsWithDPrefix}, ${dogRemindersColumnsWithDRPrefix}
       FROM dogReminders dr
       JOIN dogs d ON d.dogId = dr.dogId
       WHERE d.dogIsDeleted = 0
@@ -29,7 +32,7 @@ async function restoreAlarmNotificationsForAllFamilies() {
       AND dr.reminderExecutionDate IS NOT NULL
       AND TIMESTAMPDIFF(MICROSECOND, CURRENT_TIMESTAMP(), dr.reminderExecutionDate) >= 0
       LIMIT 18446744073709551615`,
-    );
+      );
 
     // for every reminder that exists (with a valid reminderExecutionDate that is in the future), we invoke createAlarmNotificationForAll for it
     for (let i = 0; i < remindersWithInfo.length; i += 1) {

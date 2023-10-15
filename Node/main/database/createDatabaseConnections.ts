@@ -16,7 +16,7 @@ import {
 // make a function that creates and establishes all of our connections and sets up testing for them
 
 import { SERVER } from '../server/globalConstants';
-import { HoundError, ErrorType } from '../server/globalErrors';
+import { HoundError } from '../server/globalErrors';
 
 const user = SERVER.IS_PRODUCTION_DATABASE ? productionHoundUser : developmentHoundUser;
 const host = SERVER.IS_PRODUCTION_DATABASE ? productionHoundHost : developmentHoundHost;
@@ -64,7 +64,7 @@ async function getPoolConnection(): Promise<PoolConnection> {
       (error, connection) => {
         if (error !== undefined || connection === undefined) {
           // error when trying to do query to database
-          reject(new HoundError(error.message, ErrorType.Database, error.code));
+          reject(new HoundError(error.message, 'getPoolConnection', error.code));
         }
         else {
           // database queried successfully

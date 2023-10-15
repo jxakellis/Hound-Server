@@ -1,4 +1,5 @@
 import { PoolConnection } from 'mysql2';
+import { TransactionsRow } from '../types/TransactionsRow';
 
 declare global {
     interface Error {
@@ -7,15 +8,43 @@ declare global {
 }
 
 declare module 'express-serve-static-core' {
+    // TODO NOW add a component to request that stores all of our validated information
     export interface Request {
-        databaseConnection?: PoolConnection
-        hasActiveDatabaseTransaction: boolean;
-        requestId?: number;
+        extendedProperties: {
+            requestId?: number;
+
+            databaseConnection?: PoolConnection
+            hasActiveDatabaseTransaction: boolean;
+
+            familyActiveSubscription?: TransactionsRow
+
+            // TODO NOW for all routes, except inside validateIds.ts, use req.validatedVariables.someId isntead of req.params
+            // ids that have been verified with correct permission
+            validatedVariables: {
+                // userId of the request that has been verified with correct permissions
+                validatedUserId?: string
+                // userIdentifier of the request that has been verified with correct permissions
+                validatedUserIdentifier?: string
+                // familyId of the request that has been verified with correct permissions
+                validatedFamilyId?: string
+                // dogId of the request that has been verified with correct permissions
+                validatedDogId?: number
+                // logId of the request that has been verified with correct permissions
+                validatedLogId?: number
+                // reminderId of the request that has been verified with correct permissions
+                validatedReminderId?: number
+                // reminderIds of the request that have been verified with correct permissions
+                validatedReminderIds: number[]
+            }
+        }
     }
     export interface Response {
-      sendResponseForStatusBodyError(status: number, body?: { [key: string]: unknown }, error?: object): Promise<void>;
-      hasSentResponse: boolean;
-      responseId?: number;
+        extendedProperties: {
+            responseId?: number;
+
+            hasSentResponse: boolean;
+            sendResponseForStatusBodyError(status: number, body?: unknown, error?: unknown): Promise<void>;
+        }
     }
 }
 

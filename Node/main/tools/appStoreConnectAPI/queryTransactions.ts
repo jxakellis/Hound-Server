@@ -2,8 +2,8 @@ import {
   SortParameter, decodeTransactions, decodeRenewalInfo, decodeTransaction, HistoryResponse, JWSTransactionDecodedPayload, StatusResponse, JWSRenewalInfoDecodedPayload,
 } from 'app-store-server-api';
 import { api } from './api';
-import { logServerError } from '../logging/logServerError';
-import { formatUnknownString, formatBoolean } from '../format/formatObject';
+import { logServerError } from '../../logging/logServerError';
+import { formatUnknownString, formatBoolean } from '../../format/formatObject';
 import { SERVER } from '../../server/globalConstants';
 
 /**

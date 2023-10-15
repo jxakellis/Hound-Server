@@ -1,14 +1,12 @@
 import express from 'express';
-const { areAllDefined } from '../../main/tools/validate/validateDefined';
-const { ValidationError } from '../../main/server/globalErrors';
 
-const { getUserForUserIdentifier } from '../getFor/getForUser';
+import { getPrivateCombinedUsersInformation } from '../getFor/getForUser';
+import { createUserForUserIdentifier } from '../createFor/createForUser';
+import { updateUserForUserId } from '../updateFor/updateForUser';
+import { deleteUserForUserId } from '../deleteFor/deleteForUser';
+import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
 
-const { createUserForUserIdentifier } from '../createFor/createForUser';
-
-const { updateUserForUserId } from '../updateFor/updateForUser';
-
-const { deleteUserForUserId } from '../deleteFor/deleteForUser';
+import { formatBoolean, formatDate, formatUnknownString } from '../../main/format/formatObject';
 
 /*
 Known:
@@ -17,28 +15,50 @@ Known:
 
 async function getUser(req: express.Request, res: express.Response) {
   try {
+    const { databaseConnection } = req.extendedProperties;
+    const { validatedFamilyId } = req.extendedProperties.validatedVariables;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const dogName = formatUnknownString(req.body['dogName']);
+    if (databaseConnection === undefined) {
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('databaseConnection missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+    }
+    if (validatedFamilyId === undefined) {
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('validatedFamilyId missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+    }
+
     // apple userIdentifier
     const { userIdentifier } = req.query;
 
     if (areAllDefined(userIdentifier) === false) {
-      throw new ValidationError('userIdentifier missing', global.CONSTANT.ERROR.VALUE.MISSING);
+      throw new ValidationError('userIdentifier missing', ERROR_CODES.VALUE.MISSING);
     }
 
-    const result = await getUserForUserIdentifier(req.databaseConnection, userIdentifier);
+    const result = await getUserForUserIdentifier(req.extendedProperties.databaseConnection, userIdentifier);
 
     if (areAllDefined(result) === false) {
-      throw new ValidationError('No user found or invalid permissions', global.CONSTANT.ERROR.PERMISSION.NO.USER);
+      throw new ValidationError('No user found or invalid permissions', ERROR_CODES.PERMISSION.NO.USER);
     }
 
-    return res.sendResponseForStatusBodyError(200, result, null);
+    return res.extendedProperties.sendResponseForStatusBodyError(200, result, null);
   }
   catch (error) {
-    return res.sendResponseForStatusBodyError(400, null, error);
+    return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, error);
   }
 }
 
 async function createUser(req: express.Request, res: express.Response) {
   try {
+    const { databaseConnection } = req.extendedProperties;
+    const { validatedFamilyId } = req.extendedProperties.validatedVariables;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const dogName = formatUnknownString(req.body['dogName']);
+    if (databaseConnection === undefined) {
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('databaseConnection missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+    }
+    if (validatedFamilyId === undefined) {
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('validatedFamilyId missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+    }
+
     const {
       userIdentifier,
     } = req.query;
@@ -64,7 +84,7 @@ async function createUser(req: express.Request, res: express.Response) {
     } = req.body;
 
     const result = await createUserForUserIdentifier(
-      req.databaseConnection,
+      req.extendedProperties.databaseConnection,
       // userId,
       userIdentifier,
       // userAppAccountToken,
@@ -90,16 +110,27 @@ async function createUser(req: express.Request, res: express.Response) {
       userConfigurationSilentModeEndUTCMinute,
     );
 
-    return res.sendResponseForStatusBodyError(200, result, null);
+    return res.extendedProperties.sendResponseForStatusBodyError(200, result, null);
   }
   catch (error) {
-    return res.sendResponseForStatusBodyError(400, null, error);
+    return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, error);
   }
 }
 
 async function updateUser(req: express.Request, res: express.Response) {
   try {
-    const { userId } = req.params;
+    const { databaseConnection } = req.extendedProperties;
+    const { validatedFamilyId } = req.extendedProperties.validatedVariables;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const dogName = formatUnknownString(req.body['dogName']);
+    if (databaseConnection === undefined) {
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('databaseConnection missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+    }
+    if (validatedFamilyId === undefined) {
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('validatedFamilyId missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+    }
+
+    const { userId } = req.extendedProperties.validatedVariables;
     const {
       userNotificationToken,
       userConfigurationIsNotificationEnabled,
@@ -122,7 +153,7 @@ async function updateUser(req: express.Request, res: express.Response) {
     // < 2.1.0 userConfigurationIsSilentModeEnabled
     const userConfigurationIsSilentModeEnabled = req.body.userConfigurationIsSilentModeEnabled ?? req.body.userConfigurationIsSilentModeEnabled;
     await updateUserForUserId(
-      req.databaseConnection,
+      req.extendedProperties.databaseConnection,
       userId,
       userNotificationToken,
       userConfigurationIsNotificationEnabled,
@@ -141,26 +172,37 @@ async function updateUser(req: express.Request, res: express.Response) {
       userConfigurationSilentModeEndUTCMinute,
     );
 
-    return res.sendResponseForStatusBodyError(200, null, null);
+    return res.extendedProperties.sendResponseForStatusBodyError(200, undefined, undefined);
   }
   catch (error) {
-    return res.sendResponseForStatusBodyError(400, null, error);
+    return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, error);
   }
 }
 
 async function deleteUser(req: express.Request, res: express.Response) {
   try {
-    const { userId } = req.params;
+    const { databaseConnection } = req.extendedProperties;
+    const { validatedFamilyId } = req.extendedProperties.validatedVariables;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const dogName = formatUnknownString(req.body['dogName']);
+    if (databaseConnection === undefined) {
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('databaseConnection missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+    }
+    if (validatedFamilyId === undefined) {
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('validatedFamilyId missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+    }
+
+    const { userId } = req.extendedProperties.validatedVariables;
 
     await deleteUserForUserId(
-      req.databaseConnection,
+      req.extendedProperties.databaseConnection,
       userId,
     );
 
-    return res.sendResponseForStatusBodyError(200, null, null);
+    return res.extendedProperties.sendResponseForStatusBodyError(200, undefined, undefined);
   }
   catch (error) {
-    return res.sendResponseForStatusBodyError(400, null, error);
+    return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, error);
   }
 }
 

@@ -13,7 +13,7 @@ async function createLogForUserIdDogId(databaseConnection, userId, dogId, forLog
   const logNote = formatUnknownString(forLogNote, 500);
 
   if (areAllDefined(databaseConnection, userId, dogId, logDate, logAction, logCustomActionName, logNote) === false) {
-    throw new ValidationError('databaseConnection, userId, dogId, logDate, logAction, logCustomActionName, or logNote missing', global.CONSTANT.ERROR.VALUE.MISSING);
+    throw new ValidationError('databaseConnection, userId, dogId, logDate, logAction, logCustomActionName, or logNote missing', ERROR_CODES.VALUE.MISSING);
   }
 
   // only retrieve enough not deleted logs that would exceed the limit
@@ -23,12 +23,12 @@ async function createLogForUserIdDogId(databaseConnection, userId, dogId, forLog
     FROM dogLogs dl
     WHERE logIsDeleted = 0 AND dogId = ?
     LIMIT ?`,
-    [dogId, global.CONSTANT.LIMIT.NUMBER_OF_LOGS_PER_DOG],
+    [dogId, LIMIT.NUMBER_OF_LOGS_PER_DOG],
   );
 
   // make sure that the user isn't creating too many logs
-  if (logs.length >= global.CONSTANT.LIMIT.NUMBER_OF_LOGS_PER_DOG) {
-    throw new ValidationError(`Dog log limit of ${global.CONSTANT.LIMIT.NUMBER_OF_LOGS_PER_DOG} exceeded`, global.CONSTANT.ERROR.FAMILY.LIMIT.LOG_TOO_LOW);
+  if (logs.length >= LIMIT.NUMBER_OF_LOGS_PER_DOG) {
+    throw new ValidationError(`Dog log limit of ${LIMIT.NUMBER_OF_LOGS_PER_DOG} exceeded`, ERROR_CODES.FAMILY.LIMIT.LOG_TOO_LOW);
   }
 
   const result = await databaseQuery(

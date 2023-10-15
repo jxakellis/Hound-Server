@@ -40,6 +40,20 @@ function formatKnownString(string: string, maximumLength?: number): string {
 }
 
 /**
+ * Validates if the input is an array.
+ *
+ * @param array - The input value.
+ * @returns The array if valid, undefined otherwise.
+ */
+function formatArray(array?: unknown): unknown[] | undefined {
+  if (!Array.isArray(array)) {
+    return undefined;
+  }
+
+  return array;
+}
+
+/**
  * Validates and formats a given email string.
  *
  * @param email - The email string to format.
@@ -144,41 +158,6 @@ function formatNumber(forNumber?: unknown): number | undefined {
 }
 
 /**
- * Validates if the input is an array.
- *
- * @param array - The input value.
- * @returns The array if valid, undefined otherwise.
- */
-function formatArray(array?: unknown): unknown[] | undefined {
-  if (!Array.isArray(array)) {
-    return undefined;
-  }
-
-  return array;
-}
-
-/**
- * Validates and formats a SHA256 hash string.
- *
- * @param forString - The input hash string.
- * @returns Formatted hash string if valid, undefined otherwise.
- */
-function formatSHA256Hash(forString?: unknown): string | undefined {
-  const string = formatUnknownString(forString);
-
-  if (string === undefined) {
-    return undefined;
-  }
-
-  const regex = /^[A-Fa-f0-9]{64}$/g;
-  if (!regex.test(string)) {
-    return undefined;
-  }
-
-  return string.toLowerCase();
-}
-
-/**
  * Validates and formats a Base64 encoded string.
  *
  * @param forString - The input Base64 string.
@@ -202,11 +181,10 @@ function formatBase64EncodedString(forString?: unknown): string | undefined {
 export {
   formatUnknownString,
   formatKnownString,
+  formatArray,
   formatEmail,
   formatDate,
   formatBoolean,
   formatNumber,
-  formatArray,
-  formatSHA256Hash,
   formatBase64EncodedString,
 };

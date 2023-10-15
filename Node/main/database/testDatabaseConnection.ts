@@ -1,5 +1,5 @@
 import { Queryable, databaseQuery } from './databaseQuery';
-import { serverLogger } from '../tools/logging/loggers';
+import { serverLogger } from '../logging/loggers';
 
 /// Performs basic query on user table to establish if the databaseConnection is valid
 async function testDatabaseConnection(databaseConnection: Queryable): Promise<void> {

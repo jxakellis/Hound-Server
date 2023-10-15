@@ -1,10 +1,11 @@
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
-import { poolLogger } from '../tools/logging/loggers';
-import { HoundError, ErrorType } from '../server/globalErrors';
+import { poolLogger } from '../logging/loggers';
+import { HoundError } from '../server/globalErrors';
 import { Queryable } from '../types/Queryable';
 
 // Define the "impossible" type to force callers to specify a type parameter for the function.
 type MustSpecifyType<T> = T & { __mustSpecifyType__: void };
+type SQLVariableType = (string | number | boolean | Date | null | undefined);
 
 /**
  * Queries the database with the given sqlString. If a databaseConnection is provided, then uses that databaseConnection, otherwise uses the databaseConnectionForGeneral.
@@ -13,10 +14,17 @@ type MustSpecifyType<T> = T & { __mustSpecifyType__: void };
 const databaseQuery = <T>(
   databaseConnection: Queryable,
   forSQLString: string,
-  SQLVariables: unknown[] = [],
+  forSQLVariables: SQLVariableType[] = [],
 ): Promise<MustSpecifyType<T>> => {
   // Remove all newlines, remove all carriage returns, and make all >1 length spaces into 1 length spaces
   const SQLString = forSQLString.replace(/\r?\n|\r/g, '').replace(/\s+/g, ' ');
+
+  const SQLVariables = forSQLVariables.map((variable) => {
+    if (variable === undefined) {
+      return null;
+    }
+    return variable;
+  });
 
   poolLogger.debug(`databaseQuery w/o variables: ${SQLString}`);
 
@@ -27,7 +35,7 @@ const databaseQuery = <T>(
       (error, result) => {
         if (error) {
           // error when trying to do query to database
-          reject(new HoundError(error.message, ErrorType.Database, error.code));
+          reject(new HoundError(error.message, 'databaseQuery', error.code));
         }
         else {
           // database queried successfully

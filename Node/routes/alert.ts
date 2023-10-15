@@ -10,13 +10,13 @@ const { createTerminateNotification } from '../main/tools/notifications/alert/cr
 alertRouter.post('/:alertType', async (req: express.Request, res: express.Response) => {
   const { alertType } = req.params;
   if (areAllDefined(alertType) === false) {
-    return res.sendResponseForStatusBodyError(400, null, new ValidationError('No alert type provided', global.CONSTANT.ERROR.VALUE.INVALID));
+    return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new ValidationError('No alert type provided', ERROR_CODES.VALUE.INVALID));
   }
   // the user has terminated the app
-  if (alertType === global.CONSTANT.NOTIFICATION.CATEGORY.USER.TERMINATE) {
+  if (alertType === NOTIFICATION.CATEGORY.USER.TERMINATE) {
     createTerminateNotification(req.params.userId);
   }
-  return res.sendResponseForStatusBodyError(200, null, null);
+  return res.extendedProperties.sendResponseForStatusBodyError(200, undefined, undefined);
 });
 // no body
 

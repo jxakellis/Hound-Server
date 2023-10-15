@@ -1,18 +1,31 @@
 import express from 'express';
-import { logServerError } from '../../main/tools/logging/logServerError';
+import { logServerError } from '../../main/logging/logServerError';
 
 import { createASSNForSignedPayload } from '../createFor/createForAppStoreServerNotifications';
+import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
 
-async function createAppStoreServerNotification(req: express.Request, res: express.Response) {
+import { formatUnknownString } from '../../main/format/formatObject';
+
+async function createAppStoreServerNotification(req: express.Request, res: express.Response): Promise<void> {
   try {
-    const { signedPayload } = req.body;
-    await createASSNForSignedPayload(req.databaseConnection, signedPayload);
-    return res.sendResponseForStatusBodyError(200, null, null);
+    const { databaseConnection } = req.extendedProperties;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const signedPayload = formatUnknownString(req.body['signedPayload']);
+
+    if (databaseConnection === undefined) {
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('databaseConnection missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+    }
+    if (signedPayload === undefined) {
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('signedPayload missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+    }
+
+    await createASSNForSignedPayload(databaseConnection, signedPayload);
+    return res.extendedProperties.sendResponseForStatusBodyError(200, undefined, undefined);
   }
   catch (error) {
     // Errors shouldn't occur when dealing with App Store Server Notifications
     logServerError('createAppStoreServerNotification', error);
-    return res.sendResponseForStatusBodyError(400, null, error);
+    return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, error);
   }
 }
 

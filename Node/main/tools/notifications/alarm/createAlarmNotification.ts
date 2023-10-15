@@ -1,86 +1,41 @@
-const { alarmLogger } from '../../logging/loggers';
-const { databaseConnectionForAlarms } from '../../database/createDatabaseConnections';
-const { databaseQuery } from '../../database/databaseQuery';
+import { alarmLogger } from '../../../logging/loggers';
+import { databaseConnectionForAlarms } from '../../../database/createDatabaseConnections';
+import { databaseQuery } from '../../../database/databaseQuery';
 
-const { schedule } from './schedule';
+import { schedule } from './schedule';
 
-const { formatDate } from '../../format/formatObject';
-const { areAllDefined } from '../../validate/validateDefined';
-const { sendNotificationForFamily } from '../apn/sendNotification';
+import { sendNotificationForFamily } from '../apn/sendNotification';
 
-const { logServerError } from '../../logging/logServerError';
-const { deleteAlarmNotificationsForReminder } from './deleteAlarmNotification';
-const { formatReminderAction } from '../../format/formatName';
-
-/**
- * For a given reminder for a given family, handles the alarm notifications
- * If the reminderExecutionDate is in the past, sends APN notification asap. Otherwise, schedule job to send at reminderExecutionDate.
- * If a job with that name from reminderId already exists, then we cancel and replace that job
- */
-async function createAlarmNotificationForFamily(familyId, reminderId, reminderExecutionDate) {
-  try {
-    // all ids should already be formatted into numbers
-    const formattedReminderExecutionDate = formatDate(reminderExecutionDate);
-    alarmLogger.debug(`createAlarmNotificationForFamily ${familyId}, ${reminderId}, ${reminderExecutionDate}, ${formattedReminderExecutionDate}`);
-
-    if (areAllDefined(familyId, reminderId) === false) {
-      return;
-    }
-
-    // We are potentially overriding a job, so we must cancel it first
-    await deleteAlarmNotificationsForReminder(familyId, reminderId);
-
-    // If a user updates a reminder, this function is invoked. When a reminder is updated, is reminderExecutionDate can be null
-    // Therefore we want to delete the old alarm notifications for that reminder and (if it has a reminderExecutionDate) create new alarm notifications
-    if (areAllDefined(formattedReminderExecutionDate) === false) {
-      return;
-    }
-    // The date that is further in the future is greater
-    // Therefore, if the the present is greater than reminderExecutionDate, that means the reminderExecutionDate is older than the present.
-
-    // reminderExecutionDate is present or in the past, so we should execute immediately
-    if (new Date() >= formattedReminderExecutionDate) {
-      // do these async, no need to await
-      sendAPNNotificationForFamily(familyId, reminderId);
-    }
-    // reminderExecutionDate is in the future
-    else {
-      alarmLogger.debug(`Scheduling a new job; count will be ${Object.keys(schedule.scheduledJobs).length + 1}`);
-      schedule.scheduleJob(`Family${familyId}Reminder${reminderId}`, formattedReminderExecutionDate, async () => {
-        // do these async, no need to await
-        sendAPNNotificationForFamily(familyId, reminderId);
-      });
-    }
-  }
-  catch (error) {
-    logServerError('createAlarmNotificationForFamily', error);
-  }
-}
+import { logServerError } from '../../../logging/logServerError';
+import { deleteAlarmNotificationsForReminder } from './deleteAlarmNotification';
+import { formatReminderAction } from '../../../format/formatName';
+import { DogsRow, dogsColumnsWithDPrefix } from '../../../types/DogsRow';
+import { DogRemindersRow, dogRemindersColumnsWithDRPrefix } from '../../../types/DogRemindersRow';
+import { NOTIFICATION } from '../../../server/globalConstants';
 
 /**
  * Helper method for createAlarmNotificationForFamily, actually queries database to get most updated version of dog and reminder.
  * Physically sends the APN
  */
-async function sendAPNNotificationForFamily(familyId, reminderId) {
+async function sendAPNNotificationForFamily(familyId: string, reminderId: number): Promise<void> {
   try {
     // get the dogName, reminderAction, and reminderCustomActionName for the given reminderId
     // the reminderId has to exist to search and we check to make sure the dogId isn't null (to make sure the dog still exists too)
-    const [reminder] = await databaseQuery(
+    const result = await databaseQuery<(
+DogsRow & DogRemindersRow)[]>(
       databaseConnectionForAlarms,
-      `SELECT d.dogName, dr.reminderExecutionDate, dr.reminderAction, dr.reminderCustomActionName, dr.reminderLastModified, dr.snoozeExecutionInterval
+      `SELECT ${dogsColumnsWithDPrefix}, ${dogRemindersColumnsWithDRPrefix}
       FROM dogReminders dr
       JOIN dogs d ON dr.dogId = d.dogId
       WHERE d.dogIsDeleted = 0 AND dr.reminderIsDeleted = 0 AND dr.reminderId = ? AND dr.reminderExecutionDate IS NOT NULL AND d.dogId IS NOT NULL
-      LIMIT 18446744073709551615`,
+      LIMIT 1`,
       [reminderId],
-    );
+      );
+
+    const reminder = result.safeIndex(0);
 
     // Check to make sure the required information of the reminder exists
-    if (areAllDefined(reminder) === false) {
-      return;
-    }
-
-    if (areAllDefined(reminder.dogName, reminder.reminderAction) === false) {
+    if (reminder === undefined) {
       return;
     }
 
@@ -91,18 +46,56 @@ async function sendAPNNotificationForFamily(familyId, reminderId) {
     // Maximum possible length of message: 17 (raw) + 32 (variable) = 49 (<= ALERT_BODY_LIMIT)
     let alertBody = `Lend a hand with ${formatReminderAction(reminder.reminderAction, reminder.reminderCustomActionName)}`;
 
-    const snoozeExecutionInterval = formatDate(reminder.snoozeExecutionInterval);
-    if (areAllDefined(snoozeExecutionInterval)) {
+    if (reminder.snoozeExecutionInterval !== undefined) {
       // Maximum possible length of message: 45 (raw) + 32 (variable) = 77 (<= ALERT_BODY_LIMIT)
       alertBody = `It's been a bit, remember to lend a hand with ${formatReminderAction(reminder.reminderAction, reminder.reminderCustomActionName)}`;
     }
 
     // send immediate APN notification for family
     const customPayload = { reminderId, reminderLastModified: reminder.reminderLastModified };
-    sendNotificationForFamily(familyId, global.CONSTANT.NOTIFICATION.CATEGORY.REMINDER.ALARM, alertTitle, alertBody, customPayload);
+    sendNotificationForFamily(familyId, NOTIFICATION.CATEGORY.REMINDER.ALARM, alertTitle, alertBody, customPayload);
   }
   catch (error) {
     logServerError('sendAPNNotificationForFamily', error);
+  }
+}
+
+/**
+ * For a given reminder for a given family, handles the alarm notifications
+ * If the reminderExecutionDate is in the past, sends APN notification asap. Otherwise, schedule job to send at reminderExecutionDate.
+ * If a job with that name from reminderId already exists, then we cancel and replace that job
+ */
+async function createAlarmNotificationForFamily(familyId: string, reminderId: number, reminderExecutionDate?: Date): Promise<void> {
+  try {
+    alarmLogger.debug(`createAlarmNotificationForFamily ${familyId}, ${reminderId}, ${reminderExecutionDate}, ${reminderExecutionDate}`);
+
+    // We are potentially overriding a job, so we must cancel it first
+    await deleteAlarmNotificationsForReminder(familyId, reminderId);
+
+    // If a user updates a reminder, this function is invoked. When a reminder is updated, is reminderExecutionDate can be null
+    // Therefore we want to delete the old alarm notifications for that reminder and (if it has a reminderExecutionDate) create new alarm notifications
+    if (reminderExecutionDate === undefined) {
+      return;
+    }
+    // The date that is further in the future is greater
+    // Therefore, if the the present is greater than reminderExecutionDate, that means the reminderExecutionDate is older than the present.
+
+    // reminderExecutionDate is present or in the past, so we should execute immediately
+    if (new Date() >= reminderExecutionDate) {
+      // do these async, no need to await
+      sendAPNNotificationForFamily(familyId, reminderId);
+    }
+    // reminderExecutionDate is in the future
+    else {
+      alarmLogger.debug(`Scheduling a new job; count will be ${Object.keys(schedule.scheduledJobs).length + 1}`);
+      schedule.scheduleJob(`Family${familyId}Reminder${reminderId}`, reminderExecutionDate, async () => {
+        // do these async, no need to await
+        sendAPNNotificationForFamily(familyId, reminderId);
+      });
+    }
+  }
+  catch (error) {
+    logServerError('createAlarmNotificationForFamily', error);
   }
 }
 

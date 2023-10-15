@@ -1,18 +1,44 @@
 import express from 'express';
+import bodyParser from 'body-parser';
 
-import { parseFormData, parseJSON } from '../tools/general/parseBody';
-import { logRequest, addAppVersionToLogRequest } from '../tools/logging/logRequest';
+import { logRequest, addAppVersionToLogRequest } from '../logging/logRequest';
+import { logServerError } from '../logging/logServerError';
 import { configureRequestAndResponse } from './configureRequestAndResponse';
 import { validateAppVersion } from '../tools/validate/validateId';
 import { watchdogRouter } from '../../routes/watchdog';
 import { appStoreServerNotificationsRouter } from '../../routes/appStoreServerNotifications';
 import { userRouter } from '../../routes/user';
-import { HoundError, ErrorType } from './globalErrors';
-import { ERROR } from './globalConstants';
+import { HoundError, ERROR_CODES } from './globalErrors';
 
 const serverToServerPath = '/appStoreServerNotifications';
 const watchdogPath = '/watchdog';
 const userPath = '/app/:appVersion';
+
+function parseFormData(req: express.Request, res: express.Response, next: express.NextFunction): void {
+  bodyParser.urlencoded({
+    extended: true,
+    limit: '4mb',
+  })(req, res, (error) => {
+    if (error !== undefined) {
+      logServerError('parseFormData', error);
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('Unable to parse form data', 'parseFormData', ERROR_CODES.GENERAL.PARSE_FORM_DATA_FAILED, error));
+    }
+    return next();
+  });
+}
+
+function parseJSON(req: express.Request, res: express.Response, next: express.NextFunction): void {
+  bodyParser.json({
+    limit: '4mb',
+  })(req, res, (error) => {
+    if (error !== undefined) {
+      logServerError('parseJSON', error);
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('Unable to parse json', 'parseJSON', ERROR_CODES.GENERAL.PARSE_JSON_FAILED, error));
+    }
+
+    return next();
+  });
+}
 
 function configureApp(app: express.Application): void {
   // Setup defaults and custom res.status method
@@ -42,7 +68,14 @@ function configureApp(app: express.Application): void {
   app.use(`${userPath}/user`, userRouter);
 
   // Throw back the request if an unknown path is used
-  app.use('*', async (req: express.Request, res: express.Response) => res.sendResponseForStatusBodyError(404, undefined, new HoundError('Path not found', ErrorType.General, ERROR.VALUE.INVALID)));
+  app.use(
+    '*',
+    async (req: express.Request, res: express.Response) => (res.extendedProperties.sendResponseForStatusBodyError(
+      404,
+      undefined,
+      new HoundError('Path not found', "app.use('*')", ERROR_CODES.VALUE.INVALID),
+    )),
+  );
 }
 
 export { configureApp };

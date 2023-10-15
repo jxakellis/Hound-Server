@@ -12,7 +12,7 @@ import express from 'express';
 import { SERVER } from './globalConstants';
 import './globalDeclare';
 
-import { serverLogger } from '../tools/logging/loggers';
+import { serverLogger } from '../logging/loggers';
 import { key, cert } from '../secrets/houndOrganizerHTTPS';
 
 //
@@ -30,7 +30,7 @@ import { configureApp } from './configureApp';
 //
 //
 
-import { logServerError } from '../tools/logging/logServerError';
+import { logServerError } from '../logging/logServerError';
 import { schedule } from '../tools/notifications/alarm/schedule';
 import {
   databaseConnectionForGeneral, databaseConnectionForLogging, databaseConnectionForAlarms, databaseConnectionPoolForRequests,

@@ -4,7 +4,7 @@ import {
 import { Queryable, databaseQuery } from '../../database/databaseQuery';
 import {
   formatDate, formatNumber, formatBoolean,
-} from '../format/formatObject';
+} from '../../format/formatObject';
 import { AppStoreServerNotificationsRow, appStoreServerNotificationsColumnsWithASSNPrefix, appStoreServerNotificationsColumnsWithoutASSNPrefix } from '../../types/AppStoreServerNotificationsRow';
 
 /**

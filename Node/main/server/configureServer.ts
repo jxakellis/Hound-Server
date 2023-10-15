@@ -1,14 +1,14 @@
 import https from 'https';
 import { IncomingMessage, ServerResponse } from 'http';
 
-import { serverLogger } from '../tools/logging/loggers';
+import { serverLogger } from '../logging/loggers';
 import { configureDatabaseConnections } from '../database/configureDatabaseConnection';
 import { databaseQuery } from '../database/databaseQuery';
 import { testDatabaseConnections } from '../database/testDatabaseConnection';
 import {
   databaseConnectionForGeneral, databaseConnectionForLogging, databaseConnectionForAlarms, databaseConnectionPoolForRequests,
 } from '../database/createDatabaseConnections';
-import { logServerError } from '../tools/logging/logServerError';
+import { logServerError } from '../logging/logServerError';
 import { restoreAlarmNotificationsForAllFamilies } from '../tools/notifications/alarm/restoreAlarmNotification';
 import { SERVER } from './globalConstants';
 

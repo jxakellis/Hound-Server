@@ -1,8 +1,8 @@
 import { serverLogger } from './loggers';
-import { databaseConnectionForLogging } from '../../database/createDatabaseConnections';
-import { databaseQuery } from '../../database/databaseQuery';
+import { databaseConnectionForLogging } from '../database/createDatabaseConnections';
+import { databaseQuery } from '../database/databaseQuery';
 import { formatUnknownString } from '../format/formatObject';
-import { HoundError } from '../../server/globalErrors';
+import { HoundError } from '../server/globalErrors';
 
 function printServerError(forFunction: string, forError: unknown): void {
   const errorFunction = formatUnknownString(forFunction, 100);
@@ -13,7 +13,7 @@ function printServerError(forFunction: string, forError: unknown): void {
   let errorStack: string | undefined = 'Unknown';
 
   if (forError instanceof HoundError) {
-    errorName = formatUnknownString(forError.type, 500);
+    errorName = formatUnknownString(forError.name, 500);
     errorMessage = formatUnknownString(forError.message, 500);
     errorCode = formatUnknownString(forError.code, 500);
     errorStack = formatUnknownString(forError.stack || forError, 2500);
@@ -38,7 +38,7 @@ async function logServerError(forFunction: string, forError: unknown): Promise<v
   let errorStack: string | undefined = 'Unknown';
 
   if (forError instanceof HoundError) {
-    errorName = formatUnknownString(forError.type, 500);
+    errorName = formatUnknownString(forError.name, 500);
     errorMessage = formatUnknownString(forError.message, 500);
     errorCode = formatUnknownString(forError.code, 500);
     errorStack = formatUnknownString(forError.stack || forError, 2500);

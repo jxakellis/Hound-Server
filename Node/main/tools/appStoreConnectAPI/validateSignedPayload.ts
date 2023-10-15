@@ -2,10 +2,10 @@ import {
   decodeNotificationPayload, decodeTransaction, decodeRenewalInfo,
   DecodedNotificationPayload, NotificationData, JWSTransactionDecodedPayload, JWSRenewalInfoDecodedPayload,
 } from 'app-store-server-api';
-import { HoundError, ErrorType } from '../../server/globalErrors';
-import { logServerError } from '../logging/logServerError';
-import { formatUnknownString } from '../format/formatObject';
-import { ERROR, SERVER } from '../../server/globalConstants';
+import { HoundError, ERROR_CODES } from '../../server/globalErrors';
+import { logServerError } from '../../logging/logServerError';
+import { formatUnknownString } from '../../format/formatObject';
+import { SERVER } from '../../server/globalConstants';
 
 /// Takes a signedPayload from an App Store Server Notificatio. Returns payload if successfully decoded, otherwise returns null.
 async function validateNotificationSignedPayload(signedPayload: string): Promise<DecodedNotificationPayload | undefined> {
@@ -73,7 +73,7 @@ async function validateSignedPayload(signedPayload: string): Promise<{
   const notification = await validateNotificationSignedPayload(signedPayload);
 
   if (notification === null || notification === undefined) {
-    throw new HoundError('notification missing', ErrorType.Validation, ERROR.VALUE.MISSING);
+    throw new HoundError('notification missing', 'validateSignedPayload', ERROR_CODES.VALUE.MISSING);
   }
 
   // The object that contains the app metadata and signed renewal and transaction information.
@@ -82,31 +82,34 @@ async function validateSignedPayload(signedPayload: string): Promise<{
   const transactionInfo = await validateTransactionSignedPayload(data.signedTransactionInfo);
   const renewalInfo = await validateRenewalInfoSignedPayload(data.signedRenewalInfo);
 
-  if (transactionInfo === undefined || renewalInfo === undefined) {
-    throw new HoundError('transactionInfo or renewalInfo missing', ErrorType.Validation, ERROR.VALUE.MISSING);
+  if (transactionInfo === undefined) {
+    throw new HoundError('transactionInfo missing', 'validateSignedPayload', ERROR_CODES.VALUE.MISSING);
+  }
+  if (renewalInfo === undefined) {
+    throw new HoundError('renewalInfo missing', 'validateSignedPayload', ERROR_CODES.VALUE.MISSING);
   }
 
   if (data.environment !== SERVER.ENVIRONMENT) {
     throw new HoundError(
       `data.environment must be '${SERVER.ENVIRONMENT}', not '${data.environment}'`,
-      ErrorType.Validation,
-      ERROR.VALUE.INVALID,
+      'validateSignedPayload',
+      ERROR_CODES.VALUE.INVALID,
     );
   }
 
   if (renewalInfo.environment !== SERVER.ENVIRONMENT) {
     throw new HoundError(
       `renewalInfo.environment must be '${SERVER.ENVIRONMENT}', not '${renewalInfo.environment}'`,
-      ErrorType.Validation,
-      ERROR.VALUE.INVALID,
+      'validateSignedPayload',
+      ERROR_CODES.VALUE.INVALID,
     );
   }
 
   if (transactionInfo.environment !== SERVER.ENVIRONMENT) {
     throw new HoundError(
       `transactionInfo.environment must be '${SERVER.ENVIRONMENT}', not '${transactionInfo.environment}'`,
-      ErrorType.Validation,
-      ERROR.VALUE.INVALID,
+      'validateSignedPayload',
+      ERROR_CODES.VALUE.INVALID,
     );
   }
 

@@ -1,5 +1,5 @@
 import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
-import { CombinedFamilyInformationRow } from '../../main/types/CompositeRow';
+import { FamilyInformation } from '../../main/types/CompositeRow';
 import { FamiliesRow, familiesColumnsWithFPrefix } from '../../main/types/FamiliesRow';
 import { FamilyMembersRow, familyMembersColumnsWithFMPrefix } from '../../main/types/FamilyMembersRow';
 import { PreviousFamilyMembersRow, previousFamilyMembersColumnsWithPFMPrefix } from '../../main/types/PreviousFamilyMembersRow';
@@ -125,7 +125,7 @@ async function getFamilyId(databaseConnection: Queryable, userId: string): Promi
  * @returns A key-value pairing of {userId (of familyHead), familyCode, familyIsLocked, familyMembers (array), previousFamilyMembers (array), familyActiveSubscription (object)}
  * @throws If an error is encountered
  */
-async function getAllFamilyInformationForFamilyId(databaseConnection: Queryable, familyId: string, familyActiveSubscription: TransactionsRow): Promise<CombinedFamilyInformationRow | undefined> {
+async function getAllFamilyInformationForFamilyId(databaseConnection: Queryable, familyId: string, familyActiveSubscription: TransactionsRow): Promise<FamilyInformation | undefined> {
   // family id is validated, therefore we know familyMembers is >= 1 for familyId
   // find which family member is the head
   const familiesResult = await databaseQuery<FamiliesRow[]>(
@@ -145,7 +145,7 @@ async function getAllFamilyInformationForFamilyId(databaseConnection: Queryable,
   const familyMembers = await getAllFamilyMembersForFamilyId(databaseConnection, familyId);
   const previousFamilyMembers = await getAllPreviousFamilyMembersForFamilyId(databaseConnection, familyId);
 
-  const result: CombinedFamilyInformationRow = {
+  const result: FamilyInformation = {
     ...family,
     familyMembers,
     previousFamilyMembers,
