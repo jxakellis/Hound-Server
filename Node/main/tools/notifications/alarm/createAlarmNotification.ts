@@ -9,8 +9,8 @@ import { sendNotificationForFamily } from '../apn/sendNotification';
 import { logServerError } from '../../../logging/logServerError';
 import { deleteAlarmNotificationsForReminder } from './deleteAlarmNotification';
 import { formatReminderAction } from '../../../format/formatName';
-import { DogsRow, dogsColumnsWithDPrefix } from '../../../types/DogsRow';
-import { DogRemindersRow, dogRemindersColumnsWithDRPrefix } from '../../../types/DogRemindersRow';
+import { DogsRow, prefixDogsColumns } from '../../../types/DogsRow';
+import { DogRemindersRow, prefixDogRemindersColumns } from '../../../types/DogRemindersRow';
 import { NOTIFICATION } from '../../../server/globalConstants';
 
 /**
@@ -24,7 +24,7 @@ async function sendAPNNotificationForFamily(familyId: string, reminderId: number
     const result = await databaseQuery<(
 DogsRow & DogRemindersRow)[]>(
       databaseConnectionForAlarms,
-      `SELECT ${dogsColumnsWithDPrefix}, ${dogRemindersColumnsWithDRPrefix}
+      `SELECT ${prefixDogsColumns}, ${prefixDogRemindersColumns}
       FROM dogReminders dr
       JOIN dogs d ON dr.dogId = d.dogId
       WHERE d.dogIsDeleted = 0 AND dr.reminderIsDeleted = 0 AND dr.reminderId = ? AND dr.reminderExecutionDate IS NOT NULL AND d.dogId IS NOT NULL

@@ -1,10 +1,10 @@
 import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
 import { FamilyInformation } from '../../main/types/CompositeRow';
-import { FamiliesRow, familiesColumnsWithFPrefix } from '../../main/types/FamiliesRow';
-import { FamilyMembersRow, familyMembersColumnsWithFMPrefix } from '../../main/types/FamilyMembersRow';
-import { PreviousFamilyMembersRow, previousFamilyMembersColumnsWithPFMPrefix } from '../../main/types/PreviousFamilyMembersRow';
+import { FamiliesRow, prefixFamiliesColumns } from '../../main/types/FamiliesRow';
+import { FamilyMembersRow, prefixFamilyMembersColumns } from '../../main/types/FamilyMembersRow';
+import { PreviousFamilyMembersRow, prefixPreviousFamilyMembersColumns } from '../../main/types/PreviousFamilyMembersRow';
 import { TransactionsRow } from '../../main/types/TransactionsRow';
-import { PublicUsersRow, publicUsersColumnsWithUPrefix } from '../../main/types/UsersRow';
+import { PublicUsersRow, prefixPublicUsersColumns } from '../../main/types/UsersRow';
 
 /**
  * @param {*} databaseConnection
@@ -15,7 +15,7 @@ import { PublicUsersRow, publicUsersColumnsWithUPrefix } from '../../main/types/
 async function getAllFamilyMembersForFamilyId(databaseConnection: Queryable, familyId: string): Promise<PublicUsersRow[]> {
   const result = await databaseQuery<PublicUsersRow[]>(
     databaseConnection,
-    `SELECT ${publicUsersColumnsWithUPrefix}
+    `SELECT ${prefixPublicUsersColumns}
     FROM familyMembers fm
     JOIN users u ON fm.userId = u.userId
     WHERE fm.familyId = ?
@@ -35,7 +35,7 @@ async function getAllFamilyMembersForFamilyId(databaseConnection: Queryable, fam
 async function getAllPreviousFamilyMembersForFamilyId(databaseConnection: Queryable, familyId: string): Promise<PreviousFamilyMembersRow[]> {
   const result = await databaseQuery<PreviousFamilyMembersRow[]>(
     databaseConnection,
-    `SELECT ${previousFamilyMembersColumnsWithPFMPrefix}
+    `SELECT ${prefixPreviousFamilyMembersColumns}
     FROM previousFamilyMembers pfm
     WHERE familyId = ?
     ORDER BY familyMemberLeaveDate DESC
@@ -60,7 +60,7 @@ async function getAllPreviousFamilyMembersForFamilyId(databaseConnection: Querya
 async function isUserIdInFamily(databaseConnection: Queryable, userId: string): Promise<boolean> {
   const result = await databaseQuery<FamilyMembersRow[]>(
     databaseConnection,
-    `SELECT ${familyMembersColumnsWithFMPrefix}
+    `SELECT ${prefixFamilyMembersColumns}
     FROM familyMembers fm
     WHERE userId = ?
     LIMIT 1`,
@@ -84,7 +84,7 @@ async function getFamilyHeadUserId(databaseConnection: Queryable, userId: string
       FROM familyMembers
       WHERE userId = ?
     )
-    SELECT ${familiesColumnsWithFPrefix}
+    SELECT ${prefixFamiliesColumns}
     FROM targetFamilyMember tfm 
     JOIN families f ON tfm.familyId = f.familyId
     LIMIT 1`,
@@ -103,7 +103,7 @@ async function getFamilyHeadUserId(databaseConnection: Queryable, userId: string
 async function getFamilyId(databaseConnection: Queryable, userId: string): Promise<string | undefined> {
   const result = await databaseQuery<FamilyMembersRow[]>(
     databaseConnection,
-    `SELECT ${familyMembersColumnsWithFMPrefix}
+    `SELECT ${prefixFamilyMembersColumns}
     FROM users u
     JOIN familyMembers fm ON u.userId = fm.userId
     WHERE u.userId = ?
@@ -130,7 +130,7 @@ async function getAllFamilyInformationForFamilyId(databaseConnection: Queryable,
   // find which family member is the head
   const familiesResult = await databaseQuery<FamiliesRow[]>(
     databaseConnection,
-    `SELECT ${familiesColumnsWithFPrefix}
+    `SELECT ${prefixFamiliesColumns}
     FROM families f
     WHERE familyId = ?
     LIMIT 1`,

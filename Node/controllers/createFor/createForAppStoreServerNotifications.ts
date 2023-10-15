@@ -2,7 +2,7 @@ import { NotificationType } from 'app-store-server-api';
 import {
   formatNumber,
 } from '../../main/format/formatObject';
-import { HoundError, ErrorType } from '../../main/server/globalErrors';
+import { HoundError, ERROR_CODES } from '../../main/server/globalErrors';
 import { requestLogger } from '../../main/logging/loggers';
 
 import { validateSignedPayload } from '../../main/tools/appStoreConnectAPI/validateSignedPayload';
@@ -13,7 +13,6 @@ import { getTransactionOwner } from '../getFor/getForTransactions';
 import { createUpdateTransaction } from './createForTransactions';
 
 import { Queryable } from '../../main/types/Queryable';
-
 
 /**
 * Processes an App Store Server Notification
@@ -91,7 +90,7 @@ async function createASSNForSignedPayload(databaseConnection: Queryable, signedP
 
   // Check to see if the notification provided a transactionId
   if (transactionId === undefined) {
-    throw new HoundError('transactionId missing', TODOREPLACEME, ERROR_CODES.VALUE.MISSING);
+    throw new HoundError('transactionId missing', 'createASSNForSignedPayload', ERROR_CODES.VALUE.MISSING);
   }
 
   const userId = await getTransactionOwner(
@@ -110,22 +109,10 @@ async function createASSNForSignedPayload(databaseConnection: Queryable, signedP
   await createUpdateTransaction(
     databaseConnection,
     userId,
-    renewalInfo.autoRenewProductId,
-    renewalInfo.autoRenewStatus,
-    transactionInfo.environment,
-    transactionInfo.expiresDate,
-    transactionInfo.inAppOwnershipType,
-    transactionInfo.transactionId,
-    transactionInfo.offerIdentifier,
-    transactionInfo.offerType,
-    transactionInfo.originalTransactionId,
-    transactionInfo.productId,
-    transactionInfo.purchaseDate,
-    transactionInfo.quantity,
-    transactionInfo.revocationReason,
-    transactionInfo.subscriptionGroupIdentifier,
-    transactionInfo.transactionReason,
-    transactionInfo.webOrderLineItemId,
+    {
+      ...renewalInfo,
+      ...transactionInfo,
+    }
   );
 }
 

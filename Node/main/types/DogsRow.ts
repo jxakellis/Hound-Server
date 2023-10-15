@@ -3,7 +3,7 @@ import { DogRemindersRow } from './DogRemindersRow';
 
 const prefix = 'd.';
 
-const dogsColumnsWithDPrefix = `
+const prefixDogsColumns = `
 d.dogId,
 d.familyId,
 d.dogName,
@@ -11,7 +11,7 @@ d.dogLastModified,
 d.dogIsDeleted
 `;
 
-const dogsColumnsWithoutPrefix = dogsColumnsWithDPrefix.replace(prefix, '');
+const noPrefixDogsColumns = prefixDogsColumns.replace(prefix, '');
 
 type DogsRow = {
     // NOTE: database booleans (tinyint(1)) are returned as 0 or 1 numbers, not booleans. therefore, we have to use number instead of boolean
@@ -26,6 +26,6 @@ type DogsRow = {
 
 export {
   DogsRow,
-  dogsColumnsWithDPrefix,
-  dogsColumnsWithoutPrefix,
+  prefixDogsColumns,
+  noPrefixDogsColumns,
 };

@@ -3,7 +3,7 @@ import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
 
 import { deleteAlarmNotificationsForReminder } from '../../main/tools/notifications/alarm/deleteAlarmNotification';
-import { DogRemindersRow, dogRemindersColumnsWithDRPrefix } from '../../main/types/DogRemindersRow';
+import { DogRemindersRow, prefixDogRemindersColumns } from '../../main/types/DogRemindersRow';
 
 /**
  *  Queries the database to delete a single reminder. If the query is successful, then returns
@@ -55,7 +55,7 @@ async function deleteAllRemindersForFamilyIdDogId(databaseConnection: Queryable,
 
   const reminders = await databaseQuery<DogRemindersRow[]>(
     databaseConnection,
-    `SELECT ${dogRemindersColumnsWithDRPrefix}
+    `SELECT ${prefixDogRemindersColumns}
     FROM dogReminders dr
     WHERE reminderIsDeleted = 0 AND dogId = ?
     LIMIT 18446744073709551615`,

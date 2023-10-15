@@ -31,9 +31,6 @@ async function updateReminderForDogIdReminder(
   if (reminderType === undefined) {
     throw new HoundError('reminderType missing', 'updateReminderForDogIdReminder', ERROR_CODES.VALUE.MISSING);
   }
-  if (reminderType !== 'countdown' && reminderType !== 'weekly' && reminderType !== 'monthly' && reminderType !== 'oneTime') {
-    throw new HoundError('reminderType invalid', 'updateReminderForDogIdReminder', ERROR_CODES.VALUE.INVALID);
-  }
   if (reminderIsEnabled === undefined) {
     throw new HoundError('reminderIsEnabled missing', 'updateReminderForDogIdReminder', ERROR_CODES.VALUE.MISSING);
   }

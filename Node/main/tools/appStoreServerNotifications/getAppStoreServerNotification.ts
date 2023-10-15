@@ -1,5 +1,5 @@
 import { Queryable, databaseQuery } from '../../database/databaseQuery';
-import { AppStoreServerNotificationsRow, appStoreServerNotificationsColumnsWithASSNPrefix } from '../../types/AppStoreServerNotificationsRow';
+import { AppStoreServerNotificationsRow, prefixAppStoreServerNotificationsColumns } from '../../types/AppStoreServerNotificationsRow';
 
 // TODO NOW find all uses of [] to index and use .safeIndex to get possible undefined
 
@@ -13,7 +13,7 @@ async function getAppStoreServerNotification(databaseConnection: Queryable, noti
   const notifications = await databaseQuery<AppStoreServerNotificationsRow[]>(
     databaseConnection,
     `SELECT
-    ${appStoreServerNotificationsColumnsWithASSNPrefix}
+    ${prefixAppStoreServerNotificationsColumns}
     FROM appStoreServerNotifications assn
     WHERE notificationUUID = ? 
     LIMIT 1`,

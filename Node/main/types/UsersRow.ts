@@ -1,7 +1,7 @@
 // TODO FUTURE depreciate userApplicationUsername (last used in 3.0.0)
 const prefix = 'u.';
 
-const privateUsersColumnsWithUPrefix = `
+const prefixPrivateUsersColumns = `
 u.userId,
 u.userAppAccountToken,
 u.userAppAccountToken AS userApplicationUsername,
@@ -11,7 +11,7 @@ u.userLastName,
 u.userNotificationToken
 `;
 
-const privateUsersColumnsWithoutPrefix = privateUsersColumnsWithUPrefix.replace(prefix, '');
+const noPrefixPrivateUsersColumns = prefixPrivateUsersColumns.replace(prefix, '');
 
 type PrivateUsersRow = {
     // NOTE: database booleans (tinyint(1)) are returned as 0 or 1 numbers, not booleans. therefore, we have to use number instead of boolean
@@ -23,13 +23,13 @@ type PrivateUsersRow = {
     userNotificationToken?: string
 };
 
-const publicUsersColumnsWithUPrefix = `
+const prefixPublicUsersColumns = `
 u.userId,
 u.userFirstName,
 u.userLastName
 `;
 
-const publicUsersColumnsWithoutPrefix = publicUsersColumnsWithUPrefix.replace(prefix, '');
+const noPrefixPublicUsersColumns = prefixPublicUsersColumns.replace(prefix, '');
 
 type PublicUsersRow = {
     // NOTE: database booleans (tinyint(1)) are returned as 0 or 1 numbers, not booleans. therefore, we have to use number instead of boolean
@@ -40,9 +40,9 @@ type PublicUsersRow = {
 
 export {
   PrivateUsersRow,
-  privateUsersColumnsWithUPrefix,
-  privateUsersColumnsWithoutPrefix,
+  prefixPrivateUsersColumns,
+  noPrefixPrivateUsersColumns,
   PublicUsersRow,
-  publicUsersColumnsWithUPrefix,
-  publicUsersColumnsWithoutPrefix,
+  prefixPublicUsersColumns,
+  noPrefixPublicUsersColumns,
 };

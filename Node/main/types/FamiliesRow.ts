@@ -2,7 +2,7 @@ const prefix = 'f.';
 
 // TODO FUTURE migrate from userId in families database to familyHeadUserId
 
-const familiesColumnsWithFPrefix = `
+const prefixFamiliesColumns = `
 f.userId,
 f.familyId,
 f.familyCode,
@@ -10,7 +10,7 @@ f.familyIsLocked,
 f.familyAccountCreationDate
 `;
 
-const familiesColumnsWithoutPrefix = familiesColumnsWithFPrefix.replace(prefix, '');
+const noPrefixFamiliesColumns = prefixFamiliesColumns.replace(prefix, '');
 
 type FamiliesRow = {
     // NOTE: database booleans (tinyint(1)) are returned as 0 or 1 numbers, not booleans. therefore, we have to use number instead of boolean
@@ -23,6 +23,6 @@ type FamiliesRow = {
 
 export {
   FamiliesRow,
-  familiesColumnsWithFPrefix,
-  familiesColumnsWithoutPrefix,
+  prefixFamiliesColumns,
+  noPrefixFamiliesColumns,
 };

@@ -1,6 +1,6 @@
 const prefix = 'uc.';
 
-const userConfigurationColumnsWithUCPrefix = `
+const prefixUserConfigurationColumns = `
 uc.userId,
 uc.userConfigurationIsNotificationEnabled,
 uc.userConfigurationIsLoudNotificationEnabled, 
@@ -18,7 +18,7 @@ uc.userConfigurationSilentModeStartUTCMinute,
 uc.userConfigurationSilentModeEndUTCMinute
 `;
 
-const userConfigurationColumnsWithoutPrefix = userConfigurationColumnsWithUCPrefix.replace(prefix, '');
+const noPrefixUserConfigurationColumns = prefixUserConfigurationColumns.replace(prefix, '');
 
 type UserConfigurationRow = {
     // NOTE: database booleans (tinyint(1)) are returned as 0 or 1 numbers, not booleans. therefore, we have to use number instead of boolean
@@ -41,5 +41,5 @@ type UserConfigurationRow = {
 };
 
 export {
-  UserConfigurationRow, userConfigurationColumnsWithUCPrefix, userConfigurationColumnsWithoutPrefix,
+  UserConfigurationRow, prefixUserConfigurationColumns, noPrefixUserConfigurationColumns,
 };

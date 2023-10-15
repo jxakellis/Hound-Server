@@ -1,6 +1,6 @@
 const prefix = 'pu.';
 
-const previousUsersColumnsWithPUPrefix = `
+const prefixPreviousUsersColumns = `
 pu.userId,
 pu.userIdentifier,
 pu.userApplicationUsername,
@@ -12,7 +12,7 @@ pu.userAccountCreationDate,
 pu.userAccountDeletionDate
 `;
 
-const previousUsersColumnsWithoutPrefix = previousUsersColumnsWithPUPrefix.replace(prefix, '');
+const noPrefixPreviousUsersColumns = prefixPreviousUsersColumns.replace(prefix, '');
 
 type PreviousUsersRow = {
     // NOTE: database booleans (tinyint(1)) are returned as 0 or 1 numbers, not booleans. therefore, we have to use number instead of boolean
@@ -29,6 +29,6 @@ type PreviousUsersRow = {
 
 export {
   PreviousUsersRow,
-  previousUsersColumnsWithPUPrefix,
-  previousUsersColumnsWithoutPrefix,
+  prefixPreviousUsersColumns,
+  noPrefixPreviousUsersColumns,
 };

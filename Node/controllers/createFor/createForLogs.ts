@@ -1,25 +1,17 @@
-const { databaseQuery } from '../../main/database/databaseQuery';
-const { ValidationError } from '../../main/server/globalErrors';
-const { formatDate, formatUnknownString } from '../../main/tools/format/formatObject';
-const { areAllDefined } from '../../main/tools/validate/validateDefined';
+import { Queryable, ResultSetHeader, databaseQuery } from '../../main/database/databaseQuery';
+import { LIMIT } from '../../main/server/globalConstants';
+import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
+import { DogLogsRow, prefixDogLogsColumns } from '../../main/types/DogLogsRow';
 
 /**
  *  Queries the database to create a log. If the query is successful, then returns the logId.
  *  If a problem is encountered, creates and throws custom error
  */
-async function createLogForUserIdDogId(databaseConnection, userId, dogId, forLogDate, logAction, forLogCustomActionName, forLogNote) {
-  const logDate = formatDate(forLogDate);
-  const logCustomActionName = formatUnknownString(forLogCustomActionName, 32);
-  const logNote = formatUnknownString(forLogNote, 500);
-
-  if (areAllDefined(databaseConnection, userId, dogId, logDate, logAction, logCustomActionName, logNote) === false) {
-    throw new ValidationError('databaseConnection, userId, dogId, logDate, logAction, logCustomActionName, or logNote missing', ERROR_CODES.VALUE.MISSING);
-  }
-
+async function createLogForUserIdDogId(databaseConnection: Queryable, userId: string, dogId: number, log: Partial<DogLogsRow>): Promise<number> {
   // only retrieve enough not deleted logs that would exceed the limit
-  const logs = await databaseQuery(
+  const logs = await databaseQuery<DogLogsRow[]>(
     databaseConnection,
-    `SELECT 1
+    `SELECT ${prefixDogLogsColumns}
     FROM dogLogs dl
     WHERE logIsDeleted = 0 AND dogId = ?
     LIMIT ?`,
@@ -28,15 +20,26 @@ async function createLogForUserIdDogId(databaseConnection, userId, dogId, forLog
 
   // make sure that the user isn't creating too many logs
   if (logs.length >= LIMIT.NUMBER_OF_LOGS_PER_DOG) {
-    throw new ValidationError(`Dog log limit of ${LIMIT.NUMBER_OF_LOGS_PER_DOG} exceeded`, ERROR_CODES.FAMILY.LIMIT.LOG_TOO_LOW);
+    throw new HoundError(`Dog log limit of ${LIMIT.NUMBER_OF_LOGS_PER_DOG} exceeded`, 'createLogForUserIdDogId', ERROR_CODES.FAMILY.LIMIT.LOG_TOO_LOW);
   }
 
-  const result = await databaseQuery(
+  const result = await databaseQuery<ResultSetHeader>(
     databaseConnection,
     `INSERT INTO dogLogs
-    (userId, dogId, logDate, logNote, logAction, logCustomActionName, logLastModified)
-    VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP())`,
-    [userId, dogId, logDate, logNote, logAction, logCustomActionName],
+    (
+      dogId, userId,
+      logDate, logNote, logAction, logCustomActionName,
+      logLastModified, logIsDeleted
+      )
+    VALUES (
+      ?, ?, 
+      ?, ?, ?, ?,
+      CURRENT_TIMESTAMP(), 0
+      )`,
+    [
+      dogId, userId,
+      log.logDate, log.logNote, log.logAction, log.logCustomActionName,
+    ],
   );
 
   return result.insertId;

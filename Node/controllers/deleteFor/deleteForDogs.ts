@@ -1,5 +1,5 @@
 import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
-import { DogsRow, dogsColumnsWithDPrefix } from '../../main/types/DogsRow';
+import { DogsRow, prefixDogsColumns } from '../../main/types/DogsRow';
 
 import { deleteAllLogsForDogId } from './deleteForLogs';
 import { deleteAllRemindersForFamilyIdDogId } from './deleteForReminders';
@@ -27,7 +27,7 @@ async function deleteDogForFamilyIdDogId(databaseConnection: Queryable, familyId
 async function deleteAllDogsForFamilyId(databaseConnection: Queryable, familyId: string): Promise<void> {
   const dogs = await databaseQuery<DogsRow[]>(
     databaseConnection,
-    `SELECT ${dogsColumnsWithDPrefix}
+    `SELECT ${prefixDogsColumns}
     FROM dogs d
     WHERE dogIsDeleted = 0 AND familyId = ?
     LIMIT 18446744073709551615`,

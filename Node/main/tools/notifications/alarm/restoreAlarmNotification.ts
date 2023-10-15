@@ -4,8 +4,8 @@ import { createAlarmNotificationForFamily } from './createAlarmNotification';
 import { logServerError } from '../../../logging/logServerError';
 import { databaseConnectionForAlarms } from '../../../database/createDatabaseConnections';
 import { databaseQuery } from '../../../database/databaseQuery';
-import { DogsRow, dogsColumnsWithDPrefix } from '../../../types/DogsRow';
-import { DogRemindersRow, dogRemindersColumnsWithDRPrefix } from '../../../types/DogRemindersRow';
+import { DogsRow, prefixDogsColumns } from '../../../types/DogsRow';
+import { DogRemindersRow, prefixDogRemindersColumns } from '../../../types/DogRemindersRow';
 
 /**
  * Assumes an empty schedule
@@ -24,7 +24,7 @@ async function restoreAlarmNotificationsForAllFamilies(): Promise<void> {
     const remindersWithInfo = await databaseQuery<(
 DogsRow & DogRemindersRow)[]>(
       databaseConnectionForAlarms,
-      `SELECT ${dogsColumnsWithDPrefix}, ${dogRemindersColumnsWithDRPrefix}
+      `SELECT ${prefixDogsColumns}, ${prefixDogRemindersColumns}
       FROM dogReminders dr
       JOIN dogs d ON d.dogId = dr.dogId
       WHERE d.dogIsDeleted = 0

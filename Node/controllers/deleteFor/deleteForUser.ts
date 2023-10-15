@@ -1,7 +1,7 @@
 import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
 
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
-import { previousUsersColumnsWithoutPrefix } from '../../main/types/PreviousUsersRow';
+import { noPrefixPreviousUsersColumns } from '../../main/types/PreviousUsersRow';
 
 import { getFamilyId } from '../getFor/getForFamily';
 
@@ -33,7 +33,7 @@ async function deleteUserForUserId(databaseConnection: Queryable, userId: string
   await databaseQuery(
     databaseConnection,
     `INSERT INTO previousUsers
-    (${previousUsersColumnsWithoutPrefix})
+    (${foo})
     SELECT userId, userIdentifier, userAppAccountToken, userEmail, userFirstName, userLastName, userNotificationToken, userAccountCreationDate, CURRENT_TIMESTAMP()
     FROM users u
     WHERE userId = ?`,

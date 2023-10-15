@@ -1,23 +1,18 @@
-const { databaseQuery } from '../../main/database/databaseQuery';
-const {
-  formatNumber, formatDate, formatBoolean, formatArray, formatUnknownString,
-} from ''../../main/tools/format/formatObject';
-const { areAllDefined } from '../../main/tools/validate/validateDefined';
-const { ValidationError } from '../../main/server/globalErrors';
+import { DogRemindersRow, prefixDogRemindersColumns, noPrefixDogRemindersColumnsWithNoReminderId } from '../../main/types/DogRemindersRow';
+
+import { Queryable, ResultSetHeader, databaseQuery } from '../../main/database/databaseQuery';
+import { LIMIT } from '../../main/server/globalConstants';
+import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
 
 /**
  *  Queries the database to create a single reminder. If the query is successful, then returns the reminder with created reminderId added to it.
  *  If a problem is encountered, creates and throws custom error
  */
-async function createReminderForDogIdReminder(databaseConnection, dogId, reminder) {
-  if (areAllDefined(databaseConnection, dogId, reminder) === false) {
-    throw new ValidationError('databaseConnection, dogId, or reminder missing', ERROR_CODES.VALUE.MISSING);
-  }
-
+async function createReminderForDogIdReminder(databaseConnection: Queryable, dogId: number, reminder: Partial<DogRemindersRow>): Promise<number> {
   // only retrieve enough not deleted reminders that would exceed the limit
-  const reminders = await databaseQuery(
+  const reminders = await databaseQuery<DogRemindersRow[]>(
     databaseConnection,
-    `SELECT 1
+    `SELECT ${prefixDogRemindersColumns}
     FROM dogReminders dr
     WHERE reminderIsDeleted = 0 AND dogId = ?
     LIMIT ?`,
@@ -26,119 +21,124 @@ async function createReminderForDogIdReminder(databaseConnection, dogId, reminde
 
   // make sure that the user isn't creating too many reminders
   if (reminders.length >= LIMIT.NUMBER_OF_REMINDERS_PER_DOG) {
-    throw new ValidationError(`Dog reminder limit of ${LIMIT.NUMBER_OF_REMINDERS_PER_DOG} exceeded`, ERROR_CODES.FAMILY.LIMIT.REMINDER_TOO_LOW);
+    throw new HoundError(`Dog reminder limit of ${LIMIT.NUMBER_OF_REMINDERS_PER_DOG} exceeded`, 'createReminderForDogIdReminder', ERROR_CODES.FAMILY.LIMIT.REMINDER_TOO_LOW);
   }
 
-  // general reminder components
-  const { reminderAction, reminderType } = reminder; // required
-  const reminderCustomActionName = formatUnknownString(reminder.reminderCustomActionName, 32); // required
-  const reminderIsEnabled = formatBoolean(reminder.reminderIsEnabled); // required
-  const reminderExecutionBasis = formatDate(reminder.reminderExecutionBasis); // required
-  const reminderExecutionDate = formatDate(reminder.reminderExecutionDate); // optional
+  const {
+    reminderAction, reminderCustomActionName, reminderType, reminderIsEnabled, reminderExecutionBasis, reminderExecutionDate,
+    countdownExecutionInterval,
+    weeklyUTCHour, weeklyUTCMinute, weeklySunday, weeklyMonday, weeklyTuesday, weeklyWednesday, weeklyThursday, weeklyFriday, weeklySaturday,
+    monthlyUTCDay, monthlyUTCHour, monthlyUTCMinute,
+    oneTimeDate,
+  } = reminder;
 
-  // countdown components
-  const countdownExecutionInterval = formatNumber(reminder.countdownExecutionInterval); // required
+  if (reminderAction === undefined) {
+    throw new HoundError('reminderAction missing', 'createReminderForDogIdReminder', ERROR_CODES.VALUE.MISSING);
+  }
+  if (reminderCustomActionName === undefined) {
+    throw new HoundError('reminderCustomActionName missing', 'createReminderForDogIdReminder', ERROR_CODES.VALUE.MISSING);
+  }
+  if (reminderType === undefined) {
+    throw new HoundError('reminderType missing', 'createReminderForDogIdReminder', ERROR_CODES.VALUE.MISSING);
+  }
+  if (reminderIsEnabled === undefined) {
+    throw new HoundError('reminderIsEnabled missing', 'createReminderForDogIdReminder', ERROR_CODES.VALUE.MISSING);
+  }
+  // reminderExecutionDate optional
+  if (reminderExecutionBasis === undefined) {
+    throw new HoundError('reminderExecutionBasis missing', 'createReminderForDogIdReminder', ERROR_CODES.VALUE.MISSING);
+  }
+  // snoozeExecutionInterval optional
+  if (countdownExecutionInterval === undefined) {
+    throw new HoundError('countdownExecutionInterval missing', 'createReminderForDogIdReminder', ERROR_CODES.VALUE.MISSING);
+  }
+  if (weeklyUTCHour === undefined) {
+    throw new HoundError('weeklyUTCHour missing', 'createReminderForDogIdReminder', ERROR_CODES.VALUE.MISSING);
+  }
+  if (weeklyUTCMinute === undefined) {
+    throw new HoundError('weeklyUTCMinute missing', 'createReminderForDogIdReminder', ERROR_CODES.VALUE.MISSING);
+  }
+  if (weeklySunday === undefined) {
+    throw new HoundError('weeklySunday missing', 'createReminderForDogIdReminder', ERROR_CODES.VALUE.MISSING);
+  }
+  if (weeklyMonday === undefined) {
+    throw new HoundError('weeklyMonday missing', 'createReminderForDogIdReminder', ERROR_CODES.VALUE.MISSING);
+  }
+  if (weeklyTuesday === undefined) {
+    throw new HoundError('weeklyTuesday missing', 'createReminderForDogIdReminder', ERROR_CODES.VALUE.MISSING);
+  }
+  if (weeklyWednesday === undefined) {
+    throw new HoundError('weeklyWednesday missing', 'createReminderForDogIdReminder', ERROR_CODES.VALUE.MISSING);
+  }
+  if (weeklyThursday === undefined) {
+    throw new HoundError('weeklyThursday missing', 'createReminderForDogIdReminder', ERROR_CODES.VALUE.MISSING);
+  }
+  if (weeklyFriday === undefined) {
+    throw new HoundError('weeklyFriday missing', 'createReminderForDogIdReminder', ERROR_CODES.VALUE.MISSING);
+  }
+  if (weeklySaturday === undefined) {
+    throw new HoundError('weeklySaturday missing', 'createReminderForDogIdReminder', ERROR_CODES.VALUE.MISSING);
+  }
+  // weeklySkippedDate optional
+  if (monthlyUTCDay === undefined) {
+    throw new HoundError('monthlyUTCDay missing', 'createReminderForDogIdReminder', ERROR_CODES.VALUE.MISSING);
+  }
+  if (monthlyUTCHour === undefined) {
+    throw new HoundError('monthlyUTCHour missing', 'createReminderForDogIdReminder', ERROR_CODES.VALUE.MISSING);
+  }
+  if (monthlyUTCMinute === undefined) {
+    throw new HoundError('monthlyUTCMinute missing', 'createReminderForDogIdReminder', ERROR_CODES.VALUE.MISSING);
+  }
+  // monthlySkippedDate optional
+  if (oneTimeDate === undefined) {
+    throw new HoundError('oneTimeDate missing', 'createReminderForDogIdReminder', ERROR_CODES.VALUE.MISSING);
+  }
 
-  // weekly components
-  const weeklyUTCHour = formatNumber(reminder.weeklyUTCHour); // required
-  const weeklyUTCMinute = formatNumber(reminder.weeklyUTCMinute); // required
-  const weeklySunday = formatBoolean(reminder.weeklySunday); // required
-  const weeklyMonday = formatBoolean(reminder.weeklyMonday); // required
-  const weeklyTuesday = formatBoolean(reminder.weeklyTuesday); // required
-  const weeklyWednesday = formatBoolean(reminder.weeklyWednesday); // required
-  const weeklyThursday = formatBoolean(reminder.weeklyThursday); // required
-  const weeklyFriday = formatBoolean(reminder.weeklyFriday); // required
-  const weeklySaturday = formatBoolean(reminder.weeklySaturday); // required
-
-  // monthly components
-  const monthlyUTCHour = formatNumber(reminder.monthlyUTCHour); // required
-  const monthlyUTCMinute = formatNumber(reminder.monthlyUTCMinute); // required
-  const monthlyUTCDay = formatNumber(reminder.monthlyUTCDay); // required
-
-  // one time components
-  const oneTimeDate = formatDate(reminder.oneTimeDate); // required
-
-  // check to see that necessary generic reminder components are present
-  if (areAllDefined(reminderAction, reminderCustomActionName, reminderType, reminderIsEnabled, reminderExecutionBasis) === false) {
-    throw new ValidationError('reminderAction, reminderCustomActionName, reminderType, reminderIsEnabled, or reminderExecutionBasis missing', ERROR_CODES.VALUE.MISSING);
-  }
-  else if (reminderType !== 'countdown' && reminderType !== 'weekly' && reminderType !== 'monthly' && reminderType !== 'oneTime') {
-    throw new ValidationError('reminderType invalid', ERROR_CODES.VALUE.INVALID);
-  }
-  // no need to check snooze components as a newly created reminder can't be snoozed yet
-  else if (areAllDefined(countdownExecutionInterval) === false) {
-    throw new ValidationError('countdownExecutionInterval missing', ERROR_CODES.VALUE.MISSING);
-  }
-  // no need to check weeklySkippedDate validity as newly created reminder can't be skipped yet
-  else if (areAllDefined(weeklyUTCHour, weeklyUTCMinute, weeklySunday, weeklyMonday, weeklyTuesday, weeklyWednesday, weeklyThursday, weeklyFriday, weeklySaturday) === false) {
-    throw new ValidationError(`weeklyUTCHour
-weeklyUTCMinute
-weeklySunday
-weeklyMonday
-weeklyTuesday
-weeklyWednesday
-weeklyThursday
-weeklyFriday
-or weeklySaturday missing`, ERROR_CODES.VALUE.MISSING);
-  }
-  // no need to check monthlySkippedDate validity as newly created reminder can't be skipped yet
-  else if (areAllDefined(monthlyUTCDay, monthlyUTCHour, monthlyUTCMinute) === false) {
-    throw new ValidationError('monthlyUTCDay, monthlyUTCHour, or monthlyUTCMinute missing', ERROR_CODES.VALUE.MISSING);
-  }
-  else if (areAllDefined(oneTimeDate) === false) {
-    throw new ValidationError('oneTimeDate missing', ERROR_CODES.VALUE.MISSING);
-  }
-
-  const result = await databaseQuery(
+  const result = await databaseQuery<ResultSetHeader>(
     databaseConnection,
     `INSERT INTO dogReminders(
-      dogId, reminderAction, reminderCustomActionName, reminderType, reminderIsEnabled, reminderExecutionBasis, reminderExecutionDate,
-      reminderLastModified,
-      snoozeExecutionInterval, countdownExecutionInterval, 
-      weeklyUTCHour, weeklyUTCMinute, weeklySunday, weeklyMonday, weeklyTuesday, weeklyWednesday, weeklyThursday, weeklyFriday, weeklySaturday, weeklySkippedDate,
-      monthlyUTCDay, monthlyUTCHour, monthlyUTCMinute, monthlySkippedDate, oneTimeDate)
+      ${foo}
+      )
     VALUES (
       ?, ?, ?, ?, ?, ?, ?,
-      CURRENT_TIMESTAMP(),
-      ?, ?,
+      CURRENT_TIMESTAMP(), 0,
+      ?,
+      ?,
       ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-      ?, ?, ?, ?, ?)`,
+      ?, ?, ?, ?,
+      ?)`,
     [
       dogId, reminderAction, reminderCustomActionName, reminderType, reminderIsEnabled, reminderExecutionBasis, reminderExecutionDate,
-      null,
+      undefined,
       countdownExecutionInterval,
-      weeklyUTCHour, weeklyUTCMinute, weeklySunday, weeklyMonday, weeklyTuesday, weeklyWednesday, weeklyThursday, weeklyFriday, weeklySaturday, null,
-      monthlyUTCDay, monthlyUTCHour, monthlyUTCMinute, null,
+      weeklyUTCHour, weeklyUTCMinute, weeklySunday, weeklyMonday, weeklyTuesday, weeklyWednesday, weeklyThursday, weeklyFriday, weeklySaturday, undefined,
+      monthlyUTCDay, monthlyUTCHour, monthlyUTCMinute, undefined,
       oneTimeDate,
     ],
   );
 
-  // ...reminder must come first otherwise its placeholder reminderId will override the real one
-  // was able to successfully create reminder, return the provided reminder with its added to the body
-  return {
-    ...reminder,
-    reminderId: result.insertId,
-  };
+  return result.insertId;
 }
 
 /**
    * Queries the database to create a multiple reminders. If the query is successful, then returns the reminders with their created reminderIds added to them.
  *  If a problem is encountered, creates and throws custom error
    */
-async function createRemindersForDogIdReminders(databaseConnection, dogId, forReminders) {
-  const reminders = formatArray(forReminders); // required
-  if (areAllDefined(databaseConnection, dogId, reminders) === false) {
-    throw new ValidationError('databaseConnection, dogId, or reminders missing', ERROR_CODES.VALUE.MISSING);
-  }
-
-  let reminderPromises = [];
-  for (let i = 0; i < reminders.length; i += 1) {
+async function createRemindersForDogIdReminders(databaseConnection: Queryable, dogId: number, forReminders: Partial<DogRemindersRow>[]): Promise<Partial<DogRemindersRow>[]> {
+  let promises = [];
+  for (let i = 0; i < forReminders.length; i += 1) {
     // retrieve the original provided body AND the created id
-    reminderPromises.push(createReminderForDogIdReminder(databaseConnection, dogId, reminders[i]));
+    promises.push(createReminderForDogIdReminder(databaseConnection, dogId, forReminders[i]));
   }
-  reminderPromises = await Promise.all(reminderPromises);
+  promises = await Promise.all(promises);
 
-  return reminderPromises;
+  const reminders = forReminders;
+  for (let i = 0; i < promises.length; i += 1) {
+    // We got the newly created reminderId back from inserting each reminder, add it back to the original reminder body
+    reminders[i].reminderId = promises[i];
+  }
+
+  return reminders;
 }
 
 export { createReminderForDogIdReminder, createRemindersForDogIdReminders };

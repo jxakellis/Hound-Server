@@ -1,12 +1,12 @@
-import { databaseQuery } from '../../main/database/databaseQuery';
-import {
-  formatDate, formatNumber, formatUnknownString, formatBoolean,
-} from '../../main/format/formatObject';
-import { ValidationError } from '../../main/server/globalErrors';
+import { JWSRenewalInfoDecodedPayload, JWSTransactionDecodedPayload } from 'app-store-server-api';
+import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
 
 import { extractTransactionIdFromAppStoreReceiptURL } from '../../main/tools/appStoreConnectAPI/extractTransactionId';
 import { queryAllSubscriptionsForTransactionId } from '../../main/tools/appStoreConnectAPI/queryTransactions';
+import { TransactionsRow, noPrefixTransactionsColumns, prefixTransactionsColumns } from '../../main/types/TransactionsRow';
 import { getFamilyHeadUserId } from '../getFor/getForFamily';
+import { SERVER, SUBSCRIPTION } from '../../main/server/globalConstants';
+import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
 
 /**
  * TODO NOW update documentation. incorrect
@@ -33,120 +33,60 @@ import { getFamilyHeadUserId } from '../getFor/getForFamily';
  * @param {*} forWebOrderLineItemId
  */
 async function createUpdateTransaction(
-  databaseConnection,
-  userId,
-  forAutoRenewProductId,
-  forAutoRenewStatus,
-  forEnvironment,
-  forExpiresDate,
-  forInAppOwnershipType,
-  forTransactionId,
-  forOfferIdentifier,
-  forOfferType,
-  forOriginalTransactionId,
-  forProductId,
-  forPurchaseDate,
-  forQuantity,
-  forRevocationReason,
-  forSubscriptionGroupIdentifier,
-  forTransactionReason,
-  forWebOrderLineItemId,
+  databaseConnection: Queryable,
+  userId: string,
+  renewalInfo: JWSRenewalInfoDecodedPayload,
+  transactionInfo: JWSTransactionDecodedPayload,
 ) {
   // userId
 
   // https://developer.apple.com/documentation/appstoreservernotifications/jwstransactiondecodedpayload
   // appAccountToken; A UUID that associates the transaction with a user on your own service. If your app doesn’t provide an appAccountToken, this string is empty. For more information, see appAccountToken(_:).
-  // The product identifier of the subscription that will renew when the current subscription expires. autoRenewProductId == productId when a subscription is created
-  const autoRenewProductId = formatUnknownString(forAutoRenewProductId, 60);
-  // The renewal status for an auto-renewable subscription.
-  const autoRenewStatus = formatBoolean(forAutoRenewStatus);
+  // autoRenewStatus; The product identifier of the subscription that will renew when the current subscription expires. autoRenewProductId == productId when a subscription is created
+  // autoRenewStatus; The renewal status for an auto-renewable subscription.
   // bundleId; The bundle identifier of the app.
-  // The server environment, either Sandbox or Production.
-  const environment = formatUnknownString(forEnvironment, 10);
-  // The UNIX time, in milliseconds, the subscription expires or renews.
-  const expiresDate = formatDate(formatNumber(forExpiresDate));
-  // A string that describes whether the transaction was purchased by the user, or is available to them through Family Sharing.
-  const inAppOwnershipType = formatUnknownString(forInAppOwnershipType, 13);
+  // environment; The server environment, either Sandbox or Production.
+  // expiresDate; The UNIX time, in milliseconds, the subscription expires or renews.
+  // inAppOwnershipType; A string that describes whether the transaction was purchased by the user, or is available to them through Family Sharing.
   // isUpgraded; A Boolean value that indicates whether the user upgraded to another subscription.
-  // The identifier that contains the offer code or the promotional offer identifier.
-  const offerIdentifier = formatUnknownString(forOfferIdentifier, 64);
-  // A value that represents the promotional offer type. The offer types 2 and 3 have an offerIdentifier.
-  const offerType = formatNumber(forOfferType);
+  // offerIdentifier; The identifier that contains the offer code or the promotional offer identifier.
+  // offerType; A value that represents the promotional offer type. The offer types 2 and 3 have an offerIdentifier.
   // originalPurchaseDate; The UNIX time, in milliseconds, that represents the purchase date of the original transaction identifier.
-  // The transaction identifier of the original purchase.
-  const originalTransactionId = formatNumber(forOriginalTransactionId);
-  // The product identifier of the in-app purchase.
-  const productId = formatUnknownString(forProductId, 60);
-  // The UNIX time, in milliseconds, that the App Store charged the user’s account for a purchase, restored product, subscription, or subscription renewal after a lapse.
-  const purchaseDate = formatDate(formatNumber(forPurchaseDate));
-  // The number of consumable products the user purchased.
-  const quantity = formatNumber(forQuantity);
+  // originalTransactionId; The transaction identifier of the original purchase.
+  // productId; The product identifier of the in-app purchase.
+  // purchaseDate; The UNIX time, in milliseconds, that the App Store charged the user’s account for a purchase, restored product, subscription, or subscription renewal after a lapse.
+  // quantity; The number of consumable products the user purchased.
   // revocationDate; The UNIX time, in milliseconds, that the App Store refunded the transaction or revoked it from Family Sharing.
-  // The reason that the App Store refunded the transaction or revoked it from Family Sharing.
-  const revocationReason = formatNumber(forRevocationReason);
+  // revocationReason; The reason that the App Store refunded the transaction or revoked it from Family Sharing.
   // signedDate; The UNIX time, in milliseconds, that the App Store signed the JSON Web Signature (JWS) data.
   // storefront; The three-letter code that represents the country or region associated with the App Store storefront for the purchase.
   // storefrontId; An Apple-defined value that uniquely identifies the App Store storefront associated with the purchase.
   // The identifier of the subscription group the subscription belongs to.
-  const subscriptionGroupIdentifier = formatNumber(forSubscriptionGroupIdentifier);
   // The unique identifier of the transaction.
-  const transactionId = formatNumber(forTransactionId);
   // The reason for the purchase transaction, which indicates whether it’s a customer’s purchase or a renewal for an auto-renewable subscription that the system initiates.
-  const transactionReason = formatUnknownString(forTransactionReason, 8);
   // type; The type of the in-app purchase.
   // The unique identifier of subscription purchase events across devices, including subscription renewals.
-  const webOrderLineItemId = formatNumber(forWebOrderLineItemId);
 
-  if (areAllDefined(
-    databaseConnection,
-    userId,
-    // autoRenewProductId is optionally defined
-    // autoRenewStatus is optionally defined
-    environment,
-    expiresDate,
-    inAppOwnershipType,
-    // offerIdentifier is optionally defined
-    // offerType is optionally defined
-    originalTransactionId,
-    productId,
-    purchaseDate,
-    quantity,
-    // revocationReason is optionally defined
-    subscriptionGroupIdentifier,
-    transactionId,
-    transactionReason,
-    webOrderLineItemId,
-  ) === false) {
-    throw new ValidationError(`databaseConnection, userId, 
-    autoRenewProductId, autoRenewStatus, environment, expiresDate, inAppOwnershipType, originalTransactionId, 
-    productId, purchaseDate, quantity, subscriptionGroupIdentifier, 
-    transactionId, transactionReason, or webOrderLineItemId is missing`, ERROR_CODES.VALUE.MISSING);
+  if (transactionInfo.environment !== SERVER.ENVIRONMENT) {
+    throw new HoundError(`environment must be '${SERVER.ENVIRONMENT}', not '${transactionInfo.environment}'`, 'createUpdateTransaction', ERROR_CODES.VALUE.INVALID);
   }
 
-  if (environment !== SERVER.ENVIRONMENT) {
-    throw new ValidationError(`environment must be '${SERVER.ENVIRONMENT}', not '${environment}'`, ERROR_CODES.VALUE.INVALID);
+  if (transactionInfo.inAppOwnershipType !== 'PURCHASED') {
+    throw new HoundError(`inAppOwnershipType must be 'PURCHASED', not '${transactionInfo.inAppOwnershipType}'`, 'createUpdateTransaction', ERROR_CODES.VALUE.INVALID);
   }
 
-  if (inAppOwnershipType !== 'PURCHASED') {
-    throw new ValidationError(`inAppOwnershipType must be 'PURCHASED', not '${inAppOwnershipType}'`, ERROR_CODES.VALUE.INVALID);
-  }
+  const correspondingProduct = SUBSCRIPTION.SUBSCRIPTIONS.find((subscription) => subscription.productId === transactionInfo.productId);
 
-  const correspondingProduct = SUBSCRIPTION.SUBSCRIPTIONS.find((subscription) => subscription.productId === productId);
-
-  if (areAllDefined(correspondingProduct) === false) {
-    throw new ValidationError('correspondingProduct missing', ERROR_CODES.VALUE.MISSING);
+  if (correspondingProduct === undefined) {
+    throw new HoundError('correspondingProduct missing', 'createUpdateTransaction', ERROR_CODES.VALUE.MISSING);
   }
 
   const { numberOfFamilyMembers, numberOfDogs } = correspondingProduct;
 
-  if (areAllDefined(numberOfFamilyMembers, numberOfDogs) === false) {
-    throw new ValidationError('numberOfFamilyMembers or numberOfDogs missing', ERROR_CODES.VALUE.MISSING);
-  }
-
   const familyHeadUserId = await getFamilyHeadUserId(databaseConnection, userId);
 
   if (familyHeadUserId !== userId) {
-    throw new ValidationError('You are not the family head. Only the family head can modify the family subscription', ERROR_CODES.PERMISSION.INVALID.FAMILY);
+    throw new HoundError('You are not the family head. Only the family head can modify the family subscription', 'createUpdateTransaction', ERROR_CODES.PERMISSION.INVALID.FAMILY);
   }
 
   // We attempt to insert the transaction.

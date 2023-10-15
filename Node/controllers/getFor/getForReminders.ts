@@ -1,5 +1,5 @@
 import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
-import { DogRemindersRow, dogRemindersColumnsWithDRPrefix } from '../../main/types/DogRemindersRow';
+import { DogRemindersRow, prefixDogRemindersColumns } from '../../main/types/DogRemindersRow';
 
 /**
  *  If the query is successful, returns the reminder for the reminderId.
@@ -9,7 +9,7 @@ async function getReminderForReminderId(databaseConnection: Queryable, reminderI
   const result = userConfigurationPreviousDogManagerSynchronization !== undefined
     ? await databaseQuery<DogRemindersRow[]>(
       databaseConnection,
-      `SELECT ${dogRemindersColumnsWithDRPrefix}
+      `SELECT ${prefixDogRemindersColumns}
       FROM dogReminders dr
       WHERE TIMESTAMPDIFF(MICROSECOND, reminderLastModified, ?) <= 0 AND reminderId = ?
       LIMIT 1`,
@@ -17,7 +17,7 @@ async function getReminderForReminderId(databaseConnection: Queryable, reminderI
     )
     : await databaseQuery<DogRemindersRow[]>(
       databaseConnection,
-      `SELECT ${dogRemindersColumnsWithDRPrefix}
+      `SELECT ${prefixDogRemindersColumns}
       FROM dogReminders dr
       WHERE reminderId = ?
       LIMIT 1`,
@@ -35,7 +35,7 @@ async function getAllRemindersForDogId(databaseConnection: Queryable, dogId: num
   const result = userConfigurationPreviousDogManagerSynchronization !== undefined
     ? await databaseQuery<DogRemindersRow[]>(
       databaseConnection,
-      `SELECT ${dogRemindersColumnsWithDRPrefix}
+      `SELECT ${prefixDogRemindersColumns}
       FROM dogReminders dr
       WHERE TIMESTAMPDIFF(MICROSECOND, reminderLastModified, ?) <= 0 AND dogId = ?
       LIMIT 18446744073709551615`,
@@ -43,7 +43,7 @@ async function getAllRemindersForDogId(databaseConnection: Queryable, dogId: num
     )
     : await databaseQuery<DogRemindersRow[]>(
       databaseConnection,
-      `SELECT ${dogRemindersColumnsWithDRPrefix}
+      `SELECT ${prefixDogRemindersColumns}
       FROM dogReminders dr
       WHERE dogId = ?
       LIMIT 18446744073709551615`,
