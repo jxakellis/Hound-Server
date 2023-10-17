@@ -24,7 +24,14 @@ async function commitTransaction(req: express.Request): Promise<void> {
     }
     catch (commitError) {
       // COMMIT failed, attempt to rollback
-      logServerError('commitTransaction COMMIT', commitError);
+      logServerError(
+        new HoundError(
+          'COMMIT failed, attempting to rollback',
+          'commitTransaction',
+          undefined,
+          commitError,
+        ),
+      );
       try {
         await databaseQuery(req.extendedProperties.databaseConnection, 'ROLLBACK');
         req.extendedProperties.hasActiveDatabaseTransaction = false;
@@ -32,7 +39,14 @@ async function commitTransaction(req: express.Request): Promise<void> {
       }
       catch (rollbackError) {
         // Backup ROLLBACK failed, skip COMMIT and ROLLBACK since both failed
-        logServerError('commitTransaction ROLLBACK', rollbackError);
+        logServerError(
+          new HoundError(
+            'ROLLBACK failed',
+            'commitTransaction',
+            undefined,
+            rollbackError,
+          ),
+        );
       }
     }
   }
@@ -48,7 +62,14 @@ async function rollbackTransaction(req: express.Request): Promise<void> {
     }
     catch (rollbackError) {
       // ROLLBACK failed, continue as there is nothing we can do
-      logServerError('rollbackTransaction ROLLBACK', rollbackError);
+      logServerError(
+        new HoundError(
+          'ROLLBACK failed',
+          'rollbackTransaction',
+          undefined,
+          rollbackError,
+        ),
+      );
     }
   }
 

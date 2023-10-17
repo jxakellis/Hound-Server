@@ -3,10 +3,10 @@ import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
 
 import { extractTransactionIdFromAppStoreReceiptURL } from '../../main/tools/appStoreConnectAPI/extractTransactionId';
 import { queryAllSubscriptionsForTransactionId } from '../../main/tools/appStoreConnectAPI/queryTransactions';
-import { TransactionsRow, transactionsColumns } from '../../main/types/TransactionsRow';
 import { getFamilyHeadUserId } from '../getFor/getForFamily';
 import { SERVER, SUBSCRIPTION } from '../../main/server/globalConstants';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
+import { logServerError } from '../../main/logging/logServerError';
 
 /**
  * TODO NOW update documentation. incorrect
@@ -35,7 +35,7 @@ import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
 async function createUpdateTransaction(
   databaseConnection: Queryable,
   userId: string,
-  renewalInfo: JWSRenewalInfoDecodedPayload,
+  renewalInfo: JWSRenewalInfoDecodedPayload | undefined,
   transactionInfo: JWSTransactionDecodedPayload,
 ) {
   // userId
@@ -121,11 +121,15 @@ async function createUpdateTransaction(
     [
       userId,
       numberOfFamilyMembers, numberOfDogs,
-      renewalInfo.autoRenewProductId, renewalInfo.autoRenewStatus,
+      // We null-coaless the values here in the case they don't exist
+      renewalInfo?.autoRenewProductId ?? transactionInfo.productId, renewalInfo?.autoRenewStatus ?? 1,
       transactionInfo.environment, transactionInfo.expiresDate, transactionInfo.inAppOwnershipType,
       transactionInfo.offerIdentifier, transactionInfo.offerType, transactionInfo.originalTransactionId, transactionInfo.productId,
       transactionInfo.purchaseDate, transactionInfo.quantity, transactionInfo.revocationReason, transactionInfo.subscriptionGroupIdentifier,
       transactionInfo.transactionId, transactionInfo.transactionReason, transactionInfo.webOrderLineItemId,
+      // We pass through the true, non null-coalessed, values here for the UPDATE statement
+      renewalInfo?.autoRenewProductId,
+      renewalInfo?.autoRenewStatus,
     ],
   );
 
@@ -157,21 +161,17 @@ async function createUpdateTransaction(
   );
 }
 
-async function createTransactionForAppStoreReceiptURL(databaseConnection, userId, appStoreReceiptURL) {
-  if (areAllDefined(databaseConnection, userId, appStoreReceiptURL) === false) {
-    throw new ValidationError('databaseConnection, userId, or appStoreReceiptURL missing', ERROR_CODES.VALUE.MISSING);
+async function createTransactionForAppStoreReceiptURL(databaseConnection: Queryable, userId: string, appStoreReceiptURL: string) {
+  const transactionId = extractTransactionIdFromAppStoreReceiptURL(appStoreReceiptURL);
+
+  if (transactionId === undefined) {
+    throw new HoundError('transactionId couldn\'t be constructed with extractTransactionIdFromAppStoreReceiptURL', 'createTransactionForAppStoreReceiptURL', ERROR_CODES.VALUE.INVALID);
   }
 
-  const transactionId = formatNumber(extractTransactionIdFromAppStoreReceiptURL(appStoreReceiptURL));
+  const subscriptions = await queryAllSubscriptionsForTransactionId(transactionId.toString());
 
-  if (areAllDefined(transactionId) === false) {
-    throw new ValidationError('transactionId couldn\'t be constructed with extractTransactionIdFromAppStoreReceiptURL', ERROR_CODES.VALUE.INVALID);
-  }
-
-  const subscriptions = await queryAllSubscriptionsForTransactionId(transactionId);
-
-  if (areAllDefined(subscriptions) === false || subscriptions.length === 0) {
-    throw new ValidationError('subscriptions couldn\'t be queried with querySubscriptionStatusesFromAppStoreAPI', ERROR_CODES.VALUE.INVALID);
+  if (subscriptions.length === 0) {
+    throw new HoundError('subscriptions couldn\'t be queried with querySubscriptionStatusesFromAppStoreAPI', 'createTransactionForAppStoreReceiptURL', ERROR_CODES.VALUE.INVALID);
   }
 
   // Create an array of Promises
@@ -182,7 +182,14 @@ async function createTransactionForAppStoreReceiptURL(databaseConnection, userId
     subscription.transactionInfo,
   ).catch((error) => {
     // Log or handle the error here, it won't propagate further
-    console.error(`Failed to create transaction for transactionId ${subscription.transactionId}:`, error);
+    logServerError(
+      new HoundError(
+        `Failed to create transaction for transactionId ${subscription.transactionInfo.transactionId}`,
+        'createTransactionForAppStoreReceiptURL',
+        undefined,
+        error,
+      ),
+    );
     return null;
   }));
 

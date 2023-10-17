@@ -3,6 +3,7 @@
 // https://github.com/apple/app-store-server-library-node/blob/main/receipt_utility.ts
 
 import { ASN1HEX } from 'jsrsasign';
+import { formatNumber } from '../../format/formatObject';
 
 const IN_APP_TYPE_ID = 17;
 const TRANSACTION_IDENTIFIER_TYPE_ID = 1703;
@@ -14,7 +15,7 @@ const ORIGINAL_TRANSACTION_IDENTIFIER_TYPE_ID = 1705;
      * @param appReceipt The unmodified app receipt
      * @returns A transaction id from the array of in-app purchases, null if the receipt contains no in-app purchases
      */
-function extractTransactionIdFromAppStoreReceiptURL(appStoreReceiptURL: string): string | undefined {
+function extractTransactionIdFromAppStoreReceiptURL(appStoreReceiptURL: string): number | undefined {
   // Decoding the receipt from base64 to a hex string.
   const receiptInfo = ASN1HEX.getVbyList(Buffer.from(appStoreReceiptURL, 'base64').toString('hex'), 0, [1, 0, 2, 1, 0]);
 
@@ -58,7 +59,7 @@ function extractTransactionIdFromAppStoreReceiptURL(appStoreReceiptURL: string):
             return undefined;
           }
           // Convert the hex-encoded transaction ID to a string and return it.
-          return Buffer.from(transactionId, 'hex').toString();
+          return formatNumber(Buffer.from(transactionId, 'hex').toString());
         }
         inAppIndex += 1;
       }

@@ -20,9 +20,11 @@ function parseFormData(req: express.Request, res: express.Response, next: expres
     limit: '4mb',
   })(req, res, (error) => {
     if (error !== undefined) {
-      logServerError('parseFormData', error);
-      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('Unable to parse form data', 'parseFormData', ERROR_CODES.GENERAL.PARSE_FORM_DATA_FAILED, error));
+      const houndError = new HoundError('Unable to parse form data', 'parseFormData', ERROR_CODES.GENERAL.PARSE_FORM_DATA_FAILED, error);
+      logServerError(houndError);
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, houndError);
     }
+
     return next();
   });
 }
@@ -32,8 +34,9 @@ function parseJSON(req: express.Request, res: express.Response, next: express.Ne
     limit: '4mb',
   })(req, res, (error) => {
     if (error !== undefined) {
-      logServerError('parseJSON', error);
-      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('Unable to parse json', 'parseJSON', ERROR_CODES.GENERAL.PARSE_JSON_FAILED, error));
+      const houndError = new HoundError('Unable to parse json', 'parseJSON', ERROR_CODES.GENERAL.PARSE_JSON_FAILED, error);
+      logServerError(houndError);
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, houndError);
     }
 
     return next();

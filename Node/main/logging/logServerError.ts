@@ -3,8 +3,7 @@ import { databaseConnectionForLogging } from '../database/createDatabaseConnecti
 import { databaseQuery } from '../database/databaseQuery';
 import { HoundError, convertErrorToJSON } from '../server/globalErrors';
 
-function printServerError(forFunction: string, forError: unknown): void {
-  const houndError = new HoundError(undefined, forFunction, undefined, forError);
+function printServerError(houndError: HoundError): void {
   const readableError = convertErrorToJSON(houndError);
 
   serverLogger.error(
@@ -16,11 +15,10 @@ function printServerError(forFunction: string, forError: unknown): void {
 }
 
 // Outputs response to the console and logs to database
-async function logServerError(forFunction: string, forError: unknown): Promise<void> {
-  const houndError = new HoundError(undefined, forFunction, undefined, forError);
+async function logServerError(houndError: HoundError): Promise<void> {
   const readableError = convertErrorToJSON(houndError);
 
-  printServerError(forFunction, forError);
+  printServerError(houndError);
 
   databaseQuery(
     databaseConnectionForLogging,

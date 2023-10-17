@@ -44,7 +44,14 @@ async function logRequest(req: express.Request, res: express.Response, next: exp
       req.extendedProperties.requestId = requestId;
     }
     catch (error) {
-      logServerError('logRequest', error);
+      logServerError(
+        new HoundError(
+          'Was not able to insert previousRequest',
+          'logRequest',
+          undefined,
+          error,
+        ),
+      );
     }
   }
 
@@ -70,7 +77,14 @@ async function addAppVersionToLogRequest(req: express.Request, res: express.Resp
     );
   }
   catch (error) {
-    logServerError('logRequest', error);
+    logServerError(
+      new HoundError(
+        'Was not able to update previousRequest with requestAppVersion',
+        'logRequest',
+        undefined,
+        error,
+      ),
+    );
   }
 
   return next();
@@ -95,7 +109,14 @@ async function addUserIdToLogRequest(req: express.Request, res: express.Response
     );
   }
   catch (error) {
-    logServerError('logRequest', error);
+    logServerError(
+      new HoundError(
+        'Was not able to update previousRequest with requestUserId',
+        'logRequest',
+        undefined,
+        error,
+      ),
+    );
   }
 
   return next();
@@ -120,7 +141,14 @@ async function addFamilyIdToLogRequest(req: express.Request, res: express.Respon
     );
   }
   catch (error) {
-    logServerError('logRequest', error);
+    logServerError(
+      new HoundError(
+        'Was not able to update previousRequest with requestFamilyId',
+        'logRequest',
+        undefined,
+        error,
+      ),
+    );
   }
 
   return next();

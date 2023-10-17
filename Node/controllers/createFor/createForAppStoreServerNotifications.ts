@@ -109,10 +109,8 @@ async function createASSNForSignedPayload(databaseConnection: Queryable, signedP
   await createUpdateTransaction(
     databaseConnection,
     userId,
-    {
-      ...renewalInfo,
-      ...transactionInfo,
-    }
+    renewalInfo,
+    transactionInfo,
   );
 }
 

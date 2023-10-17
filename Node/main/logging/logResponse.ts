@@ -4,6 +4,7 @@ import { logServerError } from './logServerError';
 import { databaseConnectionForLogging } from '../database/createDatabaseConnections';
 import { ResultSetHeader, databaseQuery } from '../database/databaseQuery';
 import { formatUnknownString } from '../format/formatObject';
+import { HoundError } from '../server/globalErrors';
 
 // Outputs response to the console and logs to database
 async function logResponse(req: express.Request, res: express.Response, responseStatus: number | undefined, forResponseBody: string | undefined): Promise<void> {
@@ -28,7 +29,14 @@ async function logResponse(req: express.Request, res: express.Response, response
     res.extendedProperties.responseId = result.insertId;
   }
   catch (error) {
-    logServerError('logResponse', error);
+    logServerError(
+      new HoundError(
+        'Was not able to insert previousResponse',
+        'logRequest',
+        undefined,
+        error,
+      ),
+    );
   }
 }
 
