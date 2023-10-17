@@ -1,7 +1,7 @@
 import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
 import { SUBSCRIPTION } from '../../main/server/globalConstants';
-import { TransactionsRow, prefixTransactionsColumns, noPrefixTransactionsColumns } from '../../main/types/TransactionsRow';
-import { PublicUsersRow, prefixPublicUsersColumns } from '../../main/types/UsersRow';
+import { TransactionsRow, transactionsColumns } from '../../main/types/TransactionsRow';
+import { PublicUsersRow, publicUsersColumns } from '../../main/types/UsersRow';
 
 import { getFamilyHeadUserId } from './getForFamily';
 
@@ -39,10 +39,10 @@ async function getActiveTransaction(databaseConnection: Queryable, familyMemberU
         FROM transactions t
         WHERE revocationReason IS NULL AND (TIMESTAMPDIFF(MICROSECOND, CURRENT_TIMESTAMP(), expiresDate) >= 0) AND userId = ?
     )
-    SELECT ${noPrefixTransactionsColumns}
-    FROM mostRecentlyPurchasedForEachProductId AS mrp
-    WHERE mrp.rowNumberByProductId = 1
-    ORDER BY mrp.productIdCorrespondingRank DESC
+    SELECT ${transactionsColumns}
+    FROM mostRecentlyPurchasedForEachProductId AS t
+    WHERE t.rowNumberByProductId = 1
+    ORDER BY t.productIdCorrespondingRank DESC
     LIMIT 1`,
     [familyHeadUserId],
   );
@@ -73,7 +73,7 @@ async function getAllTransactions(databaseConnection: Queryable, familyMemberUse
   // find all of the family's subscriptions
   const transactionsHistory = await databaseQuery<TransactionsRow[]>(
     databaseConnection,
-    `SELECT ${prefixTransactionsColumns}
+    `SELECT ${transactionsColumns}
     FROM transactions t
     WHERE revocationReason IS NULL AND userId = ?
     ORDER BY purchaseDate DESC, expiresDate DESC
@@ -110,7 +110,7 @@ async function getTransactionOwner(databaseConnection: Queryable, appAccountToke
   if (appAccountToken !== undefined) {
     const result = await databaseQuery<PublicUsersRow[]>(
       databaseConnection,
-      `SELECT ${prefixPublicUsersColumns} 
+      `SELECT ${publicUsersColumns} 
       FROM users u
       WHERE u.userAppAccountToken = ?
       LIMIT 1`,
@@ -129,7 +129,7 @@ async function getTransactionOwner(databaseConnection: Queryable, appAccountToke
     // ALLOW TRANSACTIONS WITH revocationReason IS NOT NULL FOR MATCHING PURPOSES
     const result = await databaseQuery<TransactionsRow[]>(
       databaseConnection,
-      `SELECT ${prefixTransactionsColumns}
+      `SELECT ${transactionsColumns}
         FROM transactions t
         WHERE originalTransactionId = ?
         ORDER BY purchaseDate DESC
@@ -149,7 +149,7 @@ async function getTransactionOwner(databaseConnection: Queryable, appAccountToke
     // ALLOW TRANSACTIONS WITH revocationReason IS NOT NULL FOR MATCHING PURPOSES
     const result = await databaseQuery<TransactionsRow[]>(
       databaseConnection,
-      `SELECT ${prefixTransactionsColumns}
+      `SELECT ${transactionsColumns}
         FROM transactions t
         WHERE transactionId = ?
         ORDER BY purchaseDate DESC

@@ -1,6 +1,4 @@
-const prefix = 'pfm.';
-
-const prefixPreviousFamilyMembersColumns = `
+const previousFamilyMembersColumns = `
 pfm.familyId,
 pfm.userId,
 pfm.familyMemberJoinDate,
@@ -9,8 +7,6 @@ pfm.userLastName,
 pfm.familyMemberLeaveDate,
 pfm.familyMemberLeaveReason
 `;
-
-const noPrefixPreviousFamilyMembersColumns = prefixPreviousFamilyMembersColumns.replace(prefix, '');
 
 type PreviousFamilyMembersRow = {
     // NOTE: database booleans (tinyint(1)) are returned as 0 or 1 numbers, not booleans. therefore, we have to use number instead of boolean
@@ -25,6 +21,5 @@ type PreviousFamilyMembersRow = {
 
 export {
   PreviousFamilyMembersRow,
-  prefixPreviousFamilyMembersColumns,
-  noPrefixPreviousFamilyMembersColumns,
+  previousFamilyMembersColumns,
 };

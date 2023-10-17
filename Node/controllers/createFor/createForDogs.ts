@@ -33,6 +33,8 @@ async function createDogForFamilyId(databaseConnection, familyId, forDogName) {
     throw new ValidationError(`Dog limit of ${LIMIT.NUMBER_OF_DOGS_PER_FAMILY} exceeded`, ERROR_CODES.FAMILY.LIMIT.DOG_TOO_LOW);
   }
 
+  // TODO NOW for all INSERT INTO statements, separate the statement into different lines.
+  // Then if a static value is provided in a string for a column, (e.g. CURRENT_TIMESTAMP for some date), add comments in the variable array to indicate the absense of values
   const result = await databaseQuery(
     databaseConnection,
     `INSERT INTO dogs

@@ -1,4 +1,4 @@
-import { DogRemindersRow, prefixDogRemindersColumns, noPrefixDogRemindersColumnsWithNoReminderId } from '../../main/types/DogRemindersRow';
+import { DogRemindersRow, dogRemindersColumns } from '../../main/types/DogRemindersRow';
 
 import { Queryable, ResultSetHeader, databaseQuery } from '../../main/database/databaseQuery';
 import { LIMIT } from '../../main/server/globalConstants';
@@ -12,7 +12,7 @@ async function createReminderForDogIdReminder(databaseConnection: Queryable, dog
   // only retrieve enough not deleted reminders that would exceed the limit
   const reminders = await databaseQuery<DogRemindersRow[]>(
     databaseConnection,
-    `SELECT ${prefixDogRemindersColumns}
+    `SELECT ${dogRemindersColumns}
     FROM dogReminders dr
     WHERE reminderIsDeleted = 0 AND dogId = ?
     LIMIT ?`,

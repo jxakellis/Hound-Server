@@ -3,7 +3,7 @@ import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
 
 import { extractTransactionIdFromAppStoreReceiptURL } from '../../main/tools/appStoreConnectAPI/extractTransactionId';
 import { queryAllSubscriptionsForTransactionId } from '../../main/tools/appStoreConnectAPI/queryTransactions';
-import { TransactionsRow, noPrefixTransactionsColumns, prefixTransactionsColumns } from '../../main/types/TransactionsRow';
+import { TransactionsRow, transactionsColumns } from '../../main/types/TransactionsRow';
 import { getFamilyHeadUserId } from '../getFor/getForFamily';
 import { SERVER, SUBSCRIPTION } from '../../main/server/globalConstants';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';

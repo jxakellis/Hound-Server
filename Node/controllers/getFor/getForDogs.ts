@@ -1,5 +1,5 @@
 import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
-import { DogsRow, prefixDogsColumns } from '../../main/types/DogsRow';
+import { DogsRow, dogsColumns } from '../../main/types/DogsRow';
 
 import { getAllLogsForDogId } from './getForLogs';
 import { getAllRemindersForDogId } from './getForReminders';
@@ -22,7 +22,7 @@ async function getDogForDogId(
   const dogs = userConfigurationPreviousDogManagerSynchronization !== undefined
     ? await databaseQuery<DogsRow[]>(
       databaseConnection,
-      `SELECT ${prefixDogsColumns}
+      `SELECT ${dogsColumns}
       FROM dogs d
       LEFT JOIN dogReminders dr ON d.dogId = dr.dogId
       LEFT JOIN dogLogs dl ON d.dogId = dl.dogId
@@ -41,7 +41,7 @@ async function getDogForDogId(
     // If they have a blank copy, no need to include deleted dogs that indicate whether to delete their local dog store
     : await databaseQuery<DogsRow[]>(
       databaseConnection,
-      `SELECT ${prefixDogsColumns}
+      `SELECT ${dogsColumns}
       FROM dogs d
       WHERE dogIsDeleted = 0 AND dogId = ?
       GROUP BY dogId
@@ -85,7 +85,7 @@ async function getAllDogsForUserIdFamilyId(
   const dogs = userConfigurationPreviousDogManagerSynchronization !== undefined
     ? await databaseQuery<DogsRow[]>(
       databaseConnection,
-      `SELECT ${prefixDogsColumns}
+      `SELECT ${dogsColumns}
       FROM dogs d
       LEFT JOIN dogReminders dr ON d.dogId = dr.dogId
       LEFT JOIN dogLogs dl ON d.dogId = dl.dogId
@@ -103,7 +103,7 @@ async function getAllDogsForUserIdFamilyId(
     // If they have a blank copy, no need to include deleted dogs that indicate whether to delete their local dog store
     : await databaseQuery<DogsRow[]>(
       databaseConnection,
-      `SELECT ${prefixDogsColumns}
+      `SELECT ${dogsColumns}
       FROM dogs d
       WHERE dogIsDeleted = 0 AND familyId = ?
       GROUP BY dogId

@@ -1,7 +1,5 @@
-const prefix = 't.';
-
 // TODO FUTURE depreciate isAutoRenewing, expirationDate, and numberOfDogs (last used 3.0.0)
-const prefixTransactionsColumns = `
+const transactionsColumns = `
 t.userId,
 t.transactionId,
 t.productId,
@@ -16,8 +14,6 @@ t.autoRenewProductId,
 t.revocationReason,
 t.offerIdentifier
 `;
-
-const noPrefixTransactionsColumns = prefixTransactionsColumns.replace(prefix, '');
 
 type TransactionsRow = {
     // NOTE: database booleans (tinyint(1)) are returned as 0 or 1 numbers, not booleans. therefore, we have to use number instead of boolean
@@ -40,6 +36,5 @@ type TransactionsRow = {
 
 export {
   TransactionsRow,
-  prefixTransactionsColumns,
-  noPrefixTransactionsColumns,
+  transactionsColumns,
 };

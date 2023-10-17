@@ -4,7 +4,7 @@ import { databaseQuery } from '../../../database/databaseQuery';
 
 import { logServerError } from '../../../logging/logServerError';
 import { cancelJobForFamilyForReminder } from './cancelJob';
-import { DogRemindersRow, prefixDogRemindersColumns } from '../../../types/DogRemindersRow';
+import { DogRemindersRow, dogRemindersColumns } from '../../../types/DogRemindersRow';
 
 async function deleteAlarmNotificationsForFamily(familyId: string): Promise<void> {
   try {
@@ -13,7 +13,7 @@ async function deleteAlarmNotificationsForFamily(familyId: string): Promise<void
     // get all the reminders for the family
     const reminders = await databaseQuery<DogRemindersRow[]>(
       databaseConnectionForAlarms,
-      `SELECT ${prefixDogRemindersColumns}
+      `SELECT ${dogRemindersColumns}
       FROM dogReminders dr
       JOIN dogs d ON dr.dogId = d.dogId
       WHERE d.dogIsDeleted = 0 AND dr.reminderIsDeleted = 0 AND d.familyId = ? 

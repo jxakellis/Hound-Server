@@ -1,5 +1,5 @@
 import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
-import { DogLogsRow, prefixDogLogsColumns } from '../../main/types/DogLogsRow';
+import { DogLogsRow, dogLogsColumns } from '../../main/types/DogLogsRow';
 
 /**
  *  If the query is successful, returns the log for the dogId.
@@ -9,7 +9,7 @@ async function getLogForLogId(databaseConnection: Queryable, logId: number, user
   const result = userConfigurationPreviousDogManagerSynchronization !== undefined
     ? await databaseQuery<DogLogsRow[]>(
       databaseConnection,
-      `SELECT ${prefixDogLogsColumns}
+      `SELECT ${dogLogsColumns}
       FROM dogLogs dl
       WHERE TIMESTAMPDIFF(MICROSECOND, logLastModified, ?) <= 0 AND logId = ?
       LIMIT 1`,
@@ -17,7 +17,7 @@ async function getLogForLogId(databaseConnection: Queryable, logId: number, user
     )
     : await databaseQuery<DogLogsRow[]>(
       databaseConnection,
-      `SELECT ${prefixDogLogsColumns}
+      `SELECT ${dogLogsColumns}
       FROM dogLogs dl
       WHERE logId = ?
       LIMIT 1`,
@@ -35,7 +35,7 @@ async function getAllLogsForDogId(databaseConnection: Queryable, dogId: number, 
   const result = userConfigurationPreviousDogManagerSynchronization !== undefined
     ? await databaseQuery<DogLogsRow[]>(
       databaseConnection,
-      `SELECT ${prefixDogLogsColumns}
+      `SELECT ${dogLogsColumns}
       FROM dogLogs dl
       WHERE TIMESTAMPDIFF(MICROSECOND, logLastModified, ?) <= 0 AND dogId = ?
       LIMIT 18446744073709551615`,
@@ -43,7 +43,7 @@ async function getAllLogsForDogId(databaseConnection: Queryable, dogId: number, 
     )
     : await databaseQuery<DogLogsRow[]>(
       databaseConnection,
-      `SELECT ${prefixDogLogsColumns}
+      `SELECT ${dogLogsColumns}
       FROM dogLogs dl
       WHERE dogId = ?
       LIMIT 18446744073709551615`,

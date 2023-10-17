@@ -1,8 +1,8 @@
 import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
 import { hash } from '../../main/format/hash';
 import { PrivateCombinedUsersInformation } from '../../main/types/CompositeRow';
-import { prefixUserConfigurationColumns } from '../../main/types/UserConfigurationRow';
-import { PublicUsersRow, prefixPrivateUsersColumns, prefixPublicUsersColumns } from '../../main/types/UsersRow';
+import { userConfigurationColumns } from '../../main/types/UserConfigurationRow';
+import { PublicUsersRow, privateUsersColumns, publicUsersColumns } from '../../main/types/UsersRow';
 
 import { updateUserForUserIdentifierHashedUserIdentifier } from '../updateFor/updateForUser';
 
@@ -16,7 +16,7 @@ async function getPrivateCombinedUsersInformation(databaseConnection: Queryable,
   // Therefore setting userId to null (if there is no family member) even though the userId isn't null.
   const result1 = await databaseQuery<PrivateCombinedUsersInformation[]>(
     databaseConnection,
-    `SELECT ${prefixPrivateUsersColumns}, fm.familyId, ${prefixUserConfigurationColumns}
+    `SELECT ${privateUsersColumns}, fm.familyId, ${userConfigurationColumns}
     FROM users u 
     JOIN userConfiguration uc ON u.userId = uc.userId
     LEFT JOIN familyMembers fm ON u.userId = fm.userId
@@ -34,7 +34,7 @@ async function getPrivateCombinedUsersInformation(databaseConnection: Queryable,
 
     const result2 = await databaseQuery<PrivateCombinedUsersInformation[]>(
       databaseConnection,
-      `SELECT ${prefixPrivateUsersColumns}, fm.familyId, ${prefixUserConfigurationColumns}
+      `SELECT ${privateUsersColumns}, fm.familyId, ${userConfigurationColumns}
       FROM users u
       JOIN userConfiguration uc ON u.userId = uc.userId 
       LEFT JOIN familyMembers fm ON u.userId = fm.userId
@@ -60,7 +60,7 @@ async function getPrivateCombinedUsersInformation(databaseConnection: Queryable,
 async function getPublicUser(databaseConnection: Queryable, userId: string): Promise<PublicUsersRow | undefined> {
   const result = await databaseQuery<PublicUsersRow[]>(
     databaseConnection,
-    `SELECT ${prefixPublicUsersColumns}
+    `SELECT ${publicUsersColumns}
     FROM users u
     WHERE u.userId = ?
     LIMIT 1`,

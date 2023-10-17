@@ -7,9 +7,7 @@ import { createUserKickedNotification } from '../../main/tools/notifications/ale
 import { TransactionsRow } from '../../main/types/TransactionsRow';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
 import { SUBSCRIPTION } from '../../main/server/globalConstants';
-import { noPrefixPreviousFamilyMembersColumns } from '../../main/types/PreviousFamilyMembersRow';
-import { FamilyMembersRow, prefixFamilyMembersColumns } from '../../main/types/FamilyMembersRow';
-import { noPrefixPreviousFamiliesColumns } from '../../main/types/PreviousFamiliesRow';
+import { FamilyMembersRow, familyMembersColumns } from '../../main/types/FamilyMembersRow';
 
 /**
  * Helper function for deleteFamilyLeaveFamilyForUserIdFamilyId
@@ -20,7 +18,7 @@ async function deleteFamily(databaseConnection: Queryable, familyId: string, fam
   // find the amount of family members in the family
   const familyMembers = await databaseQuery<FamilyMembersRow[]>(
     databaseConnection,
-    `SELECT ${prefixFamilyMembersColumns}
+    `SELECT ${familyMembersColumns}
     FROM familyMembers fm
     WHERE familyId = ?
     LIMIT 18446744073709551615`,
@@ -55,7 +53,9 @@ async function deleteFamily(databaseConnection: Queryable, familyId: string, fam
     databaseQuery(
       databaseConnection,
       `INSERT INTO previousFamilies
-      (${foo})
+      (
+        familyId, userId, familyCode, familyIsLocked, familyAccountCreationDate, familyAccountDeletionDate
+      )
       SELECT familyId, userId, familyCode, familyIsLocked, familyAccountCreationDate, CURRENT_TIMESTAMP()
       FROM families f
       WHERE familyId = ?`,
@@ -64,7 +64,9 @@ async function deleteFamily(databaseConnection: Queryable, familyId: string, fam
     databaseQuery(
       databaseConnection,
       `INSERT INTO previousFamilyMembers
-      (${foo}) 
+      (
+        familyId, userId, familyMemberJoinDate, userFirstName, userLastName, familyMemberLeaveDate, familyMemberLeaveReason
+      ) 
       SELECT fm.familyId, fm.userId, fm.familyMemberJoinDate, u.userFirstName, u.userLastName, CURRENT_TIMESTAMP(), 'familyDeleted' 
       FROM familyMembers fm
       JOIN users u ON fm.userId = u.userId
@@ -111,7 +113,9 @@ async function leaveFamily(databaseConnection: Queryable, userId: string): Promi
   await databaseQuery(
     databaseConnection,
     `INSERT INTO previousFamilyMembers
-    (${foo}) 
+    (
+      familyId, userId, familyMemberJoinDate, userFirstName, userLastName, familyMemberLeaveDate, familyMemberLeaveReason
+    ) 
     SELECT fm.familyId, fm.userId, fm.familyMemberJoinDate, u.userFirstName, u.userLastName, CURRENT_TIMESTAMP(), 'userLeft' 
     FROM familyMembers fm
     JOIN users u ON fm.userId = u.userId

@@ -1,6 +1,4 @@
-const prefix = 'dr.';
-
-const prefixDogRemindersColumns = `
+const dogRemindersColumns = `
 dr.reminderId,
 dr.dogId,
 dr.reminderAction,
@@ -29,8 +27,6 @@ dr.monthlyUTCMinute,
 dr.monthlySkippedDate,
 dr.oneTimeDate
 `;
-
-const noPrefixDogRemindersColumns = prefixDogRemindersColumns.replace(prefix, '');
 
 type DogRemindersRow = {
     // NOTE: database booleans (tinyint(1)) are returned as 0 or 1 numbers, not booleans. therefore, we have to use number instead of boolean
@@ -65,6 +61,5 @@ type DogRemindersRow = {
 
 export {
   DogRemindersRow,
-  prefixDogRemindersColumns,
-  noPrefixDogRemindersColumns,
+  dogRemindersColumns,
 };

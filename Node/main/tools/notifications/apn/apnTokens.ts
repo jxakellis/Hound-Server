@@ -1,7 +1,7 @@
 import { databaseConnectionForGeneral } from '../../../database/createDatabaseConnections';
 import { databaseQuery } from '../../../database/databaseQuery';
 import { UserConfigurationWithPartialPrivateUsers } from '../../../types/CompositeRow';
-import { prefixUserConfigurationColumns } from '../../../types/UserConfigurationRow';
+import { userConfigurationColumns } from '../../../types/UserConfigurationRow';
 
 /**
  *  Takes a userId
@@ -12,7 +12,7 @@ async function getUserToken(userId: string): Promise<UserConfigurationWithPartia
   // retrieve userNotificationToken, userConfigurationNotificationSound, and isLoudNotificaiton of a user with the userId, non-null userNotificationToken, and userConfigurationIsNotificationEnabled
   const result = await databaseQuery<UserConfigurationWithPartialPrivateUsers[]>(
     databaseConnectionForGeneral,
-    `SELECT u.userNotificationToken, ${prefixUserConfigurationColumns}
+    `SELECT u.userNotificationToken, ${userConfigurationColumns}
     FROM users u
     JOIN userConfiguration uc ON u.userId = uc.userId
     WHERE u.userId = ? AND u.userNotificationToken IS NOT NULL AND uc.userConfigurationIsNotificationEnabled = 1
@@ -32,7 +32,7 @@ async function getAllFamilyMemberTokens(familyId: string): Promise<UserConfigura
   // retrieve userNotificationToken that fit the criteria
   const result = await databaseQuery<UserConfigurationWithPartialPrivateUsers[]>(
     databaseConnectionForGeneral,
-    `SELECT u.userNotificationToken, ${prefixUserConfigurationColumns}
+    `SELECT u.userNotificationToken, ${userConfigurationColumns}
     FROM users u
     JOIN userConfiguration uc ON u.userId = uc.userId
     JOIN familyMembers fm ON u.userId = fm.userId
@@ -53,7 +53,7 @@ async function getOtherFamilyMemberTokens(userId: string, familyId: string): Pro
   // retrieve userNotificationToken that fit the criteria
   const result = await databaseQuery<UserConfigurationWithPartialPrivateUsers[]>(
     databaseConnectionForGeneral,
-    `SELECT u.userNotificationToken, ${prefixUserConfigurationColumns}
+    `SELECT u.userNotificationToken, ${userConfigurationColumns}
     FROM users u
     JOIN userConfiguration uc ON u.userId = uc.userId
     JOIN familyMembers fm ON u.userId = fm.userId

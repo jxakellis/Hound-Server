@@ -1,7 +1,7 @@
 import { Queryable, ResultSetHeader, databaseQuery } from '../../main/database/databaseQuery';
 import { LIMIT } from '../../main/server/globalConstants';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
-import { DogLogsRow, prefixDogLogsColumns } from '../../main/types/DogLogsRow';
+import { DogLogsRow, dogLogsColumns } from '../../main/types/DogLogsRow';
 
 /**
  *  Queries the database to create a log. If the query is successful, then returns the logId.
@@ -11,7 +11,7 @@ async function createLogForUserIdDogId(databaseConnection: Queryable, userId: st
   // only retrieve enough not deleted logs that would exceed the limit
   const logs = await databaseQuery<DogLogsRow[]>(
     databaseConnection,
-    `SELECT ${prefixDogLogsColumns}
+    `SELECT ${dogLogsColumns}
     FROM dogLogs dl
     WHERE logIsDeleted = 0 AND dogId = ?
     LIMIT ?`,

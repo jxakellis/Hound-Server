@@ -8,11 +8,11 @@ import { hash } from '../../format/hash';
 
 import { updateUserForUserIdentifierHashedUserIdentifier } from '../../../controllers/updateFor/updateForUser';
 import { SERVER } from '../../server/globalConstants';
-import { PublicUsersRow, prefixPublicUsersColumns } from '../../types/UsersRow';
-import { FamilyMembersRow, prefixFamilyMembersColumns } from '../../types/FamilyMembersRow';
-import { DogsRow, prefixDogsColumns } from '../../types/DogsRow';
-import { DogLogsRow, prefixDogLogsColumns } from '../../types/DogLogsRow';
-import { DogRemindersRow, prefixDogRemindersColumns } from '../../types/DogRemindersRow';
+import { PublicUsersRow, publicUsersColumns } from '../../types/UsersRow';
+import { FamilyMembersRow, familyMembersColumns } from '../../types/FamilyMembersRow';
+import { DogsRow, dogsColumns } from '../../types/DogsRow';
+import { DogLogsRow, dogLogsColumns } from '../../types/DogLogsRow';
+import { DogRemindersRow, dogRemindersColumns } from '../../types/DogRemindersRow';
 
 // TODO NOW for all next() paths, all req.extendedProperties.validatedVariables.foo = foo. this will track the ids that we have verified.
 // TODO NOW there should only ever be ONE (1) req.params.someId access for any given id (e.g. userId). This access should be inside a function to validate the id's value, then all other accesses should be from validatedVariables
@@ -69,7 +69,7 @@ async function validateUserId(req: express.Request, res: express.Response, next:
     // we are verifying that a user is able to use the provided userId, and to do so they must know the corresponding secret (the userIdentifier)
     const regularResult = await databaseQuery<PublicUsersRow[]>(
       databaseConnection,
-      `SELECT ${prefixPublicUsersColumns}
+      `SELECT ${publicUsersColumns}
       FROM users u
       WHERE userId = ? AND userIdentifier = ?
       LIMIT 1`,
@@ -86,7 +86,7 @@ async function validateUserId(req: express.Request, res: express.Response, next:
 
       const hashedResult = await databaseQuery<PublicUsersRow[]>(
         databaseConnection,
-        `SELECT ${prefixPublicUsersColumns}
+        `SELECT ${publicUsersColumns}
         FROM users u
         WHERE userId = ? AND userIdentifier = ?
         LIMIT 1`,
@@ -143,7 +143,7 @@ async function validateFamilyId(req: express.Request, res: express.Response, nex
     // queries the database to find familyIds associated with the userId
     const result = await databaseQuery<FamilyMembersRow[]>(
       databaseConnection,
-      `SELECT ${prefixFamilyMembersColumns}
+      `SELECT ${familyMembersColumns}
       FROM familyMembers fm
       WHERE userId = ? AND familyId = ?
       LIMIT 1`,
@@ -191,7 +191,7 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
     // JOIN families as dog must have a family attached to it
     const dogs = await databaseQuery<DogsRow[]>(
       databaseConnection,
-      `SELECT ${prefixDogsColumns}
+      `SELECT ${dogsColumns}
       FROM dogs d
       JOIN families f ON d.familyId = f.familyId
       WHERE d.familyId = ? AND d.dogId = ?
@@ -246,7 +246,7 @@ async function validateLogId(req: express.Request, res: express.Response, next: 
     // JOIN dogs d as log has to have dog still attached to it
     const logs = await databaseQuery<DogLogsRow[]>(
       databaseConnection,
-      `SELECT ${prefixDogLogsColumns}
+      `SELECT ${dogLogsColumns}
       FROM dogLogs dl
       JOIN dogs d ON dl.dogId = d.dogId
       WHERE dl.dogId = ? AND dl.logId = ?
@@ -302,7 +302,7 @@ async function validateParamsReminderId(req: express.Request, res: express.Respo
     // JOIN dogs d as reminder must have dog attached to it
     const reminders = await databaseQuery<DogRemindersRow[]>(
       databaseConnection,
-      `SELECT ${prefixDogRemindersColumns}
+      `SELECT ${dogRemindersColumns}
       FROM dogReminders dr
       JOIN dogs d ON dr.dogId = d.dogId
       WHERE dr.dogId = ? AND dr.reminderId = ?
@@ -364,7 +364,7 @@ async function validateBodyReminderId(req: express.Request, res: express.Respons
     // Attempt to locate a reminder. It must match the reminderId provided while being attached to a dog that the user has permission to use
     promises.push(databaseQuery<DogRemindersRow[]>(
       databaseConnection,
-      `SELECT ${prefixDogRemindersColumns}
+      `SELECT ${dogRemindersColumns}
       FROM dogReminders dr
       JOIN dogs d ON dr.dogId = d.dogId
       WHERE dr.dogId = ? AND dr.reminderId = ?

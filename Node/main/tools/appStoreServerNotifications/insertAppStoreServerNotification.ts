@@ -5,7 +5,7 @@ import { Queryable, databaseQuery } from '../../database/databaseQuery';
 import {
   formatDate, formatNumber, formatBoolean,
 } from '../../format/formatObject';
-import { AppStoreServerNotificationsRow, prefixAppStoreServerNotificationsColumns } from '../../types/AppStoreServerNotificationsRow';
+import { AppStoreServerNotificationsRow, appStoreServerNotificationsColumns } from '../../types/AppStoreServerNotificationsRow';
 
 /**
  * Extracts data from parameters provided and attempts to insert a corresponding notification into the appStoreServerNotification table.
@@ -123,7 +123,7 @@ async function insertAppStoreServerNotification(
 
   const existingAppStoreServerNotification = (await databaseQuery<AppStoreServerNotificationsRow[]>(
     databaseConnection,
-    `SELECT ${prefixAppStoreServerNotificationsColumns}
+    `SELECT ${appStoreServerNotificationsColumns}
     FROM appStoreServerNotifications assn
     WHERE notificationUUID = ?
     LIMIT 1`,

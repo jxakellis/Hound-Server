@@ -1,6 +1,4 @@
-const prefix = 'dl.';
-
-const prefixDogLogsColumns = `
+const dogLogsColumns = `
 dl.logId,
 dl.dogId,
 dl.userId,
@@ -11,8 +9,6 @@ dl.logCustomActionName,
 dl.logLastModified,
 dl.logIsDeleted
 `;
-
-const noPrefixDogLogsColumns = prefixDogLogsColumns.replace(prefix, '');
 
 type DogLogsRow = {
     // NOTE: database booleans (tinyint(1)) are returned as 0 or 1 numbers, not booleans. therefore, we have to use number instead of boolean
@@ -29,6 +25,5 @@ type DogLogsRow = {
 
 export {
   DogLogsRow,
-  prefixDogLogsColumns,
-  noPrefixDogLogsColumns,
+  dogLogsColumns,
 };

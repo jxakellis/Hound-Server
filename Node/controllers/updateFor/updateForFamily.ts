@@ -1,7 +1,7 @@
 import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
 import { createFamilyMemberJoinNotification, createFamilyLockedNotification } from '../../main/tools/notifications/alert/createFamilyNotification';
-import { FamiliesRow, prefixFamiliesColumns } from '../../main/types/FamiliesRow';
+import { FamiliesRow, familiesColumns } from '../../main/types/FamiliesRow';
 
 import { getAllFamilyMembersForFamilyId, isUserIdInFamily } from '../getFor/getForFamily';
 import { getActiveTransaction } from '../getFor/getForTransactions';
@@ -15,7 +15,7 @@ async function addFamilyMember(databaseConnection: Queryable, userId: string, fo
   // retrieve information about the family linked to the familyCode
   const families = await databaseQuery<FamiliesRow[]>(
     databaseConnection,
-    `SELECT ${prefixFamiliesColumns}
+    `SELECT ${familiesColumns}
     FROM families f
     WHERE familyCode = ?
     LIMIT 1`,

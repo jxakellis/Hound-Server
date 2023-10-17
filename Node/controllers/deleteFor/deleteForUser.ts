@@ -1,7 +1,6 @@
 import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
 
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
-import { noPrefixPreviousUsersColumns } from '../../main/types/PreviousUsersRow';
 
 import { getFamilyId } from '../getFor/getForFamily';
 
@@ -10,7 +9,7 @@ import { deleteFamilyLeaveFamilyForUserIdFamilyId } from './deleteForFamily';
 
 /**
 * Queries the database to delete a user. If the query is successful, then returns
- *  If an error is encountered, creates and throws custom error
+*  If an error is encountered, creates and throws custom error
 */
 async function deleteUserForUserId(databaseConnection: Queryable, userId: string): Promise<void> {
   // Deleting the user from our database is a multi-step process. We need to delete the user from the family first, then delete the user from the database
@@ -33,23 +32,42 @@ async function deleteUserForUserId(databaseConnection: Queryable, userId: string
   await databaseQuery(
     databaseConnection,
     `INSERT INTO previousUsers
-    (${foo})
-    SELECT userId, userIdentifier, userAppAccountToken, userEmail, userFirstName, userLastName, userNotificationToken, userAccountCreationDate, CURRENT_TIMESTAMP()
-    FROM users u
-    WHERE userId = ?`,
+    (
+      userId,
+      userIdentifier,
+      userApplicationUsername,
+      userEmail,
+      userFirstName,
+      userLastName,
+      userNotificationToken,
+      userAccountCreationDate,
+      userAccountDeletionDate
+      )
+      SELECT 
+      userId,
+      userIdentifier,
+      userAppAccountToken, 
+      userEmail, 
+      userFirstName, 
+      userLastName, 
+      userNotificationToken, 
+      userAccountCreationDate, 
+      CURRENT_TIMESTAMP()
+      FROM users u
+      WHERE userId = ?`,
     [userId],
   );
 
   await databaseQuery(
     databaseConnection,
     `DELETE FROM users
-    WHERE userId = ?`,
+        WHERE userId = ?`,
     [userId],
   );
   await databaseQuery(
     databaseConnection,
     `DELETE FROM userConfiguration
-    WHERE userId = ?`,
+          WHERE userId = ?`,
     [userId],
   );
 }

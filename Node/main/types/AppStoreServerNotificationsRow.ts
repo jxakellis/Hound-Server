@@ -1,6 +1,4 @@
-const prefix = 'assn.';
-
-const prefixAppStoreServerNotificationsColumns = `
+const appStoreServerNotificationsColumns = `
 assn.notificationType,
 assn.subtype,
 assn.notificationUUID,
@@ -46,8 +44,6 @@ assn.transactionInfoTransactionId,
 assn.transactionInfoType,
 assn.transactionInfoWebOrderLineItemId
 `;
-
-const noPrefixAppStoreServerNotificationsColumns = prefixAppStoreServerNotificationsColumns.replace(prefix, '');
 
 // TODO NOW IMPORTANT, when we retrieve a date from the database and it gets loaded into the data structure for our type, it might not be a date object. instead it might be a string object that needs to be converted
 type AppStoreServerNotificationsRow = {
@@ -98,4 +94,4 @@ type AppStoreServerNotificationsRow = {
     transactionInfoWebOrderLineItemId?: number,
 };
 
-export { AppStoreServerNotificationsRow, prefixAppStoreServerNotificationsColumns, noPrefixAppStoreServerNotificationsColumns };
+export { AppStoreServerNotificationsRow, appStoreServerNotificationsColumns };
