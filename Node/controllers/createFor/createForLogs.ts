@@ -39,6 +39,7 @@ async function createLogForUserIdDogId(databaseConnection: Queryable, userId: st
     [
       dogId, userId,
       log.logDate, log.logNote, log.logAction, log.logCustomActionName,
+      // none, default values
     ],
   );
 

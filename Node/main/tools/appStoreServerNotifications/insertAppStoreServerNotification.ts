@@ -5,7 +5,7 @@ import { Queryable, databaseQuery } from '../../database/databaseQuery';
 import {
   formatDate, formatNumber, formatBoolean,
 } from '../../format/formatObject';
-import { AppStoreServerNotificationsRow, prefixAppStoreServerNotificationsColumns, noPrefixAppStoreServerNotificationsColumns } from '../../types/AppStoreServerNotificationsRow';
+import { AppStoreServerNotificationsRow, prefixAppStoreServerNotificationsColumns } from '../../types/AppStoreServerNotificationsRow';
 
 /**
  * Extracts data from parameters provided and attempts to insert a corresponding notification into the appStoreServerNotification table.
@@ -141,31 +141,44 @@ async function insertAppStoreServerNotification(
     databaseConnection,
     `INSERT INTO appStoreServerNotifications
     (
-      ${foo}
+      notificationType, subtype, notificationUUID, version, signedDate,
+      dataAppAppleId, dataBundleId, dataBundleVersion, dataEnvironment, dataStatus,
+      renewalInfoAutoRenewProductId, renewalInfoAutoRenewStatus, renewalInfoEnvironment, renewalInfoExpirationIntent,
+      renewalInfoGracePeriodExpiresDate, renewalInfoIsInBillingRetryPeriod, renewalInfoOfferIdentifier, renewalInfoOfferType,
+      renewalInfoOriginalTransactionId, renewalInfoPriceIncreaseStatus, renewalInfoProductId, renewalInfoRecentSubscriptionStartDate,
+      renewalInfoRenewalDate, renewalInfoSignedDate,
+      transactionInfoAppAccountToken, transactionInfoBundleId, transactionInfoEnvironment, transactionInfoExpiresDate,
+      transactionInfoInAppOwnershipType, transactionInfoIsUpgraded, transactionInfoOfferIdentifier, transactionInfoOfferType,
+      transactionInfoOriginalPurchaseDate, transactionInfoOriginalTransactionId, transactionInfoProductId, transactionInfoPurchaseDate,
+      transactionInfoQuantity, transactionInfoRevocationDate, transactionInfoRevocationReason, transactionInfoSignedDate,
+      transactionInfoSubscriptionGroupIdentifier, transactionInfoTransactionId, transactionInfoType, transactionInfoWebOrderLineItemId
     ) 
     VALUES (
-      ?, ?, ?, ?, ?, ?, ?,
+      ?, ?, ?, ?, ?,
       ?, ?, ?, ?, ?,
       ?, ?, ?, ?,
       ?, ?, ?, ?,
-      ?, ?, ?, ?, ?,
+      ?, ?, ?, ?,
+      ?, ?,
       ?, ?, ?, ?,
       ?, ?, ?, ?,
       ?, ?, ?, ?,
       ?, ?, ?, ?,
-      ?, ?, ?)
+      ?, ?, ?, ?,
+      )
     ON DUPLICATE KEY UPDATE notificationUUID=notificationUUID`,
     [
-      notificationType, subtype, notificationUUID, version, signedDate, dataAppAppleId, dataBundleId,
-      dataBundleVersion, dataEnvironment, dataStatus, renewalInfoAutoRenewProductId, renewalInfoAutoRenewStatus,
-      renewalInfoEnvironment, renewalInfoExpirationIntent, renewalInfoGracePeriodExpiresDate, renewalInfoIsInBillingRetryPeriod,
-      renewalInfoOfferIdentifier, renewalInfoOfferType, renewalInfoOriginalTransactionId, renewalInfoPriceIncreaseStatus,
-      renewalInfoProductId, renewalInfoRecentSubscriptionStartDate, renewalInfoRenewalDate, renewalInfoSignedDate, transactionInfoAppAccountToken,
-      transactionInfoBundleId, transactionInfoEnvironment, transactionInfoExpiresDate, transactionInfoInAppOwnershipType,
-      transactionInfoIsUpgraded, transactionInfoOfferIdentifier, transactionInfoOfferType, transactionInfoOriginalPurchaseDate,
-      transactionInfoOriginalTransactionId, transactionInfoProductId, transactionInfoPurchaseDate, transactionInfoQuantity,
-      transactionInfoRevocationDate, transactionInfoRevocationReason, transactionInfoSignedDate, transactionInfoSubscriptionGroupIdentifier,
-      transactionInfoTransactionId, transactionInfoType, transactionInfoWebOrderLineItemId,
+      notificationType, subtype, notificationUUID, version, signedDate,
+      dataAppAppleId, dataBundleId, dataBundleVersion, dataEnvironment, dataStatus,
+      renewalInfoAutoRenewProductId, renewalInfoAutoRenewStatus, renewalInfoEnvironment, renewalInfoExpirationIntent,
+      renewalInfoGracePeriodExpiresDate, renewalInfoIsInBillingRetryPeriod, renewalInfoOfferIdentifier, renewalInfoOfferType,
+      renewalInfoOriginalTransactionId, renewalInfoPriceIncreaseStatus, renewalInfoProductId, renewalInfoRecentSubscriptionStartDate,
+      renewalInfoRenewalDate, renewalInfoSignedDate,
+      transactionInfoAppAccountToken, transactionInfoBundleId, transactionInfoEnvironment, transactionInfoExpiresDate,
+      transactionInfoInAppOwnershipType, transactionInfoIsUpgraded, transactionInfoOfferIdentifier, transactionInfoOfferType,
+      transactionInfoOriginalPurchaseDate, transactionInfoOriginalTransactionId, transactionInfoProductId, transactionInfoPurchaseDate,
+      transactionInfoQuantity, transactionInfoRevocationDate, transactionInfoRevocationReason, transactionInfoSignedDate,
+      transactionInfoSubscriptionGroupIdentifier, transactionInfoTransactionId, transactionInfoType, transactionInfoWebOrderLineItemId,
     ],
   );
 

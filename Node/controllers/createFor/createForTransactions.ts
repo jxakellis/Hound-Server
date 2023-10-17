@@ -98,23 +98,21 @@ async function createUpdateTransaction(
     (
       userId,
       numberOfFamilyMembers, numberOfDogs,
-      autoRenewProductId,
-      autoRenewStatus,
+      autoRenewProductId, autoRenewStatus,
       environment, expiresDate, inAppOwnershipType,
       offerIdentifier, offerType, originalTransactionId, productId,
-      purchaseDate, quantity, revocationReason, subscriptionGroupIdentifier, transactionId,
-      transactionReason, webOrderLineItemId
+      purchaseDate, quantity, revocationReason, subscriptionGroupIdentifier,
+      transactionId, transactionReason, webOrderLineItemId
     )
     VALUES
     (
       ?,
       ?, ?,
-      ?,
-      ?,
+      ?, ?,
       ?, ?, ?,
-      ?, ?, ?, ?, 
-      ?, ?, ?, ?, ?,
-      ?, ?
+      ?, ?, ?, ?,
+      ?, ?, ?, ?,
+      ?, ?, ?
     )
     ON DUPLICATE KEY UPDATE
       autoRenewProductId = CASE WHEN ? IS NOT NULL THEN ? ELSE autoRenewProductId END,
@@ -123,14 +121,11 @@ async function createUpdateTransaction(
     [
       userId,
       numberOfFamilyMembers, numberOfDogs,
-      autoRenewProductId ?? productId,
-      autoRenewStatus ?? true,
-      environment, expiresDate, inAppOwnershipType,
-      offerIdentifier, offerType, originalTransactionId, productId,
-      purchaseDate, quantity, revocationReason, subscriptionGroupIdentifier, transactionId,
-      transactionReason, webOrderLineItemId,
-      autoRenewProductId, autoRenewProductId,
-      autoRenewStatus, autoRenewStatus,
+      renewalInfo.autoRenewProductId, renewalInfo.autoRenewStatus,
+      transactionInfo.environment, transactionInfo.expiresDate, transactionInfo.inAppOwnershipType,
+      transactionInfo.offerIdentifier, transactionInfo.offerType, transactionInfo.originalTransactionId, transactionInfo.productId,
+      transactionInfo.purchaseDate, transactionInfo.quantity, transactionInfo.revocationReason, transactionInfo.subscriptionGroupIdentifier,
+      transactionInfo.transactionId, transactionInfo.transactionReason, transactionInfo.webOrderLineItemId,
     ],
   );
 
@@ -183,22 +178,8 @@ async function createTransactionForAppStoreReceiptURL(databaseConnection, userId
   const subscriptionPromises = subscriptions.map((subscription) => createUpdateTransaction(
     databaseConnection,
     userId,
-    subscription.autoRenewProductId,
-    subscription.autoRenewStatus,
-    subscription.environment,
-    subscription.expiresDate,
-    subscription.inAppOwnershipType,
-    subscription.transactionId,
-    subscription.offerIdentifier,
-    subscription.offerType,
-    subscription.originalTransactionId,
-    subscription.productId,
-    subscription.purchaseDate,
-    subscription.quantity,
-    subscription.revocationReason,
-    subscription.subscriptionGroupIdentifier,
-    subscription.transactionReason,
-    subscription.webOrderLineItemId,
+    subscription.renewalInfo,
+    subscription.transactionInfo,
   ).catch((error) => {
     // Log or handle the error here, it won't propagate further
     console.error(`Failed to create transaction for transactionId ${subscription.transactionId}:`, error);

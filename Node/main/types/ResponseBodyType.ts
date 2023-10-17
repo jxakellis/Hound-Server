@@ -1,6 +1,7 @@
 type ResponseBodyType = {
     message: string
     code: string
+    sourceFunction: string
     name: string
     stack: string
     requestId?: number

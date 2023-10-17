@@ -1,3 +1,5 @@
+import { formatKnownString } from '../format/formatObject';
+
 const ERROR_CODES = {
   GENERAL: {
     APP_VERSION_OUTDATED: 'ER_GENERAL_APP_VERSION_OUTDATED',
@@ -51,38 +53,42 @@ const ERROR_CODES = {
 };
 
 class HoundError extends Error {
-  constructor(message: string, name: string, code?: string, fromError?: unknown) {
-    super(message);
-    this.code = code;
-    this.message = message;
-    this.name = name;
+  sourceFunction: (string | undefined);
+
+  constructor(forCustomMessage?: string, forSourceFunction?: string, forCode?: string, fromError?: unknown) {
+    // We want the message to be the customMessage (if supplied), otherwise try to extract it fromError, otherwise result to default
+    let customMessage = forCustomMessage;
 
     if (fromError !== undefined && fromError instanceof Error) {
-      this.cause = this.cause ?? fromError?.cause;
-      this.code = this.code ?? fromError?.code;
-      this.message = this.message ?? fromError?.message;
-      this.name = this.name ?? fromError?.name;
-      this.stack = fromError?.stack;
+      customMessage = fromError.message ?? customMessage;
+    }
+    customMessage = customMessage ?? 'Unknown Message';
+
+    super(customMessage);
+
+    this.code = forCode;
+    this.sourceFunction = forSourceFunction;
+    // Attempt to set other parameters, using the parameters first, then fromError seconds if no value found
+    if (fromError !== undefined && fromError instanceof Error) {
+      // code and sourceFunction are set by us. Therefore, our manual values take priority
+      this.code = this.code ?? fromError.code;
+      this.sourceFunction = this.sourceFunction ?? fromError.name;
+      // cause, name, and stack aren't set by us. Therefore, override their values with fromError
+      this.cause = fromError.cause;
+      this.name = fromError.name;
+      this.stack = fromError.stack;
     }
   }
 }
 
-function convertErrorToJSON(forError?: Error): {code: string, message: string, name: string, stack: string} {
-  let houndError: (HoundError | undefined);
-
-  if (forError instanceof HoundError) {
-    houndError = forError;
-  }
-  else if (forError !== undefined) {
-    houndError = new HoundError(forError?.message, forError.name, forError.code, forError);
-  }
-
+function convertErrorToJSON(houndError?: HoundError): {code: string, message: string, sourceFunction: string, name: string, stack: string} {
   return {
-    code: houndError?.code ?? 'Unknown Code',
+    sourceFunction: formatKnownString(houndError?.sourceFunction ?? 'Unknown Source Function', 100),
+    code: formatKnownString(houndError?.code ?? 'Unknown Code', 500),
     // Remove all newlines, remove all carriage returns, and make all >1 length spaces into 1 length spaces
-    message: houndError?.message.replace('/\r?\n|\r/g', '').replace(/\s+/g, ' ') ?? 'Unknown Message',
-    name: houndError?.name ?? 'Unknown Name',
-    stack: houndError?.stack ?? 'Unknown Stack',
+    message: formatKnownString(houndError?.message.replace('/\r?\n|\r/g', '').replace(/\s+/g, ' ') ?? 'Unknown Message', 500),
+    name: formatKnownString(houndError?.name ?? 'Unknown Name', 500),
+    stack: formatKnownString(houndError?.stack ?? 'Unknown Stack', 2500),
   };
 }
 

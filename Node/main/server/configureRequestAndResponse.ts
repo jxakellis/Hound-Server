@@ -74,7 +74,7 @@ function configureRequestAndResponseExtendedProperties(req: express.Request, res
   res.extendedProperties = {
     responseId: undefined,
     hasSentResponse: false,
-    sendResponseForStatusBodyError: async function sendResponseForStatusBodyError(status: number, body?: { [key: string]: unknown }, error?: unknown): Promise<void> {
+    sendResponseForStatusBodyError: async function sendResponseForStatusBodyError(status: number, body?: { [key: string]: unknown }, error?: HoundError): Promise<void> {
       // Check to see if the request has an active databaseConnection
       // If it does, then we attempt to COMMIT or ROLLBACK (and if they fail, the functions release() anyways)
       // if there is no active transaction, then we attempt to release the databaseConnection

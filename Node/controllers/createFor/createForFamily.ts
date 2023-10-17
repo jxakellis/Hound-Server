@@ -504,16 +504,46 @@ async function createFamilyForUserId(databaseConnection, userId) {
     databaseQuery(
       databaseConnection,
       `INSERT INTO families
-      (userId, familyId, familyCode, familyIsLocked, familyAccountCreationDate)
-      VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP())`,
-      [userId, familyId, familyCode, false],
+      (
+        userId,
+        familyId,
+        familyCode,
+        familyIsLocked,
+        familyAccountCreationDate
+        )
+      VALUES (
+        ?,
+        ?,
+        ?,
+        0,
+        CURRENT_TIMESTAMP()
+      )`,
+      [
+        userId,
+        familyId,
+        familyCode,
+        // none, default value
+        // none, default value
+      ],
     ),
     databaseQuery(
       databaseConnection,
       `INSERT INTO familyMembers
-      (userId, familyId, familyMemberJoinDate)
-      VALUES (?, ?, CURRENT_TIMESTAMP())`,
-      [userId, familyId],
+      (
+        userId,
+        familyId,
+        familyMemberJoinDate
+      )
+      VALUES (
+        ?,
+        ?,
+        CURRENT_TIMESTAMP()
+      )`,
+      [
+        userId,
+        familyId,
+        // none, default value
+      ],
     ),
   ];
 

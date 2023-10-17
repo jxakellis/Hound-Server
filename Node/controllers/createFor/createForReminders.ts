@@ -97,22 +97,45 @@ async function createReminderForDogIdReminder(databaseConnection: Queryable, dog
   const result = await databaseQuery<ResultSetHeader>(
     databaseConnection,
     `INSERT INTO dogReminders(
-      ${foo}
+      dogId,
+      reminderAction, reminderCustomActionName, reminderType, reminderIsEnabled,
+      reminderExecutionBasis, reminderExecutionDate,
+      reminderLastModified, reminderIsDeleted,
+      snoozeExecutionInterval,
+      countdownExecutionInterval,
+      weeklyUTCHour, weeklyUTCMinute,
+      weeklySunday, weeklyMonday, weeklyTuesday, weeklyWednesday, weeklyThursday, weeklyFriday, weeklySaturday,
+      weeklySkippedDate,
+      monthlyUTCDay, monthlyUTCHour, monthlyUTCMinute,
+      monthlySkippedDate,
+      oneTimeDate
       )
     VALUES (
-      ?, ?, ?, ?, ?, ?, ?,
-      CURRENT_TIMESTAMP(), 0,
       ?,
-      ?,
-      ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
       ?, ?, ?, ?,
-      ?)`,
-    [
-      dogId, reminderAction, reminderCustomActionName, reminderType, reminderIsEnabled, reminderExecutionBasis, reminderExecutionDate,
-      undefined,
+      ?, ?,
+      CURRENT_TIMESTAMP(), 0,
+      null,
       countdownExecutionInterval,
-      weeklyUTCHour, weeklyUTCMinute, weeklySunday, weeklyMonday, weeklyTuesday, weeklyWednesday, weeklyThursday, weeklyFriday, weeklySaturday, undefined,
-      monthlyUTCDay, monthlyUTCHour, monthlyUTCMinute, undefined,
+      weeklyUTCHour, weeklyUTCMinute,
+      weeklySunday, weeklyMonday, weeklyTuesday, weeklyWednesday, weeklyThursday, weeklyFriday, weeklySaturday,
+      null,
+      monthlyUTCDay, monthlyUTCHour, monthlyUTCMinute,
+      null,
+      oneTimeDate
+    )`,
+    [
+      dogId,
+      reminderAction, reminderCustomActionName, reminderType, reminderIsEnabled,
+      reminderExecutionBasis, reminderExecutionDate,
+      // none, default values
+      // none, default value
+      countdownExecutionInterval,
+      weeklyUTCHour, weeklyUTCMinute,
+      weeklySunday, weeklyMonday, weeklyTuesday, weeklyWednesday, weeklyThursday, weeklyFriday, weeklySaturday,
+      // none, default value
+      monthlyUTCDay, monthlyUTCHour, monthlyUTCMinute,
+      // none, default value
       oneTimeDate,
     ],
   );

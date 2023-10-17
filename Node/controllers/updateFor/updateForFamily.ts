@@ -7,8 +7,8 @@ import { getAllFamilyMembersForFamilyId, isUserIdInFamily } from '../getFor/getF
 import { getActiveTransaction } from '../getFor/getForTransactions';
 
 /**
- * Helper method for createFamilyForUserId, goes through checks to attempt to add user to desired family
- */
+* Helper method for createFamilyForUserId, goes through checks to attempt to add user to desired family
+*/
 async function addFamilyMember(databaseConnection: Queryable, userId: string, forFamilyCode: string): Promise<void> {
   const familyCode = forFamilyCode.toUpperCase();
 
@@ -60,9 +60,21 @@ async function addFamilyMember(databaseConnection: Queryable, userId: string, fo
   await databaseQuery(
     databaseConnection,
     `INSERT INTO familyMembers
-    (userId, familyId, familyMemberJoinDate)
-    VALUES (?, ?, CURRENT_TIMESTAMP())`,
-    [userId, family.familyId],
+      (
+        userId,
+        familyId,
+        familyMemberJoinDate
+        )
+        VALUES (
+          ?,
+          ?,
+          CURRENT_TIMESTAMP()
+          )`,
+    [
+      userId,
+      family.familyId,
+      // none, default value
+    ],
   );
 
   const { offerIdentifier, transactionId } = familyActiveSubscription;
@@ -72,8 +84,8 @@ async function addFamilyMember(databaseConnection: Queryable, userId: string, fo
     await databaseQuery(
       databaseConnection,
       `UPDATE transactions
-      SET didUtilizeOfferIdentifier = 1
-      WHERE transactionId = ?`,
+              SET didUtilizeOfferIdentifier = 1
+              WHERE transactionId = ?`,
       [transactionId],
     );
   }
@@ -82,14 +94,14 @@ async function addFamilyMember(databaseConnection: Queryable, userId: string, fo
 }
 
 /**
- * Helper method for updateFamilyForFamilyId, switches the family familyIsLocked status
- */
+          * Helper method for updateFamilyForFamilyId, switches the family familyIsLocked status
+          */
 async function updateIsLocked(databaseConnection: Queryable, userId: string, familyId: string, familyIsLocked: boolean): Promise<void> {
   await databaseQuery(
     databaseConnection,
     `UPDATE families
-    SET familyIsLocked = ?
-    WHERE familyId = ?`,
+              SET familyIsLocked = ?
+              WHERE familyId = ?`,
     [familyIsLocked, familyId],
   );
 
@@ -100,9 +112,9 @@ async function updateIsLocked(databaseConnection: Queryable, userId: string, fam
 // ^^ also check other logic, since in the past a family always had the same userId for its family head, but now that could switch, so verify that functions are compatible with that (e.g. retrieving transactions, reassigning transctions, transaction metrics)
 
 /**
- *  Queries the database to update a family to add a new user. If the query is successful, then returns
- *  If a problem is encountered, creates and throws custom error
- */
+            *  Queries the database to update a family to add a new user. If the query is successful, then returns
+            *  If a problem is encountered, creates and throws custom error
+            */
 async function updateFamilyForUserIdFamilyId(databaseConnection: Queryable, userId: string, familyId?: string, familyCode?: string, familyIsLocked?: boolean): Promise<void> {
   if (familyId === undefined && familyCode !== undefined) {
     await addFamilyMember(databaseConnection, userId, familyCode);
