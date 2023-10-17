@@ -14,7 +14,14 @@ async function validateNotificationSignedPayload(signedPayload: string): Promise
     payload = await decodeNotificationPayload(signedPayload);
   }
   catch (error) {
-    logServerError('validateNotificationSignedPayload', error);
+    logServerError(
+      new HoundError(
+        'error from decodeNotificationPayload',
+        'validateNotificationSignedPayload',
+        undefined,
+        error,
+      ),
+    );
     return undefined;
   }
 
@@ -32,7 +39,14 @@ async function validateTransactionSignedPayload(signedTransactionInfo: string): 
     payload = await decodeTransaction(signedTransactionInfo);
   }
   catch (error) {
-    logServerError('validateTransactionSignedPayload', error);
+    logServerError(
+      new HoundError(
+        'error from decodeTransactions',
+        'validateTransactionSignedPayload',
+        undefined,
+        error,
+      ),
+    );
     return undefined;
   }
 
@@ -50,7 +64,14 @@ async function validateRenewalInfoSignedPayload(signedRenewalInfo: string): Prom
     payload = await decodeRenewalInfo(signedRenewalInfo);
   }
   catch (error) {
-    logServerError('validateRenewalInfoSignedPayload', error);
+    logServerError(
+      new HoundError(
+        'error from decodeRenewalInfo',
+        'validateRenewalInfoSignedPayload',
+        undefined,
+        error,
+      ),
+    );
     return undefined;
   }
 

@@ -1,158 +1,123 @@
-const crypto = require('crypto';
+import crypto from 'crypto';
 
-const { databaseQuery } from '../../main/database/databaseQuery';
-const { ValidationError } from '../../main/server/globalErrors';
-const {
-  formatNumber, formatEmail, formatBoolean, formatUnknownString,
-} from ''../../main/tools/format/formatObject';
-const { hash } from '../../main/tools/format/hash';
-const { areAllDefined } from '../../main/tools/validate/validateDefined';
+import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
+import { hash } from '../../main/format/hash';
 
-const { getUserForUserIdentifier } from '../getFor/getForUser';
+import { getPublicUser } from '../getFor/getForUser';
+import { PrivateUsersRow } from '../../main/types/UsersRow';
+import { UserConfigurationRow } from '../../main/types/UserConfigurationRow';
+import { formatEmail, formatUnknownString } from '../../main/format/formatObject';
 
 /**
  *  Queries the database to create a user. If the query is successful, then returns the userId.
  *  If a problem is encountered, creates and throws custom error
  */
 async function createUserForUserIdentifier(
-  databaseConnection,
-  // userId,
-  userIdentifier,
-  // userAppAccountToken,
-  forUserEmail,
-  forUserFirstName,
-  forUserLastName,
-  forUserNotificationToken,
-  // userAccountCreationDate,
-  forUserConfigurationIsNotificationEnabled,
-  forUserConfigurationIsLoudNotification,
-  forUserConfigurationIsLogNotificationEnabled,
-  forUserConfigurationIsReminderNotificationEnabled,
-  forUserConfigurationInterfaceStyle,
-  forUserConfigurationSnoozeLength,
-  forUserConfigurationNotificationSound,
-  forUserConfigurationLogsInterfaceScale,
-  forUserConfigurationRemindersInterfaceScale,
-  // userConfigurationPreviousDogManagerSynchronization,
-  forUserConfigurationSilentModeIsEnabled,
-  forUserConfigurationSilentModeStartUTCHour,
-  forUserConfigurationSilentModeEndUTCHour,
-  forUserConfigurationSilentModeStartUTCMinute,
-  forUserConfigurationSilentModeEndUTCMinte,
-) {
-  if (areAllDefined(databaseConnection, userIdentifier) === false) {
-    throw new ValidationError('databaseConnection or userIdentifier missing', ERROR_CODES.VALUE.MISSING);
-  }
+  databaseConnection: Queryable,
+  userIdentifier: string,
+  user: Partial<PrivateUsersRow>,
+  userConfiguration: Partial<UserConfigurationRow>,
+): Promise<string> {
+  const existingUser = await getPublicUser(databaseConnection, userIdentifier);
 
-  const existingUser = await getUserForUserIdentifier(databaseConnection, userIdentifier);
-
-  if (areAllDefined(existingUser) === true) {
+  if (existingUser !== undefined) {
     return existingUser.userId;
   }
 
   const userId = hash(userIdentifier);
-  // userIdentifier
-  const userAppAccountToken = formatUnknownString(crypto.randomUUID(), 36);
-  const userEmail = formatEmail(forUserEmail);
-  const userFirstName = formatUnknownString(forUserFirstName, 32);
-  const userLastName = formatUnknownString(forUserLastName, 32);
-  const userNotificationToken = formatUnknownString(forUserNotificationToken, 100);
-
-  if (areAllDefined(
-    userId,
-    // userAppAccountToken
-    // userEmail,
-    // userFirstName
-    // userLastName
-    // userNotificationToken
-  ) === false) {
-    throw new ValidationError('userId missing', ERROR_CODES.VALUE.MISSING);
-  }
-
-  const userConfigurationIsNotificationEnabled = formatBoolean(forUserConfigurationIsNotificationEnabled) ?? false;
-  const userConfigurationIsLoudNotificationEnabled = formatBoolean(forUserConfigurationIsLoudNotification) ?? false;
-  const userConfigurationIsLogNotificationEnabled = formatBoolean(forUserConfigurationIsLogNotificationEnabled) ?? false;
-  const userConfigurationIsReminderNotificationEnabled = formatBoolean(forUserConfigurationIsReminderNotificationEnabled) ?? false;
-  const userConfigurationInterfaceStyle = formatNumber(forUserConfigurationInterfaceStyle) ?? 0;
-  const userConfigurationSnoozeLength = formatNumber(forUserConfigurationSnoozeLength) ?? 300;
-  const userConfigurationNotificationSound = forUserConfigurationNotificationSound ?? 'Radar';
-  const userConfigurationLogsInterfaceScale = forUserConfigurationLogsInterfaceScale ?? 'Medium';
-  const userConfigurationRemindersInterfaceScale = forUserConfigurationRemindersInterfaceScale ?? 'Medium';
-  const userConfigurationIsSilentModeEnabled = formatBoolean(forUserConfigurationSilentModeIsEnabled) ?? false;
-  const userConfigurationSilentModeStartUTCHour = formatNumber(forUserConfigurationSilentModeStartUTCHour) ?? 7;
-  const userConfigurationSilentModeEndUTCHour = formatNumber(forUserConfigurationSilentModeEndUTCHour) ?? 19;
-  const userConfigurationSilentModeStartUTCMinute = formatNumber(forUserConfigurationSilentModeStartUTCMinute) ?? 0;
-  const userConfigurationSilentModeEndUTCMinute = formatNumber(forUserConfigurationSilentModeEndUTCMinte) ?? 0;
-
-  if (areAllDefined(
-    userConfigurationIsNotificationEnabled,
-    userConfigurationIsLoudNotificationEnabled,
-    userConfigurationIsLogNotificationEnabled,
-    userConfigurationIsReminderNotificationEnabled,
-    userConfigurationInterfaceStyle,
-    userConfigurationSnoozeLength,
-    userConfigurationNotificationSound,
-    userConfigurationLogsInterfaceScale,
-    userConfigurationRemindersInterfaceScale,
-    userConfigurationIsSilentModeEnabled,
-    userConfigurationSilentModeStartUTCHour,
-    userConfigurationSilentModeEndUTCHour,
-    userConfigurationSilentModeStartUTCMinute,
-    userConfigurationSilentModeEndUTCMinute,
-  ) === false) {
-    throw new ValidationError(`userConfigurationIsNotificationEnabled,
-userConfigurationIsLoudNotificationEnabled,
-userConfigurationIsLogNotificationEnabled,
-userConfigurationIsReminderNotificationEnabled,
-userConfigurationInterfaceStyle,
-userConfigurationSnoozeLength,
-userConfigurationNotificationSound,
-userConfigurationLogsInterfaceScale,
-userConfigurationRemindersInterfaceScale,
-userConfigurationIsSilentModeEnabled,
-userConfigurationSilentModeStartUTCHour,
-userConfigurationSilentModeEndUTCHour,
-userConfigurationSilentModeStartUTCMinute,
-or userConfigurationSilentModeEndUTCMinute missing`, ERROR_CODES.VALUE.MISSING);
-  }
 
   const promises = [
     databaseQuery(
       databaseConnection,
       `INSERT INTO users
-      (userId, userIdentifier, userAppAccountToken, userEmail,
-        userFirstName, userLastName, userNotificationToken, userAccountCreationDate) 
-      VALUES (?, ?, ?, ?,
-        ?, ?, ?, CURRENT_TIMESTAMP())`,
-      [userId, userIdentifier, userAppAccountToken, userEmail, userFirstName, userLastName, userNotificationToken],
+      (
+        userId,
+        userIdentifier,
+        userAppAccountToken,
+        userEmail,
+        userFirstName,
+        userLastName,
+        userNotificationToken,
+        userAccountCreationDate
+      ) 
+      VALUES (
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        CURRENT_TIMESTAMP()
+      )`,
+      [
+        userId,
+        userIdentifier,
+        crypto.randomUUID(),
+        formatEmail(user.userEmail),
+        formatUnknownString(user.userFirstName, 32),
+        formatUnknownString(user.userLastName, 32),
+        formatUnknownString(user.userNotificationToken, 100),
+        // none, default value
+      ],
     ),
     databaseQuery(
       databaseConnection,
       `INSERT INTO userConfiguration
-      (userId, userConfigurationIsNotificationEnabled, userConfigurationIsLoudNotificationEnabled, 
-      userConfigurationIsLogNotificationEnabled, userConfigurationIsReminderNotificationEnabled, 
-      userConfigurationSnoozeLength, userConfigurationNotificationSound, userConfigurationLogsInterfaceScale, 
-      userConfigurationRemindersInterfaceScale, userConfigurationInterfaceStyle, userConfigurationIsSilentModeEnabled, 
-      userConfigurationSilentModeStartUTCHour, userConfigurationSilentModeEndUTCHour, userConfigurationSilentModeStartUTCMinute, 
-      userConfigurationSilentModeEndUTCMinute) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [userId,
+      (
+        userId,
         userConfigurationIsNotificationEnabled,
         userConfigurationIsLoudNotificationEnabled,
         userConfigurationIsLogNotificationEnabled,
         userConfigurationIsReminderNotificationEnabled,
+        userConfigurationInterfaceStyle,
         userConfigurationSnoozeLength,
         userConfigurationNotificationSound,
         userConfigurationLogsInterfaceScale,
         userConfigurationRemindersInterfaceScale,
-        userConfigurationInterfaceStyle,
         userConfigurationIsSilentModeEnabled,
         userConfigurationSilentModeStartUTCHour,
         userConfigurationSilentModeEndUTCHour,
         userConfigurationSilentModeStartUTCMinute,
         userConfigurationSilentModeEndUTCMinute,
+      ) 
+      VALUES (
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+      ) `,
+      [
+        userId,
+        userConfiguration.userConfigurationIsNotificationEnabled ?? 0,
+        userConfiguration.userConfigurationIsLoudNotificationEnabled ?? 0,
+        userConfiguration.userConfigurationIsLogNotificationEnabled ?? 0,
+        userConfiguration.userConfigurationIsReminderNotificationEnabled ?? 0,
+        userConfiguration.userConfigurationInterfaceStyle ?? 0,
+        userConfiguration.userConfigurationSnoozeLength ?? 300,
+        userConfiguration.userConfigurationNotificationSound ?? 'Radar',
+        userConfiguration.userConfigurationLogsInterfaceScale ?? 'Medium',
+        userConfiguration.userConfigurationRemindersInterfaceScale ?? 'Medium',
+        // none, default value for userConfigurationPreviousDogManagerSynchronization
+        userConfiguration.userConfigurationIsSilentModeEnabled ?? false,
+        userConfiguration.userConfigurationSilentModeStartUTCHour ?? 7,
+        userConfiguration.userConfigurationSilentModeEndUTCHour ?? 19,
+        userConfiguration.userConfigurationSilentModeStartUTCMinute ?? 0,
+        userConfiguration.userConfigurationSilentModeEndUTCMinute ?? 0,
       ],
     )];
+
   await Promise.all(promises);
 
   return userId;

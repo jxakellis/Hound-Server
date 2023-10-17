@@ -11,6 +11,7 @@ import {
 import { logServerError } from '../logging/logServerError';
 import { restoreAlarmNotificationsForAllFamilies } from '../tools/notifications/alarm/restoreAlarmNotification';
 import { SERVER } from './globalConstants';
+import { HoundError } from './globalErrors';
 
 async function configureServer(server: https.Server<typeof IncomingMessage, typeof ServerResponse>): Promise<NodeJS.Timeout> {
   return new Promise((resolve) => {
@@ -34,7 +35,14 @@ async function configureServer(server: https.Server<typeof IncomingMessage, type
           JOIN (SELECT requestId FROM previousRequests pr ORDER BY requestDate DESC LIMIT 1 OFFSET ?) prl ON pr.requestId < prl.requestId`,
           [SERVER.DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES],
         )
-          .catch((error) => logServerError('DELETE previousRequests for databaseMaintenanceIntervalObject', error));
+          .catch((error) => logServerError(
+            new HoundError(
+              'DELETE previousRequests',
+              'databaseMaintenanceIntervalObject',
+              undefined,
+              error,
+            ),
+          ));
 
         // Keep the latest DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES previousResponses, then delete any entries that are older
         databaseQuery(
@@ -44,11 +52,25 @@ async function configureServer(server: https.Server<typeof IncomingMessage, type
             JOIN (SELECT requestId FROM previousRequests pr ORDER BY requestDate DESC LIMIT 1 OFFSET ?) prl ON pr.requestId < prl.requestId`,
           [SERVER.DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES],
         )
-          .catch((error) => logServerError('DELETE previousResponses for databaseMaintenanceIntervalObject', error));
+          .catch((error) => logServerError(
+            new HoundError(
+              'DELETE previousResponses',
+              'databaseMaintenanceIntervalObject',
+              undefined,
+              error,
+            ),
+          ));
 
         // Ensure that the database connections are valid and can query the database
         testDatabaseConnections(databaseConnectionForGeneral, databaseConnectionForLogging, databaseConnectionForAlarms, databaseConnectionPoolForRequests)
-          .catch((error) => logServerError('testDatabaseConnections for databaseMaintenanceIntervalObject', error));
+          .catch((error) => logServerError(
+            new HoundError(
+              'testDatabaseConnections',
+              'databaseMaintenanceIntervalObject',
+              undefined,
+              error,
+            ),
+          ));
       }, SERVER.DATABASE_MAINTENANCE_INTERVAL);
 
       resolve(databaseMaintenanceIntervalObject);

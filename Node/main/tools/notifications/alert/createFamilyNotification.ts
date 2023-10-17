@@ -6,6 +6,7 @@ import { getPublicUser } from '../../../../controllers/getFor/getForUser';
 import { sendNotificationForFamilyExcludingUser } from '../apn/sendNotification';
 import { formatIntoName } from '../../../format/formatName';
 import { NOTIFICATION } from '../../../server/globalConstants';
+import { HoundError } from '../../../server/globalErrors';
 
 /**
  * Helper function for createFamilyMemberJoinNotification, createFamilyMemberLeaveNotification, createFamilyLockedNotification, and createFamilyPausedNotification
@@ -36,7 +37,14 @@ async function createFamilyMemberJoinNotification(userId: string, familyId: stri
     sendNotificationForFamilyExcludingUser(userId, familyId, NOTIFICATION.CATEGORY.FAMILY.JOIN, alertTitle, alertBody, {});
   }
   catch (error) {
-    logServerError('createFamilyMemberJoinNotification', error);
+    logServerError(
+      new HoundError(
+        'createFamilyMemberJoinNotification',
+        'createFamilyMemberJoinNotification',
+        undefined,
+        error,
+      ),
+    );
   }
 }
 
@@ -60,7 +68,14 @@ async function createFamilyMemberLeaveNotification(userId: string, familyId: str
     sendNotificationForFamilyExcludingUser(userId, familyId, NOTIFICATION.CATEGORY.FAMILY.LEAVE, alertTitle, alertBody, {});
   }
   catch (error) {
-    logServerError('createFamilyMemberLeaveNotification', error);
+    logServerError(
+      new HoundError(
+        'createFamilyMemberLeaveNotification',
+        'createFamilyMemberLeaveNotification',
+        undefined,
+        error,
+      ),
+    );
   }
 }
 
@@ -88,7 +103,14 @@ async function createFamilyLockedNotification(userId: string, familyId: string, 
     sendNotificationForFamilyExcludingUser(userId, familyId, NOTIFICATION.CATEGORY.FAMILY.LOCK, alertTitle, alertBody, {});
   }
   catch (error) {
-    logServerError('createFamilyLockedNotification', error);
+    logServerError(
+      new HoundError(
+        'createFamilyLockedNotification',
+        'createFamilyLockedNotification',
+        undefined,
+        error,
+      ),
+    );
   }
 }
 

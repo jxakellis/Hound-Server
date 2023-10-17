@@ -4,6 +4,7 @@ import { logServerError } from '../../../logging/logServerError';
 
 import { sendAPN } from './sendAPN';
 import { getUserToken, getAllFamilyMemberTokens, getOtherFamilyMemberTokens } from './apnTokens';
+import { HoundError } from '../../../server/globalErrors';
 
 /**
 * Takes a userId and retrieves the userNotificationToken for the user
@@ -23,7 +24,14 @@ async function sendNotificationForUser(userId: string, category: string, alertTi
     sendAPN(userNotificationConfiguration, category, alertTitle, alertBody, customPayload);
   }
   catch (error) {
-    logServerError('sendNotificationForUser', error);
+    logServerError(
+      new HoundError(
+        'sendNotificationForUser',
+        'sendNotificationForUser',
+        undefined,
+        error,
+      ),
+    );
   }
 }
 
@@ -48,7 +56,14 @@ async function sendNotificationForFamily(familyId: string, category: string, ale
     }
   }
   catch (error) {
-    logServerError('sendNotificationForFamily', error);
+    logServerError(
+      new HoundError(
+        'sendNotificationForFamily',
+        'sendNotificationForFamily',
+        undefined,
+        error,
+      ),
+    );
   }
 }
 
@@ -80,7 +95,14 @@ async function sendNotificationForFamilyExcludingUser(
     }
   }
   catch (error) {
-    logServerError('sendNotificationForFamilyExcludingUser', error);
+    logServerError(
+      new HoundError(
+        'sendNotificationForFamilyExcludingUser',
+        'sendNotificationForFamilyExcludingUser',
+        undefined,
+        error,
+      ),
+    );
   }
 }
 

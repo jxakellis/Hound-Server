@@ -7,6 +7,7 @@ import { getPublicUser } from '../../../../controllers/getFor/getForUser';
 import { sendNotificationForFamilyExcludingUser } from '../apn/sendNotification';
 import { formatIntoName, formatLogAction } from '../../../format/formatName';
 import { NOTIFICATION } from '../../../server/globalConstants';
+import { HoundError } from '../../../server/globalErrors';
 
 /**
  * Sends an alert to all of the family members that one of them has logged something.
@@ -32,7 +33,14 @@ async function createLogNotification(userId: string, familyId: string, dogId: nu
     sendNotificationForFamilyExcludingUser(userId, familyId, NOTIFICATION.CATEGORY.LOG.CREATED, alertTitle, alertBody, {});
   }
   catch (error) {
-    logServerError('createLogNotification', error);
+    logServerError(
+      new HoundError(
+        'createLogNotification',
+        'createLogNotification',
+        undefined,
+        error,
+      ),
+    );
   }
 }
 

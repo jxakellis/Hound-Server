@@ -27,10 +27,10 @@ async function getDogs(req: express.Request, res: express.Response): Promise<voi
     const signedPayload = formatUnknownString(req.body['signedPayload']);
 
     if (databaseConnection === undefined) {
-      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('databaseConnection missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('databaseConnection missing', 'getDogs', ERROR_CODES.VALUE.INVALID));
     }
     if (signedPayload === undefined) {
-      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('signedPayload missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('signedPayload missing', 'getDogs', ERROR_CODES.VALUE.INVALID));
     }
 
     if (validatedDogId !== undefined) {
@@ -39,10 +39,10 @@ async function getDogs(req: express.Request, res: express.Response): Promise<voi
     }
 
     if (validatedUserId === undefined) {
-      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('validatedUserId missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('validatedUserId missing', 'getDogs', ERROR_CODES.VALUE.INVALID));
     }
     if (validatedFamilyId === undefined) {
-      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('validatedFamilyId missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('validatedFamilyId missing', 'getDogs', ERROR_CODES.VALUE.INVALID));
     }
 
     const result = await getAllDogsForUserIdFamilyId(
@@ -67,13 +67,16 @@ async function createDog(req: express.Request, res: express.Response): Promise<v
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const dogName = formatUnknownString(req.body['dogName']);
     if (databaseConnection === undefined) {
-      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('databaseConnection missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('databaseConnection missing', 'createDog', ERROR_CODES.VALUE.INVALID));
     }
     if (validatedFamilyId === undefined) {
-      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('validatedFamilyId missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('validatedFamilyId missing', 'createDog', ERROR_CODES.VALUE.INVALID));
+    }
+    if (dogName === undefined) {
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('dogName missing', 'createDog', ERROR_CODES.VALUE.INVALID));
     }
 
-    const result = await createDogForFamilyId(req.extendedProperties.databaseConnection, validatedFamilyId, dogName);
+    const result = await createDogForFamilyId(databaseConnection, validatedFamilyId, dogName);
 
     return res.extendedProperties.sendResponseForStatusBodyError(200, result, null);
   }
@@ -89,13 +92,19 @@ async function updateDog(req: express.Request, res: express.Response): Promise<v
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const dogName = formatUnknownString(req.body['dogName']);
     if (databaseConnection === undefined) {
-      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('databaseConnection missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('databaseConnection missing', 'updateDog', ERROR_CODES.VALUE.INVALID));
     }
     if (validatedDogId === undefined) {
-      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('validatedDogId missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('validatedDogId missing', 'updateDog', ERROR_CODES.VALUE.INVALID));
+    }
+    if (dogName === undefined) {
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('dogName missing', 'updateDog', ERROR_CODES.VALUE.INVALID));
     }
 
-    await updateDogForDogId(databaseConnection, validatedDogId, dogName);
+    await updateDogForDogId(databaseConnection, {
+      dogId: validatedDogId,
+      dogName,
+    });
     return res.extendedProperties.sendResponseForStatusBodyError(200, undefined, undefined);
   }
   catch (error) {
@@ -108,13 +117,13 @@ async function deleteDog(req: express.Request, res: express.Response): Promise<v
     const { databaseConnection } = req.extendedProperties;
     const { validatedFamilyId, validatedDogId } = req.extendedProperties.validatedVariables;
     if (databaseConnection === undefined) {
-      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('databaseConnection missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('databaseConnection missing', 'deleteDog', ERROR_CODES.VALUE.INVALID));
     }
     if (validatedFamilyId === undefined) {
-      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('validatedFamilyId missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('validatedFamilyId missing', 'deleteDog', ERROR_CODES.VALUE.INVALID));
     }
     if (validatedDogId === undefined) {
-      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('validatedDogId missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('validatedDogId missing', 'deleteDog', ERROR_CODES.VALUE.INVALID));
     }
 
     await deleteDogForFamilyIdDogId(databaseConnection, validatedFamilyId, validatedDogId);

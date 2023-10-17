@@ -5,6 +5,7 @@ import { api } from './api';
 import { logServerError } from '../../logging/logServerError';
 import { formatUnknownString, formatBoolean } from '../../format/formatObject';
 import { SERVER } from '../../server/globalConstants';
+import { HoundError } from '../../server/globalErrors';
 
 /**
  * Internal function.
@@ -25,7 +26,14 @@ async function queryTransactionHistoryFromAppStoreServerAPI(transactionId: strin
     });
   }
   catch (error) {
-    logServerError('queryTransactionHistoryFromAppStoreServerAPI getTransactionHistory', error);
+    logServerError(
+      new HoundError(
+        'getTransactionHistory',
+        'queryTransactionHistoryFromAppStoreServerAPI',
+        undefined,
+        error,
+      ),
+    );
     return [];
   }
 
@@ -43,7 +51,14 @@ async function queryTransactionHistoryFromAppStoreServerAPI(transactionId: strin
     transactions = (await decodeTransactions(response.signedTransactions)).map((transactionInfo) => ({ transactionInfo }));
   }
   catch (error) {
-    logServerError('queryTransactionHistoryFromAppStoreServerAPI decodeTransactions', error);
+    logServerError(
+      new HoundError(
+        'decodeTransactions',
+        'queryTransactionHistoryFromAppStoreServerAPI',
+        undefined,
+        error,
+      ),
+    );
     return [];
   }
 
@@ -76,7 +91,14 @@ async function querySubscriptionStatusesFromAppStoreAPI(transactionId: string): 
     statusResponse = await api.getSubscriptionStatuses(transactionId);
   }
   catch (error) {
-    logServerError('querySubscriptionStatusesFromAppStoreAPI getSubscriptionStatuses', error);
+    logServerError(
+      new HoundError(
+        'getSubscriptionStatuses',
+        'querySubscriptionStatusesFromAppStoreAPI',
+        undefined,
+        error,
+      ),
+    );
     return [];
   }
   if (formatUnknownString(statusResponse.bundleId) !== SERVER.APP_BUNDLE_ID) {
@@ -117,7 +139,14 @@ async function querySubscriptionStatusesFromAppStoreAPI(transactionId: string): 
     decodedTransactionInfos = await Promise.all(transactionInfoPromises);
   }
   catch (error) {
-    logServerError('querySubscriptionStatusesFromAppStoreAPI decodeTransaction', error);
+    logServerError(
+      new HoundError(
+        'decodeTransaction',
+        'querySubscriptionStatusesFromAppStoreAPI',
+        undefined,
+        error,
+      ),
+    );
     return [];
   }
 
@@ -126,7 +155,14 @@ async function querySubscriptionStatusesFromAppStoreAPI(transactionId: string): 
     decodedRenewalInfos = await Promise.all(renewalInfoPromises);
   }
   catch (error) {
-    logServerError('querySubscriptionStatusesFromAppStoreAPI decodeRenewalInfo', error);
+    logServerError(
+      new HoundError(
+        'decodeRenewalInfo',
+        'querySubscriptionStatusesFromAppStoreAPI',
+        undefined,
+        error,
+      ),
+    );
     return [];
   }
 

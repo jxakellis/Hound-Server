@@ -12,6 +12,7 @@ import { formatReminderAction } from '../../../format/formatName';
 import { DogsRow, dogsColumns } from '../../../types/DogsRow';
 import { DogRemindersRow, dogRemindersColumns } from '../../../types/DogRemindersRow';
 import { NOTIFICATION } from '../../../server/globalConstants';
+import { HoundError } from '../../../server/globalErrors';
 
 /**
  * Helper method for createAlarmNotificationForFamily, actually queries database to get most updated version of dog and reminder.
@@ -56,7 +57,14 @@ DogsRow & DogRemindersRow)[]>(
     sendNotificationForFamily(familyId, NOTIFICATION.CATEGORY.REMINDER.ALARM, alertTitle, alertBody, customPayload);
   }
   catch (error) {
-    logServerError('sendAPNNotificationForFamily', error);
+    logServerError(
+      new HoundError(
+        'sendAPNNotificationForFamily',
+        'sendAPNNotificationForFamily',
+        undefined,
+        error,
+      ),
+    );
   }
 }
 
@@ -95,7 +103,14 @@ async function createAlarmNotificationForFamily(familyId: string, reminderId: nu
     }
   }
   catch (error) {
-    logServerError('createAlarmNotificationForFamily', error);
+    logServerError(
+      new HoundError(
+        'createAlarmNotificationForFamily',
+        'createAlarmNotificationForFamily',
+        undefined,
+        error,
+      ),
+    );
   }
 }
 

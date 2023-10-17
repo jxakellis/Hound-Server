@@ -6,6 +6,7 @@ import { formatKnownString } from '../../../format/formatObject';
 import { apn, productionAPNProvider, developmentAPNProvider } from './apnProvider';
 import { NOTIFICATION } from '../../../server/globalConstants';
 import { UserConfigurationWithPartialPrivateUsers } from '../../../types/CompositeRow';
+import { HoundError } from '../../../server/globalErrors';
 
 function sendDevelopmentAPN(notification: apn.Notification, notificationToken: string): void {
   developmentAPNProvider.send(notification, notificationToken)
@@ -20,7 +21,14 @@ function sendDevelopmentAPN(notification: apn.Notification, notificationToken: s
       }
     })
     .catch((error) => {
-      logServerError('sendDevelopmentAPN Response', error);
+      logServerError(
+        new HoundError(
+          'sendDevelopmentAPN response error',
+          'sendDevelopmentAPN',
+          undefined,
+          error,
+        ),
+      );
     });
 }
 
@@ -43,7 +51,14 @@ function sendProductionAPN(notification: apn.Notification, notificationToken: st
       }
     })
     .catch((error) => {
-      logServerError('sendProductionAPN Response', error);
+      logServerError(
+        new HoundError(
+          'sendProductionAPN response error',
+          'sendProductionAPN',
+          undefined,
+          error,
+        ),
+      );
     });
 }
 

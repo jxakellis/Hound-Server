@@ -37,7 +37,7 @@ async function createUpdateTransaction(
   userId: string,
   renewalInfo: JWSRenewalInfoDecodedPayload | undefined,
   transactionInfo: JWSTransactionDecodedPayload,
-) {
+): Promise<void> {
   // userId
 
   // https://developer.apple.com/documentation/appstoreservernotifications/jwstransactiondecodedpayload
@@ -161,7 +161,7 @@ async function createUpdateTransaction(
   );
 }
 
-async function createTransactionForAppStoreReceiptURL(databaseConnection: Queryable, userId: string, appStoreReceiptURL: string) {
+async function createTransactionForAppStoreReceiptURL(databaseConnection: Queryable, userId: string, appStoreReceiptURL: string): Promise<void> {
   const transactionId = extractTransactionIdFromAppStoreReceiptURL(appStoreReceiptURL);
 
   if (transactionId === undefined) {

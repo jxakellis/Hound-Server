@@ -6,6 +6,7 @@ import { databaseConnectionForAlarms } from '../../../database/createDatabaseCon
 import { databaseQuery } from '../../../database/databaseQuery';
 import { DogsRow, dogsColumns } from '../../../types/DogsRow';
 import { DogRemindersRow, dogRemindersColumns } from '../../../types/DogRemindersRow';
+import { HoundError } from '../../../server/globalErrors';
 
 /**
  * Assumes an empty schedule
@@ -48,7 +49,14 @@ DogsRow & DogRemindersRow)[]>(
     }
   }
   catch (error) {
-    logServerError('restoreAlarmNotificationsForAll', error);
+    logServerError(
+      new HoundError(
+        'restoreAlarmNotificationsForAll',
+        'restoreAlarmNotificationsForAll',
+        undefined,
+        error,
+      ),
+    );
   }
 }
 

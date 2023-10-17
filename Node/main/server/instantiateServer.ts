@@ -35,6 +35,7 @@ import { schedule } from '../tools/notifications/alarm/schedule';
 import {
   databaseConnectionForGeneral, databaseConnectionForLogging, databaseConnectionForAlarms, databaseConnectionPoolForRequests,
 } from '../database/createDatabaseConnections';
+import { HoundError } from './globalErrors';
 
 // Initialize the express engine
 const app: express.Application = express();
@@ -170,8 +171,14 @@ process.on('uncaughtException', async (error, origin) => {
   // uncaught error happened somewhere
   serverLogger.info(`Uncaught exception from origin: ${origin}`);
   // Specifically await logServerError here to ensure that the error is logged before the server shuts down
-  await logServerError('uncaughtException', error)
-    .catch((shutdownError) => serverLogger.error(`Experienced error while attempting to shutdown (logServerError): ${shutdownError}`));
+  await logServerError(
+    new HoundError(
+      'uncaughtException',
+      'shutdown',
+      undefined,
+      error,
+    ),
+  );
   await shutdown()
     .catch((shutdownError) => serverLogger.error(`Experienced error while attempting to shutdown (shutdown): ${shutdownError}`));
 

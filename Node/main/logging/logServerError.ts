@@ -47,7 +47,14 @@ async function logServerError(houndError: HoundError): Promise<void> {
       readableError.stack,
     ],
   ).catch(
-    (error) => printServerError('logServerError', error),
+    (error) => printServerError(
+      new HoundError(
+        'logServerError',
+        'logServerError',
+        undefined,
+        error,
+      ),
+    ),
   );
 }
 

@@ -5,6 +5,7 @@ import { databaseQuery } from '../../../database/databaseQuery';
 import { logServerError } from '../../../logging/logServerError';
 import { cancelJobForFamilyForReminder } from './cancelJob';
 import { DogRemindersRow, dogRemindersColumns } from '../../../types/DogRemindersRow';
+import { HoundError } from '../../../server/globalErrors';
 
 async function deleteAlarmNotificationsForFamily(familyId: string): Promise<void> {
   try {
@@ -27,7 +28,14 @@ async function deleteAlarmNotificationsForFamily(familyId: string): Promise<void
     }
   }
   catch (error) {
-    logServerError('deleteAlarmNotificationsForFamily', error);
+    logServerError(
+      new HoundError(
+        'deleteAlarmNotificationsForFamily',
+        'deleteAlarmNotificationsForFamily',
+        undefined,
+        error,
+      ),
+    );
   }
 }
 
@@ -41,7 +49,14 @@ async function deleteAlarmNotificationsForReminder(familyId: string, reminderId:
     cancelJobForFamilyForReminder(familyId, reminderId);
   }
   catch (error) {
-    logServerError('deleteAlarmNotificationsForReminder', error);
+    logServerError(
+      new HoundError(
+        'deleteAlarmNotificationsForReminder',
+        'deleteAlarmNotificationsForReminder',
+        undefined,
+        error,
+      ),
+    );
   }
 }
 
