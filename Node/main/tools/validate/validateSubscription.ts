@@ -28,7 +28,7 @@ async function attachActiveSubscription(req: express.Request, res: express.Respo
     return next();
   }
   catch (error) {
-    return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, error);
+    return res.extendedProperties.sendFailureResponse(error);
   }
 }
 
@@ -75,7 +75,7 @@ async function validateSubscription(req: express.Request, res: express.Response,
     return next();
   }
   catch (error) {
-    return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, error);
+    return res.extendedProperties.sendFailureResponse(error);
   }
 }
 

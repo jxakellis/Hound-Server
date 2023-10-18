@@ -9,7 +9,7 @@ import { UserConfigurationRow } from '../../main/types/UserConfigurationRow';
 async function updateUserForUserId(
   databaseConnection: Queryable,
   userId: string,
-  userConfiguration: Partial<UserConfigurationRow>,
+  userConfiguration: UserConfigurationRow,
   userNotificationToken?: string,
 ): Promise<void> {
   const {

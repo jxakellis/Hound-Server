@@ -31,8 +31,6 @@ declare module 'express-serve-static-core' {
                 validatedDogId?: number
                 // logId of the request that has been verified with correct permissions
                 validatedLogId?: number
-                // reminderId of the request that has been verified with correct permissions
-                validatedReminderId?: number
                 // reminderIds of the request that have been verified with correct permissions
                 validatedReminderIds: number[]
             }
@@ -43,7 +41,8 @@ declare module 'express-serve-static-core' {
             responseId?: number;
 
             hasSentResponse: boolean;
-            sendResponseForStatusBodyError(status: number, body?: unknown, error?: unknown): Promise<void>;
+            sendSuccessResponse(body: NonNullable<unknown>): Promise<void>;
+            sendFailureResponse(error?: unknown): Promise<void>;
         }
     }
 }

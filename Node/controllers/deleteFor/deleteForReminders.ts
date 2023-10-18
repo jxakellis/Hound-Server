@@ -1,7 +1,4 @@
 import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
-
-import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
-
 import { deleteAlarmNotificationsForReminder } from '../../main/tools/notifications/alarm/deleteAlarmNotification';
 import { DogRemindersRow, dogRemindersColumns } from '../../main/types/DogRemindersRow';
 
@@ -9,7 +6,7 @@ import { DogRemindersRow, dogRemindersColumns } from '../../main/types/DogRemind
  *  Queries the database to delete a single reminder. If the query is successful, then returns
  *  If an error is encountered, creates and throws custom error
  */
-async function deleteReminderForFamilyIdDogIdReminderId(databaseConnection: Queryable, familyId: string, dogId: number, reminderId: number): Promise<void> {
+async function deleteReminderForFamilyIdDogIdReminderId(databaseConnection: Queryable, familyId: string, reminderId: number): Promise<void> {
   await databaseQuery(
     databaseConnection,
     `UPDATE dogReminders
@@ -26,17 +23,12 @@ async function deleteReminderForFamilyIdDogIdReminderId(databaseConnection: Quer
  *  Queries the database to delete multiple reminders. If the query is successful, then returns
  *  If a problem is encountered, creates and throws custom error
  */
-async function deleteRemindersForFamilyIdDogIdReminderIds(databaseConnection: Queryable, familyId: string, dogId: number, reminders: Partial<DogRemindersRow>[]): Promise<void> {
+async function deleteRemindersForFamilyIdDogIdReminderIds(databaseConnection: Queryable, familyId: string, reminderIds: number[]): Promise<void> {
   const promises = [];
-  for (let i = 0; i < reminders.length; i += 1) {
-    const { reminderId } = reminders[i];
-
-    if (reminderId === undefined) {
-      throw new HoundError('reminderId missing for deleteReminderForFamilyIdDogIdReminderId', 'deleteRemindersForFamilyIdDogIdReminderIds', ERROR_CODES.VALUE.MISSING);
-    }
-
-    promises.push(deleteReminderForFamilyIdDogIdReminderId(databaseConnection, familyId, dogId, reminderId));
+  for (let i = 0; i < reminderIds.length; i += 1) {
+    promises.push(deleteReminderForFamilyIdDogIdReminderId(databaseConnection, familyId, reminderIds[i]));
   }
+
   await Promise.all(promises);
 }
 
@@ -73,4 +65,4 @@ async function deleteAllRemindersForFamilyIdDogId(databaseConnection: Queryable,
   }
 }
 
-export { deleteReminderForFamilyIdDogIdReminderId, deleteRemindersForFamilyIdDogIdReminderIds, deleteAllRemindersForFamilyIdDogId };
+export { deleteRemindersForFamilyIdDogIdReminderIds, deleteAllRemindersForFamilyIdDogId };

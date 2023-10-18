@@ -18,16 +18,17 @@ async function logRequest(req: express.Request, res: express.Response, next: exp
 
   requestLogger.debug(`Request for ${method} ${originalUrl}`);
 
+  // TODO NOW wrap all middlewares in try catch to throw these errors, only having one call of sendFailureResponse per function that is inside the catch statement
   if (method === undefined) {
-    return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('method missing', 'logRequest', ERROR_CODES.VALUE.MISSING));
+    return res.extendedProperties.sendFailureResponse(new HoundError('method missing', 'logRequest', ERROR_CODES.VALUE.MISSING));
   }
 
   if (method !== 'GET' && method !== 'POST' && method !== 'PUT' && method !== 'DELETE') {
-    return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('method invalid', 'logRequest', ERROR_CODES.VALUE.INVALID));
+    return res.extendedProperties.sendFailureResponse(new HoundError('method invalid', 'logRequest', ERROR_CODES.VALUE.INVALID));
   }
 
   if (originalUrl === undefined) {
-    return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('originalUrl missing', 'logRequest', ERROR_CODES.VALUE.MISSING));
+    return res.extendedProperties.sendFailureResponse(new HoundError('originalUrl missing', 'logRequest', ERROR_CODES.VALUE.MISSING));
   }
 
   // Inserts request information into the previousRequests table.

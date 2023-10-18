@@ -7,6 +7,7 @@ import { apn, productionAPNProvider, developmentAPNProvider } from './apnProvide
 import { NOTIFICATION } from '../../../server/globalConstants';
 import { UserConfigurationWithPartialPrivateUsers } from '../../../types/CompositeRow';
 import { HoundError } from '../../../server/globalErrors';
+import { Dictionary } from '../../../types/Dictionary';
 
 function sendDevelopmentAPN(notification: apn.Notification, notificationToken: string): void {
   developmentAPNProvider.send(notification, notificationToken)
@@ -75,7 +76,7 @@ function sendAPN(
   category: string,
   forAlertTitle: string,
   forAlertBody: string,
-  customPayload: { [key: string]: unknown },
+  customPayload: Dictionary,
 ): void {
   const { userNotificationToken } = userNotificationConfiguration;
 

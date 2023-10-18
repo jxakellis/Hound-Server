@@ -148,6 +148,17 @@ function formatBoolean(boolean?: unknown): boolean | undefined {
  * @returns Number if valid, undefined otherwise.
  */
 function formatNumber(forNumber?: unknown): number | undefined {
+  const trueValues = new Set(['true', 'True', 'TRUE', '1', 'yes', 'Yes', 'YES']);
+  const falseValues = new Set(['false', 'False', 'FALSE', '0', 'no', 'No', 'NO']);
+
+  if (forNumber === true || trueValues.has(String(forNumber))) {
+    return 1;
+  }
+
+  if (forNumber === false || falseValues.has(String(forNumber))) {
+    return 0;
+  }
+
   const number = Number(forNumber);
 
   if (!Number.isFinite(number)) {

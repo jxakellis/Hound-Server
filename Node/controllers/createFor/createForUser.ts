@@ -4,7 +4,6 @@ import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
 import { hash } from '../../main/format/hash';
 
 import { getPublicUser } from '../getFor/getForUser';
-import { PrivateUsersRow } from '../../main/types/UsersRow';
 import { UserConfigurationRow } from '../../main/types/UserConfigurationRow';
 import { formatEmail, formatUnknownString } from '../../main/format/formatObject';
 
@@ -15,8 +14,11 @@ import { formatEmail, formatUnknownString } from '../../main/format/formatObject
 async function createUserForUserIdentifier(
   databaseConnection: Queryable,
   userIdentifier: string,
-  user: Partial<PrivateUsersRow>,
-  userConfiguration: Partial<UserConfigurationRow>,
+  userConfiguration: UserConfigurationRow,
+  userEmail?: string,
+  userFirstName?: string,
+  userLastName?: string,
+  userNotificationToken?: string,
 ): Promise<string> {
   const existingUser = await getPublicUser(databaseConnection, userIdentifier);
 
@@ -54,10 +56,10 @@ async function createUserForUserIdentifier(
         userId,
         userIdentifier,
         crypto.randomUUID(),
-        formatEmail(user.userEmail),
-        formatUnknownString(user.userFirstName, 32),
-        formatUnknownString(user.userLastName, 32),
-        formatUnknownString(user.userNotificationToken, 100),
+        formatEmail(userEmail),
+        formatUnknownString(userFirstName, 32),
+        formatUnknownString(userLastName, 32),
+        formatUnknownString(userNotificationToken, 100),
         // none, default value
       ],
     ),
@@ -96,7 +98,7 @@ async function createUserForUserIdentifier(
         ?,
         ?,
         ?,
-        ?,
+        ?
       ) `,
       [
         userId,

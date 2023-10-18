@@ -5,12 +5,13 @@ import { logServerError } from '../../../logging/logServerError';
 import { sendAPN } from './sendAPN';
 import { getUserToken, getAllFamilyMemberTokens, getOtherFamilyMemberTokens } from './apnTokens';
 import { HoundError } from '../../../server/globalErrors';
+import { Dictionary } from '../../../types/Dictionary';
 
 /**
 * Takes a userId and retrieves the userNotificationToken for the user
 * Invokes sendAPN with the tokens, alertTitle, and alertBody
 */
-async function sendNotificationForUser(userId: string, category: string, alertTitle: string, alertBody: string, customPayload: { [key: string]: unknown }): Promise<void> {
+async function sendNotificationForUser(userId: string, category: string, alertTitle: string, alertBody: string, customPayload: Dictionary): Promise<void> {
   apnLogger.debug(`sendNotificationForUser ${userId}, ${category}, ${alertTitle}, ${alertBody}`);
 
   try {
@@ -39,7 +40,7 @@ async function sendNotificationForUser(userId: string, category: string, alertTi
  * Takes a familyId and retrieves the userNotificationToken for all familyMembers
  * Invokes sendAPN with the tokens, alertTitle, and alertBody
  */
-async function sendNotificationForFamily(familyId: string, category: string, alertTitle: string, alertBody: string, customPayload: { [key: string]: unknown }): Promise<void> {
+async function sendNotificationForFamily(familyId: string, category: string, alertTitle: string, alertBody: string, customPayload: Dictionary): Promise<void> {
   apnLogger.debug(`sendNotificationForFamily ${familyId}, ${category}, ${alertTitle}, ${alertBody}, ${customPayload}`);
 
   try {
@@ -77,7 +78,7 @@ async function sendNotificationForFamilyExcludingUser(
   category: string,
   alertTitle: string,
   alertBody: string,
-  customPayload: { [key: string]: unknown },
+  customPayload: Dictionary,
 ): Promise<void> {
   apnLogger.debug(`sendNotificationForFamilyExcludingUser ${userId}, ${familyId}, ${category}, ${alertTitle}, ${alertBody}, ${customPayload}`);
 

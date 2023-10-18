@@ -13,14 +13,15 @@ async function createAppStoreServerNotification(req: express.Request, res: expre
     const signedPayload = formatUnknownString(req.body['signedPayload']);
 
     if (databaseConnection === undefined) {
-      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('databaseConnection missing', 'createAppStoreServerNotification', ERROR_CODES.VALUE.INVALID));
+      throw new HoundError('databaseConnection missing', 'createAppStoreServerNotification', ERROR_CODES.VALUE.INVALID);
     }
     if (signedPayload === undefined) {
-      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('signedPayload missing', 'createAppStoreServerNotification', ERROR_CODES.VALUE.INVALID));
+      throw new HoundError('signedPayload missing', 'createAppStoreServerNotification', ERROR_CODES.VALUE.INVALID);
     }
 
     await createASSNForSignedPayload(databaseConnection, signedPayload);
-    return res.extendedProperties.sendResponseForStatusBodyError(200, undefined, undefined);
+
+    return res.extendedProperties.sendSuccessResponse({});
   }
   catch (error) {
     // Errors shouldn't occur when dealing with App Store Server Notifications
@@ -32,7 +33,7 @@ async function createAppStoreServerNotification(req: express.Request, res: expre
         error,
       ),
     );
-    return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, error);
+    return res.extendedProperties.sendFailureResponse(error);
   }
 }
 

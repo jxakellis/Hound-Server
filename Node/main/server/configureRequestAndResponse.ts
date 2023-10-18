@@ -88,14 +88,14 @@ function configureRequestAndResponseExtendedProperties(req: express.Request, res
       validatedFamilyId: undefined,
       validatedDogId: undefined,
       validatedLogId: undefined,
-      validatedReminderId: undefined,
       validatedReminderIds: [],
     },
   };
   res.extendedProperties = {
     responseId: undefined,
     hasSentResponse: false,
-    sendResponseForStatusBodyError: async function sendResponseForStatusBodyError(status: number, body?: { [key: string]: unknown }, error?: HoundError): Promise<void> {
+    sendSuccessResponse: async function sendSuccessResponse(body: NonNullable<unknown>): Promise<void> {
+      const status = 200;
       // Check to see if the request has an active databaseConnection
       // If it does, then we attempt to COMMIT or ROLLBACK (and if they fail, the functions release() anyways)
       // if there is no active transaction, then we attempt to release the databaseConnection
@@ -103,9 +103,46 @@ function configureRequestAndResponseExtendedProperties(req: express.Request, res
         if (req.extendedProperties.hasActiveDatabaseTransaction === false) {
           releaseDatabaseConnection(req);
         }
-        else if (status >= 200 && status <= 299) {
+        else {
           // attempt to commit transaction
           await commitTransaction(req);
+        }
+      }
+
+      // Check to see if a response has been sent yet
+      if (res.extendedProperties.hasSentResponse === true) {
+        return;
+      }
+
+      const socketDestroyed = res?.socket?.destroyed;
+
+      if (socketDestroyed === undefined || socketDestroyed === true) {
+        return;
+      }
+
+      // If we user provided an error, then we convert that error to JSON and use it as the body
+
+      const response: ResponseBodyType = { result: body };
+
+      await logResponse(req, res, status, JSON.stringify(response));
+
+      if (req.originalUrl !== '/watchdog') {
+        // need to update watchdog so it recognizes pattern of requestId and responseId. currently can only recognize {"result":""} as success
+        response.requestId = req.extendedProperties.requestId ?? -1;
+        response.responseId = res.extendedProperties.responseId ?? -1;
+      }
+
+      res.extendedProperties.hasSentResponse = true;
+      res.status(status).json(response);
+    },
+    sendFailureResponse: async function sendFailureResponse(error?: HoundError): Promise<void> {
+      const status = 400;
+      // Check to see if the request has an active databaseConnection
+      // If it does, then we attempt to COMMIT or ROLLBACK (and if they fail, the functions release() anyways)
+      // if there is no active transaction, then we attempt to release the databaseConnection
+      if (req.extendedProperties.databaseConnection !== undefined) {
+        if (req.extendedProperties.hasActiveDatabaseTransaction === false) {
+          releaseDatabaseConnection(req);
         }
         else {
           // attempt to rollback transaction
@@ -126,18 +163,7 @@ function configureRequestAndResponseExtendedProperties(req: express.Request, res
 
       // If we user provided an error, then we convert that error to JSON and use it as the body
 
-      let response: ResponseBodyType;
-      if (error !== undefined) {
-        if (error instanceof Error) {
-          response = convertErrorToJSON(error);
-        }
-        else {
-          response = convertErrorToJSON(undefined);
-        }
-      }
-      else {
-        response = { result: body ?? '' };
-      }
+      const response: ResponseBodyType = (error !== undefined && error instanceof Error) ? convertErrorToJSON(error) : convertErrorToJSON(undefined);
 
       await logResponse(req, res, status, JSON.stringify(response));
 
@@ -168,17 +194,13 @@ async function configureRequestAndResponse(req: express.Request, res: express.Re
       req.extendedProperties.hasActiveDatabaseTransaction = true;
     }
     catch (transactionError) {
-      return res.extendedProperties.sendResponseForStatusBodyError(
-        500,
-        undefined,
+      return res.extendedProperties.sendFailureResponse(
         new HoundError("Couldn't begin a transaction with databaseConnection", 'configureRequestAndResponse', ERROR_CODES.GENERAL.POOL_TRANSACTION_FAILED, transactionError),
       );
     }
   }
   catch (databaseConnectionError) {
-    return res.extendedProperties.sendResponseForStatusBodyError(
-      500,
-      undefined,
+    return res.extendedProperties.sendFailureResponse(
       new HoundError("Couldn't get a connection from databaseConnectionPoolForRequests", 'configureRequestAndResponse', ERROR_CODES.GENERAL.POOL_CONNECTION_FAILED, databaseConnectionError),
     );
   }

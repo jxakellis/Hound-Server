@@ -10,7 +10,7 @@ import { updateLogForDogIdLogId } from '../updateFor/updateForLogs';
 import { deleteLogForLogId } from '../deleteFor/deleteForLogs';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
 
-import { formatBoolean, formatDate, formatUnknownString } from '../../main/format/formatObject';
+import { formatDate, formatUnknownString } from '../../main/format/formatObject';
 
 /*
 Known:
@@ -18,111 +18,184 @@ Known:
 - dogId formatted correctly and request has sufficient permissions to use
 - (if appliciable to controller) logId formatted correctly and request has sufficient permissions to use
 */
-async function getLogs(req: express.Request, res: express.Response) {
+async function getLogs(req: express.Request, res: express.Response): Promise<void> {
   try {
     const { databaseConnection } = req.extendedProperties;
-    const { validatedFamilyId } = req.extendedProperties.validatedVariables;
+    const { validatedDogId, validatedLogId } = req.extendedProperties.validatedVariables;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const dogName = formatUnknownString(req.body['dogName']);
+    const userConfigurationPreviousDogManagerSynchronization = formatDate(req.query['userConfigurationPreviousDogManagerSynchronization']);
+
     if (databaseConnection === undefined) {
-      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('databaseConnection missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+      // TODO NOW for all functions inside ./controllerRoutes instead of sending response right here, throw error and have it caught by the catch statement below
+      throw new HoundError('databaseConnection missing', 'getLogs', ERROR_CODES.VALUE.INVALID);
     }
-    if (validatedFamilyId === undefined) {
-      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('validatedFamilyId missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+    if (validatedDogId === undefined) {
+      throw new HoundError('validatedDogId missing', 'getLogs', ERROR_CODES.VALUE.INVALID);
     }
 
-    const { dogId, logId } = req.extendedProperties.validatedVariables;
-    const { userConfigurationPreviousDogManagerSynchronization } = req.query;
-    const result = areAllDefined(logId)
+    const result = validatedLogId !== undefined
     // if logId is defined and it is a number then continue to find a single log
-      ? await getLogForLogId(req.extendedProperties.databaseConnection, logId, userConfigurationPreviousDogManagerSynchronization)
+      ? await getLogForLogId(databaseConnection, validatedLogId, userConfigurationPreviousDogManagerSynchronization)
     // query for multiple logs
-      : await getAllLogsForDogId(req.extendedProperties.databaseConnection, dogId, userConfigurationPreviousDogManagerSynchronization);
+      : await getAllLogsForDogId(databaseConnection, validatedDogId, userConfigurationPreviousDogManagerSynchronization);
 
-    return res.extendedProperties.sendResponseForStatusBodyError(200, result, null);
+    // TODO NOW for all functions inside ./controllerRoutes make sure to check if result is not undefined, otherwise throw error
+    return res.extendedProperties.sendSuccessResponse(result);
   }
   catch (error) {
-    return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, error);
+    return res.extendedProperties.sendFailureResponse(error);
   }
 }
 
-async function createLog(req: express.Request, res: express.Response) {
+async function createLog(req: express.Request, res: express.Response): Promise<void> {
   try {
     const { databaseConnection } = req.extendedProperties;
-    const { validatedFamilyId } = req.extendedProperties.validatedVariables;
+    const { validatedUserId, validatedFamilyId, validatedDogId } = req.extendedProperties.validatedVariables;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const dogName = formatUnknownString(req.body['dogName']);
+    const logDate = formatDate(req.body['logDate']);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const logAction = formatUnknownString(req.body['logAction']);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const logCustomActionName = formatUnknownString(req.body['logCustomActionName']);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const logNote = formatUnknownString(req.body['logNote']);
+
     if (databaseConnection === undefined) {
-      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('databaseConnection missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+      throw new HoundError('databaseConnection missing', 'createLog', ERROR_CODES.VALUE.INVALID);
+    }
+    if (validatedUserId === undefined) {
+      throw new HoundError('validatedUserId missing', 'createLog', ERROR_CODES.VALUE.INVALID);
     }
     if (validatedFamilyId === undefined) {
-      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('validatedFamilyId missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+      throw new HoundError('validatedFamilyId missing', 'createLog', ERROR_CODES.VALUE.INVALID);
+    }
+    if (validatedDogId === undefined) {
+      throw new HoundError('validatedDogId missing', 'createLog', ERROR_CODES.VALUE.INVALID);
+    }
+    if (logDate === undefined) {
+      throw new HoundError('logDate missing', 'createLog', ERROR_CODES.VALUE.INVALID);
+    }
+    if (logAction === undefined) {
+      throw new HoundError('logAction missing', 'createLog', ERROR_CODES.VALUE.INVALID);
+    }
+    if (logCustomActionName === undefined) {
+      throw new HoundError('logCustomActionName missing', 'createLog', ERROR_CODES.VALUE.INVALID);
+    }
+    if (logNote === undefined) {
+      throw new HoundError('logNote missing', 'createLog', ERROR_CODES.VALUE.INVALID);
     }
 
-    const { userId, familyId, dogId } = req.extendedProperties.validatedVariables;
-    const {
-      logDate, logAction, logCustomActionName, logNote,
-    } = req.body;
-    const result = await createLogForUserIdDogId(req.extendedProperties.databaseConnection, userId, dogId, logDate, logAction, logCustomActionName, logNote);
+    const result = await createLogForUserIdDogId(
+      databaseConnection,
+      {
+        userId: validatedUserId,
+        dogId: validatedDogId,
+        // this value is unused, we just need a placeholder for a valid DogLogsRow
+        logId: -1,
+        logDate,
+        logAction,
+        logCustomActionName,
+        logNote,
+        // this value is unused, we just need a placeholder for a valid DogLogsRow
+        logLastModified: new Date(),
+        // this value is unused, we just need a placeholder for a valid DogLogsRow
+        logIsDeleted: 0,
+      },
+    );
     createLogNotification(
-      userId,
-      familyId,
-      dogId,
+      validatedUserId,
+      validatedFamilyId,
+      validatedDogId,
       logAction,
       logCustomActionName,
     );
 
-    return res.extendedProperties.sendResponseForStatusBodyError(200, result, null);
+    return res.extendedProperties.sendSuccessResponse(result);
   }
   catch (error) {
-    return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, error);
+    return res.extendedProperties.sendFailureResponse(error);
   }
 }
 
-async function updateLog(req: express.Request, res: express.Response) {
+async function updateLog(req: express.Request, res: express.Response): Promise<void> {
   try {
     const { databaseConnection } = req.extendedProperties;
-    const { validatedFamilyId } = req.extendedProperties.validatedVariables;
+    const { validatedUserId, validatedDogId, validatedLogId } = req.extendedProperties.validatedVariables;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const dogName = formatUnknownString(req.body['dogName']);
+    const logDate = formatDate(req.body['logDate']);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const logAction = formatUnknownString(req.body['logAction']);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const logCustomActionName = formatUnknownString(req.body['logCustomActionName']);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const logNote = formatUnknownString(req.body['logNote']);
+
     if (databaseConnection === undefined) {
-      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('databaseConnection missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+      throw new HoundError('databaseConnection missing', 'updateLog', ERROR_CODES.VALUE.INVALID);
     }
-    if (validatedFamilyId === undefined) {
-      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('validatedFamilyId missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+    if (validatedUserId === undefined) {
+      throw new HoundError('validatedUserId missing', 'updateLog', ERROR_CODES.VALUE.INVALID);
+    }
+    if (validatedDogId === undefined) {
+      throw new HoundError('validatedDogId missing', 'updateLog', ERROR_CODES.VALUE.INVALID);
+    }
+    if (validatedLogId === undefined) {
+      throw new HoundError('validatedLogId missing', 'updateLog', ERROR_CODES.VALUE.INVALID);
+    }
+    if (logDate === undefined) {
+      throw new HoundError('logDate missing', 'updateLog', ERROR_CODES.VALUE.INVALID);
+    }
+    if (logAction === undefined) {
+      throw new HoundError('logAction missing', 'updateLog', ERROR_CODES.VALUE.INVALID);
+    }
+    if (logCustomActionName === undefined) {
+      throw new HoundError('logCustomActionName missing', 'updateLog', ERROR_CODES.VALUE.INVALID);
+    }
+    if (logNote === undefined) {
+      throw new HoundError('logNote missing', 'updateLog', ERROR_CODES.VALUE.INVALID);
     }
 
-    const { dogId, logId } = req.extendedProperties.validatedVariables;
-    const {
-      logDate, logAction, logCustomActionName, logNote,
-    } = req.body;
-    await updateLogForDogIdLogId(req.extendedProperties.databaseConnection, dogId, logId, logDate, logAction, logCustomActionName, logNote);
-    return res.extendedProperties.sendResponseForStatusBodyError(200, undefined, undefined);
+    await updateLogForDogIdLogId(
+      databaseConnection,
+      {
+        userId: validatedUserId,
+        dogId: validatedDogId,
+        logId: validatedLogId,
+        logDate,
+        logAction,
+        logCustomActionName,
+        logNote,
+        // this value is unused, we just need a placeholder for a valid DogLogsRow
+        logLastModified: new Date(),
+        // this value is unused, we just need a placeholder for a valid DogLogsRow
+        logIsDeleted: 0,
+      },
+    );
+    return res.extendedProperties.sendSuccessResponse({});
   }
   catch (error) {
-    return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, error);
+    return res.extendedProperties.sendFailureResponse(error);
   }
 }
 
-async function deleteLog(req: express.Request, res: express.Response) {
+async function deleteLog(req: express.Request, res: express.Response): Promise<void> {
   try {
     const { databaseConnection } = req.extendedProperties;
-    const { validatedFamilyId } = req.extendedProperties.validatedVariables;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const dogName = formatUnknownString(req.body['dogName']);
+    const { validatedLogId } = req.extendedProperties.validatedVariables;
+
     if (databaseConnection === undefined) {
-      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('databaseConnection missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+      throw new HoundError('databaseConnection missing', 'deleteLog', ERROR_CODES.VALUE.INVALID);
     }
-    if (validatedFamilyId === undefined) {
-      return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, new HoundError('validatedFamilyId missing', TODOREPLACEME, ERROR_CODES.VALUE.INVALID));
+    if (validatedLogId === undefined) {
+      throw new HoundError('validatedLogId missing', 'deleteLog', ERROR_CODES.VALUE.INVALID);
     }
 
-    const { dogId, logId } = req.extendedProperties.validatedVariables;
-    await deleteLogForLogId(req.extendedProperties.databaseConnection, dogId, logId);
-    return res.extendedProperties.sendResponseForStatusBodyError(200, undefined, undefined);
+    await deleteLogForLogId(databaseConnection, validatedLogId);
+
+    return res.extendedProperties.sendSuccessResponse({});
   }
   catch (error) {
-    return res.extendedProperties.sendResponseForStatusBodyError(400, undefined, error);
+    return res.extendedProperties.sendFailureResponse(error);
   }
 }
 
