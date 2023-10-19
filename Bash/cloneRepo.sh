@@ -19,9 +19,9 @@ echo
 echo "DELETING"
 echo
 
-echo "MOVING '/HOUND_SERVER_DIR/Node/main/secrets/' INTO '/PARENT_DIR/'"
+echo "MOVING '/HOUND_SERVER_DIR/Node/src/main/secrets/' INTO '/PARENT_DIR/'"
 rm -rf "${PARENT_DIR}/secrets/"
-mv -f "${HOUND_SERVER_DIR}/Node/main/secrets/" "${PARENT_DIR}"
+mv -f "${HOUND_SERVER_DIR}/Node/src/main/secrets/" "${PARENT_DIR}"
 
 echo "DELETING '/HOUND_SERVER_DIR/'"
 rm -rf "${HOUND_SERVER_DIR}"
@@ -43,9 +43,9 @@ echo "GRANTING R & W PRIVILEGES ON '/HOUND_SERVER_DIR/' (again)"
 # Grant privileges AGAIN so that jxakellis has read/write privileges on node_modules folder
 chmod -R a+rwx "${HOUND_SERVER_DIR}/"
 
-echo "MOVING '/PARENT_DIR/secrets/' INTO '/HOUND_SERVER_DIR/Node/main/'"
-rm -rf "${HOUND_SERVER_DIR}/Node/main/secrets/"
-mv -f "${PARENT_DIR}/secrets/" "${HOUND_SERVER_DIR}/Node/main/"
+echo "MOVING '/PARENT_DIR/secrets/' INTO '/HOUND_SERVER_DIR/Node/src/main/'"
+rm -rf "${HOUND_SERVER_DIR}/Node/src/main/secrets/"
+mv -f "${PARENT_DIR}/secrets/" "${HOUND_SERVER_DIR}/Node/src/main/"
 
 echo "MOVING '/HOUND_SERVER_DIR/Bash/*' INTO '/PARENT_DIR/' "
 # When you include the * wildcard character inside quotes, bash doesn't expand it. So, bash is trying to find a file literally named *, which of course doesn't exist.
