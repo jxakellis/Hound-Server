@@ -12,3 +12,18 @@ rm -rf /home/ubuntu/parent_dir/Hound-Server/Node/main
 scp -i /Users/jonathanxakellis/Documents/Hound.nosync/Certificates/developmentHoundInstance.cer -r /Users/jonathanxakellis/Documents/Hound.nosync/Hound-Server/Node/src/main/secrets/* ubuntu@3.23.242.120:/home/ubuntu/parent_dir/Hound-Server/Node/src/main/secrets/
 
 (SECRETS COPIED)
+
+fix updateRepo script (might already be fixed when goes to production)
+vi updateRepo.sh 
+
+(CHANGE)
+pm2 start "${HOUND_SERVER_DIR}/Node/pm2.config.js"
+(TO)
+pm2 start "${HOUND_SERVER_DIR}/Node/pm2.config.cjs"
+
+(PULL REPO AGAIN)
+
+sudo bash /home/ubuntu/parent_dir/updateRepo.sh
+
+(MOVE PRODUCTION INDICATOR FOR PROD)
+mv -f /home/ubuntu/parent_dir/Hound-Server/Node/productionIndicator.txt /home/ubuntu/parent_dir/

@@ -42,5 +42,5 @@ module.exports = {
       },
     }
   },
-  ignorePatterns: ['.eslintrc.cjs', 'built/', 'pm2.config.cjs'],
+  ignorePatterns: ['.eslintrc.*', 'built/', 'pm2.config.*', 'tsconfig.*'],
 };
