@@ -1,0 +1,14 @@
+MIGRATION OF LINUX SERVER FROM JS TO TS
+ssh -i /Users/jonathanxakellis/Documents/Hound.nosync/Certificates/developmentHoundInstance.cer ubuntu@3.23.242.120
+sudo bash /home/ubuntu/parent_dir/Hound-Server/Bash/updateLinux.sh
+
+(SERVER UPDATES)
+
+sudo bash /home/ubuntu/parent_dir/cloneRepo.sh
+rm -rf /home/ubuntu/parent_dir/Hound-Server/Node/main
+
+(MOVE SECRETS FROM LOCAL TO SERVER)
+
+scp -i /Users/jonathanxakellis/Documents/Hound.nosync/Certificates/developmentHoundInstance.cer -r /Users/jonathanxakellis/Documents/Hound.nosync/Hound-Server/Node/src/main/secrets/* ubuntu@3.23.242.120:/home/ubuntu/parent_dir/Hound-Server/Node/src/main/secrets/
+
+(SECRETS COPIED)
