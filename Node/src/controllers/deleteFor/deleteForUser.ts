@@ -1,11 +1,11 @@
-import { type Queryable, databaseQuery } from '../../main/database/databaseQuery';
+import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
 
-import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
+import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 
-import { getFamilyId } from '../getFor/getForFamily';
+import { getFamilyId } from '../getFor/getForFamily.js';
 
-import { getActiveTransaction } from '../getFor/getForTransactions';
-import { deleteFamilyLeaveFamilyForUserIdFamilyId } from './deleteForFamily';
+import { getActiveTransaction } from '../getFor/getForTransactions.js';
+import { deleteFamilyLeaveFamilyForUserIdFamilyId } from './deleteForFamily.js';
 
 /**
 * Queries the database to delete a user. If the query is successful, then returns

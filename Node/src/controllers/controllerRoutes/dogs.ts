@@ -1,15 +1,15 @@
 import express from 'express';
 
-import { getDogForDogId, getAllDogsForUserIdFamilyId } from '../getFor/getForDogs';
+import { getDogForDogId, getAllDogsForUserIdFamilyId } from '../getFor/getForDogs.js';
 
-import { createDogForFamilyId } from '../createFor/createForDogs';
+import { createDogForFamilyId } from '../createFor/createForDogs.js';
 
-import { updateDogForDogId } from '../updateFor/updateForDogs';
+import { updateDogForDogId } from '../updateFor/updateForDogs.js';
 
-import { deleteDogForFamilyIdDogId } from '../deleteFor/deleteForDogs';
-import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
+import { deleteDogForFamilyIdDogId } from '../deleteFor/deleteForDogs.js';
+import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 
-import { formatBoolean, formatDate, formatUnknownString } from '../../main/format/formatObject';
+import { formatBoolean, formatDate, formatUnknownString } from '../../main/format/formatObject.js';
 
 /*
 Known:

@@ -1,4 +1,4 @@
-import { formatKnownString } from '../format/formatObject';
+import { formatKnownString } from '../format/formatObject.js';
 
 const ERROR_CODES = {
   GENERAL: {

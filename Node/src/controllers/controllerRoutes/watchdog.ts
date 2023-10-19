@@ -1,7 +1,7 @@
 import express from 'express';
-import { getDatabaseStatusForWatchdog } from '../getFor/getForWatchdog';
+import { getDatabaseStatusForWatchdog } from '../getFor/getForWatchdog.js';
 
-import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
+import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 
 async function getWatchdog(req: express.Request, res: express.Response): Promise<void> {
   try {

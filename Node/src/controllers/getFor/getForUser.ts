@@ -1,10 +1,10 @@
-import { type Queryable, databaseQuery } from '../../main/database/databaseQuery';
-import { hash } from '../../main/format/hash';
-import { type PrivateCombinedUsersInformation } from '../../main/types/CompositeRow';
-import { userConfigurationColumns } from '../../main/types/UserConfigurationRow';
-import { type PublicUsersRow, privateUsersColumns, publicUsersColumns } from '../../main/types/UsersRow';
+import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
+import { hash } from '../../main/format/hash.js';
+import { type PrivateCombinedUsersInformation } from '../../main/types/CompositeRow.js';
+import { userConfigurationColumns } from '../../main/types/UserConfigurationRow.js';
+import { type PublicUsersRow, privateUsersColumns, publicUsersColumns } from '../../main/types/UsersRow.js';
 
-import { updateUserForUserIdentifierHashedUserIdentifier } from '../updateFor/updateForUser';
+import { updateUserForUserIdentifierHashedUserIdentifier } from '../updateFor/updateForUser.js';
 
 /**
 * If the query is successful, returns the user for the userIdentifier.

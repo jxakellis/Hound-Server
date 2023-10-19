@@ -1,9 +1,9 @@
-import { type FamiliesRow } from './FamiliesRow';
-import { type FamilyMembersRow } from './FamilyMembersRow';
-import { type PreviousFamilyMembersRow } from './PreviousFamilyMembersRow';
-import { type TransactionsRow } from './TransactionsRow';
-import { type UserConfigurationRow } from './UserConfigurationRow';
-import { type PrivateUsersRow, type PublicUsersRow } from './UsersRow';
+import { type FamiliesRow } from './FamiliesRow.js';
+import { type FamilyMembersRow } from './FamilyMembersRow.js';
+import { type PreviousFamilyMembersRow } from './PreviousFamilyMembersRow.js';
+import { type TransactionsRow } from './TransactionsRow.js';
+import { type UserConfigurationRow } from './UserConfigurationRow.js';
+import { type PrivateUsersRow, type PublicUsersRow } from './UsersRow.js';
 
 type UserConfigurationWithPartialPrivateUsers = UserConfigurationRow & Partial<PrivateUsersRow>
 

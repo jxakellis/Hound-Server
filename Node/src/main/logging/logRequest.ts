@@ -1,10 +1,10 @@
 import express from 'express';
-import { requestLogger } from './loggers';
-import { logServerError } from './logServerError';
-import { getDatabaseConnections } from '../database/databaseConnections';
-import { type ResultSetHeader, databaseQuery } from '../database/databaseQuery';
-import { formatUnknownString, formatNumber } from '../format/formatObject';
-import { HoundError, ERROR_CODES } from '../server/globalErrors';
+import { requestLogger } from './loggers.js';
+import { logServerError } from './logServerError.js';
+import { getDatabaseConnections } from '../database/databaseConnections.js';
+import { type ResultSetHeader, databaseQuery } from '../database/databaseQuery.js';
+import { formatUnknownString, formatNumber } from '../format/formatObject.js';
+import { HoundError, ERROR_CODES } from '../server/globalErrors.js';
 
 // Outputs request to the console and logs to database
 async function logRequest(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {

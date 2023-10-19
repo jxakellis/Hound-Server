@@ -2,7 +2,7 @@ import express from 'express';
 
 import {
   getWatchdog,
-} from '../controllers/controllerRoutes/watchdog';
+} from '../controllers/controllerRoutes/watchdog.js';
 
 const watchdogRouter = express.Router({ mergeParams: true });
 

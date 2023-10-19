@@ -1,14 +1,14 @@
 import https from 'https';
 import { IncomingMessage, ServerResponse } from 'http';
 
-import { serverLogger } from '../logging/loggers';
-import { databaseQuery } from '../database/databaseQuery';
-import { testDatabaseConnections } from '../database/testDatabaseConnection';
-import { logServerError } from '../logging/logServerError';
-import { restoreAlarmNotificationsForAllFamilies } from '../tools/notifications/alarm/restoreAlarmNotification';
-import { SERVER } from './globalConstants';
-import { HoundError } from './globalErrors';
-import { getDatabaseConnections } from '../database/databaseConnections';
+import { serverLogger } from '../logging/loggers.js';
+import { databaseQuery } from '../database/databaseQuery.js';
+import { testDatabaseConnections } from '../database/testDatabaseConnection.js';
+import { logServerError } from '../logging/logServerError.js';
+import { restoreAlarmNotificationsForAllFamilies } from '../tools/notifications/alarm/restoreAlarmNotification.js';
+import { SERVER } from './globalConstants.js';
+import { HoundError } from './globalErrors.js';
+import { getDatabaseConnections } from '../database/databaseConnections.js';
 
 async function configureServer(server: https.Server<typeof IncomingMessage, typeof ServerResponse>): Promise<NodeJS.Timeout> {
   return new Promise((resolve) => {

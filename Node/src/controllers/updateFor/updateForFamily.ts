@@ -1,10 +1,10 @@
-import { type Queryable, databaseQuery } from '../../main/database/databaseQuery';
-import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
-import { createFamilyMemberJoinNotification, createFamilyLockedNotification } from '../../main/tools/notifications/alert/createFamilyNotification';
-import { type FamiliesRow, familiesColumns } from '../../main/types/FamiliesRow';
+import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
+import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
+import { createFamilyMemberJoinNotification, createFamilyLockedNotification } from '../../main/tools/notifications/alert/createFamilyNotification.js';
+import { type FamiliesRow, familiesColumns } from '../../main/types/FamiliesRow.js';
 
-import { getAllFamilyMembersForFamilyId, isUserIdInFamily } from '../getFor/getForFamily';
-import { getActiveTransaction } from '../getFor/getForTransactions';
+import { getAllFamilyMembersForFamilyId, isUserIdInFamily } from '../getFor/getForFamily.js';
+import { getActiveTransaction } from '../getFor/getForTransactions.js';
 
 /**
 * Helper method for createFamilyForUserId, goes through checks to attempt to add user to desired family

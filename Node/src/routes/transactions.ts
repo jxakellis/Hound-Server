@@ -2,7 +2,7 @@ import express from 'express';
 
 import {
   getTransactions, createTransactions,
-} from '../controllers/controllerRoutes/transactions';
+} from '../controllers/controllerRoutes/transactions.js';
 
 const transactionsRouter = express.Router({ mergeParams: true });
 

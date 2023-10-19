@@ -1,18 +1,18 @@
-import { alarmLogger } from '../../../logging/loggers';
-import { getDatabaseConnections } from '../../../database/databaseConnections';
-import { databaseQuery } from '../../../database/databaseQuery';
+import { alarmLogger } from '../../../logging/loggers.js';
+import { getDatabaseConnections } from '../../../database/databaseConnections.js';
+import { databaseQuery } from '../../../database/databaseQuery.js';
 
-import { schedule } from './schedule';
+import { schedule } from './schedule.js';
 
-import { sendNotificationForFamily } from '../apn/sendNotification';
+import { sendNotificationForFamily } from '../apn/sendNotification.js';
 
-import { logServerError } from '../../../logging/logServerError';
-import { deleteAlarmNotificationsForReminder } from './deleteAlarmNotification';
-import { formatReminderAction } from '../../../format/formatName';
-import { type DogsRow, dogsColumns } from '../../../types/DogsRow';
-import { type DogRemindersRow, dogRemindersColumns } from '../../../types/DogRemindersRow';
-import { NOTIFICATION } from '../../../server/globalConstants';
-import { HoundError } from '../../../server/globalErrors';
+import { logServerError } from '../../../logging/logServerError.js';
+import { deleteAlarmNotificationsForReminder } from './deleteAlarmNotification.js';
+import { formatReminderAction } from '../../../format/formatName.js';
+import { type DogsRow, dogsColumns } from '../../../types/DogsRow.js';
+import { type DogRemindersRow, dogRemindersColumns } from '../../../types/DogRemindersRow.js';
+import { NOTIFICATION } from '../../../server/globalConstants.js';
+import { HoundError } from '../../../server/globalErrors.js';
 
 /**
  * Helper method for createAlarmNotificationForFamily, actually queries database to get most updated version of dog and reminder.

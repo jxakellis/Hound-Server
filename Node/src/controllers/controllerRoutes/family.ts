@@ -1,15 +1,15 @@
 import express from 'express';
 
-import { getAllFamilyInformationForFamilyId } from '../getFor/getForFamily';
+import { getAllFamilyInformationForFamilyId } from '../getFor/getForFamily.js';
 
-import { createFamilyForUserId } from '../createFor/createForFamily';
+import { createFamilyForUserId } from '../createFor/createForFamily.js';
 
-import { updateFamilyForUserIdFamilyId } from '../updateFor/updateForFamily';
+import { updateFamilyForUserIdFamilyId } from '../updateFor/updateForFamily.js';
 
-import { deleteFamilyLeaveFamilyForUserIdFamilyId, kickFamilyMemberForUserIdFamilyId } from '../deleteFor/deleteForFamily';
-import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
+import { deleteFamilyLeaveFamilyForUserIdFamilyId, kickFamilyMemberForUserIdFamilyId } from '../deleteFor/deleteForFamily.js';
+import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 
-import { formatBoolean, formatUnknownString } from '../../main/format/formatObject';
+import { formatBoolean, formatUnknownString } from '../../main/format/formatObject.js';
 
 /*
 Known:

@@ -1,5 +1,5 @@
-import { type DogLogsRow } from './DogLogsRow';
-import { type DogRemindersRow } from './DogRemindersRow';
+import { type DogLogsRow } from './DogLogsRow.js';
+import { type DogRemindersRow } from './DogRemindersRow.js';
 
 const dogsColumns = `
 d.dogId,

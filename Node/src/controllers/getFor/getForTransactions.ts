@@ -1,9 +1,9 @@
-import { type Queryable, databaseQuery } from '../../main/database/databaseQuery';
-import { SUBSCRIPTION } from '../../main/server/globalConstants';
-import { type TransactionsRow, transactionsColumns } from '../../main/types/TransactionsRow';
-import { type PublicUsersRow, publicUsersColumns } from '../../main/types/UsersRow';
+import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
+import { SUBSCRIPTION } from '../../main/server/globalConstants.js';
+import { type TransactionsRow, transactionsColumns } from '../../main/types/TransactionsRow.js';
+import { type PublicUsersRow, publicUsersColumns } from '../../main/types/UsersRow.js';
 
-import { getFamilyHeadUserId } from './getForFamily';
+import { getFamilyHeadUserId } from './getForFamily.js';
 
 /**
  *  If the query is successful, returns the most recent subscription for the userId's family (if no most recent subscription, fills in default subscription details).

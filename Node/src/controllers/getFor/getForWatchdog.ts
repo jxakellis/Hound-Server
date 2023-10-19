@@ -1,4 +1,4 @@
-import { type Queryable, databaseQuery } from '../../main/database/databaseQuery';
+import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
 
 /**
  * Queries all the tables to check if they are on line

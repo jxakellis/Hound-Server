@@ -1,8 +1,8 @@
 import express from 'express';
-import { formatUnknownString } from '../main/format/formatObject';
-import { ERROR_CODES, HoundError } from '../main/server/globalErrors';
-import { NOTIFICATION } from '../main/server/globalConstants';
-import { createTerminateNotification } from '../main/tools/notifications/alert/createTerminateNotification';
+import { formatUnknownString } from '../main/format/formatObject.js';
+import { ERROR_CODES, HoundError } from '../main/server/globalErrors.js';
+import { NOTIFICATION } from '../main/server/globalConstants.js';
+import { createTerminateNotification } from '../main/tools/notifications/alert/createTerminateNotification.js';
 
 const alertRouter = express.Router({ mergeParams: true });
 

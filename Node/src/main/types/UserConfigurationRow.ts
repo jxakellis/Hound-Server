@@ -31,7 +31,7 @@ type UserConfigurationRow = {
     userConfigurationSilentModeEndUTCHour: number
     userConfigurationSilentModeStartUTCMinute: number
     userConfigurationSilentModeEndUTCMinute: number
-};
+}; 
 
 export {
   type UserConfigurationRow, userConfigurationColumns,

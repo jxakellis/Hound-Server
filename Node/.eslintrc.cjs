@@ -14,8 +14,8 @@ module.exports = {
   },
   plugins: ['@typescript-eslint'], // Use the TypeScript plugin
   rules: {
-    // Custom
-    'max-len': ['error', { code: 200, ignoreComments: true }],
+    // Custom 
+    'max-len': ['error', { code: 200, ignoreComments: true }], 
     'brace-style': ['error', 'stroustrup', { allowSingleLine: false }],
     '@typescript-eslint/no-use-before-define': ['error', { functions: false, classes: true, variables: true }],
     // Error
@@ -40,5 +40,5 @@ module.exports = {
       }
     }
   },
-  ignorePatterns: ['.eslintrc.js', 'built/'],
+  ignorePatterns: ['.eslintrc.cjs', 'built/'],
 };

@@ -1,12 +1,12 @@
-import { schedule } from './schedule';
-import { createAlarmNotificationForFamily } from './createAlarmNotification';
+import { schedule } from './schedule.js';
+import { createAlarmNotificationForFamily } from './createAlarmNotification.js';
 
-import { logServerError } from '../../../logging/logServerError';
-import { getDatabaseConnections } from '../../../database/databaseConnections';
-import { databaseQuery } from '../../../database/databaseQuery';
-import { type DogsRow, dogsColumns } from '../../../types/DogsRow';
-import { type DogRemindersRow, dogRemindersColumns } from '../../../types/DogRemindersRow';
-import { HoundError } from '../../../server/globalErrors';
+import { logServerError } from '../../../logging/logServerError.js';
+import { getDatabaseConnections } from '../../../database/databaseConnections.js';
+import { databaseQuery } from '../../../database/databaseQuery.js';
+import { type DogsRow, dogsColumns } from '../../../types/DogsRow.js';
+import { type DogRemindersRow, dogRemindersColumns } from '../../../types/DogRemindersRow.js';
+import { HoundError } from '../../../server/globalErrors.js';
 
 /**
  * Assumes an empty schedule

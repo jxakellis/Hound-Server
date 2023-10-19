@@ -1,7 +1,7 @@
 import { AppStoreServerAPI, Environment } from 'app-store-server-api';
 
-import { key, keyId, issuerId } from '../../secrets/appStoreConnectAPI';
-import { SERVER } from '../../server/globalConstants';
+import { key, keyId, issuerId } from '../../secrets/appStoreConnectAPI.js';
+import { SERVER } from '../../server/globalConstants.js';
 
 const api = new AppStoreServerAPI(
   key,

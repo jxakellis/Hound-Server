@@ -1,5 +1,5 @@
 import { type PoolConnection } from 'mysql2';
-import { type TransactionsRow } from '../types/TransactionsRow';
+import { type TransactionsRow } from '../types/TransactionsRow.js';
 
 declare global {
     interface Error {

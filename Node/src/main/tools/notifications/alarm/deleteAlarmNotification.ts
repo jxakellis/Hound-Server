@@ -1,11 +1,11 @@
-import { alarmLogger } from '../../../logging/loggers';
-import { getDatabaseConnections } from '../../../database/databaseConnections';
-import { databaseQuery } from '../../../database/databaseQuery';
+import { alarmLogger } from '../../../logging/loggers.js';
+import { getDatabaseConnections } from '../../../database/databaseConnections.js';
+import { databaseQuery } from '../../../database/databaseQuery.js';
 
-import { logServerError } from '../../../logging/logServerError';
-import { cancelJobForFamilyForReminder } from './cancelJob';
-import { type DogRemindersRow, dogRemindersColumns } from '../../../types/DogRemindersRow';
-import { HoundError } from '../../../server/globalErrors';
+import { logServerError } from '../../../logging/logServerError.js';
+import { cancelJobForFamilyForReminder } from './cancelJob.js';
+import { type DogRemindersRow, dogRemindersColumns } from '../../../types/DogRemindersRow.js';
+import { HoundError } from '../../../server/globalErrors.js';
 
 async function deleteAlarmNotificationsForFamily(familyId: string): Promise<void> {
   try {

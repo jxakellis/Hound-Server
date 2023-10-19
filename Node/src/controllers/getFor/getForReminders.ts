@@ -1,5 +1,5 @@
-import { type Queryable, databaseQuery } from '../../main/database/databaseQuery';
-import { type DogRemindersRow, dogRemindersColumns } from '../../main/types/DogRemindersRow';
+import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
+import { type DogRemindersRow, dogRemindersColumns } from '../../main/types/DogRemindersRow.js';
 
 /**
  *  If the query is successful, returns the reminder for the reminderId.

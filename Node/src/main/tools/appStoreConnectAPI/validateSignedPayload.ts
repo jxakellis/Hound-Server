@@ -2,10 +2,10 @@ import {
   decodeNotificationPayload, decodeTransaction, decodeRenewalInfo,
   type DecodedNotificationPayload, type NotificationData, type JWSTransactionDecodedPayload, type JWSRenewalInfoDecodedPayload,
 } from 'app-store-server-api';
-import { HoundError, ERROR_CODES } from '../../server/globalErrors';
-import { logServerError } from '../../logging/logServerError';
-import { formatUnknownString } from '../../format/formatObject';
-import { SERVER } from '../../server/globalConstants';
+import { HoundError, ERROR_CODES } from '../../server/globalErrors.js';
+import { logServerError } from '../../logging/logServerError.js';
+import { formatUnknownString } from '../../format/formatObject.js';
+import { SERVER } from '../../server/globalConstants.js';
 
 /// Takes a signedPayload from an App Store Server Notificatio. Returns payload if successfully decoded, otherwise returns null.
 async function validateNotificationSignedPayload(signedPayload: string): Promise<DecodedNotificationPayload | undefined> {

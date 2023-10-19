@@ -1,10 +1,10 @@
-import { type Queryable, databaseQuery } from '../../main/database/databaseQuery';
-import { type FamilyInformation } from '../../main/types/CompositeRow';
-import { type FamiliesRow, familiesColumns } from '../../main/types/FamiliesRow';
-import { type FamilyMembersRow, familyMembersColumns } from '../../main/types/FamilyMembersRow';
-import { type PreviousFamilyMembersRow, previousFamilyMembersColumns } from '../../main/types/PreviousFamilyMembersRow';
-import { type TransactionsRow } from '../../main/types/TransactionsRow';
-import { type PublicUsersRow, publicUsersColumns } from '../../main/types/UsersRow';
+import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
+import { type FamilyInformation } from '../../main/types/CompositeRow.js';
+import { type FamiliesRow, familiesColumns } from '../../main/types/FamiliesRow.js';
+import { type FamilyMembersRow, familyMembersColumns } from '../../main/types/FamilyMembersRow.js';
+import { type PreviousFamilyMembersRow, previousFamilyMembersColumns } from '../../main/types/PreviousFamilyMembersRow.js';
+import { type TransactionsRow } from '../../main/types/TransactionsRow.js';
+import { type PublicUsersRow, publicUsersColumns } from '../../main/types/UsersRow.js';
 
 /**
  * @param {*} databaseConnection

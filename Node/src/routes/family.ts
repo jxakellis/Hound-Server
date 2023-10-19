@@ -1,20 +1,20 @@
 import express from 'express';
 
-import { addFamilyIdToLogRequest } from '../main/logging/logRequest';
+import { addFamilyIdToLogRequest } from '../main/logging/logRequest.js';
 
 import {
   getFamily, createFamily, updateFamily, deleteFamily,
-} from '../controllers/controllerRoutes/family';
+} from '../controllers/controllerRoutes/family.js';
 
-import { validateFamilyId } from '../main/tools/validate/validateId';
+import { validateFamilyId } from '../main/tools/validate/validateId.js';
 
-import { attachActiveSubscription } from '../main/tools/validate/validateSubscription';
+import { attachActiveSubscription } from '../main/tools/validate/validateSubscription.js';
 
 // route to dogs (or nested) related things
-import { dogsRouter } from './dogs';
+import { dogsRouter } from './dogs.js';
 
 // route to subscription related things
-import { transactionsRouter } from './transactions';
+import { transactionsRouter } from './transactions.js';
 
 const familyRouter = express.Router({ mergeParams: true });
 

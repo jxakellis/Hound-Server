@@ -1,4 +1,4 @@
-import { type Queryable, databaseQuery } from '../../main/database/databaseQuery';
+import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
 
 /**
  *  Queries the database to update a dog. If the query is successful, then returns

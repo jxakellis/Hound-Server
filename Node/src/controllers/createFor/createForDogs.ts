@@ -1,7 +1,7 @@
-import { type Queryable, type ResultSetHeader, databaseQuery } from '../../main/database/databaseQuery';
-import { LIMIT } from '../../main/server/globalConstants';
-import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
-import { type DogsRow, dogsColumns } from '../../main/types/DogsRow';
+import { type Queryable, type ResultSetHeader, databaseQuery } from '../../main/database/databaseQuery.js';
+import { LIMIT } from '../../main/server/globalConstants.js';
+import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
+import { type DogsRow, dogsColumns } from '../../main/types/DogsRow.js';
 
 /**
 *  Queries the database to create a dog. If the query is successful, then returns the dogId.

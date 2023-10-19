@@ -2,8 +2,8 @@ import express from 'express';
 
 import {
   getLogs, createLog, updateLog, deleteLog,
-} from '../controllers/controllerRoutes/logs';
-import { validateLogId } from '../main/tools/validate/validateId';
+} from '../controllers/controllerRoutes/logs.js';
+import { validateLogId } from '../main/tools/validate/validateId.js';
 
 const logsRouter = express.Router({ mergeParams: true });
 

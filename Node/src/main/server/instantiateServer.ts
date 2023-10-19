@@ -9,11 +9,11 @@ import https from 'https';
 import express from 'express';
 
 // Import the global constant values to instantiate them
-import { SERVER } from './globalConstants';
+import { SERVER } from './globalConstants.js';
 import './globalDeclare';
 
-import { serverLogger } from '../logging/loggers';
-import { key, cert } from '../secrets/houndOrganizerHTTPS';
+import { serverLogger } from '../logging/loggers.js';
+import { key, cert } from '../secrets/houndOrganizerHTTPS.js';
 
 //
 //
@@ -21,8 +21,8 @@ import { key, cert } from '../secrets/houndOrganizerHTTPS';
 //
 //
 
-import { configureServer } from './configureServer';
-import { configureApp } from './configureApp';
+import { configureServer } from './configureServer.js';
+import { configureApp } from './configureApp.js';
 
 //
 //
@@ -30,12 +30,12 @@ import { configureApp } from './configureApp';
 //
 //
 
-import { logServerError } from '../logging/logServerError';
-import { schedule } from '../tools/notifications/alarm/schedule';
+import { logServerError } from '../logging/logServerError.js';
+import { schedule } from '../tools/notifications/alarm/schedule.js';
 import {
   getDatabaseConnections,
-} from '../database/databaseConnections';
-import { HoundError } from './globalErrors';
+} from '../database/databaseConnections.js';
+import { HoundError } from './globalErrors.js';
 
 // Initialize the express engine
 const app: express.Application = express();

@@ -1,5 +1,5 @@
-import { NOTIFICATION } from '../../../server/globalConstants';
-import { sendNotificationForUser } from '../apn/sendNotification';
+import { NOTIFICATION } from '../../../server/globalConstants.js';
+import { sendNotificationForUser } from '../apn/sendNotification.js';
 
 function createUserKickedNotification(userId: string): void {
   // don't perform any checks as there are too many. we would have to make sure the user has notifications on, has loud notifications on, has an enabled/upcoming reminder, etc.

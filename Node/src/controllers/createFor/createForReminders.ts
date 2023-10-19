@@ -1,8 +1,8 @@
-import { type DogRemindersRow, dogRemindersColumns } from '../../main/types/DogRemindersRow';
+import { type DogRemindersRow, dogRemindersColumns } from '../../main/types/DogRemindersRow.js';
 
-import { type Queryable, type ResultSetHeader, databaseQuery } from '../../main/database/databaseQuery';
-import { LIMIT } from '../../main/server/globalConstants';
-import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
+import { type Queryable, type ResultSetHeader, databaseQuery } from '../../main/database/databaseQuery.js';
+import { LIMIT } from '../../main/server/globalConstants.js';
+import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 
 /**
 *  Queries the database to create a single reminder. If the query is successful, then returns the reminder with created reminderId added to it.

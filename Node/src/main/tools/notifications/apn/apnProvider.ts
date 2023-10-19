@@ -1,7 +1,7 @@
 import apn from '@parse/node-apn';
 import {
   key, keyId, teamId,
-} from '../../../secrets/applePushNotificationsService';
+} from '../../../secrets/applePushNotificationsService.js';
 
 // use key.p8, keyId, and teamId
 // https://github.com/parse-community/node-apn/blob/650993dcfc210485def7b4ce6ddf68e6c6a32878/doc/provider.markdown

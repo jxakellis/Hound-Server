@@ -1,7 +1,7 @@
-import { serverLogger } from './loggers';
-import { getDatabaseConnections } from '../database/databaseConnections';
-import { databaseQuery } from '../database/databaseQuery';
-import { HoundError, convertErrorToJSON } from '../server/globalErrors';
+import { serverLogger } from './loggers.js';
+import { getDatabaseConnections } from '../database/databaseConnections.js';
+import { databaseQuery } from '../database/databaseQuery.js';
+import { HoundError, convertErrorToJSON } from '../server/globalErrors.js';
 
 function printServerError(houndError: HoundError): void {
   const readableError = convertErrorToJSON(houndError);

@@ -3,7 +3,7 @@
 // https://github.com/apple/app-store-server-library-node/blob/main/receipt_utility.ts
 
 import { ASN1HEX } from 'jsrsasign';
-import { formatNumber } from '../../format/formatObject';
+import { formatNumber } from '../../format/formatObject.js';
 
 const IN_APP_TYPE_ID = 17;
 const TRANSACTION_IDENTIFIER_TYPE_ID = 1703;

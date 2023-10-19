@@ -2,18 +2,18 @@ import express from 'express';
 import { databaseQuery } from '../../database/databaseQuery.js';
 import {
   formatUnknownString, formatNumber, formatArray,
-} from '../../format/formatObject';
-import { HoundError, ERROR_CODES } from '../../server/globalErrors';
-import { hash } from '../../format/hash';
+} from '../../format/formatObject.js';
+import { HoundError, ERROR_CODES } from '../../server/globalErrors.js';
+import { hash } from '../../format/hash.js';
 
-import { updateUserForUserIdentifierHashedUserIdentifier } from '../../../controllers/updateFor/updateForUser';
-import { SERVER } from '../../server/globalConstants';
-import { type PublicUsersRow, publicUsersColumns } from '../../types/UsersRow';
-import { type FamilyMembersRow, familyMembersColumns } from '../../types/FamilyMembersRow';
-import { type DogsRow, dogsColumns } from '../../types/DogsRow';
-import { type DogLogsRow, dogLogsColumns } from '../../types/DogLogsRow';
-import { type DogRemindersRow, dogRemindersColumns } from '../../types/DogRemindersRow';
-import { type Dictionary } from '../../types/Dictionary';
+import { updateUserForUserIdentifierHashedUserIdentifier } from '../../../controllers/updateFor/updateForUser.js';
+import { SERVER } from '../../server/globalConstants.js';
+import { type PublicUsersRow, publicUsersColumns } from '../../types/UsersRow.js';
+import { type FamilyMembersRow, familyMembersColumns } from '../../types/FamilyMembersRow.js';
+import { type DogsRow, dogsColumns } from '../../types/DogsRow.js';
+import { type DogLogsRow, dogLogsColumns } from '../../types/DogLogsRow.js';
+import { type DogRemindersRow, dogRemindersColumns } from '../../types/DogRemindersRow.js';
+import { type Dictionary } from '../../types/Dictionary.js'; 
 
 /**
 * Checks to see that the appVersion of the requester is compatible

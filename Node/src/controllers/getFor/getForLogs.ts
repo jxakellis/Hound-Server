@@ -1,5 +1,5 @@
-import { type Queryable, databaseQuery } from '../../main/database/databaseQuery';
-import { type DogLogsRow, dogLogsColumns } from '../../main/types/DogLogsRow';
+import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
+import { type DogLogsRow, dogLogsColumns } from '../../main/types/DogLogsRow.js';
 
 /**
  *  If the query is successful, returns the log for the dogId.

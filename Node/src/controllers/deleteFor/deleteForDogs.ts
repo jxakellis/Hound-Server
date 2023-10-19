@@ -1,8 +1,8 @@
-import { type Queryable, databaseQuery } from '../../main/database/databaseQuery';
-import { type DogsRow, dogsColumns } from '../../main/types/DogsRow';
+import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
+import { type DogsRow, dogsColumns } from '../../main/types/DogsRow.js';
 
-import { deleteAllLogsForDogId } from './deleteForLogs';
-import { deleteAllRemindersForFamilyIdDogId } from './deleteForReminders';
+import { deleteAllLogsForDogId } from './deleteForLogs.js';
+import { deleteAllRemindersForFamilyIdDogId } from './deleteForReminders.js';
 
 /**
  *  Queries the database to delete a dog and everything nested under it. If the query is successful, then returns

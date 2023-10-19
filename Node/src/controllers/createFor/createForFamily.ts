@@ -1,8 +1,8 @@
-import { type Queryable, type RowDataPacket, databaseQuery } from '../../main/database/databaseQuery';
-import { hash } from '../../main/format/hash';
-import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
+import { type Queryable, type RowDataPacket, databaseQuery } from '../../main/database/databaseQuery.js';
+import { hash } from '../../main/format/hash.js';
+import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 
-import { isUserIdInFamily } from '../getFor/getForFamily';
+import { isUserIdInFamily } from '../getFor/getForFamily.js';
 
 const familyCodeLength = 8;
 

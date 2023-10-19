@@ -1,7 +1,7 @@
 import { type ResultSetHeader, type RowDataPacket } from 'mysql2';
-import { poolLogger } from '../logging/loggers';
-import { HoundError } from '../server/globalErrors';
-import { type Queryable } from '../types/Queryable';
+import { poolLogger } from '../logging/loggers.js';
+import { HoundError } from '../server/globalErrors.js';
+import { type Queryable } from '../types/Queryable.js';
 
 // Define the "impossible" type to force callers to specify a type parameter for the function.
 type MustSpecifyType<T> = T & { __mustSpecifyType__: void };

@@ -2,8 +2,8 @@ import express from 'express';
 
 import {
   getReminders, createReminder, updateReminder, deleteReminder,
-} from '../controllers/controllerRoutes/reminders';
-import { validateParamsReminderId, validateBodyReminderId } from '../main/tools/validate/validateId';
+} from '../controllers/controllerRoutes/reminders.js';
+import { validateParamsReminderId, validateBodyReminderId } from '../main/tools/validate/validateId.js';
 
 const remindersRouter = express.Router({ mergeParams: true });
 

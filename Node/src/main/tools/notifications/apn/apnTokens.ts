@@ -1,7 +1,7 @@
-import { getDatabaseConnections } from '../../../database/databaseConnections';
-import { databaseQuery } from '../../../database/databaseQuery';
-import { type UserConfigurationWithPartialPrivateUsers } from '../../../types/CompositeRow';
-import { userConfigurationColumns } from '../../../types/UserConfigurationRow';
+import { getDatabaseConnections } from '../../../database/databaseConnections.js';
+import { databaseQuery } from '../../../database/databaseQuery.js';
+import { type UserConfigurationWithPartialPrivateUsers } from '../../../types/CompositeRow.js';
+import { userConfigurationColumns } from '../../../types/UserConfigurationRow.js';
 
 /**
  *  Takes a userId

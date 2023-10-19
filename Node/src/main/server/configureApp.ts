@@ -1,14 +1,14 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 
-import { logRequest, addAppVersionToLogRequest } from '../logging/logRequest';
-import { logServerError } from '../logging/logServerError';
-import { configureRequestAndResponse } from './configureRequestAndResponse';
-import { validateAppVersion } from '../tools/validate/validateId';
-import { watchdogRouter } from '../../routes/watchdog';
-import { appStoreServerNotificationsRouter } from '../../routes/appStoreServerNotifications';
-import { userRouter } from '../../routes/user';
-import { HoundError, ERROR_CODES } from './globalErrors';
+import { logRequest, addAppVersionToLogRequest } from '../logging/logRequest.js';
+import { logServerError } from '../logging/logServerError.js';
+import { configureRequestAndResponse } from './configureRequestAndResponse.js';
+import { validateAppVersion } from '../tools/validate/validateId.js';
+import { watchdogRouter } from '../../routes/watchdog.js';
+import { appStoreServerNotificationsRouter } from '../../routes/appStoreServerNotifications.js';
+import { userRouter } from '../../routes/user.js';
+import { HoundError, ERROR_CODES } from './globalErrors.js';
 
 const serverToServerPath = '/appStoreServerNotifications';
 const watchdogPath = '/watchdog';

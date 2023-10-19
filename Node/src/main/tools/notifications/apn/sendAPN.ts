@@ -1,13 +1,13 @@
-import { apnLogger } from '../../../logging/loggers';
+import { apnLogger } from '../../../logging/loggers.js';
 
-import { logServerError } from '../../../logging/logServerError';
-import { formatKnownString } from '../../../format/formatObject';
+import { logServerError } from '../../../logging/logServerError.js';
+import { formatKnownString } from '../../../format/formatObject.js';
 
-import { apn, productionAPNProvider, developmentAPNProvider } from './apnProvider'; 
-import { NOTIFICATION } from '../../../server/globalConstants';
-import { type UserConfigurationWithPartialPrivateUsers } from '../../../types/CompositeRow';
-import { HoundError } from '../../../server/globalErrors';
-import { type Dictionary } from '../../../types/Dictionary';
+import { apn, productionAPNProvider, developmentAPNProvider } from './apnProvider.js'; 
+import { NOTIFICATION } from '../../../server/globalConstants.js';
+import { type UserConfigurationWithPartialPrivateUsers } from '../../../types/CompositeRow.js';
+import { HoundError } from '../../../server/globalErrors.js';
+import { type Dictionary } from '../../../types/Dictionary.js';
 
 function sendDevelopmentAPN(notification: apn.Notification, notificationToken: string): void {
   developmentAPNProvider.send(notification, notificationToken)

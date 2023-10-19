@@ -1,7 +1,7 @@
 import express from 'express';
-import { ERROR_CODES, HoundError } from '../../server/globalErrors';
-import { getActiveTransaction } from '../../../controllers/getFor/getForTransactions';
-import { getAllFamilyMembersForFamilyId } from '../../../controllers/getFor/getForFamily';
+import { ERROR_CODES, HoundError } from '../../server/globalErrors.js';
+import { getActiveTransaction } from '../../../controllers/getFor/getForTransactions.js';
+import { getAllFamilyMembersForFamilyId } from '../../../controllers/getFor/getForFamily.js';
 
 /**
  * Checks the family's subscription

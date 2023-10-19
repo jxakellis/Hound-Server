@@ -1,10 +1,10 @@
 import express from 'express';
-import { getAllTransactions, getActiveTransaction } from '../getFor/getForTransactions';
+import { getAllTransactions, getActiveTransaction } from '../getFor/getForTransactions.js';
 
-import { createTransactionForAppStoreReceiptURL } from '../createFor/createForTransactions';
-import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
+import { createTransactionForAppStoreReceiptURL } from '../createFor/createForTransactions.js';
+import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 
-import { formatUnknownString } from '../../main/format/formatObject';
+import { formatUnknownString } from '../../main/format/formatObject.js';
 
 async function getTransactions(req: express.Request, res: express.Response): Promise<void> {
   try {

@@ -1,11 +1,11 @@
 import {
   SortParameter, decodeTransactions, decodeRenewalInfo, decodeTransaction, type HistoryResponse, type JWSTransactionDecodedPayload, type StatusResponse, type JWSRenewalInfoDecodedPayload,
 } from 'app-store-server-api';
-import { api } from './api';
-import { logServerError } from '../../logging/logServerError';
-import { formatUnknownString, formatBoolean } from '../../format/formatObject';
-import { SERVER } from '../../server/globalConstants';
-import { HoundError } from '../../server/globalErrors';
+import { api } from './api.js';
+import { logServerError } from '../../logging/logServerError.js';
+import { formatUnknownString, formatBoolean } from '../../format/formatObject.js';
+import { SERVER } from '../../server/globalConstants.js';
+import { HoundError } from '../../server/globalErrors.js';
 
 /**
  * Internal function.

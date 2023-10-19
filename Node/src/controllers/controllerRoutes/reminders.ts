@@ -1,20 +1,20 @@
 import express from 'express';
-import { createAlarmNotificationForFamily } from '../../main/tools/notifications/alarm/createAlarmNotification';
+import { createAlarmNotificationForFamily } from '../../main/tools/notifications/alarm/createAlarmNotification.js';
 
-import { getReminderForReminderId, getAllRemindersForDogId } from '../getFor/getForReminders';
+import { getReminderForReminderId, getAllRemindersForDogId } from '../getFor/getForReminders.js';
 
-import { createRemindersForDogIdReminders } from '../createFor/createForReminders';
+import { createRemindersForDogIdReminders } from '../createFor/createForReminders.js';
 
-import { updateRemindersForDogIdReminders } from '../updateFor/updateForReminders';
+import { updateRemindersForDogIdReminders } from '../updateFor/updateForReminders.js';
 
-import { deleteRemindersForFamilyIdDogIdReminderIds } from '../deleteFor/deleteForReminders';
-import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
+import { deleteRemindersForFamilyIdDogIdReminderIds } from '../deleteFor/deleteForReminders.js';
+import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 
 import {
   formatArray, formatDate, formatNumber, formatUnknownString,
-} from '../../main/format/formatObject';
-import { type Dictionary } from '../../main/types/Dictionary';
-import { type DogRemindersRow } from '../../main/types/DogRemindersRow';
+} from '../../main/format/formatObject.js';
+import { type Dictionary } from '../../main/types/Dictionary.js';
+import { type DogRemindersRow } from '../../main/types/DogRemindersRow.js';
 
 /*
 Known:

@@ -1,16 +1,16 @@
 import express from 'express';
-import { createLogNotification } from '../../main/tools/notifications/alert/createLogNotification';
+import { createLogNotification } from '../../main/tools/notifications/alert/createLogNotification.js';
 
-import { getLogForLogId, getAllLogsForDogId } from '../getFor/getForLogs';
+import { getLogForLogId, getAllLogsForDogId } from '../getFor/getForLogs.js';
 
-import { createLogForUserIdDogId } from '../createFor/createForLogs';
+import { createLogForUserIdDogId } from '../createFor/createForLogs.js';
 
-import { updateLogForDogIdLogId } from '../updateFor/updateForLogs';
+import { updateLogForDogIdLogId } from '../updateFor/updateForLogs.js';
 
-import { deleteLogForLogId } from '../deleteFor/deleteForLogs';
-import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
+import { deleteLogForLogId } from '../deleteFor/deleteForLogs.js';
+import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 
-import { formatDate, formatUnknownString } from '../../main/format/formatObject';
+import { formatDate, formatUnknownString } from '../../main/format/formatObject.js';
 
 /*
 Known:

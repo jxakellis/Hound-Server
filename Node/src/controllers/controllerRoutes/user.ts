@@ -1,12 +1,12 @@
 import express from 'express';
 
-import { getPrivateCombinedUsersInformation } from '../getFor/getForUser';
-import { createUserForUserIdentifier } from '../createFor/createForUser';
-import { updateUserForUserId } from '../updateFor/updateForUser';
-import { deleteUserForUserId } from '../deleteFor/deleteForUser';
-import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
+import { getPrivateCombinedUsersInformation } from '../getFor/getForUser.js';
+import { createUserForUserIdentifier } from '../createFor/createForUser.js';
+import { updateUserForUserId } from '../updateFor/updateForUser.js';
+import { deleteUserForUserId } from '../deleteFor/deleteForUser.js';
+import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 
-import { formatNumber, formatUnknownString } from '../../main/format/formatObject';
+import { formatNumber, formatUnknownString } from '../../main/format/formatObject.js';
 
 /*
 Known:

@@ -8,15 +8,15 @@ import {
   productionHoundHost,
   productionHoundPassword,
   productionHoundDatabase,
-} from '../secrets/databaseConnection';
+} from '../secrets/databaseConnection.js';
 
-import { SERVER } from '../server/globalConstants';
-import { HoundError } from '../server/globalErrors';
+import { SERVER } from '../server/globalConstants.js';
+import { HoundError } from '../server/globalErrors.js';
 
-import { serverLogger } from '../logging/loggers';
-import { testDatabaseConnections } from './testDatabaseConnection';
-import { type Queryable, databaseQuery } from './databaseQuery';
-import { type StatusResultRow } from '../types/StatusResultRow';
+import { serverLogger } from '../logging/loggers.js';
+import { testDatabaseConnections } from './testDatabaseConnection.js';
+import { type Queryable, databaseQuery } from './databaseQuery.js';
+import { type StatusResultRow } from '../types/StatusResultRow.js';
 
 // CREATE CONFIGURATION FOR DATABSE CONNECTIONS
 

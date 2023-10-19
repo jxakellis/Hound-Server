@@ -1,11 +1,11 @@
 import crypto from 'crypto';
 
-import { type Queryable, databaseQuery } from '../../main/database/databaseQuery';
-import { hash } from '../../main/format/hash';
+import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
+import { hash } from '../../main/format/hash.js';
 
-import { getPublicUser } from '../getFor/getForUser';
-import { type UserConfigurationRow } from '../../main/types/UserConfigurationRow';
-import { formatEmail, formatUnknownString } from '../../main/format/formatObject';
+import { getPublicUser } from '../getFor/getForUser.js';
+import { type UserConfigurationRow } from '../../main/types/UserConfigurationRow.js';
+import { formatEmail, formatUnknownString } from '../../main/format/formatObject.js';
 
 /**
 *  Queries the database to create a user. If the query is successful, then returns the userId.

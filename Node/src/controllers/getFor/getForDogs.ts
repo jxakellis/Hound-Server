@@ -1,10 +1,10 @@
-import { type Queryable, databaseQuery } from '../../main/database/databaseQuery';
-import { type DogLogsRow } from '../../main/types/DogLogsRow';
-import { type DogRemindersRow } from '../../main/types/DogRemindersRow';
-import { type DogsRow, dogsColumns } from '../../main/types/DogsRow';
+import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
+import { type DogLogsRow } from '../../main/types/DogLogsRow.js';
+import { type DogRemindersRow } from '../../main/types/DogRemindersRow.js';
+import { type DogsRow, dogsColumns } from '../../main/types/DogsRow.js';
 
-import { getAllLogsForDogId } from './getForLogs';
-import { getAllRemindersForDogId } from './getForReminders';
+import { getAllLogsForDogId } from './getForLogs.js';
+import { getAllRemindersForDogId } from './getForReminders.js';
 
 /**
  *  If the query is successful, returns the dog for the dogId.

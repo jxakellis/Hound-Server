@@ -1,12 +1,12 @@
 import { type JWSRenewalInfoDecodedPayload, type JWSTransactionDecodedPayload } from 'app-store-server-api';
-import { type Queryable, databaseQuery } from '../../main/database/databaseQuery';
+import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
 
-import { extractTransactionIdFromAppStoreReceiptURL } from '../../main/tools/appStoreConnectAPI/extractTransactionId';
-import { queryAllSubscriptionsForTransactionId } from '../../main/tools/appStoreConnectAPI/queryTransactions';
-import { getFamilyHeadUserId } from '../getFor/getForFamily';
-import { SERVER, SUBSCRIPTION } from '../../main/server/globalConstants';
-import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
-import { logServerError } from '../../main/logging/logServerError';
+import { extractTransactionIdFromAppStoreReceiptURL } from '../../main/tools/appStoreConnectAPI/extractTransactionId.js';
+import { queryAllSubscriptionsForTransactionId } from '../../main/tools/appStoreConnectAPI/queryTransactions.js';
+import { getFamilyHeadUserId } from '../getFor/getForFamily.js';
+import { SERVER, SUBSCRIPTION } from '../../main/server/globalConstants.js';
+import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
+import { logServerError } from '../../main/logging/logServerError.js';
 
 /**
  * Processes and updates a transaction in the database.

@@ -1,13 +1,13 @@
-import { type Queryable, databaseQuery } from '../../main/database/databaseQuery';
+import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
 
-import { getFamilyHeadUserId } from '../getFor/getForFamily';
+import { getFamilyHeadUserId } from '../getFor/getForFamily.js';
 
-import { createFamilyMemberLeaveNotification } from '../../main/tools/notifications/alert/createFamilyNotification';
-import { createUserKickedNotification } from '../../main/tools/notifications/alert/createUserKickedNotification';
-import { type TransactionsRow } from '../../main/types/TransactionsRow';
-import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
-import { SUBSCRIPTION } from '../../main/server/globalConstants';
-import { type FamilyMembersRow, familyMembersColumns } from '../../main/types/FamilyMembersRow';
+import { createFamilyMemberLeaveNotification } from '../../main/tools/notifications/alert/createFamilyNotification.js';
+import { createUserKickedNotification } from '../../main/tools/notifications/alert/createUserKickedNotification.js';
+import { type TransactionsRow } from '../../main/types/TransactionsRow.js';
+import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
+import { SUBSCRIPTION } from '../../main/server/globalConstants.js';
+import { type FamilyMembersRow, familyMembersColumns } from '../../main/types/FamilyMembersRow.js';
 
 /**
 * Helper function for deleteFamilyLeaveFamilyForUserIdFamilyId

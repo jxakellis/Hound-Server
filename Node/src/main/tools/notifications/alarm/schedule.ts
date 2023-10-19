@@ -1,7 +1,7 @@
 // for all scheduled items. Cannot create multiple seperate schedulers.
 import schedule from 'node-schedule';
 import events from 'events';
-import { LIMIT } from '../../../server/globalConstants';
+import { LIMIT } from '../../../server/globalConstants.js';
 
 const eventEmitter: typeof events = events.EventEmitter;
 

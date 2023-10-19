@@ -1,6 +1,6 @@
-import { alarmLogger } from '../../../logging/loggers';
+import { alarmLogger } from '../../../logging/loggers.js';
 
-import { schedule } from './schedule';
+import { schedule } from './schedule.js';
 
 /**
  * Cancels jobs scheduled with the provided familyId and reminderId

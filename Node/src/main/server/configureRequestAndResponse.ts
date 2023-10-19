@@ -1,10 +1,10 @@
 import express from 'express';
-import { HoundError, ERROR_CODES, convertErrorToJSON } from './globalErrors';
-import { logResponse } from '../logging/logResponse';
-import { logServerError } from '../logging/logServerError';
-import { databaseQuery } from '../database/databaseQuery';
-import { getDatabaseConnections } from '../database/databaseConnections';
-import { type ResponseBodyType } from '../types/ResponseBodyType';
+import { HoundError, ERROR_CODES, convertErrorToJSON } from './globalErrors.js';
+import { logResponse } from '../logging/logResponse.js';
+import { logServerError } from '../logging/logServerError.js';
+import { databaseQuery } from '../database/databaseQuery.js';
+import { getDatabaseConnections } from '../database/databaseConnections.js';
+import { type ResponseBodyType } from '../types/ResponseBodyType.js';
 
 function releaseDatabaseConnection(req: express.Request): void {
   if (req.houndDeclarationExtendedProperties.databaseConnection === undefined) {

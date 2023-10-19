@@ -1,7 +1,7 @@
 // Steps out of GitHub repo directory until in parent directory, then looks for file that indicates the server should be production
 // /server/ -> ../ -> /main/ -> ../ -> /Node/ -> ../ -> /Hound-Server/ -> ../ -> /PARENT_DIR/
 import * as fs from 'fs';
-import { type TransactionsRow } from '../types/TransactionsRow';
+import { type TransactionsRow } from '../types/TransactionsRow.js';
 
 // Move this productionIndicator.txt's path from /parent_dir/Hound-Server/Node/productionIndicator.txt into /parent_dir/productionIndicator.txt to trigger indication to Hound node server.
 const IS_PRODUCTION_DATABASE = fs.existsSync(`${__dirname}/../../../../../productionIndicator.txt`) || fs.existsSync(`${__dirname}/../../../../productionIndicator.txt`);
