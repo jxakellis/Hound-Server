@@ -28,8 +28,7 @@ async function getReminders(req: express.Request, res: express.Response): Promis
   try {
     const { databaseConnection } = req.extendedProperties;
     const { validatedDogId, validatedReminderIds } = req.extendedProperties.validatedVariables;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const userConfigurationPreviousDogManagerSynchronization = formatDate(req.query['userConfigurationPreviousDogManagerSynchronization']);
+    const previousDogManagerSynchronization = formatDate(req.query['previousDogManagerSynchronization'] ?? req.query['userConfigurationPreviousDogManagerSynchronization']);
 
     if (databaseConnection === undefined) {
       throw new HoundError('databaseConnection missing', 'getReminders', ERROR_CODES.VALUE.INVALID);
@@ -40,11 +39,16 @@ async function getReminders(req: express.Request, res: express.Response): Promis
 
     const validatedReminderId = validatedReminderIds.safeIndex(0);
     if (validatedReminderId !== undefined) {
-      const result = await getReminderForReminderId(databaseConnection, validatedReminderId, userConfigurationPreviousDogManagerSynchronization);
+      const result = await getReminderForReminderId(databaseConnection, validatedReminderId, previousDogManagerSynchronization);
+
+      if (result === undefined) {
+        throw new HoundError('result missing', 'getReminders', ERROR_CODES.VALUE.INVALID);
+      }
+
       return res.extendedProperties.sendSuccessResponse(result);
     }
 
-    const result = await getAllRemindersForDogId(databaseConnection, validatedDogId, userConfigurationPreviousDogManagerSynchronization);
+    const result = await getAllRemindersForDogId(databaseConnection, validatedDogId, previousDogManagerSynchronization);
     return res.extendedProperties.sendSuccessResponse(result);
   }
   catch (error) {

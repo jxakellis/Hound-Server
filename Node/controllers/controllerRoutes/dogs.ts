@@ -20,7 +20,7 @@ async function getDogs(req: express.Request, res: express.Response): Promise<voi
   try {
     const { databaseConnection } = req.extendedProperties;
     const { validatedUserId, validatedFamilyId, validatedDogId } = req.extendedProperties.validatedVariables;
-    const userConfigurationPreviousDogManagerSynchronization = formatDate(req.query['userConfigurationPreviousDogManagerSynchronization']);
+    const previousDogManagerSynchronization = formatDate(req.query['previousDogManagerSynchronization'] ?? req.query['userConfigurationPreviousDogManagerSynchronization']);
     const isRetrievingReminders = formatBoolean(req.query['isRetrievingReminders']) ?? false;
     const isRetrievingLogs = formatBoolean(req.query['isRetrievingLogs']) ?? false;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -34,7 +34,7 @@ async function getDogs(req: express.Request, res: express.Response): Promise<voi
     }
 
     if (validatedDogId !== undefined) {
-      const result = await getDogForDogId(databaseConnection, validatedDogId, isRetrievingReminders, isRetrievingLogs, userConfigurationPreviousDogManagerSynchronization);
+      const result = await getDogForDogId(databaseConnection, validatedDogId, isRetrievingReminders, isRetrievingLogs, previousDogManagerSynchronization);
 
       if (result === undefined) {
         throw new HoundError('getDogForDogId  result undefined', 'getDogs', ERROR_CODES.VALUE.INVALID);
@@ -55,7 +55,7 @@ async function getDogs(req: express.Request, res: express.Response): Promise<voi
       validatedFamilyId,
       isRetrievingReminders,
       isRetrievingLogs,
-      userConfigurationPreviousDogManagerSynchronization,
+      previousDogManagerSynchronization,
     );
 
     if (result === undefined) {

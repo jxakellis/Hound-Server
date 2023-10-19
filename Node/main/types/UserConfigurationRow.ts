@@ -1,5 +1,4 @@
 const userConfigurationColumns = `
-uc.userId,
 uc.userConfigurationIsNotificationEnabled,
 uc.userConfigurationIsLoudNotificationEnabled, 
 uc.userConfigurationIsLogNotificationEnabled,
@@ -18,7 +17,6 @@ uc.userConfigurationSilentModeEndUTCMinute
 
 type UserConfigurationRow = {
     // NOTE: database booleans (tinyint(1)) are returned as 0 or 1 numbers, not booleans. therefore, we have to use number instead of boolean
-    userId: string
     userConfigurationIsNotificationEnabled: number
     userConfigurationIsLoudNotificationEnabled: number
     userConfigurationIsLogNotificationEnabled: number
@@ -28,7 +26,6 @@ type UserConfigurationRow = {
     userConfigurationNotificationSound: string
     userConfigurationLogsInterfaceScale: string
     userConfigurationRemindersInterfaceScale: string
-    userConfigurationPreviousDogManagerSynchronization: Date
     userConfigurationIsSilentModeEnabled: number
     userConfigurationSilentModeStartUTCHour: number
     userConfigurationSilentModeEndUTCHour: number

@@ -2,7 +2,6 @@ import express from 'express';
 import { ERROR_CODES, HoundError } from '../../server/globalErrors';
 import { getActiveTransaction } from '../../../controllers/getFor/getForTransactions';
 import { getAllFamilyMembersForFamilyId } from '../../../controllers/getFor/getForFamily';
-import { formatUnknownString } from '../../format/formatObject';
 
 /**
  * Checks the family's subscription
@@ -12,16 +11,16 @@ import { formatUnknownString } from '../../format/formatObject';
 async function attachActiveSubscription(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
     const { databaseConnection } = req.extendedProperties;
-    const userId = formatUnknownString(req.params['userId']);
+    const { validatedUserId } = req.extendedProperties.validatedVariables;
 
     if (databaseConnection === undefined) {
       throw new HoundError('databaseConnection missing', 'attachActiveSubscription', ERROR_CODES.VALUE.MISSING);
     }
-    if (userId === undefined) {
-      throw new HoundError('userId missing', 'attachActiveSubscription', ERROR_CODES.VALUE.MISSING);
+    if (validatedUserId === undefined) {
+      throw new HoundError('validatedUserId missing', 'attachActiveSubscription', ERROR_CODES.VALUE.MISSING);
     }
 
-    const familyActiveSubscription = await getActiveTransaction(databaseConnection, userId);
+    const familyActiveSubscription = await getActiveTransaction(databaseConnection, validatedUserId);
 
     req.extendedProperties.familyActiveSubscription = familyActiveSubscription;
 
@@ -39,19 +38,18 @@ async function attachActiveSubscription(req: express.Request, res: express.Respo
 async function validateSubscription(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
     const { databaseConnection } = req.extendedProperties;
-    const userId = formatUnknownString(req.params['userId']);
-    const familyId = formatUnknownString(req.params['familyId']);
+    const { validatedUserId, validatedFamilyId } = req.extendedProperties.validatedVariables;
     const numberOfFamilyMembers = req.extendedProperties.familyActiveSubscription?.numberOfFamilyMembers;
     const numberOfDogs = req.extendedProperties.familyActiveSubscription?.numberOfDogs;
 
     if (databaseConnection === undefined) {
       throw new HoundError('databaseConnection missing', 'validateSubscription', ERROR_CODES.VALUE.MISSING);
     }
-    if (userId === undefined) {
-      throw new HoundError('userId missing', 'validateSubscription', ERROR_CODES.VALUE.MISSING);
+    if (validatedUserId === undefined) {
+      throw new HoundError('validatedUserId missing', 'validateSubscription', ERROR_CODES.VALUE.MISSING);
     }
-    if (familyId === undefined) {
-      throw new HoundError('familyId missing', 'validateSubscription', ERROR_CODES.VALUE.MISSING);
+    if (validatedFamilyId === undefined) {
+      throw new HoundError('validatedFamilyId missing', 'validateSubscription', ERROR_CODES.VALUE.MISSING);
     }
     if (numberOfFamilyMembers === undefined) {
       throw new HoundError('numberOfFamilyMembers missing', 'validateSubscription', ERROR_CODES.VALUE.MISSING);
@@ -66,7 +64,7 @@ async function validateSubscription(req: express.Request, res: express.Response,
       return next();
     }
 
-    const familyMembers = await getAllFamilyMembersForFamilyId(databaseConnection, familyId);
+    const familyMembers = await getAllFamilyMembersForFamilyId(databaseConnection, validatedFamilyId);
 
     if (familyMembers.length > numberOfFamilyMembers) {
       throw new HoundError(`Family member limit of ${numberOfFamilyMembers} exceeded`, 'validateSubscription', ERROR_CODES.FAMILY.LIMIT.FAMILY_MEMBER_EXCEEDED);

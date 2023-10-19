@@ -5,15 +5,15 @@ import { DogLogsRow, dogLogsColumns } from '../../main/types/DogLogsRow';
  *  If the query is successful, returns the log for the dogId.
  *  If a problem is encountered, creates and throws custom error
 */
-async function getLogForLogId(databaseConnection: Queryable, logId: number, userConfigurationPreviousDogManagerSynchronization?: Date): Promise<DogLogsRow | undefined> {
-  const result = userConfigurationPreviousDogManagerSynchronization !== undefined
+async function getLogForLogId(databaseConnection: Queryable, logId: number, previousDogManagerSynchronization?: Date): Promise<DogLogsRow | undefined> {
+  const result = previousDogManagerSynchronization !== undefined
     ? await databaseQuery<DogLogsRow[]>(
       databaseConnection,
       `SELECT ${dogLogsColumns}
       FROM dogLogs dl
       WHERE TIMESTAMPDIFF(MICROSECOND, logLastModified, ?) <= 0 AND logId = ?
       LIMIT 1`,
-      [userConfigurationPreviousDogManagerSynchronization, logId],
+      [previousDogManagerSynchronization, logId],
     )
     : await databaseQuery<DogLogsRow[]>(
       databaseConnection,
@@ -31,15 +31,15 @@ async function getLogForLogId(databaseConnection: Queryable, logId: number, user
  *  If the query is successful, returns an array of all the logs for the dogId. Errors not handled
  *  If a problem is encountered, creates and throws custom error
  */
-async function getAllLogsForDogId(databaseConnection: Queryable, dogId: number, userConfigurationPreviousDogManagerSynchronization?: Date): Promise<DogLogsRow[]> {
-  const result = userConfigurationPreviousDogManagerSynchronization !== undefined
+async function getAllLogsForDogId(databaseConnection: Queryable, dogId: number, previousDogManagerSynchronization?: Date): Promise<DogLogsRow[]> {
+  const result = previousDogManagerSynchronization !== undefined
     ? await databaseQuery<DogLogsRow[]>(
       databaseConnection,
       `SELECT ${dogLogsColumns}
       FROM dogLogs dl
       WHERE TIMESTAMPDIFF(MICROSECOND, logLastModified, ?) <= 0 AND dogId = ?
       LIMIT 18446744073709551615`,
-      [userConfigurationPreviousDogManagerSynchronization, dogId],
+      [previousDogManagerSynchronization, dogId],
     )
     : await databaseQuery<DogLogsRow[]>(
       databaseConnection,

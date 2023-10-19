@@ -15,11 +15,11 @@ async function getDogForDogId(
   dogId: number,
   isRetrievingReminders: boolean,
   isRetrievingLogs: boolean,
-  userConfigurationPreviousDogManagerSynchronization?: Date,
+  previousDogManagerSynchronization?: Date,
 ): Promise<DogsRow | undefined> {
   // if the user provides a last sync, then we look for dogs that were modified after this last sync.
   // Therefore, only providing dogs that were modified and the local client is outdated on
-  const dogs = userConfigurationPreviousDogManagerSynchronization !== undefined
+  const dogs = previousDogManagerSynchronization !== undefined
     ? await databaseQuery<DogsRow[]>(
       databaseConnection,
       `SELECT ${dogsColumns}
@@ -35,7 +35,7 @@ async function getDogForDogId(
       AND d.dogId = ?
       GROUP BY d.dogId
       LIMIT 1`,
-      [userConfigurationPreviousDogManagerSynchronization, userConfigurationPreviousDogManagerSynchronization, userConfigurationPreviousDogManagerSynchronization, dogId],
+      [previousDogManagerSynchronization, previousDogManagerSynchronization, previousDogManagerSynchronization, dogId],
     )
     // User is requesting a complete copy of dogs, therefore we can assume they have a blank copy
     // If they have a blank copy, no need to include deleted dogs that indicate whether to delete their local dog store
@@ -59,11 +59,11 @@ async function getDogForDogId(
   // if the query parameter indicates that they want the logs and the reminders too, we add them.
   if (isRetrievingReminders) {
     // add all the reminders we want to retrieving into an array, 1:1 corresponding to dogs
-    dog.reminders = await getAllRemindersForDogId(databaseConnection, dog.dogId, userConfigurationPreviousDogManagerSynchronization);
+    dog.reminders = await getAllRemindersForDogId(databaseConnection, dog.dogId, previousDogManagerSynchronization);
   }
 
   if (isRetrievingLogs) {
-    dog.logs = await getAllLogsForDogId(databaseConnection, dog.dogId, userConfigurationPreviousDogManagerSynchronization);
+    dog.logs = await getAllLogsForDogId(databaseConnection, dog.dogId, previousDogManagerSynchronization);
   }
 
   return dog;
@@ -79,10 +79,10 @@ async function getAllDogsForUserIdFamilyId(
   familyId: string,
   isRetrievingReminders: boolean,
   isRetrievingLogs: boolean,
-  userConfigurationPreviousDogManagerSynchronization?: Date,
+  previousDogManagerSynchronization?: Date,
 ): Promise<DogsRow[] | undefined> {
   // if the user provides a last sync, then we look for dogs that were modified after this last sync. Therefore, only providing dogs that were modified and the local client is outdated on
-  const dogs = userConfigurationPreviousDogManagerSynchronization !== undefined
+  const dogs = previousDogManagerSynchronization !== undefined
     ? await databaseQuery<DogsRow[]>(
       databaseConnection,
       `SELECT ${dogsColumns}
@@ -97,7 +97,7 @@ async function getAllDogsForUserIdFamilyId(
       AND d.familyId = ?
       GROUP BY d.dogId
       LIMIT 18446744073709551615`,
-      [userConfigurationPreviousDogManagerSynchronization, userConfigurationPreviousDogManagerSynchronization, userConfigurationPreviousDogManagerSynchronization, familyId],
+      [previousDogManagerSynchronization, previousDogManagerSynchronization, previousDogManagerSynchronization, familyId],
     )
     // User is requesting a complete copy of dogs, therefore we can assume they have a blank copy
     // If they have a blank copy, no need to include deleted dogs that indicate whether to delete their local dog store
@@ -116,7 +116,7 @@ async function getAllDogsForUserIdFamilyId(
     let reminderPromises = [];
     // add all the reminders we want to retrieving into an array, 1:1 corresponding to dogs
     for (let i = 0; i < dogs.length; i += 1) {
-      reminderPromises.push(getAllRemindersForDogId(databaseConnection, dogs[i].dogId, userConfigurationPreviousDogManagerSynchronization));
+      reminderPromises.push(getAllRemindersForDogId(databaseConnection, dogs[i].dogId, previousDogManagerSynchronization));
     }
 
     // resolve this array (or throw error for whole request if there is a problem)
@@ -132,7 +132,7 @@ async function getAllDogsForUserIdFamilyId(
     let logPromises = [];
     // add all the logs we want to retrieving into an array, 1:1 corresponding to dogs
     for (let i = 0; i < dogs.length; i += 1) {
-      logPromises.push(getAllLogsForDogId(databaseConnection, dogs[i].dogId, userConfigurationPreviousDogManagerSynchronization));
+      logPromises.push(getAllLogsForDogId(databaseConnection, dogs[i].dogId, previousDogManagerSynchronization));
     }
 
     // resolve this array (or throw error for whole request if there is a problem)
@@ -145,16 +145,16 @@ async function getAllDogsForUserIdFamilyId(
   }
 
   // If the user retrieved the most updated information from the dog (by getting reminders and logs and providing a lastSynchronization), we update
-  if (userConfigurationPreviousDogManagerSynchronization !== undefined && isRetrievingReminders && isRetrievingLogs) {
+  if (previousDogManagerSynchronization !== undefined && isRetrievingReminders && isRetrievingLogs) {
     // This function is retrieving the all dogs for a given familyId.
     // If the user also specified to get reminders and logs, that means this query is retrieving the ENTIRE dog manager
-    // Therefore, the user's userConfigurationPreviousDogManagerSynchronization should be saved as this counts as a dogManagerSyncronization
+    // Therefore, the user's previousDogManagerSynchronization should be saved as this counts as a dogManagerSyncronization
     await databaseQuery(
       databaseConnection,
       `UPDATE userConfiguration
-      SET userConfigurationPreviousDogManagerSynchronization = ?
+      SET previousDogManagerSynchronization = ?
       WHERE userId = ?`,
-      [userConfigurationPreviousDogManagerSynchronization, userId],
+      [previousDogManagerSynchronization, userId],
     );
   }
 

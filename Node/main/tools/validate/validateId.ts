@@ -210,8 +210,7 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
       throw new HoundError('Dog has been deleted', 'validateDogId', ERROR_CODES.FAMILY.DELETED.DOG);
     }
 
-    // the dogId exists and it is linked to the familyId, valid!
-    // reassign req.params so that the id there is guarrenteed to be an int and not a string
+    // the dogId exists and it is linked to the familyId, valid
     req.extendedProperties.validatedVariables.validatedDogId = dogId;
   }
   catch (error) {
@@ -266,8 +265,7 @@ async function validateLogId(req: express.Request, res: express.Response, next: 
       throw new HoundError('Log has been deleted', 'validateLogId', ERROR_CODES.FAMILY.DELETED.LOG);
     }
 
-    // the logId exists and it is linked to the dogId, valid!
-    // reassign req.params so that the id there is guarrenteed to be an int and not a string
+    // the logId exists and it is linked to the dogId, valid
     req.extendedProperties.validatedVariables.validatedLogId = logId;
   }
   catch (error) {

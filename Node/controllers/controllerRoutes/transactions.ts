@@ -20,6 +20,10 @@ async function getTransactions(req: express.Request, res: express.Response): Pro
 
     const result = await getAllTransactions(databaseConnection, validatedUserId);
 
+    if (result === undefined) {
+      throw new HoundError('result missing', 'getTransactions', ERROR_CODES.VALUE.INVALID);
+    }
+
     return res.extendedProperties.sendSuccessResponse(result);
   }
   catch (error) {
@@ -48,6 +52,10 @@ async function createTransactions(req: express.Request, res: express.Response): 
 
     // After we have updated the stored transactions, we want to return the new active subscription to the user.
     const result = await getActiveTransaction(databaseConnection, validatedUserId);
+
+    if (result === undefined) {
+      throw new HoundError('result missing', 'createTransactions', ERROR_CODES.VALUE.INVALID);
+    }
 
     return res.extendedProperties.sendSuccessResponse(result);
   }

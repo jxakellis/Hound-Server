@@ -93,10 +93,9 @@ async function addAppVersionToLogRequest(req: express.Request, res: express.Resp
 
 async function addUserIdToLogRequest(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   const requestId = formatNumber(req.extendedProperties.requestId);
-  const userId = formatUnknownString(req.params['userId']);
+  const { validatedUserId } = req.extendedProperties.validatedVariables;
 
-  // We are going to be modifying a pre-existing requestId and the userId should exist if this function is invoked
-  if (requestId === undefined || userId === undefined) {
+  if (requestId === undefined || validatedUserId === undefined) {
     return next();
   }
 
@@ -106,7 +105,7 @@ async function addUserIdToLogRequest(req: express.Request, res: express.Response
       `UPDATE previousRequests
       SET requestUserId = ?
       WHERE requestId = ?`,
-      [userId, requestId],
+      [validatedUserId, requestId],
     );
   }
   catch (error) {
@@ -125,10 +124,10 @@ async function addUserIdToLogRequest(req: express.Request, res: express.Response
 
 async function addFamilyIdToLogRequest(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   const requestId = formatNumber(req.extendedProperties.requestId);
-  const familyId = formatUnknownString(req.params['familyId']);
+  const { validatedFamilyId } = req.extendedProperties.validatedVariables;
 
   // We are going to be modifying a pre-existing requestId and the userId should exist if this function is invoked
-  if (requestId === undefined || familyId === undefined) {
+  if (requestId === undefined || validatedFamilyId === undefined) {
     return next();
   }
 
@@ -138,7 +137,7 @@ async function addFamilyIdToLogRequest(req: express.Request, res: express.Respon
       `UPDATE previousRequests
       SET requestFamilyId = ?
       WHERE requestId = ?`,
-      [familyId, requestId],
+      [validatedFamilyId, requestId],
     );
   }
   catch (error) {

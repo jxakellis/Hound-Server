@@ -22,8 +22,7 @@ async function getLogs(req: express.Request, res: express.Response): Promise<voi
   try {
     const { databaseConnection } = req.extendedProperties;
     const { validatedDogId, validatedLogId } = req.extendedProperties.validatedVariables;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const userConfigurationPreviousDogManagerSynchronization = formatDate(req.query['userConfigurationPreviousDogManagerSynchronization']);
+    const previousDogManagerSynchronization = formatDate(req.query['previousDogManagerSynchronization'] ?? req.query['userConfigurationPreviousDogManagerSynchronization']);
 
     if (databaseConnection === undefined) {
       // TODO NOW for all functions inside ./controllerRoutes instead of sending response right here, throw error and have it caught by the catch statement below
@@ -35,11 +34,14 @@ async function getLogs(req: express.Request, res: express.Response): Promise<voi
 
     const result = validatedLogId !== undefined
     // if logId is defined and it is a number then continue to find a single log
-      ? await getLogForLogId(databaseConnection, validatedLogId, userConfigurationPreviousDogManagerSynchronization)
+      ? await getLogForLogId(databaseConnection, validatedLogId, previousDogManagerSynchronization)
     // query for multiple logs
-      : await getAllLogsForDogId(databaseConnection, validatedDogId, userConfigurationPreviousDogManagerSynchronization);
+      : await getAllLogsForDogId(databaseConnection, validatedDogId, previousDogManagerSynchronization);
 
-    // TODO NOW for all functions inside ./controllerRoutes make sure to check if result is not undefined, otherwise throw error
+    if (result === undefined) {
+      throw new HoundError('result missing', 'getLogs', ERROR_CODES.VALUE.INVALID);
+    }
+
     return res.extendedProperties.sendSuccessResponse(result);
   }
   catch (error) {
