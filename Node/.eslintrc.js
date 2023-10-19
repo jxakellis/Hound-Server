@@ -40,5 +40,5 @@ module.exports = {
       }
     }
   },
-  ignorePatterns: ['.eslintrc.js', 'compiledTypescript/'],
+  ignorePatterns: ['.eslintrc.js', 'built/'],
 };

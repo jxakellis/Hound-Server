@@ -7,7 +7,7 @@
     // Determines how module resolution works, "node" works in the Node.js-style module resolution.
     "moduleResolution": "node",
     // Specifies the location where the compiled JS files will be.
-    "outDir": "./compiledTypescript",
+    "outDir": "./built",
     "baseUrl": ".",
     // Enable all strict type checking options.
     "strict": true,
@@ -31,8 +31,5 @@
   },
   
   // Specifies the root files and patterns to include in the compilation.
-  "include": ["**/*.ts", "**/*.js"],
-
-  // Excludes specific files and folders from the compilation.
-  "exclude": ["node_modules"]
+  "include": ["./src/**/*"],
 }

@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "compile": "tsc",
-    "start": "node ./compiledTypescript/main/server/instantiateServer.js | pino-pretty -c -t",
+    "start": "node ./built/main/server/instantiateServer.js | pino-pretty -c -t",
     "houndServer": "sudo npm run compile && sudo npm run start",
-    "personalDev": "npm run compile && node ./compiledTypescript/main/server/instantiateServer.js | pino-pretty -c -t"
+    "personalDev": "npm run compile && node ./built/main/server/instantiateServer.js | pino-pretty -c -t"
   },
   "author": "",
   "license": "ISC",
