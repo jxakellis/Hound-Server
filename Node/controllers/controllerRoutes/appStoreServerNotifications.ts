@@ -13,10 +13,10 @@ async function createAppStoreServerNotification(req: express.Request, res: expre
     const signedPayload = formatUnknownString(req.body['signedPayload']);
 
     if (databaseConnection === undefined) {
-      throw new HoundError('databaseConnection missing', 'createAppStoreServerNotification', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', createAppStoreServerNotification, ERROR_CODES.VALUE.INVALID);
     }
     if (signedPayload === undefined) {
-      throw new HoundError('signedPayload missing', 'createAppStoreServerNotification', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('signedPayload missing', createAppStoreServerNotification, ERROR_CODES.VALUE.INVALID);
     }
 
     await createASSNForSignedPayload(databaseConnection, signedPayload);
@@ -28,7 +28,7 @@ async function createAppStoreServerNotification(req: express.Request, res: expre
     logServerError(
       new HoundError(
         'Got some error from createASSNForSignedPayload',
-        'createAppStoreServerNotification',
+        createAppStoreServerNotification,
         undefined,
         error,
       ),

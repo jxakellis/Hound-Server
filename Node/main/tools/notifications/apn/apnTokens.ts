@@ -1,4 +1,4 @@
-import { databaseConnectionForGeneral } from '../../../database/createDatabaseConnections';
+import { getDatabaseConnections } from '../../../database/databaseConnections';
 import { databaseQuery } from '../../../database/databaseQuery';
 import { UserConfigurationWithPartialPrivateUsers } from '../../../types/CompositeRow';
 import { userConfigurationColumns } from '../../../types/UserConfigurationRow';
@@ -9,6 +9,8 @@ import { userConfigurationColumns } from '../../../types/UserConfigurationRow';
  *  If an error is encountered, creates and throws custom error
  */
 async function getUserToken(userId: string): Promise<UserConfigurationWithPartialPrivateUsers | undefined> {
+  const { databaseConnectionForGeneral } = await getDatabaseConnections();
+
   // retrieve userNotificationToken, userConfigurationNotificationSound, and isLoudNotificaiton of a user with the userId, non-null userNotificationToken, and userConfigurationIsNotificationEnabled
   const result = await databaseQuery<UserConfigurationWithPartialPrivateUsers[]>(
     databaseConnectionForGeneral,
@@ -29,6 +31,8 @@ async function getUserToken(userId: string): Promise<UserConfigurationWithPartia
  * If an error is encountered, creates and throws custom error
  */
 async function getAllFamilyMemberTokens(familyId: string): Promise<UserConfigurationWithPartialPrivateUsers[]> {
+  const { databaseConnectionForGeneral } = await getDatabaseConnections();
+
   // retrieve userNotificationToken that fit the criteria
   const result = await databaseQuery<UserConfigurationWithPartialPrivateUsers[]>(
     databaseConnectionForGeneral,
@@ -50,6 +54,8 @@ async function getAllFamilyMemberTokens(familyId: string): Promise<UserConfigura
  * If an error is encountered, creates and throws custom error
  */
 async function getOtherFamilyMemberTokens(userId: string, familyId: string): Promise<UserConfigurationWithPartialPrivateUsers[]> {
+  const { databaseConnectionForGeneral } = await getDatabaseConnections();
+
   // retrieve userNotificationToken that fit the criteria
   const result = await databaseQuery<UserConfigurationWithPartialPrivateUsers[]>(
     databaseConnectionForGeneral,

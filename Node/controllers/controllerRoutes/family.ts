@@ -22,19 +22,19 @@ async function getFamily(req: express.Request, res: express.Response): Promise<v
     const { validatedFamilyId } = req.extendedProperties.validatedVariables;
 
     if (databaseConnection === undefined) {
-      throw new HoundError('databaseConnection missing', 'getFamily', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', getFamily, ERROR_CODES.VALUE.INVALID);
     }
     if (familyActiveSubscription === undefined) {
-      throw new HoundError('familyActiveSubscription missing', 'getFamily', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('familyActiveSubscription missing', getFamily, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedFamilyId === undefined) {
-      throw new HoundError('validatedFamilyId missing', 'getFamily', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('validatedFamilyId missing', getFamily, ERROR_CODES.VALUE.INVALID);
     }
 
     const result = await getAllFamilyInformationForFamilyId(databaseConnection, validatedFamilyId, familyActiveSubscription);
 
     if (result === undefined) {
-      throw new HoundError('result missing', 'getFamily', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('result missing', getFamily, ERROR_CODES.VALUE.INVALID);
     }
 
     return res.extendedProperties.sendSuccessResponse(result);
@@ -50,10 +50,10 @@ async function createFamily(req: express.Request, res: express.Response): Promis
     const { validatedUserId } = req.extendedProperties.validatedVariables;
 
     if (databaseConnection === undefined) {
-      throw new HoundError('databaseConnection missing', 'createFamily', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', createFamily, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedUserId === undefined) {
-      throw new HoundError('validatedUserId missing', 'createFamily', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('validatedUserId missing', createFamily, ERROR_CODES.VALUE.INVALID);
     }
 
     const result = await createFamilyForUserId(databaseConnection, validatedUserId);
@@ -75,13 +75,13 @@ async function updateFamily(req: express.Request, res: express.Response): Promis
     const familyIsLocked = formatBoolean(req.body['familyIsLocked']);
 
     if (databaseConnection === undefined) {
-      throw new HoundError('databaseConnection missing', 'updateFamily', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', updateFamily, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedUserId === undefined) {
-      throw new HoundError('validatedUserId missing', 'updateFamily', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('validatedUserId missing', updateFamily, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedFamilyId === undefined) {
-      throw new HoundError('validatedFamilyId missing', 'updateFamily', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('validatedFamilyId missing', updateFamily, ERROR_CODES.VALUE.INVALID);
     }
 
     await updateFamilyForUserIdFamilyId(databaseConnection, validatedUserId, validatedFamilyId, familyCode, familyIsLocked);
@@ -100,16 +100,16 @@ async function deleteFamily(req: express.Request, res: express.Response): Promis
     const familyKickUserId = formatUnknownString(req.body['familyKickUserId']);
 
     if (databaseConnection === undefined) {
-      throw new HoundError('databaseConnection missing', 'deleteFamily', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', deleteFamily, ERROR_CODES.VALUE.INVALID);
     }
     if (familyActiveSubscription === undefined) {
-      throw new HoundError('familyActiveSubscription missing', 'deleteFamily', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('familyActiveSubscription missing', deleteFamily, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedUserId === undefined) {
-      throw new HoundError('validatedUserId missing', 'deleteFamily', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('validatedUserId missing', deleteFamily, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedFamilyId === undefined) {
-      throw new HoundError('validatedFamilyId missing', 'deleteFamily', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('validatedFamilyId missing', deleteFamily, ERROR_CODES.VALUE.INVALID);
     }
 
     if (familyKickUserId !== undefined) {

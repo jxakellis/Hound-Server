@@ -35,10 +35,8 @@ async function deleteAllDogsForFamilyId(databaseConnection: Queryable, familyId:
   );
 
   // delete all the dogs
-  const promises = [];
-  for (let i = 0; i < dogs.length; i += 1) {
-    promises.push(deleteDogForFamilyIdDogId(databaseConnection, familyId, dogs[i].dogId));
-  }
+  const promises: Promise<void>[] = [];
+  dogs.forEach((dog) => promises.push(deleteDogForFamilyIdDogId(databaseConnection, familyId, dog.dogId)));
 
   await Promise.all(promises);
 }

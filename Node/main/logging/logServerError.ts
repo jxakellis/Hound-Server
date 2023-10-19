@@ -1,5 +1,5 @@
 import { serverLogger } from './loggers';
-import { databaseConnectionForLogging } from '../database/createDatabaseConnections';
+import { getDatabaseConnections } from '../database/databaseConnections';
 import { databaseQuery } from '../database/databaseQuery';
 import { HoundError, convertErrorToJSON } from '../server/globalErrors';
 
@@ -7,10 +7,10 @@ function printServerError(houndError: HoundError): void {
   const readableError = convertErrorToJSON(houndError);
 
   serverLogger.error(
-    `UNCAUGHT '${readableError.name}' FROM SOURCE FUNCTION: ${readableError.sourceFunction}
-  MESSAGE: ${readableError.message}
-  CODE: ${readableError.code}
-  STACK: ${readableError.stack}`,
+    `UNCAUGHT '${readableError}' FROM SOURCE FUNCTION: ${readableError.sourceFunction}
+    MESSAGE: ${readableError.message}
+    CODE: ${readableError.code}
+    STACK: ${readableError.stack}`,
   );
 }
 
@@ -20,42 +20,48 @@ async function logServerError(houndError: HoundError): Promise<void> {
 
   printServerError(houndError);
 
-  databaseQuery(
-    databaseConnectionForLogging,
-    `INSERT INTO previousServerErrors
-    (
-      errorDate,
-      errorFunction, 
-      errorName, 
-      errorMessage, 
-      errorCode, 
-      errorStack)
-      VALUES (
-        CURRENT_TIMESTAMP(),
-        ?,
-        ?,
-        ?,
-        ?,
-        ?
-        )`,
-    [
+  try {
+    const { databaseConnectionForLogging } = await getDatabaseConnections();
+
+    await databaseQuery(
+      databaseConnectionForLogging,
+      `INSERT INTO previousServerErrors
+      (
+        errorDate,
+        errorFunction, 
+        errorName, 
+        errorMessage, 
+        errorCode, 
+        errorStack
+        )
+        VALUES (
+          CURRENT_TIMESTAMP(),
+          ?,
+          ?,
+          ?,
+          ?,
+          ?
+          )`,
+      [
       // none, default value
-      readableError.sourceFunction,
-      readableError.name,
-      readableError.message,
-      readableError.code,
-      readableError.stack,
-    ],
-  ).catch(
-    (error) => printServerError(
+        readableError.sourceFunction,
+        readableError.name,
+        readableError.message,
+        readableError.code,
+        readableError.stack,
+      ],
+    );
+  }
+  catch (error) {
+    printServerError(
       new HoundError(
-        'logServerError',
-        'logServerError',
+        'logServerError could not insert error',
+        logServerError,
         undefined,
         error,
       ),
-    ),
-  );
+    );
+  }
 }
 
 export { logServerError };

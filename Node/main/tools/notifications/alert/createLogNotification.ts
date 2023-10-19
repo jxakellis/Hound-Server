@@ -1,5 +1,5 @@
 import { alertLogger } from '../../../logging/loggers';
-import { databaseConnectionForGeneral } from '../../../database/createDatabaseConnections';
+import { getDatabaseConnections } from '../../../database/databaseConnections';
 
 import { logServerError } from '../../../logging/logServerError';
 import { getDogForDogId } from '../../../../controllers/getFor/getForDogs';
@@ -15,6 +15,7 @@ import { HoundError } from '../../../server/globalErrors';
 async function createLogNotification(userId: string, familyId: string, dogId: number, logAction: string, logCustomActionName?: string): Promise<void> {
   try {
     alertLogger.debug(`createLogNotification ${userId}, ${familyId}, ${dogId}, ${logAction}, ${logCustomActionName}`);
+    const { databaseConnectionForGeneral } = await getDatabaseConnections();
 
     const user = await getPublicUser(databaseConnectionForGeneral, userId);
     const dog = await getDogForDogId(databaseConnectionForGeneral, dogId, false, false, undefined);
@@ -36,7 +37,7 @@ async function createLogNotification(userId: string, familyId: string, dogId: nu
     logServerError(
       new HoundError(
         'createLogNotification',
-        'createLogNotification',
+        createLogNotification,
         undefined,
         error,
       ),

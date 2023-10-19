@@ -1,26 +1,28 @@
-const express = require('express';
+import express from 'express';
+
+import { addUserIdToLogRequest } from '../main/logging/logRequest';
+
+import {
+  getUser, createUser, updateUser, deleteUser,
+} from '../controllers/controllerRoutes/user';
+
+import { validateUserIdentifier, validateUserId } from '../main/tools/validate/validateId';
+
+// Route for an alert to send to the suer
+import { alertRouter } from './alert';
+
+// Route for family (or nested) related things
+import { familyRouter } from './family';
 
 const userRouter = express.Router({ mergeParams: true });
 
-const { addUserIdToLogRequest } from '../main/tools/logging/logRequest';
-
-const {
-  getUser, createUser, updateUser, deleteUser,
-} from ''../controllers/controllerRoutes/user';
-
-const { validateUserId } from '../main/tools/validate/validateId';
-
 // TODO FUTURE we pass userId, userIdentifier, familyId, and appVersion through as headers in >= 3.0.1. Once users updated, depreciate old way of using them as param paths.
 
-userRouter.param('userId', validateUserId, addUserIdToLogRequest);
-
-// Route for an alert to send to the suer
-const { alertRouter } from './alert';
+userRouter.use(validateUserIdentifier);
+userRouter.param('userId', validateUserId);
+userRouter.param('userId', addUserIdToLogRequest);
 
 userRouter.use('/:userId/alert', alertRouter);
-
-// Route for family (or nested) related things
-const { familyRouter } from './family';
 
 userRouter.use('/:userId/family', familyRouter);
 

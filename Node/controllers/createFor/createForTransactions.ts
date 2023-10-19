@@ -9,28 +9,21 @@ import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
 import { logServerError } from '../../main/logging/logServerError';
 
 /**
- * TODO NOW update documentation. incorrect
- * 1. Formats the parameters provided
- * 2. Validates the parameters
- * 3. Attempts to insert the transaction
- * 4a. Transaction successfully inserted, returns without issue
- * 4b. Transaction unsuccessfully inserted due to duplicate transactionId, returns without issue (as transaction already exists so no need to insert it)
- * 4c. Transaction unsuccessfully inserted due to non-duplicate key error, throws error
- * @param {*} databaseConnection
- * @param {*} userId
- * @param {*} forEnvironment
- * @param {*} forExpiresDate
- * @param {*} forInAppOwnershipType
- * @param {*} forTransactionId
- * @param {*} forOfferIdentifier
- * @param {*} forOfferType
- * @param {*} forOriginalTransactionId
- * @param {*} forProductId
- * @param {*} forPurchaseDate
- * @param {*} forQuantity
- * @param {*} forSubscriptionGroupIdentifier
- * @param {*} forTransactionReason
- * @param {*} forWebOrderLineItemId
+ * Processes and updates a transaction in the database.
+ * This function carries out the following operations:
+ * 1. Validates the provided transaction data, ensuring that it matches the expected environment and ownership type.
+ * 2. Checks for the family head user associated with the provided user ID.
+ * 3. Attempts to insert the transaction into the database.
+ *    a. If the transaction already exists (due to a duplicate transactionId), it updates specific values that might have changed since the transaction was last created.
+ *    b. If there's a non-duplicate key error, the function throws an error.
+ * 4. Ensures that the most recent transaction for the user has the appropriate auto-renewal status.
+ * @param databaseConnection The database connection object.
+ * @param userId The ID of the user associated with the transaction.
+ * @param renewalInfo Optional renewal info associated with the transaction.
+ * @param transactionInfo Detailed transaction info to be processed.
+ * @returns Promise<void>
+ * @throws {HoundError} If the environment does not match, ownership type is not 'PURCHASED', or if the product ID does not correspond to an existing subscription.
+ * @throws {HoundError} If the user is not the head of the family.
  */
 async function createUpdateTransaction(
   databaseConnection: Queryable,
@@ -68,17 +61,17 @@ async function createUpdateTransaction(
   // The unique identifier of subscription purchase events across devices, including subscription renewals.
 
   if (transactionInfo.environment !== SERVER.ENVIRONMENT) {
-    throw new HoundError(`environment must be '${SERVER.ENVIRONMENT}', not '${transactionInfo.environment}'`, 'createUpdateTransaction', ERROR_CODES.VALUE.INVALID);
+    throw new HoundError(`environment must be '${SERVER.ENVIRONMENT}', not '${transactionInfo.environment}'`, createUpdateTransaction, ERROR_CODES.VALUE.INVALID);
   }
 
   if (transactionInfo.inAppOwnershipType !== 'PURCHASED') {
-    throw new HoundError(`inAppOwnershipType must be 'PURCHASED', not '${transactionInfo.inAppOwnershipType}'`, 'createUpdateTransaction', ERROR_CODES.VALUE.INVALID);
+    throw new HoundError(`inAppOwnershipType must be 'PURCHASED', not '${transactionInfo.inAppOwnershipType}'`, createUpdateTransaction, ERROR_CODES.VALUE.INVALID);
   }
 
   const correspondingProduct = SUBSCRIPTION.SUBSCRIPTIONS.find((subscription) => subscription.productId === transactionInfo.productId);
 
   if (correspondingProduct === undefined) {
-    throw new HoundError('correspondingProduct missing', 'createUpdateTransaction', ERROR_CODES.VALUE.MISSING);
+    throw new HoundError('correspondingProduct missing', createUpdateTransaction, ERROR_CODES.VALUE.MISSING);
   }
 
   const { numberOfFamilyMembers, numberOfDogs } = correspondingProduct;
@@ -86,7 +79,7 @@ async function createUpdateTransaction(
   const familyHeadUserId = await getFamilyHeadUserId(databaseConnection, userId);
 
   if (familyHeadUserId !== userId) {
-    throw new HoundError('You are not the family head. Only the family head can modify the family subscription', 'createUpdateTransaction', ERROR_CODES.PERMISSION.INVALID.FAMILY);
+    throw new HoundError('You are not the family head. Only the family head can modify the family subscription', createUpdateTransaction, ERROR_CODES.PERMISSION.INVALID.FAMILY);
   }
 
   // We attempt to insert the transaction.
@@ -95,29 +88,29 @@ async function createUpdateTransaction(
   await databaseQuery(
     databaseConnection,
     `INSERT INTO transactions
-    (
-      userId,
-      numberOfFamilyMembers, numberOfDogs,
-      autoRenewProductId, autoRenewStatus,
-      environment, expiresDate, inAppOwnershipType,
-      offerIdentifier, offerType, originalTransactionId, productId,
-      purchaseDate, quantity, revocationReason, subscriptionGroupIdentifier,
-      transactionId, transactionReason, webOrderLineItemId
-    )
-    VALUES
-    (
-      ?,
-      ?, ?,
-      ?, ?,
-      ?, ?, ?,
-      ?, ?, ?, ?,
-      ?, ?, ?, ?,
-      ?, ?, ?
-    )
-    ON DUPLICATE KEY UPDATE
-      autoRenewProductId = CASE WHEN ? IS NOT NULL THEN ? ELSE autoRenewProductId END,
-      autoRenewStatus = CASE WHEN ? IS NOT NULL THEN ? ELSE autoRenewStatus END,
-      revocationReason = VALUES(revocationReason)`,
+      (
+        userId,
+        numberOfFamilyMembers, numberOfDogs,
+        autoRenewProductId, autoRenewStatus,
+        environment, expiresDate, inAppOwnershipType,
+        offerIdentifier, offerType, originalTransactionId, productId,
+        purchaseDate, quantity, revocationReason, subscriptionGroupIdentifier,
+        transactionId, transactionReason, webOrderLineItemId
+        )
+        VALUES
+        (
+          ?,
+          ?, ?,
+          ?, ?,
+          ?, ?, ?,
+          ?, ?, ?, ?,
+          ?, ?, ?, ?,
+          ?, ?, ?
+          )
+          ON DUPLICATE KEY UPDATE
+          autoRenewProductId = CASE WHEN ? IS NOT NULL THEN ? ELSE autoRenewProductId END,
+          autoRenewStatus = CASE WHEN ? IS NOT NULL THEN ? ELSE autoRenewStatus END,
+          revocationReason = VALUES(revocationReason)`,
     [
       userId,
       numberOfFamilyMembers, numberOfDogs,
@@ -134,29 +127,29 @@ async function createUpdateTransaction(
   );
 
   /*
-  * Find the most recent transaction, with the most up-to-date autoRenewStatus, for a userId
-  * If the transaction is the most recent, leave its autoRenewStatus alone
-  * If the transaction isn't the most recent, then it cannot possibly be renewing.
-  * Upgrades make new transactions (so new transaction is now renewing) and downgrades update existing transactions (so existing transaction is still renewing)
-  */
+          * Find the most recent transaction, with the most up-to-date autoRenewStatus, for a userId
+          * If the transaction is the most recent, leave its autoRenewStatus alone
+          * If the transaction isn't the most recent, then it cannot possibly be renewing.
+          * Upgrades make new transactions (so new transaction is now renewing) and downgrades update existing transactions (so existing transaction is still renewing)
+          */
 
   await databaseQuery(
     databaseConnection,
     `
-    UPDATE transactions t
-    JOIN (
-      SELECT transactionId, autoRenewProductId, autoRenewStatus
-      FROM transactions
-      WHERE revocationReason IS NULL AND userId = ?
-      ORDER BY purchaseDate DESC
-      LIMIT 1
-      ) mrt
-      ON t.userId = ?
-      SET t.autoRenewStatus =
-      CASE
-      WHEN t.transactionId = mrt.transactionId THEN mrt.autoRenewStatus
-      ELSE 0
-      END`,
+            UPDATE transactions t
+            JOIN (
+              SELECT transactionId, autoRenewProductId, autoRenewStatus
+              FROM transactions
+              WHERE revocationReason IS NULL AND userId = ?
+              ORDER BY purchaseDate DESC
+              LIMIT 1
+              ) mrt
+              ON t.userId = ?
+              SET t.autoRenewStatus =
+              CASE
+              WHEN t.transactionId = mrt.transactionId THEN mrt.autoRenewStatus
+              ELSE 0
+              END`,
     [userId, userId],
   );
 }
@@ -165,13 +158,13 @@ async function createTransactionForAppStoreReceiptURL(databaseConnection: Querya
   const transactionId = extractTransactionIdFromAppStoreReceiptURL(appStoreReceiptURL);
 
   if (transactionId === undefined) {
-    throw new HoundError('transactionId couldn\'t be constructed with extractTransactionIdFromAppStoreReceiptURL', 'createTransactionForAppStoreReceiptURL', ERROR_CODES.VALUE.INVALID);
+    throw new HoundError('transactionId couldn\'t be constructed with extractTransactionIdFromAppStoreReceiptURL', createTransactionForAppStoreReceiptURL, ERROR_CODES.VALUE.INVALID);
   }
 
   const subscriptions = await queryAllSubscriptionsForTransactionId(transactionId.toString());
 
   if (subscriptions.length === 0) {
-    throw new HoundError('subscriptions couldn\'t be queried with querySubscriptionStatusesFromAppStoreAPI', 'createTransactionForAppStoreReceiptURL', ERROR_CODES.VALUE.INVALID);
+    throw new HoundError('subscriptions couldn\'t be queried with querySubscriptionStatusesFromAppStoreAPI', createTransactionForAppStoreReceiptURL, ERROR_CODES.VALUE.INVALID);
   }
 
   // Create an array of Promises
@@ -185,7 +178,7 @@ async function createTransactionForAppStoreReceiptURL(databaseConnection: Querya
     logServerError(
       new HoundError(
         `Failed to create transaction for transactionId ${subscription.transactionInfo.transactionId}`,
-        'createTransactionForAppStoreReceiptURL',
+        createTransactionForAppStoreReceiptURL,
         undefined,
         error,
       ),

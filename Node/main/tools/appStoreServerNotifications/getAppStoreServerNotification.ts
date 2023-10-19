@@ -1,8 +1,6 @@
 import { Queryable, databaseQuery } from '../../database/databaseQuery';
 import { AppStoreServerNotificationsRow, appStoreServerNotificationsColumns } from '../../types/AppStoreServerNotificationsRow';
 
-// TODO NOW find all uses of [] to index and use .safeIndex to get possible undefined
-
 /**
  * Attempts to find the App Store Server Notification associated with the notificationUUID provided
  * @param {*} databaseConnection

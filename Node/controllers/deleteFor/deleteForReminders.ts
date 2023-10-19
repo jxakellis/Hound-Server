@@ -57,12 +57,7 @@ async function deleteAllRemindersForFamilyIdDogId(databaseConnection: Queryable,
   // iterate through all reminders provided to update them all
   // if there is a problem, then we return that problem (function that invokes this will roll back requests)
   // if there are no problems with any of the reminders, we return.
-  for (let i = 0; i < reminders.length; i += 1) {
-    const { reminderId } = reminders[i];
-
-    // everything here succeeded so we shoot off a request to delete the alarm notification for the reminder
-    deleteAlarmNotificationsForReminder(familyId, reminderId);
-  }
+  reminders.forEach((reminder) => deleteAlarmNotificationsForReminder(familyId, reminder.reminderId));
 }
 
 export { deleteRemindersForFamilyIdDogIdReminderIds, deleteAllRemindersForFamilyIdDogId };

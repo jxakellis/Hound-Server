@@ -29,7 +29,7 @@ async function queryTransactionHistoryFromAppStoreServerAPI(transactionId: strin
     logServerError(
       new HoundError(
         'getTransactionHistory',
-        'queryTransactionHistoryFromAppStoreServerAPI',
+        queryTransactionHistoryFromAppStoreServerAPI,
         undefined,
         error,
       ),
@@ -54,7 +54,7 @@ async function queryTransactionHistoryFromAppStoreServerAPI(transactionId: strin
     logServerError(
       new HoundError(
         'decodeTransactions',
-        'queryTransactionHistoryFromAppStoreServerAPI',
+        queryTransactionHistoryFromAppStoreServerAPI,
         undefined,
         error,
       ),
@@ -94,7 +94,7 @@ async function querySubscriptionStatusesFromAppStoreAPI(transactionId: string): 
     logServerError(
       new HoundError(
         'getSubscriptionStatuses',
-        'querySubscriptionStatusesFromAppStoreAPI',
+        querySubscriptionStatusesFromAppStoreAPI,
         undefined,
         error,
       ),
@@ -110,39 +110,36 @@ async function querySubscriptionStatusesFromAppStoreAPI(transactionId: string): 
   }
 
   // We will have a potentially large amount of signedRenewal/TransactionInfos to decode. Therefore, we want to gather them all then do Promise.all.
-  const transactionInfoPromises = [];
-  const renewalInfoPromises = [];
+  const transactionInfoPromises: Promise<JWSTransactionDecodedPayload>[] = [];
+  const renewalInfoPromises: Promise<JWSRenewalInfoDecodedPayload>[] = [];
 
   // statusResponse.data is an array of SubscriptionGroupIdentifierItem
   const subscriptionGroupIdentifierItems = statusResponse.data;
 
-  for (let i = 0; i < subscriptionGroupIdentifierItems.length; i += 1) {
+  subscriptionGroupIdentifierItems.forEach((subscriptionGroupIdentifierItem) => {
     // https://developer.apple.com/documentation/appstoreserverapi/subscriptiongroupidentifieritem
     // each SubscriptionGroupIdentifierItem has a subscriptionGroupIdentifier and lastTransactionsItem array
-
-    const subscriptionGroupIdentifierItem = subscriptionGroupIdentifierItems[i];
     const lastTransactionsItems = subscriptionGroupIdentifierItem.lastTransactions;
 
-    for (let j = 0; j < lastTransactionsItems.length; j += 1) {
+    lastTransactionsItems.forEach((lastTransactionsItem) => {
       // https://developer.apple.com/documentation/appstoreserverapi/lasttransactionsitem
       // each lastTransactionsItem has an originalTransactionId, status, signedRenewalInfo, and signedTransactionInfo
-      const lastTransactionsItem = lastTransactionsItems[j];
 
       transactionInfoPromises.push(decodeTransaction(lastTransactionsItem.signedTransactionInfo));
       renewalInfoPromises.push(decodeRenewalInfo(lastTransactionsItem.signedRenewalInfo));
-    }
-  }
+    });
+  });
 
   // Now we have two arrays of promises, await them to get our results
-  let decodedTransactionInfos: JWSTransactionDecodedPayload[];
+  const decodedTransactionInfos: JWSTransactionDecodedPayload[] = [];
   try {
-    decodedTransactionInfos = await Promise.all(transactionInfoPromises);
+    decodedTransactionInfos.concat(await Promise.all(transactionInfoPromises));
   }
   catch (error) {
     logServerError(
       new HoundError(
         'decodeTransaction',
-        'querySubscriptionStatusesFromAppStoreAPI',
+        querySubscriptionStatusesFromAppStoreAPI,
         undefined,
         error,
       ),
@@ -150,15 +147,15 @@ async function querySubscriptionStatusesFromAppStoreAPI(transactionId: string): 
     return [];
   }
 
-  let decodedRenewalInfos: JWSRenewalInfoDecodedPayload[];
+  const decodedRenewalInfos: JWSRenewalInfoDecodedPayload[] = [];
   try {
-    decodedRenewalInfos = await Promise.all(renewalInfoPromises);
+    decodedRenewalInfos.concat(await Promise.all(renewalInfoPromises));
   }
   catch (error) {
     logServerError(
       new HoundError(
         'decodeRenewalInfo',
-        'querySubscriptionStatusesFromAppStoreAPI',
+        querySubscriptionStatusesFromAppStoreAPI,
         undefined,
         error,
       ),
@@ -191,13 +188,15 @@ async function queryAllSubscriptionsForTransactionId(transactionId: string): Pro
     renewalInfo?: JWSRenewalInfoDecodedPayload,
 }[] = await queryTransactionHistoryFromAppStoreServerAPI(transactionId);
 
+  const randomSingleTransaction = transactions.safeIndex(0);
+
   // If there are no transactions, return an empty array.
-  if (transactions.length === 0) {
+  if (randomSingleTransaction === undefined) {
     return [];
   }
 
   // Use the transactionId of the first transaction to query the subscription status.
-  const subscriptions = await querySubscriptionStatusesFromAppStoreAPI(transactions[0].transactionInfo.transactionId);
+  const subscriptions = await querySubscriptionStatusesFromAppStoreAPI(randomSingleTransaction.transactionInfo.transactionId);
 
   if (subscriptions.length === 0) {
     return transactions;

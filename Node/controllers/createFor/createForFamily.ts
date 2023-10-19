@@ -463,9 +463,11 @@ async function generateUniqueFamilyCode(databaseConnection: Queryable): Promise<
       FROM families f
       WHERE familyCode = ?
       LIMIT 1`,
-      [potentialFamilyCode],
+      [
+        potentialFamilyCode,
+      ],
     );
-    // if the result's length is zero, that means there wasn't a match for the family code and the code is unique
+      // if the result's length is zero, that means there wasn't a match for the family code and the code is unique
     if (result.length === 0) {
       uniqueFamilyCode = potentialFamilyCode;
     }
@@ -475,9 +477,9 @@ async function generateUniqueFamilyCode(databaseConnection: Queryable): Promise<
 }
 
 /**
- *  Queries the database to create a family. If the query is successful, then returns the familyId.
- *  If a problem is encountered, creates and throws custom error
- */
+  *  Queries the database to create a family. If the query is successful, then returns the familyId.
+  *  If a problem is encountered, creates and throws custom error
+  */
 async function createFamilyForUserId(databaseConnection: Queryable, userId: string): Promise<string> {
   const familyId = hash(userId);
 
@@ -486,7 +488,7 @@ async function createFamilyForUserId(databaseConnection: Queryable, userId: stri
 
   // validate that the user is not in a family
   if (isUserInFamily === true) {
-    throw new HoundError('User is already in a family', 'createFamilyForUserId', ERROR_CODES.FAMILY.JOIN.IN_FAMILY_ALREADY);
+    throw new HoundError('User is already in a family', createFamilyForUserId, ERROR_CODES.FAMILY.JOIN.IN_FAMILY_ALREADY);
   }
 
   // create a family code for the new family
@@ -496,20 +498,20 @@ async function createFamilyForUserId(databaseConnection: Queryable, userId: stri
     databaseQuery(
       databaseConnection,
       `INSERT INTO families
-      (
-        userId,
-        familyId,
-        familyCode,
-        familyIsLocked,
-        familyAccountCreationDate
-        )
-      VALUES (
-        ?,
-        ?,
-        ?,
-        0,
-        CURRENT_TIMESTAMP()
-      )`,
+        (
+          userId,
+          familyId,
+          familyCode,
+          familyIsLocked,
+          familyAccountCreationDate
+          )
+          VALUES (
+            ?,
+            ?,
+            ?,
+            0,
+            CURRENT_TIMESTAMP()
+            )`,
       [
         userId,
         familyId,
@@ -521,16 +523,16 @@ async function createFamilyForUserId(databaseConnection: Queryable, userId: stri
     databaseQuery(
       databaseConnection,
       `INSERT INTO familyMembers
-      (
-        userId,
-        familyId,
-        familyMemberJoinDate
-      )
-      VALUES (
-        ?,
-        ?,
-        CURRENT_TIMESTAMP()
-      )`,
+              (
+                userId,
+                familyId,
+                familyMemberJoinDate
+                )
+                VALUES (
+                  ?,
+                  ?,
+                  CURRENT_TIMESTAMP()
+                  )`,
       [
         userId,
         familyId,

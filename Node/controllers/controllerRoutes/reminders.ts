@@ -31,10 +31,10 @@ async function getReminders(req: express.Request, res: express.Response): Promis
     const previousDogManagerSynchronization = formatDate(req.query['previousDogManagerSynchronization'] ?? req.query['userConfigurationPreviousDogManagerSynchronization']);
 
     if (databaseConnection === undefined) {
-      throw new HoundError('databaseConnection missing', 'getReminders', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', getReminders, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedDogId === undefined) {
-      throw new HoundError('validatedDogId missing', 'getReminders', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('validatedDogId missing', getReminders, ERROR_CODES.VALUE.INVALID);
     }
 
     const validatedReminderId = validatedReminderIds.safeIndex(0);
@@ -42,7 +42,7 @@ async function getReminders(req: express.Request, res: express.Response): Promis
       const result = await getReminderForReminderId(databaseConnection, validatedReminderId, previousDogManagerSynchronization);
 
       if (result === undefined) {
-        throw new HoundError('result missing', 'getReminders', ERROR_CODES.VALUE.INVALID);
+        throw new HoundError('result missing', getReminders, ERROR_CODES.VALUE.INVALID);
       }
 
       return res.extendedProperties.sendSuccessResponse(result);
@@ -64,22 +64,20 @@ async function createReminder(req: express.Request, res: express.Response): Prom
     const remindersDictionary = formatArray(req.body['reminders'] ?? [req.body]) as (Dictionary[] | undefined);
 
     if (databaseConnection === undefined) {
-      throw new HoundError('databaseConnection missing', 'createReminder', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', createReminder, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedFamilyId === undefined) {
-      throw new HoundError('validatedFamilyId missing', 'createReminder', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('validatedFamilyId missing', createReminder, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedDogId === undefined) {
-      throw new HoundError('validatedDogId missing', 'createReminder', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('validatedDogId missing', createReminder, ERROR_CODES.VALUE.INVALID);
     }
     if (remindersDictionary === undefined) {
-      throw new HoundError('remindersDictionary missing', 'createReminder', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('remindersDictionary missing', createReminder, ERROR_CODES.VALUE.INVALID);
     }
 
     const reminders: DogRemindersRow[] = [];
-    for (let i = 0; i < remindersDictionary.length; i += 1) {
-      const reminder = remindersDictionary[i];
-
+    remindersDictionary.forEach((reminder) => {
       // validate reminder id against validatedReminders
       const reminderId = req.extendedProperties.validatedVariables.validatedReminderIds.find((validatedReminderId) => validatedReminderId === formatNumber(reminder['reminderId']));
       const reminderAction = formatUnknownString(reminder['reminderAction']);
@@ -109,68 +107,68 @@ async function createReminder(req: express.Request, res: express.Response): Prom
       const oneTimeDate = formatDate(reminder['oneTimeDate']);
 
       if (reminderId === undefined) {
-        throw new HoundError('reminderId missing', 'createReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('reminderId missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
       if (reminderAction === undefined) {
-        throw new HoundError('reminderAction missing', 'createReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('reminderAction missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
       if (reminderCustomActionName === undefined) {
-        throw new HoundError('reminderCustomActionName missing', 'createReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('reminderCustomActionName missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
       if (reminderType === undefined) {
-        throw new HoundError('reminderType missing', 'createReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('reminderType missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
       if (reminderIsEnabled === undefined) {
-        throw new HoundError('reminderIsEnabled missing', 'createReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('reminderIsEnabled missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
       // reminderExecutionDate optional
       if (reminderExecutionBasis === undefined) {
-        throw new HoundError('reminderExecutionBasis missing', 'createReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('reminderExecutionBasis missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
       // snoozeExecutionInterval optional
       if (countdownExecutionInterval === undefined) {
-        throw new HoundError('countdownExecutionInterval missing', 'createReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('countdownExecutionInterval missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
       if (weeklyUTCHour === undefined) {
-        throw new HoundError('weeklyUTCHour missing', 'createReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('weeklyUTCHour missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
       if (weeklyUTCMinute === undefined) {
-        throw new HoundError('weeklyUTCMinute missing', 'createReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('weeklyUTCMinute missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
       if (weeklySunday === undefined) {
-        throw new HoundError('weeklySunday missing', 'createReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('weeklySunday missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
       if (weeklyMonday === undefined) {
-        throw new HoundError('weeklyMonday missing', 'createReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('weeklyMonday missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
       if (weeklyTuesday === undefined) {
-        throw new HoundError('weeklyTuesday missing', 'createReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('weeklyTuesday missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
       if (weeklyWednesday === undefined) {
-        throw new HoundError('weeklyWednesday missing', 'createReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('weeklyWednesday missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
       if (weeklyThursday === undefined) {
-        throw new HoundError('weeklyThursday missing', 'createReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('weeklyThursday missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
       if (weeklyFriday === undefined) {
-        throw new HoundError('weeklyFriday missing', 'createReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('weeklyFriday missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
       if (weeklySaturday === undefined) {
-        throw new HoundError('weeklySaturday missing', 'createReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('weeklySaturday missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
       // weeklySkippedDate optional
       if (monthlyUTCDay === undefined) {
-        throw new HoundError('monthlyUTCDay missing', 'createReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('monthlyUTCDay missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
       if (monthlyUTCHour === undefined) {
-        throw new HoundError('monthlyUTCHour missing', 'createReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('monthlyUTCHour missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
       if (monthlyUTCMinute === undefined) {
-        throw new HoundError('monthlyUTCMinute missing', 'createReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('monthlyUTCMinute missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
       // monthlySkippedDate optional
       if (oneTimeDate === undefined) {
-        throw new HoundError('oneTimeDate missing', 'createReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('oneTimeDate missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
 
       reminders.push({
@@ -204,18 +202,18 @@ async function createReminder(req: express.Request, res: express.Response): Prom
         monthlySkippedDate,
         oneTimeDate,
       });
-    }
+    });
 
     const results = await createRemindersForDogIdReminders(databaseConnection, reminders);
 
     // create was successful, so we can create all the alarm notifications
-    for (let i = 0; i < results.length; i += 1) {
+    results.forEach((result) => {
       createAlarmNotificationForFamily(
         validatedFamilyId,
-        results[i].reminderId,
-        results[i].reminderExecutionDate,
+        result.reminderId,
+        result.reminderExecutionDate,
       );
-    }
+    });
 
     return res.extendedProperties.sendSuccessResponse(results);
   }
@@ -232,22 +230,20 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
     const remindersDictionary = formatArray(req.body['reminders'] ?? [req.body]) as (Dictionary[] | undefined);
 
     if (databaseConnection === undefined) {
-      throw new HoundError('databaseConnection missing', 'createReminder', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', updateReminder, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedFamilyId === undefined) {
-      throw new HoundError('validatedFamilyId missing', 'createReminder', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('validatedFamilyId missing', updateReminder, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedDogId === undefined) {
-      throw new HoundError('validatedDogId missing', 'createReminder', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('validatedDogId missing', updateReminder, ERROR_CODES.VALUE.INVALID);
     }
     if (remindersDictionary === undefined) {
-      throw new HoundError('remindersDictionary missing', 'createReminder', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('remindersDictionary missing', updateReminder, ERROR_CODES.VALUE.INVALID);
     }
 
     const reminders: DogRemindersRow[] = [];
-    for (let i = 0; i < remindersDictionary.length; i += 1) {
-      const reminder = remindersDictionary[i];
-
+    remindersDictionary.forEach((reminder) => {
       // validate reminder id against validatedReminders
       const reminderId = req.extendedProperties.validatedVariables.validatedReminderIds.find((validatedReminderId) => validatedReminderId === formatNumber(reminder['reminderId']));
       const reminderAction = formatUnknownString(reminder['reminderAction']);
@@ -277,68 +273,68 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
       const oneTimeDate = formatDate(reminder['oneTimeDate']);
 
       if (reminderId === undefined) {
-        throw new HoundError('reminderId missing', 'updateReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('reminderId missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
       if (reminderAction === undefined) {
-        throw new HoundError('reminderAction missing', 'updateReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('reminderAction missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
       if (reminderCustomActionName === undefined) {
-        throw new HoundError('reminderCustomActionName missing', 'updateReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('reminderCustomActionName missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
       if (reminderType === undefined) {
-        throw new HoundError('reminderType missing', 'updateReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('reminderType missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
       if (reminderIsEnabled === undefined) {
-        throw new HoundError('reminderIsEnabled missing', 'updateReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('reminderIsEnabled missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
       // reminderExecutionDate optional
       if (reminderExecutionBasis === undefined) {
-        throw new HoundError('reminderExecutionBasis missing', 'updateReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('reminderExecutionBasis missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
       // snoozeExecutionInterval optional
       if (countdownExecutionInterval === undefined) {
-        throw new HoundError('countdownExecutionInterval missing', 'updateReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('countdownExecutionInterval missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
       if (weeklyUTCHour === undefined) {
-        throw new HoundError('weeklyUTCHour missing', 'updateReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('weeklyUTCHour missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
       if (weeklyUTCMinute === undefined) {
-        throw new HoundError('weeklyUTCMinute missing', 'updateReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('weeklyUTCMinute missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
       if (weeklySunday === undefined) {
-        throw new HoundError('weeklySunday missing', 'updateReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('weeklySunday missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
       if (weeklyMonday === undefined) {
-        throw new HoundError('weeklyMonday missing', 'updateReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('weeklyMonday missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
       if (weeklyTuesday === undefined) {
-        throw new HoundError('weeklyTuesday missing', 'updateReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('weeklyTuesday missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
       if (weeklyWednesday === undefined) {
-        throw new HoundError('weeklyWednesday missing', 'updateReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('weeklyWednesday missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
       if (weeklyThursday === undefined) {
-        throw new HoundError('weeklyThursday missing', 'updateReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('weeklyThursday missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
       if (weeklyFriday === undefined) {
-        throw new HoundError('weeklyFriday missing', 'updateReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('weeklyFriday missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
       if (weeklySaturday === undefined) {
-        throw new HoundError('weeklySaturday missing', 'updateReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('weeklySaturday missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
       // weeklySkippedDate optional
       if (monthlyUTCDay === undefined) {
-        throw new HoundError('monthlyUTCDay missing', 'updateReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('monthlyUTCDay missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
       if (monthlyUTCHour === undefined) {
-        throw new HoundError('monthlyUTCHour missing', 'updateReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('monthlyUTCHour missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
       if (monthlyUTCMinute === undefined) {
-        throw new HoundError('monthlyUTCMinute missing', 'updateReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('monthlyUTCMinute missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
       // monthlySkippedDate optional
       if (oneTimeDate === undefined) {
-        throw new HoundError('oneTimeDate missing', 'updateReminder', ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('oneTimeDate missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
 
       reminders.push({
@@ -372,18 +368,19 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
         monthlySkippedDate,
         oneTimeDate,
       });
-    }
+    });
 
     await updateRemindersForDogIdReminders(databaseConnection, reminders);
 
     // update was successful, so we can create all new alarm notifications
-    for (let i = 0; i < reminders.length; i += 1) {
+    reminders.forEach((reminder) => {
       createAlarmNotificationForFamily(
         validatedFamilyId,
-        reminders[i].reminderId,
-        reminders[i].reminderExecutionDate,
+        reminder.reminderId,
+        reminder.reminderExecutionDate,
       );
-    }
+    });
+
     return res.extendedProperties.sendSuccessResponse({});
   }
   catch (error) {
@@ -397,13 +394,13 @@ async function deleteReminder(req: express.Request, res: express.Response): Prom
     const { validatedFamilyId, validatedReminderIds } = req.extendedProperties.validatedVariables;
 
     if (databaseConnection === undefined) {
-      throw new HoundError('databaseConnection missing', 'deleteReminder', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', deleteReminder, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedFamilyId === undefined) {
-      throw new HoundError('validatedFamilyId missing', 'deleteReminder', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('validatedFamilyId missing', deleteReminder, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedReminderIds === undefined) {
-      throw new HoundError('validatedReminderIds missing', 'deleteReminder', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('validatedReminderIds missing', deleteReminder, ERROR_CODES.VALUE.INVALID);
     }
 
     await deleteRemindersForFamilyIdDogIdReminderIds(databaseConnection, validatedFamilyId, validatedReminderIds);

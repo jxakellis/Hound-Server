@@ -12,16 +12,16 @@ async function getTransactions(req: express.Request, res: express.Response): Pro
     const { validatedUserId } = req.extendedProperties.validatedVariables;
 
     if (databaseConnection === undefined) {
-      throw new HoundError('databaseConnection missing', 'getTransactions', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', getTransactions, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedUserId === undefined) {
-      throw new HoundError('validatedUserId missing', 'getTransactions', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('validatedUserId missing', getTransactions, ERROR_CODES.VALUE.INVALID);
     }
 
     const result = await getAllTransactions(databaseConnection, validatedUserId);
 
     if (result === undefined) {
-      throw new HoundError('result missing', 'getTransactions', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('result missing', getTransactions, ERROR_CODES.VALUE.INVALID);
     }
 
     return res.extendedProperties.sendSuccessResponse(result);
@@ -39,13 +39,13 @@ async function createTransactions(req: express.Request, res: express.Response): 
     const appStoreReceiptURL = formatUnknownString(req.body['appStoreReceiptURL']);
 
     if (databaseConnection === undefined) {
-      throw new HoundError('databaseConnection missing', 'createTransactions', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', createTransactions, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedUserId === undefined) {
-      throw new HoundError('validatedUserId missing', 'createTransactions', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('validatedUserId missing', createTransactions, ERROR_CODES.VALUE.INVALID);
     }
     if (appStoreReceiptURL === undefined) {
-      throw new HoundError('appStoreReceiptURL missing', 'createTransactions', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('appStoreReceiptURL missing', createTransactions, ERROR_CODES.VALUE.INVALID);
     }
 
     await createTransactionForAppStoreReceiptURL(databaseConnection, validatedUserId, appStoreReceiptURL);
@@ -54,7 +54,7 @@ async function createTransactions(req: express.Request, res: express.Response): 
     const result = await getActiveTransaction(databaseConnection, validatedUserId);
 
     if (result === undefined) {
-      throw new HoundError('result missing', 'createTransactions', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('result missing', createTransactions, ERROR_CODES.VALUE.INVALID);
     }
 
     return res.extendedProperties.sendSuccessResponse(result);

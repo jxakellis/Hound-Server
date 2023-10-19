@@ -27,19 +27,18 @@ async function addFamilyMember(databaseConnection: Queryable, userId: string, fo
   // make sure the familyCode was valid by checking if it matched a family
   if (family === undefined) {
     // result length is zero so there are no families with that familyCode
-    throw new HoundError('family missing; familyCode is not linked to any family', 'addFamilyMember', ERROR_CODES.FAMILY.JOIN.FAMILY_CODE_INVALID);
+    throw new HoundError('family missing; familyCode is not linked to any family', addFamilyMember, ERROR_CODES.FAMILY.JOIN.FAMILY_CODE_INVALID);
   }
   // familyCode exists and is linked to a family, now check if family is locked against new members
   if (family.familyIsLocked === 1) {
-    // TODO NOW go through all Hound errors. amke sure that the ERROR_CODES parameter isn't in the spot for name (and we forgot to add a name like 'addFamilyMember')
-    throw new HoundError('Family is locked', 'addFamilyMember', ERROR_CODES.FAMILY.JOIN.FAMILY_LOCKED);
+    throw new HoundError('Family is locked', addFamilyMember, ERROR_CODES.FAMILY.JOIN.FAMILY_LOCKED);
   }
 
   // the familyCode is valid and linked to an UNLOCKED family
   const isUserInFamily = await isUserIdInFamily(databaseConnection, userId);
 
   if (isUserInFamily === true) {
-    throw new HoundError('You are already in a family', 'addFamilyMember', ERROR_CODES.FAMILY.JOIN.IN_FAMILY_ALREADY);
+    throw new HoundError('You are already in a family', addFamilyMember, ERROR_CODES.FAMILY.JOIN.IN_FAMILY_ALREADY);
   }
 
   // Don't use .familyActiveSubscription property: the property wasn't assigned to the request due to the user not being in a family (only assigned with familyId is path param)
@@ -47,12 +46,12 @@ async function addFamilyMember(databaseConnection: Queryable, userId: string, fo
   const familyMembers = await getAllFamilyMembersForFamilyId(databaseConnection, family.familyId);
 
   if (familyActiveSubscription === undefined) {
-    throw new HoundError('familyActiveSubscription missing', 'addFamilyMember', ERROR_CODES.VALUE.MISSING);
+    throw new HoundError('familyActiveSubscription missing', addFamilyMember, ERROR_CODES.VALUE.MISSING);
   }
 
   // the family is either at the limit of family members is exceeds the limit, therefore no new users can join
   if (familyMembers.length >= familyActiveSubscription.numberOfFamilyMembers) {
-    throw new HoundError(`Family member limit of ${familyActiveSubscription.numberOfFamilyMembers} exceeded`, 'addFamilyMember', ERROR_CODES.FAMILY.LIMIT.FAMILY_MEMBER_TOO_LOW);
+    throw new HoundError(`Family member limit of ${familyActiveSubscription.numberOfFamilyMembers} exceeded`, addFamilyMember, ERROR_CODES.FAMILY.LIMIT.FAMILY_MEMBER_TOO_LOW);
   }
 
   // familyCode validated and user is not a family member in any family
@@ -108,7 +107,7 @@ async function updateIsLocked(databaseConnection: Queryable, userId: string, fam
   createFamilyLockedNotification(userId, familyId, familyIsLocked);
 }
 
-// TODO NOW add logic for a family to allow it to switch family heads. this will mean checking the active subscription to make sure it is not renewing, similar to deleting a family.
+// TODO FUTURE add logic for a family to allow it to switch family heads. this will mean checking the active subscription to make sure it is not renewing, similar to deleting a family.
 // ^^ also check other logic, since in the past a family always had the same userId for its family head, but now that could switch, so verify that functions are compatible with that (e.g. retrieving transactions, reassigning transctions, transaction metrics)
 
 /**
@@ -116,15 +115,20 @@ async function updateIsLocked(databaseConnection: Queryable, userId: string, fam
             *  If a problem is encountered, creates and throws custom error
             */
 async function updateFamilyForUserIdFamilyId(databaseConnection: Queryable, userId: string, familyId?: string, familyCode?: string, familyIsLocked?: boolean): Promise<void> {
-  if (familyId === undefined && familyCode !== undefined) {
-    await addFamilyMember(databaseConnection, userId, familyCode);
+  if (familyId === undefined) {
+    if (familyCode !== undefined) {
+      await addFamilyMember(databaseConnection, userId, familyCode);
+      return;
+    }
   }
-  else if (familyId !== undefined && familyIsLocked !== undefined) {
-    await updateIsLocked(databaseConnection, userId, familyId, familyIsLocked);
+  else if (familyId !== undefined) {
+    if (familyIsLocked !== undefined) {
+      await updateIsLocked(databaseConnection, userId, familyId, familyIsLocked);
+      return;
+    }
   }
-  else {
-    throw new HoundError('No matching values provided', 'updateFamilyForUserIdFamilyId', ERROR_CODES.VALUE.MISSING);
-  }
+
+  throw new HoundError('No matching values provided', updateFamilyForUserIdFamilyId, ERROR_CODES.VALUE.MISSING);
 }
 
 export { updateFamilyForUserIdFamilyId };

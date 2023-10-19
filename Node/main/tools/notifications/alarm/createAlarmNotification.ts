@@ -1,5 +1,5 @@
 import { alarmLogger } from '../../../logging/loggers';
-import { databaseConnectionForAlarms } from '../../../database/createDatabaseConnections';
+import { getDatabaseConnections } from '../../../database/databaseConnections';
 import { databaseQuery } from '../../../database/databaseQuery';
 
 import { schedule } from './schedule';
@@ -20,6 +20,7 @@ import { HoundError } from '../../../server/globalErrors';
  */
 async function sendAPNNotificationForFamily(familyId: string, reminderId: number): Promise<void> {
   try {
+    const { databaseConnectionForAlarms } = await getDatabaseConnections();
     // get the dogName, reminderAction, and reminderCustomActionName for the given reminderId
     // the reminderId has to exist to search and we check to make sure the dogId isn't null (to make sure the dog still exists too)
     const result = await databaseQuery<(
@@ -60,7 +61,7 @@ DogsRow & DogRemindersRow)[]>(
     logServerError(
       new HoundError(
         'sendAPNNotificationForFamily',
-        'sendAPNNotificationForFamily',
+        sendAPNNotificationForFamily,
         undefined,
         error,
       ),
@@ -106,7 +107,7 @@ async function createAlarmNotificationForFamily(familyId: string, reminderId: nu
     logServerError(
       new HoundError(
         'createAlarmNotificationForFamily',
-        'createAlarmNotificationForFamily',
+        createAlarmNotificationForFamily,
         undefined,
         error,
       ),

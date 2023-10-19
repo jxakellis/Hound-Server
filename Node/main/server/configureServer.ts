@@ -2,16 +2,13 @@ import https from 'https';
 import { IncomingMessage, ServerResponse } from 'http';
 
 import { serverLogger } from '../logging/loggers';
-import { configureDatabaseConnections } from '../database/configureDatabaseConnection';
 import { databaseQuery } from '../database/databaseQuery';
 import { testDatabaseConnections } from '../database/testDatabaseConnection';
-import {
-  databaseConnectionForGeneral, databaseConnectionForLogging, databaseConnectionForAlarms, databaseConnectionPoolForRequests,
-} from '../database/createDatabaseConnections';
 import { logServerError } from '../logging/logServerError';
 import { restoreAlarmNotificationsForAllFamilies } from '../tools/notifications/alarm/restoreAlarmNotification';
 import { SERVER } from './globalConstants';
 import { HoundError } from './globalErrors';
+import { getDatabaseConnections } from '../database/databaseConnections';
 
 async function configureServer(server: https.Server<typeof IncomingMessage, typeof ServerResponse>): Promise<NodeJS.Timeout> {
   return new Promise((resolve) => {
@@ -19,13 +16,17 @@ async function configureServer(server: https.Server<typeof IncomingMessage, type
     server.listen(SERVER.SERVER_PORT, async () => {
       serverLogger.info(`Running HTTPS server on port ${SERVER.SERVER_PORT}; ${SERVER.ENVIRONMENT} database`);
 
-      await configureDatabaseConnections();
+      await getDatabaseConnections();
 
       await restoreAlarmNotificationsForAllFamilies();
 
       // Invoke this interval every DATABASE_MAINTENANCE_INTERVAL, tests database connections and delete certain things
-      const databaseMaintenanceIntervalObject = setInterval(() => {
+      const databaseMaintenanceIntervalObject = setInterval(async () => {
         serverLogger.info(`Performing ${SERVER.DATABASE_MAINTENANCE_INTERVAL / 1000} second maintenance`);
+
+        const {
+          databaseConnectionForGeneral, databaseConnectionForLogging, databaseConnectionForAlarms, databaseConnectionPoolForRequests,
+        } = await getDatabaseConnections();
 
         // Keep the latest DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES previousRequests, then delete any entries that are older
         databaseQuery(
@@ -38,7 +39,7 @@ async function configureServer(server: https.Server<typeof IncomingMessage, type
           .catch((error) => logServerError(
             new HoundError(
               'DELETE previousRequests',
-              'databaseMaintenanceIntervalObject',
+              setInterval,
               undefined,
               error,
             ),
@@ -55,7 +56,7 @@ async function configureServer(server: https.Server<typeof IncomingMessage, type
           .catch((error) => logServerError(
             new HoundError(
               'DELETE previousResponses',
-              'databaseMaintenanceIntervalObject',
+              setInterval,
               undefined,
               error,
             ),
@@ -66,7 +67,7 @@ async function configureServer(server: https.Server<typeof IncomingMessage, type
           .catch((error) => logServerError(
             new HoundError(
               'testDatabaseConnections',
-              'databaseMaintenanceIntervalObject',
+              setInterval,
               undefined,
               error,
             ),

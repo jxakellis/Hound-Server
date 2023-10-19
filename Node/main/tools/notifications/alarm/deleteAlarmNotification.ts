@@ -1,5 +1,5 @@
 import { alarmLogger } from '../../../logging/loggers';
-import { databaseConnectionForAlarms } from '../../../database/createDatabaseConnections';
+import { getDatabaseConnections } from '../../../database/databaseConnections';
 import { databaseQuery } from '../../../database/databaseQuery';
 
 import { logServerError } from '../../../logging/logServerError';
@@ -10,6 +10,8 @@ import { HoundError } from '../../../server/globalErrors';
 async function deleteAlarmNotificationsForFamily(familyId: string): Promise<void> {
   try {
     alarmLogger.debug(`deleteAlarmNotificationsForFamily ${familyId}`);
+
+    const { databaseConnectionForAlarms } = await getDatabaseConnections();
 
     // get all the reminders for the family
     const reminders = await databaseQuery<DogRemindersRow[]>(
@@ -22,16 +24,13 @@ async function deleteAlarmNotificationsForFamily(familyId: string): Promise<void
       [familyId],
     );
 
-    for (let i = 0; i < reminders.length; i += 1) {
-      const { reminderId } = reminders[i];
-      cancelJobForFamilyForReminder(familyId, reminderId);
-    }
+    reminders.forEach((reminder) => cancelJobForFamilyForReminder(familyId, reminder.reminderId));
   }
   catch (error) {
     logServerError(
       new HoundError(
         'deleteAlarmNotificationsForFamily',
-        'deleteAlarmNotificationsForFamily',
+        deleteAlarmNotificationsForFamily,
         undefined,
         error,
       ),
@@ -43,21 +42,7 @@ async function deleteAlarmNotificationsForFamily(familyId: string): Promise<void
  * Cancels and deletes any job scheduled with the provided reminderId
  */
 async function deleteAlarmNotificationsForReminder(familyId: string, reminderId: number): Promise<void> {
-  try {
-    alarmLogger.debug(`deleteAlarmNotificationsForReminder ${familyId}, ${reminderId}`);
-
-    cancelJobForFamilyForReminder(familyId, reminderId);
-  }
-  catch (error) {
-    logServerError(
-      new HoundError(
-        'deleteAlarmNotificationsForReminder',
-        'deleteAlarmNotificationsForReminder',
-        undefined,
-        error,
-      ),
-    );
-  }
+  cancelJobForFamilyForReminder(familyId, reminderId);
 }
 
 export {

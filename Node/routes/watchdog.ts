@@ -1,10 +1,10 @@
-const express = require('express';
+import express from 'express';
+
+import {
+  getWatchdog,
+} from '../controllers/controllerRoutes/watchdog';
 
 const watchdogRouter = express.Router({ mergeParams: true });
-
-const {
-  getWatchdog,
-} from ''../controllers/controllerRoutes/watchdog';
 
 watchdogRouter.get('/', getWatchdog);
 // no body

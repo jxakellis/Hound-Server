@@ -8,16 +8,16 @@ import {
 import { AppStoreServerNotificationsRow, appStoreServerNotificationsColumns } from '../../types/AppStoreServerNotificationsRow';
 
 /**
- * Extracts data from parameters provided and attempts to insert a corresponding notification into the appStoreServerNotification table.
- * If a duplicate key is found for notificationUUID, a no-op operation is performed.
- * @param {*} databaseConnection
- * @param {*} notification
- * @param {*} data
- * @param {*} renewalInfo
- * @param {*} transactionInfo
- * @returns true if an App Store Server Notification was inserted, false if it already existed and wasn't inserted
- * @throws If data is missing or databaseQuery fails
- */
+* Extracts data from parameters provided and attempts to insert a corresponding notification into the appStoreServerNotification table.
+* If a duplicate key is found for notificationUUID, a no-op operation is performed.
+* @param {*} databaseConnection
+* @param {*} notification
+* @param {*} data
+* @param {*} renewalInfo
+* @param {*} transactionInfo
+* @returns true if an App Store Server Notification was inserted, false if it already existed and wasn't inserted
+* @throws If data is missing or databaseQuery fails
+*/
 async function insertAppStoreServerNotification(
   databaseConnection: Queryable,
   notification: DecodedNotificationPayload,
@@ -121,14 +121,16 @@ async function insertAppStoreServerNotification(
   // The unique identifier of subscription purchase events across devices, including subscription renewals.
   const transactionInfoWebOrderLineItemId = transactionInfo.webOrderLineItemId;
 
-  const existingAppStoreServerNotification = (await databaseQuery<AppStoreServerNotificationsRow[]>(
+  const result = await databaseQuery<AppStoreServerNotificationsRow[]>(
     databaseConnection,
     `SELECT ${appStoreServerNotificationsColumns}
-    FROM appStoreServerNotifications assn
-    WHERE notificationUUID = ?
-    LIMIT 1`,
+      FROM appStoreServerNotifications assn
+      WHERE notificationUUID = ?
+      LIMIT 1`,
     [notificationUUID],
-  )).safeIndex(0);
+  );
+
+  const existingAppStoreServerNotification = result.safeIndex(0);
 
   // If the ASSN already exists, we don't want to try and reinsert it, so we ignore it.
   if (existingAppStoreServerNotification === undefined) {
@@ -140,33 +142,33 @@ async function insertAppStoreServerNotification(
   await databaseQuery(
     databaseConnection,
     `INSERT INTO appStoreServerNotifications
-    (
-      notificationType, subtype, notificationUUID, version, signedDate,
-      dataAppAppleId, dataBundleId, dataBundleVersion, dataEnvironment, dataStatus,
-      renewalInfoAutoRenewProductId, renewalInfoAutoRenewStatus, renewalInfoEnvironment, renewalInfoExpirationIntent,
-      renewalInfoGracePeriodExpiresDate, renewalInfoIsInBillingRetryPeriod, renewalInfoOfferIdentifier, renewalInfoOfferType,
-      renewalInfoOriginalTransactionId, renewalInfoPriceIncreaseStatus, renewalInfoProductId, renewalInfoRecentSubscriptionStartDate,
-      renewalInfoRenewalDate, renewalInfoSignedDate,
-      transactionInfoAppAccountToken, transactionInfoBundleId, transactionInfoEnvironment, transactionInfoExpiresDate,
-      transactionInfoInAppOwnershipType, transactionInfoIsUpgraded, transactionInfoOfferIdentifier, transactionInfoOfferType,
-      transactionInfoOriginalPurchaseDate, transactionInfoOriginalTransactionId, transactionInfoProductId, transactionInfoPurchaseDate,
-      transactionInfoQuantity, transactionInfoRevocationDate, transactionInfoRevocationReason, transactionInfoSignedDate,
-      transactionInfoSubscriptionGroupIdentifier, transactionInfoTransactionId, transactionInfoType, transactionInfoWebOrderLineItemId
-    ) 
-    VALUES (
-      ?, ?, ?, ?, ?,
-      ?, ?, ?, ?, ?,
-      ?, ?, ?, ?,
-      ?, ?, ?, ?,
-      ?, ?, ?, ?,
-      ?, ?,
-      ?, ?, ?, ?,
-      ?, ?, ?, ?,
-      ?, ?, ?, ?,
-      ?, ?, ?, ?,
-      ?, ?, ?, ?,
-      )
-    ON DUPLICATE KEY UPDATE notificationUUID=notificationUUID`,
+        (
+          notificationType, subtype, notificationUUID, version, signedDate,
+          dataAppAppleId, dataBundleId, dataBundleVersion, dataEnvironment, dataStatus,
+          renewalInfoAutoRenewProductId, renewalInfoAutoRenewStatus, renewalInfoEnvironment, renewalInfoExpirationIntent,
+          renewalInfoGracePeriodExpiresDate, renewalInfoIsInBillingRetryPeriod, renewalInfoOfferIdentifier, renewalInfoOfferType,
+          renewalInfoOriginalTransactionId, renewalInfoPriceIncreaseStatus, renewalInfoProductId, renewalInfoRecentSubscriptionStartDate,
+          renewalInfoRenewalDate, renewalInfoSignedDate,
+          transactionInfoAppAccountToken, transactionInfoBundleId, transactionInfoEnvironment, transactionInfoExpiresDate,
+          transactionInfoInAppOwnershipType, transactionInfoIsUpgraded, transactionInfoOfferIdentifier, transactionInfoOfferType,
+          transactionInfoOriginalPurchaseDate, transactionInfoOriginalTransactionId, transactionInfoProductId, transactionInfoPurchaseDate,
+          transactionInfoQuantity, transactionInfoRevocationDate, transactionInfoRevocationReason, transactionInfoSignedDate,
+          transactionInfoSubscriptionGroupIdentifier, transactionInfoTransactionId, transactionInfoType, transactionInfoWebOrderLineItemId
+          ) 
+          VALUES (
+            ?, ?, ?, ?, ?,
+            ?, ?, ?, ?, ?,
+            ?, ?, ?, ?,
+            ?, ?, ?, ?,
+            ?, ?, ?, ?,
+            ?, ?,
+            ?, ?, ?, ?,
+            ?, ?, ?, ?,
+            ?, ?, ?, ?,
+            ?, ?, ?, ?,
+            ?, ?, ?, ?,
+            )
+            ON DUPLICATE KEY UPDATE notificationUUID=notificationUUID`,
     [
       notificationType, subtype, notificationUUID, version, signedDate,
       dataAppAppleId, dataBundleId, dataBundleVersion, dataEnvironment, dataStatus,

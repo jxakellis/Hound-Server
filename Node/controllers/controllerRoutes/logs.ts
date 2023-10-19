@@ -25,11 +25,10 @@ async function getLogs(req: express.Request, res: express.Response): Promise<voi
     const previousDogManagerSynchronization = formatDate(req.query['previousDogManagerSynchronization'] ?? req.query['userConfigurationPreviousDogManagerSynchronization']);
 
     if (databaseConnection === undefined) {
-      // TODO NOW for all functions inside ./controllerRoutes instead of sending response right here, throw error and have it caught by the catch statement below
-      throw new HoundError('databaseConnection missing', 'getLogs', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', getLogs, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedDogId === undefined) {
-      throw new HoundError('validatedDogId missing', 'getLogs', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('validatedDogId missing', getLogs, ERROR_CODES.VALUE.INVALID);
     }
 
     const result = validatedLogId !== undefined
@@ -39,7 +38,7 @@ async function getLogs(req: express.Request, res: express.Response): Promise<voi
       : await getAllLogsForDogId(databaseConnection, validatedDogId, previousDogManagerSynchronization);
 
     if (result === undefined) {
-      throw new HoundError('result missing', 'getLogs', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('result missing', getLogs, ERROR_CODES.VALUE.INVALID);
     }
 
     return res.extendedProperties.sendSuccessResponse(result);
@@ -63,28 +62,28 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
     const logNote = formatUnknownString(req.body['logNote']);
 
     if (databaseConnection === undefined) {
-      throw new HoundError('databaseConnection missing', 'createLog', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', createLog, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedUserId === undefined) {
-      throw new HoundError('validatedUserId missing', 'createLog', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('validatedUserId missing', createLog, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedFamilyId === undefined) {
-      throw new HoundError('validatedFamilyId missing', 'createLog', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('validatedFamilyId missing', createLog, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedDogId === undefined) {
-      throw new HoundError('validatedDogId missing', 'createLog', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('validatedDogId missing', createLog, ERROR_CODES.VALUE.INVALID);
     }
     if (logDate === undefined) {
-      throw new HoundError('logDate missing', 'createLog', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('logDate missing', createLog, ERROR_CODES.VALUE.INVALID);
     }
     if (logAction === undefined) {
-      throw new HoundError('logAction missing', 'createLog', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('logAction missing', createLog, ERROR_CODES.VALUE.INVALID);
     }
     if (logCustomActionName === undefined) {
-      throw new HoundError('logCustomActionName missing', 'createLog', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('logCustomActionName missing', createLog, ERROR_CODES.VALUE.INVALID);
     }
     if (logNote === undefined) {
-      throw new HoundError('logNote missing', 'createLog', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('logNote missing', createLog, ERROR_CODES.VALUE.INVALID);
     }
 
     const result = await createLogForUserIdDogId(
@@ -133,28 +132,28 @@ async function updateLog(req: express.Request, res: express.Response): Promise<v
     const logNote = formatUnknownString(req.body['logNote']);
 
     if (databaseConnection === undefined) {
-      throw new HoundError('databaseConnection missing', 'updateLog', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', updateLog, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedUserId === undefined) {
-      throw new HoundError('validatedUserId missing', 'updateLog', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('validatedUserId missing', updateLog, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedDogId === undefined) {
-      throw new HoundError('validatedDogId missing', 'updateLog', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('validatedDogId missing', updateLog, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedLogId === undefined) {
-      throw new HoundError('validatedLogId missing', 'updateLog', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('validatedLogId missing', updateLog, ERROR_CODES.VALUE.INVALID);
     }
     if (logDate === undefined) {
-      throw new HoundError('logDate missing', 'updateLog', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('logDate missing', updateLog, ERROR_CODES.VALUE.INVALID);
     }
     if (logAction === undefined) {
-      throw new HoundError('logAction missing', 'updateLog', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('logAction missing', updateLog, ERROR_CODES.VALUE.INVALID);
     }
     if (logCustomActionName === undefined) {
-      throw new HoundError('logCustomActionName missing', 'updateLog', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('logCustomActionName missing', updateLog, ERROR_CODES.VALUE.INVALID);
     }
     if (logNote === undefined) {
-      throw new HoundError('logNote missing', 'updateLog', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('logNote missing', updateLog, ERROR_CODES.VALUE.INVALID);
     }
 
     await updateLogForDogIdLogId(
@@ -186,10 +185,10 @@ async function deleteLog(req: express.Request, res: express.Response): Promise<v
     const { validatedLogId } = req.extendedProperties.validatedVariables;
 
     if (databaseConnection === undefined) {
-      throw new HoundError('databaseConnection missing', 'deleteLog', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', deleteLog, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedLogId === undefined) {
-      throw new HoundError('validatedLogId missing', 'deleteLog', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('validatedLogId missing', deleteLog, ERROR_CODES.VALUE.INVALID);
     }
 
     await deleteLogForLogId(databaseConnection, validatedLogId);

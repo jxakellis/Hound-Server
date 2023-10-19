@@ -8,9 +8,9 @@ import { UserConfigurationRow } from '../../main/types/UserConfigurationRow';
 import { formatEmail, formatUnknownString } from '../../main/format/formatObject';
 
 /**
- *  Queries the database to create a user. If the query is successful, then returns the userId.
- *  If a problem is encountered, creates and throws custom error
- */
+*  Queries the database to create a user. If the query is successful, then returns the userId.
+*  If a problem is encountered, creates and throws custom error
+*/
 async function createUserForUserIdentifier(
   databaseConnection: Queryable,
   userIdentifier: string,
@@ -32,26 +32,26 @@ async function createUserForUserIdentifier(
     databaseQuery(
       databaseConnection,
       `INSERT INTO users
-      (
-        userId,
-        userIdentifier,
-        userAppAccountToken,
-        userEmail,
-        userFirstName,
-        userLastName,
-        userNotificationToken,
-        userAccountCreationDate
-      ) 
-      VALUES (
-        ?,
-        ?,
-        ?,
-        ?,
-        ?,
-        ?,
-        ?,
-        CURRENT_TIMESTAMP()
-      )`,
+        (
+          userId,
+          userIdentifier,
+          userAppAccountToken,
+          userEmail,
+          userFirstName,
+          userLastName,
+          userNotificationToken,
+          userAccountCreationDate
+          ) 
+          VALUES (
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            CURRENT_TIMESTAMP()
+            )`,
       [
         userId,
         userIdentifier,
@@ -66,40 +66,40 @@ async function createUserForUserIdentifier(
     databaseQuery(
       databaseConnection,
       `INSERT INTO userConfiguration
-      (
-        userId,
-        userConfigurationIsNotificationEnabled,
-        userConfigurationIsLoudNotificationEnabled,
-        userConfigurationIsLogNotificationEnabled,
-        userConfigurationIsReminderNotificationEnabled,
-        userConfigurationInterfaceStyle,
-        userConfigurationSnoozeLength,
-        userConfigurationNotificationSound,
-        userConfigurationLogsInterfaceScale,
-        userConfigurationRemindersInterfaceScale,
-        userConfigurationIsSilentModeEnabled,
-        userConfigurationSilentModeStartUTCHour,
-        userConfigurationSilentModeEndUTCHour,
-        userConfigurationSilentModeStartUTCMinute,
-        userConfigurationSilentModeEndUTCMinute,
-      ) 
-      VALUES (
-        ?,
-        ?,
-        ?,
-        ?,
-        ?,
-        ?,
-        ?,
-        ?,
-        ?,
-        ?,
-        ?,
-        ?,
-        ?,
-        ?,
-        ?
-      ) `,
+              (
+                userId,
+                userConfigurationIsNotificationEnabled,
+                userConfigurationIsLoudNotificationEnabled,
+                userConfigurationIsLogNotificationEnabled,
+                userConfigurationIsReminderNotificationEnabled,
+                userConfigurationInterfaceStyle,
+                userConfigurationSnoozeLength,
+                userConfigurationNotificationSound,
+                userConfigurationLogsInterfaceScale,
+                userConfigurationRemindersInterfaceScale,
+                userConfigurationIsSilentModeEnabled,
+                userConfigurationSilentModeStartUTCHour,
+                userConfigurationSilentModeEndUTCHour,
+                userConfigurationSilentModeStartUTCMinute,
+                userConfigurationSilentModeEndUTCMinute,
+                ) 
+                VALUES (
+                  ?,
+                  ?,
+                  ?,
+                  ?,
+                  ?,
+                  ?,
+                  ?,
+                  ?,
+                  ?,
+                  ?,
+                  ?,
+                  ?,
+                  ?,
+                  ?,
+                  ?
+                  ) `,
       [
         userId,
         userConfiguration.userConfigurationIsNotificationEnabled, // ?? 0,

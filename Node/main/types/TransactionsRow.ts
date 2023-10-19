@@ -31,7 +31,7 @@ type TransactionsRow = {
     revocationReason?: number
     offerIdentifier?: number
     // This row is added manually after a database query. This serves as a flag that can be used client-side to easily determine which subscription is the active one
-    isActive?: boolean
+    isActive?: number
 };
 
 export {

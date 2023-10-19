@@ -90,7 +90,7 @@ async function createASSNForSignedPayload(databaseConnection: Queryable, signedP
 
   // Check to see if the notification provided a transactionId
   if (transactionId === undefined) {
-    throw new HoundError('transactionId missing', 'createASSNForSignedPayload', ERROR_CODES.VALUE.MISSING);
+    throw new HoundError('transactionId missing', createASSNForSignedPayload, ERROR_CODES.VALUE.MISSING);
   }
 
   const userId = await getTransactionOwner(

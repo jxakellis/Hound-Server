@@ -20,6 +20,7 @@ module.exports = {
     '@typescript-eslint/no-use-before-define': ['error', { functions: false, classes: true, variables: true }],
     // Error
     '@typescript-eslint/no-unsafe-member-access': ['error'],
+    'array-callback-return': ['error'],
     // Warn
     "@typescript-eslint/explicit-function-return-type": ['warn'],
     "@typescript-eslint/no-shadow": ['warn'],

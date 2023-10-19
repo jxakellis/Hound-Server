@@ -33,8 +33,8 @@ import { configureApp } from './configureApp';
 import { logServerError } from '../logging/logServerError';
 import { schedule } from '../tools/notifications/alarm/schedule';
 import {
-  databaseConnectionForGeneral, databaseConnectionForLogging, databaseConnectionForAlarms, databaseConnectionPoolForRequests,
-} from '../database/createDatabaseConnections';
+  getDatabaseConnections,
+} from '../database/databaseConnections';
 import { HoundError } from './globalErrors';
 
 // Initialize the express engine
@@ -64,6 +64,10 @@ configureApp(app);
  * This includes the databaseConnection pool for the database for general requests, the databaseConnection for server notifications, the server itself, and the notification schedule
  */
 async function shutdown(): Promise<void> {
+  const {
+    databaseConnectionForGeneral, databaseConnectionForLogging, databaseConnectionForAlarms, databaseConnectionPoolForRequests,
+  } = await getDatabaseConnections();
+
   return new Promise((resolve) => {
     serverLogger.info('Shutdown Initiated');
 
@@ -174,7 +178,7 @@ process.on('uncaughtException', async (error, origin) => {
   await logServerError(
     new HoundError(
       'uncaughtException',
-      'shutdown',
+      shutdown,
       undefined,
       error,
     ),

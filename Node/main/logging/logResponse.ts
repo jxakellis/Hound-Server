@@ -1,7 +1,7 @@
 import express from 'express';
 import { responseLogger } from './loggers';
 import { logServerError } from './logServerError';
-import { databaseConnectionForLogging } from '../database/createDatabaseConnections';
+import { getDatabaseConnections } from '../database/databaseConnections';
 import { ResultSetHeader, databaseQuery } from '../database/databaseQuery';
 import { formatUnknownString } from '../format/formatObject';
 import { HoundError } from '../server/globalErrors';
@@ -19,12 +19,28 @@ async function logResponse(req: express.Request, res: express.Response, response
   }
 
   try {
+    const { databaseConnectionForLogging } = await getDatabaseConnections();
+
     const result = await databaseQuery<ResultSetHeader>(
       databaseConnectionForLogging,
       `INSERT INTO previousResponses
-      (requestId, responseStatus, responseDate, responseBody)
-      VALUES (?, ?, CURRENT_TIMESTAMP(), ?)`,
-      [req.extendedProperties.requestId, responseStatus, responseBody],
+      (
+        requestId, 
+        responseStatus, 
+        responseDate, 
+        responseBody
+        )
+        VALUES (
+          ?, 
+          ?, 
+          CURRENT_TIMESTAMP(), 
+          ?)`,
+      [
+        req.extendedProperties.requestId,
+        responseStatus,
+        // none, default value
+        responseBody,
+      ],
     );
     res.extendedProperties.responseId = result.insertId;
   }
@@ -32,7 +48,7 @@ async function logResponse(req: express.Request, res: express.Response, response
     logServerError(
       new HoundError(
         'Was not able to insert previousResponse',
-        'logRequest',
+        logResponse,
         undefined,
         error,
       ),

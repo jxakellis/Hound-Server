@@ -22,7 +22,7 @@ async function deleteUserForUserId(databaseConnection: Queryable, userId: string
     const familyActiveSubscription = await getActiveTransaction(databaseConnection, userId);
 
     if (familyActiveSubscription === undefined) {
-      throw new HoundError('familyActiveSubscription missing', 'deleteUserForUserId', ERROR_CODES.VALUE.MISSING);
+      throw new HoundError('familyActiveSubscription missing', deleteUserForUserId, ERROR_CODES.VALUE.MISSING);
     }
 
     // This step is reversible but sends a non-reversible notification at the end, so we save it for the very end so the notif is only sent if everything else is successful

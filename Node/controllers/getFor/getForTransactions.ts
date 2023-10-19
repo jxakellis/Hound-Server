@@ -54,7 +54,7 @@ async function getActiveTransaction(databaseConnection: Queryable, familyMemberU
     return undefined;
   }
 
-  familySubscription.isActive = true;
+  familySubscription.isActive = 1;
 
   return familySubscription;
 }
@@ -87,7 +87,7 @@ async function getAllTransactions(databaseConnection: Queryable, familyMemberUse
   if (familyActiveSubscription !== undefined) {
     for (let i = 0; i < transactionsHistory.length; i += 1) {
       const subscription = transactionsHistory[i];
-      subscription.isActive = subscription.transactionId === familyActiveSubscription.transactionId;
+      subscription.isActive = (subscription.transactionId === familyActiveSubscription.transactionId) ? 1 : 0;
     }
   }
 

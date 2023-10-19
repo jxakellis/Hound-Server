@@ -8,7 +8,6 @@ declare global {
 }
 
 declare module 'express-serve-static-core' {
-    // TODO NOW add a component to request that stores all of our validated information
     export interface Request {
         extendedProperties: {
             requestId?: number;
@@ -18,7 +17,6 @@ declare module 'express-serve-static-core' {
 
             familyActiveSubscription?: TransactionsRow
 
-            // TODO NOW for all routes, except inside validateIds.ts, use req.validatedVariables.someId isntead of req.params
             // ids that have been verified with correct permission
             validatedVariables: {
                 // userId of the request that has been verified with correct permissions

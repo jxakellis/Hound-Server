@@ -8,7 +8,7 @@ async function getWatchdog(req: express.Request, res: express.Response): Promise
     const { databaseConnection } = req.extendedProperties;
 
     if (databaseConnection === undefined) {
-      throw new HoundError('databaseConnection missing', 'getWatchdog', ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', getWatchdog, ERROR_CODES.VALUE.INVALID);
     }
 
     await getDatabaseStatusForWatchdog(databaseConnection);

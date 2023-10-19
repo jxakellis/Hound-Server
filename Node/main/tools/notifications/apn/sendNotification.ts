@@ -28,7 +28,7 @@ async function sendNotificationForUser(userId: string, category: string, alertTi
     logServerError(
       new HoundError(
         'sendNotificationForUser',
-        'sendNotificationForUser',
+        sendNotificationForUser,
         undefined,
         error,
       ),
@@ -52,15 +52,13 @@ async function sendNotificationForFamily(familyId: string, category: string, ale
     }
 
     // sendAPN if there are > 0 user notification tokens
-    for (let i = 0; i < userNotificationConfigurations.length; i += 1) {
-      sendAPN(userNotificationConfigurations[i], category, alertTitle, alertBody, customPayload);
-    }
+    userNotificationConfigurations.forEach((userNotificationConfiguration) => sendAPN(userNotificationConfiguration, category, alertTitle, alertBody, customPayload));
   }
   catch (error) {
     logServerError(
       new HoundError(
         'sendNotificationForFamily',
-        'sendNotificationForFamily',
+        sendNotificationForFamily,
         undefined,
         error,
       ),
@@ -91,15 +89,13 @@ async function sendNotificationForFamilyExcludingUser(
     }
 
     // sendAPN if there are > 0 user notification tokens
-    for (let i = 0; i < userNotificationConfigurations.length; i += 1) {
-      sendAPN(userNotificationConfigurations[i], category, alertTitle, alertBody, customPayload);
-    }
+    userNotificationConfigurations.forEach((userNotificationConfiguration) => sendAPN(userNotificationConfiguration, category, alertTitle, alertBody, customPayload));
   }
   catch (error) {
     logServerError(
       new HoundError(
         'sendNotificationForFamilyExcludingUser',
-        'sendNotificationForFamilyExcludingUser',
+        sendNotificationForFamilyExcludingUser,
         undefined,
         error,
       ),

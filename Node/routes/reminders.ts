@@ -1,11 +1,11 @@
-const express = require('express';
+import express from 'express';
+
+import {
+  getReminders, createReminder, updateReminder, deleteReminder,
+} from '../controllers/controllerRoutes/reminders';
+import { validateParamsReminderId, validateBodyReminderId } from '../main/tools/validate/validateId';
 
 const remindersRouter = express.Router({ mergeParams: true });
-
-const {
-  getReminders, createReminder, updateReminder, deleteReminder,
-} from ''../controllers/controllerRoutes/reminders';
-const { validateParamsReminderId, validateBodyReminderId } from '../main/tools/validate/validateId';
 
 // No need to validate body for get ( no body exists )
 // No need to validate body for create ( there are no passed reminders )

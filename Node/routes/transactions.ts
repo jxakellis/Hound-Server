@@ -1,10 +1,10 @@
-const express = require('express';
+import express from 'express';
+
+import {
+  getTransactions, createTransactions,
+} from '../controllers/controllerRoutes/transactions';
 
 const transactionsRouter = express.Router({ mergeParams: true });
-
-const {
-  getTransactions, createTransactions,
-} from ''../controllers/controllerRoutes/transactions';
 
 //
 transactionsRouter.get('/', getTransactions);

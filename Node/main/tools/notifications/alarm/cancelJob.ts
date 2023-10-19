@@ -14,7 +14,7 @@ async function cancelJobForFamilyForReminder(familyId: string, reminderId: numbe
     return;
   }
 
-  alarmLogger.debug(`Cancelling job: ${job.name}`);
+  alarmLogger.debug(`Cancelling job: ${job}`);
   job.cancel();
   alarmLogger.debug(`Cancelled job; count is now ${Object.keys(schedule.scheduledJobs).length}`);
 }

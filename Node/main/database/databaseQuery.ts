@@ -35,7 +35,7 @@ const databaseQuery = <T>(
       (error, result) => {
         if (error) {
           // error when trying to do query to database
-          reject(new HoundError(error.message, 'databaseQuery', error.code));
+          reject(new HoundError(undefined, databaseQuery, undefined, error));
         }
         else {
           // database queried successfully

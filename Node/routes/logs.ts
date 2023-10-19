@@ -1,11 +1,11 @@
-const express = require('express';
+import express from 'express';
+
+import {
+  getLogs, createLog, updateLog, deleteLog,
+} from '../controllers/controllerRoutes/logs';
+import { validateLogId } from '../main/tools/validate/validateId';
 
 const logsRouter = express.Router({ mergeParams: true });
-
-const {
-  getLogs, createLog, updateLog, deleteLog,
-} from ''../controllers/controllerRoutes/logs';
-const { validateLogId } from '../main/tools/validate/validateId';
 
 // validation that params are formatted correctly and have adequate permissions
 logsRouter.param('logId', validateLogId);

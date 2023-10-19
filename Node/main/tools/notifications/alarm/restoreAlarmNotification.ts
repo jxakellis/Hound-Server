@@ -2,7 +2,7 @@ import { schedule } from './schedule';
 import { createAlarmNotificationForFamily } from './createAlarmNotification';
 
 import { logServerError } from '../../../logging/logServerError';
-import { databaseConnectionForAlarms } from '../../../database/createDatabaseConnections';
+import { getDatabaseConnections } from '../../../database/databaseConnections';
 import { databaseQuery } from '../../../database/databaseQuery';
 import { DogsRow, dogsColumns } from '../../../types/DogsRow';
 import { DogRemindersRow, dogRemindersColumns } from '../../../types/DogRemindersRow';
@@ -17,12 +17,12 @@ async function restoreAlarmNotificationsForAllFamilies(): Promise<void> {
   try {
     // remove any pending jobs (there shouldn't be any)
     const jobs = Object.values(schedule.scheduledJobs);
-    for (let i = 0; i < jobs.length; i += 1) {
-      jobs[i].cancel();
-    }
+    jobs.forEach((job) => job.cancel());
+
+    const { databaseConnectionForAlarms } = await getDatabaseConnections();
 
     // for ALL reminders get: familyId, reminderId, dogName, reminderExecutionDate, reminderAction, and reminderCustomActionName
-    const remindersWithInfo = await databaseQuery<(
+    const alarmNotificationInformations = await databaseQuery<(
 DogsRow & DogRemindersRow)[]>(
       databaseConnectionForAlarms,
       `SELECT ${dogsColumns}, ${dogRemindersColumns}
@@ -36,9 +36,7 @@ DogsRow & DogRemindersRow)[]>(
       );
 
     // for every reminder that exists (with a valid reminderExecutionDate that is in the future), we invoke createAlarmNotificationForAll for it
-    for (let i = 0; i < remindersWithInfo.length; i += 1) {
-      // get individual information for a family
-      const alarmNotificationInformation = remindersWithInfo[i];
+    alarmNotificationInformations.forEach((alarmNotificationInformation) => {
       // restore generic alarm for family for given reminder
       // don't use await here as that will significantly slow down process
       createAlarmNotificationForFamily(
@@ -46,13 +44,13 @@ DogsRow & DogRemindersRow)[]>(
         alarmNotificationInformation.reminderId,
         alarmNotificationInformation.reminderExecutionDate,
       );
-    }
+    });
   }
   catch (error) {
     logServerError(
       new HoundError(
-        'restoreAlarmNotificationsForAll',
-        'restoreAlarmNotificationsForAll',
+        'restoreAlarmNotificationsForAllFamilies',
+        restoreAlarmNotificationsForAllFamilies,
         undefined,
         error,
       ),

@@ -1,5 +1,5 @@
 import { alertLogger } from '../../../logging/loggers';
-import { databaseConnectionForGeneral } from '../../../database/createDatabaseConnections';
+import { getDatabaseConnections } from '../../../database/databaseConnections';
 
 import { logServerError } from '../../../logging/logServerError';
 import { getPublicUser } from '../../../../controllers/getFor/getForUser';
@@ -12,6 +12,8 @@ import { HoundError } from '../../../server/globalErrors';
  * Helper function for createFamilyMemberJoinNotification, createFamilyMemberLeaveNotification, createFamilyLockedNotification, and createFamilyPausedNotification
  */
 async function abreviatedFullNameForUserId(userId: string): Promise<string> {
+  const { databaseConnectionForGeneral } = await getDatabaseConnections();
+
   const result = await getPublicUser(databaseConnectionForGeneral, userId);
 
   return formatIntoName(true, result?.userFirstName, result?.userLastName);
@@ -40,7 +42,7 @@ async function createFamilyMemberJoinNotification(userId: string, familyId: stri
     logServerError(
       new HoundError(
         'createFamilyMemberJoinNotification',
-        'createFamilyMemberJoinNotification',
+        createFamilyMemberJoinNotification,
         undefined,
         error,
       ),
@@ -71,7 +73,7 @@ async function createFamilyMemberLeaveNotification(userId: string, familyId: str
     logServerError(
       new HoundError(
         'createFamilyMemberLeaveNotification',
-        'createFamilyMemberLeaveNotification',
+        createFamilyMemberLeaveNotification,
         undefined,
         error,
       ),
@@ -106,7 +108,7 @@ async function createFamilyLockedNotification(userId: string, familyId: string, 
     logServerError(
       new HoundError(
         'createFamilyLockedNotification',
-        'createFamilyLockedNotification',
+        createFamilyLockedNotification,
         undefined,
         error,
       ),

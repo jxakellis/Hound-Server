@@ -14,21 +14,21 @@ async function attachActiveSubscription(req: express.Request, res: express.Respo
     const { validatedUserId } = req.extendedProperties.validatedVariables;
 
     if (databaseConnection === undefined) {
-      throw new HoundError('databaseConnection missing', 'attachActiveSubscription', ERROR_CODES.VALUE.MISSING);
+      throw new HoundError('databaseConnection missing', attachActiveSubscription, ERROR_CODES.VALUE.MISSING);
     }
     if (validatedUserId === undefined) {
-      throw new HoundError('validatedUserId missing', 'attachActiveSubscription', ERROR_CODES.VALUE.MISSING);
+      throw new HoundError('validatedUserId missing', attachActiveSubscription, ERROR_CODES.VALUE.MISSING);
     }
 
     const familyActiveSubscription = await getActiveTransaction(databaseConnection, validatedUserId);
 
     req.extendedProperties.familyActiveSubscription = familyActiveSubscription;
-
-    return next();
   }
   catch (error) {
     return res.extendedProperties.sendFailureResponse(error);
   }
+
+  return next();
 }
 
 /**
@@ -43,19 +43,19 @@ async function validateSubscription(req: express.Request, res: express.Response,
     const numberOfDogs = req.extendedProperties.familyActiveSubscription?.numberOfDogs;
 
     if (databaseConnection === undefined) {
-      throw new HoundError('databaseConnection missing', 'validateSubscription', ERROR_CODES.VALUE.MISSING);
+      throw new HoundError('databaseConnection missing', validateSubscription, ERROR_CODES.VALUE.MISSING);
     }
     if (validatedUserId === undefined) {
-      throw new HoundError('validatedUserId missing', 'validateSubscription', ERROR_CODES.VALUE.MISSING);
+      throw new HoundError('validatedUserId missing', validateSubscription, ERROR_CODES.VALUE.MISSING);
     }
     if (validatedFamilyId === undefined) {
-      throw new HoundError('validatedFamilyId missing', 'validateSubscription', ERROR_CODES.VALUE.MISSING);
+      throw new HoundError('validatedFamilyId missing', validateSubscription, ERROR_CODES.VALUE.MISSING);
     }
     if (numberOfFamilyMembers === undefined) {
-      throw new HoundError('numberOfFamilyMembers missing', 'validateSubscription', ERROR_CODES.VALUE.MISSING);
+      throw new HoundError('numberOfFamilyMembers missing', validateSubscription, ERROR_CODES.VALUE.MISSING);
     }
     if (numberOfDogs === undefined) {
-      throw new HoundError('numberOfDogs missing', 'validateSubscription', ERROR_CODES.VALUE.MISSING);
+      throw new HoundError('numberOfDogs missing', validateSubscription, ERROR_CODES.VALUE.MISSING);
     }
 
     // a subscription doesn't matter for GET or DELETE requests. We can allow retrieving/deleting of information even if expired
@@ -67,14 +67,14 @@ async function validateSubscription(req: express.Request, res: express.Response,
     const familyMembers = await getAllFamilyMembersForFamilyId(databaseConnection, validatedFamilyId);
 
     if (familyMembers.length > numberOfFamilyMembers) {
-      throw new HoundError(`Family member limit of ${numberOfFamilyMembers} exceeded`, 'validateSubscription', ERROR_CODES.FAMILY.LIMIT.FAMILY_MEMBER_EXCEEDED);
+      throw new HoundError(`Family member limit of ${numberOfFamilyMembers} exceeded`, validateSubscription, ERROR_CODES.FAMILY.LIMIT.FAMILY_MEMBER_EXCEEDED);
     }
-
-    return next();
   }
   catch (error) {
     return res.extendedProperties.sendFailureResponse(error);
   }
+
+  return next();
 }
 
 export { attachActiveSubscription, validateSubscription };

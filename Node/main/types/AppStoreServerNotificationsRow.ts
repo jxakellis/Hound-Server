@@ -45,7 +45,6 @@ assn.transactionInfoType,
 assn.transactionInfoWebOrderLineItemId
 `;
 
-// TODO NOW IMPORTANT, when we retrieve a date from the database and it gets loaded into the data structure for our type, it might not be a date object. instead it might be a string object that needs to be converted
 type AppStoreServerNotificationsRow = {
     // NOTE: database booleans (tinyint(1)) are returned as 0 or 1 numbers, not booleans. therefore, we have to use number instead of boolean
     notificationType?: string,

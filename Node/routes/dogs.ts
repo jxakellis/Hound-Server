@@ -1,26 +1,26 @@
-const express = require('express';
+import express from 'express';
+
+import { validateSubscription } from '../main/tools/validate/validateSubscription';
+
+import {
+  getDogs, createDog, updateDog, deleteDog,
+} from '../controllers/controllerRoutes/dogs';
+import { validateDogId } from '../main/tools/validate/validateId';
+
+// route to dogs
+import { logsRouter } from './logs';
+
+// route to reminders
+import { remindersRouter } from './reminders';
 
 const dogsRouter = express.Router({ mergeParams: true });
 
-const { validateSubscription } from '../main/tools/validate/validateSubscription';
-
 dogsRouter.use('/', validateSubscription);
-
-const {
-  getDogs, createDog, updateDog, deleteDog,
-} from ''../controllers/controllerRoutes/dogs';
-const { validateDogId } from '../main/tools/validate/validateId';
 
 // validation that params are formatted correctly and have adequate permissions
 dogsRouter.param('dogId', validateDogId);
 
-// route to dogs
-const { logsRouter } from './logs';
-
 dogsRouter.use('/:dogId/logs', logsRouter);
-
-// route to reminders
-const { remindersRouter } from './reminders';
 
 dogsRouter.use('/:dogId/reminders', remindersRouter);
 

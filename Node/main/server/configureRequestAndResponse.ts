@@ -3,7 +3,7 @@ import { HoundError, ERROR_CODES, convertErrorToJSON } from './globalErrors';
 import { logResponse } from '../logging/logResponse';
 import { logServerError } from '../logging/logServerError';
 import { databaseQuery } from '../database/databaseQuery';
-import { getPoolConnection } from '../database/createDatabaseConnections';
+import { getDatabaseConnections } from '../database/databaseConnections';
 import { ResponseBodyType } from '../types/ResponseBodyType';
 
 function releaseDatabaseConnection(req: express.Request): void {
@@ -27,7 +27,7 @@ async function commitTransaction(req: express.Request): Promise<void> {
       logServerError(
         new HoundError(
           'COMMIT failed, attempting to rollback',
-          'commitTransaction',
+          commitTransaction,
           undefined,
           commitError,
         ),
@@ -42,7 +42,7 @@ async function commitTransaction(req: express.Request): Promise<void> {
         logServerError(
           new HoundError(
             'ROLLBACK failed',
-            'commitTransaction',
+            commitTransaction,
             undefined,
             rollbackError,
           ),
@@ -65,7 +65,7 @@ async function rollbackTransaction(req: express.Request): Promise<void> {
       logServerError(
         new HoundError(
           'ROLLBACK failed',
-          'rollbackTransaction',
+          rollbackTransaction,
           undefined,
           rollbackError,
         ),
@@ -187,6 +187,7 @@ async function configureRequestAndResponse(req: express.Request, res: express.Re
   }
 
   try {
+    const { getPoolConnection } = await getDatabaseConnections();
     const requestPoolConnection = await getPoolConnection();
     try {
       await requestPoolConnection.promise().beginTransaction();
@@ -195,13 +196,13 @@ async function configureRequestAndResponse(req: express.Request, res: express.Re
     }
     catch (transactionError) {
       return res.extendedProperties.sendFailureResponse(
-        new HoundError("Couldn't begin a transaction with databaseConnection", 'configureRequestAndResponse', ERROR_CODES.GENERAL.POOL_TRANSACTION_FAILED, transactionError),
+        new HoundError("Couldn't begin a transaction with databaseConnection", configureRequestAndResponse, ERROR_CODES.GENERAL.POOL_TRANSACTION_FAILED, transactionError),
       );
     }
   }
   catch (databaseConnectionError) {
     return res.extendedProperties.sendFailureResponse(
-      new HoundError("Couldn't get a connection from databaseConnectionPoolForRequests", 'configureRequestAndResponse', ERROR_CODES.GENERAL.POOL_CONNECTION_FAILED, databaseConnectionError),
+      new HoundError("Couldn't get a connection from databaseConnectionPoolForRequests", configureRequestAndResponse, ERROR_CODES.GENERAL.POOL_CONNECTION_FAILED, databaseConnectionError),
     );
   }
 

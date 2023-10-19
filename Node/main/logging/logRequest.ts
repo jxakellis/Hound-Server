@@ -1,79 +1,101 @@
 import express from 'express';
 import { requestLogger } from './loggers';
 import { logServerError } from './logServerError';
-import { databaseConnectionForLogging } from '../database/createDatabaseConnections';
+import { getDatabaseConnections } from '../database/databaseConnections';
 import { ResultSetHeader, databaseQuery } from '../database/databaseQuery';
 import { formatUnknownString, formatNumber } from '../format/formatObject';
 import { HoundError, ERROR_CODES } from '../server/globalErrors';
 
 // Outputs request to the console and logs to database
 async function logRequest(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
-  const ip = formatUnknownString(req.ip, 32);
+  try {
+    const ip = formatUnknownString(req.ip, 32);
 
-  const method = formatUnknownString(req.method, 6);
+    const method = formatUnknownString(req.method, 6);
 
-  const originalUrl = formatUnknownString(req.originalUrl, 500);
+    const originalUrl = formatUnknownString(req.originalUrl, 500);
 
-  const body = formatUnknownString(JSON.stringify(req.body), 2000);
+    const body = formatUnknownString(JSON.stringify(req.body), 2000);
 
-  requestLogger.debug(`Request for ${method} ${originalUrl}`);
+    requestLogger.debug(`Request for ${method} ${originalUrl}`);
 
-  // TODO NOW wrap all middlewares in try catch to throw these errors, only having one call of sendFailureResponse per function that is inside the catch statement
-  if (method === undefined) {
-    return res.extendedProperties.sendFailureResponse(new HoundError('method missing', 'logRequest', ERROR_CODES.VALUE.MISSING));
-  }
+    if (method === undefined) {
+      throw new HoundError('method missing', logRequest, ERROR_CODES.VALUE.MISSING);
+    }
 
-  if (method !== 'GET' && method !== 'POST' && method !== 'PUT' && method !== 'DELETE') {
-    return res.extendedProperties.sendFailureResponse(new HoundError('method invalid', 'logRequest', ERROR_CODES.VALUE.INVALID));
-  }
+    if (method !== 'GET' && method !== 'POST' && method !== 'PUT' && method !== 'DELETE') {
+      throw new HoundError('method invalid', logRequest, ERROR_CODES.VALUE.INVALID);
+    }
 
-  if (originalUrl === undefined) {
-    return res.extendedProperties.sendFailureResponse(new HoundError('originalUrl missing', 'logRequest', ERROR_CODES.VALUE.MISSING));
-  }
+    if (originalUrl === undefined) {
+      throw new HoundError('originalUrl missing', logRequest, ERROR_CODES.VALUE.MISSING);
+    }
 
-  // Inserts request information into the previousRequests table.
-  if (req.extendedProperties.requestId !== undefined) {
-    try {
+    // Inserts request information into the previousRequests table.
+    if (req.extendedProperties.requestId !== undefined) {
+      const { databaseConnectionForLogging } = await getDatabaseConnections();
       const result = await databaseQuery<ResultSetHeader>(
         databaseConnectionForLogging,
         `INSERT INTO previousRequests
-        (requestIP, requestDate, requestMethod, requestOriginalURL, requestBody)
-        VALUES (?, CURRENT_TIMESTAMP(), ?, ?, ?)`,
-        [ip, method, originalUrl, body],
+        (
+          requestIP,
+          requestDate,
+          requestMethod,
+          requestOriginalURL,
+          requestBody
+          )
+          VALUES 
+          (
+            ?,
+            CURRENT_TIMESTAMP(), 
+            ?, 
+            ?, 
+            ?
+            )`,
+        [
+          ip,
+          // none, default value
+          method,
+          originalUrl,
+          body,
+        ],
       );
       const requestId = result.insertId;
       req.extendedProperties.requestId = requestId;
     }
-    catch (error) {
-      logServerError(
-        new HoundError(
-          'Was not able to insert previousRequest',
-          'logRequest',
-          undefined,
-          error,
-        ),
-      );
-    }
+  }
+  catch (error) {
+    logServerError(
+      new HoundError(
+        'Was not able to insert previousRequest',
+        logRequest,
+        undefined,
+        error,
+      ),
+    );
+    return res.extendedProperties.sendFailureResponse(error);
   }
 
   return next();
 }
 
 async function addAppVersionToLogRequest(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
-  const requestId = formatNumber(req.extendedProperties.requestId);
-  const appVersion = formatUnknownString(req.params['appVersion']);
-
-  // We are going to be modifying a pre-existing requestId and the appVersion should exist if this function is invoked
-  if (requestId === undefined || appVersion === undefined) {
-    return next();
-  }
-
   try {
+    const requestId = formatNumber(req.extendedProperties.requestId);
+    const appVersion = formatUnknownString(req.params['appVersion']);
+
+    // We are going to be modifying a pre-existing requestId and the appVersion should exist if this function is invoked
+    if (requestId === undefined || appVersion === undefined) {
+      return next();
+    }
+
+    const { databaseConnectionForLogging } = await getDatabaseConnections();
+
     await databaseQuery(
       databaseConnectionForLogging,
       `UPDATE previousRequests
-      SET requestAppVersion = ?
-      WHERE requestId = ?`,
+                SET requestAppVersion = ?
+                WHERE requestId = ?`,
       [appVersion, requestId],
     );
   }
@@ -81,7 +103,7 @@ async function addAppVersionToLogRequest(req: express.Request, res: express.Resp
     logServerError(
       new HoundError(
         'Was not able to update previousRequest with requestAppVersion',
-        'logRequest',
+        logRequest,
         undefined,
         error,
       ),
@@ -92,19 +114,21 @@ async function addAppVersionToLogRequest(req: express.Request, res: express.Resp
 }
 
 async function addUserIdToLogRequest(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
-  const requestId = formatNumber(req.extendedProperties.requestId);
-  const { validatedUserId } = req.extendedProperties.validatedVariables;
-
-  if (requestId === undefined || validatedUserId === undefined) {
-    return next();
-  }
-
   try {
+    const requestId = formatNumber(req.extendedProperties.requestId);
+    const { validatedUserId } = req.extendedProperties.validatedVariables;
+
+    if (requestId === undefined || validatedUserId === undefined) {
+      return next();
+    }
+
+    const { databaseConnectionForLogging } = await getDatabaseConnections();
+
     await databaseQuery(
       databaseConnectionForLogging,
       `UPDATE previousRequests
-      SET requestUserId = ?
-      WHERE requestId = ?`,
+                      SET requestUserId = ?
+                      WHERE requestId = ?`,
       [validatedUserId, requestId],
     );
   }
@@ -112,7 +136,7 @@ async function addUserIdToLogRequest(req: express.Request, res: express.Response
     logServerError(
       new HoundError(
         'Was not able to update previousRequest with requestUserId',
-        'logRequest',
+        logRequest,
         undefined,
         error,
       ),
@@ -123,20 +147,22 @@ async function addUserIdToLogRequest(req: express.Request, res: express.Response
 }
 
 async function addFamilyIdToLogRequest(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
-  const requestId = formatNumber(req.extendedProperties.requestId);
-  const { validatedFamilyId } = req.extendedProperties.validatedVariables;
-
-  // We are going to be modifying a pre-existing requestId and the userId should exist if this function is invoked
-  if (requestId === undefined || validatedFamilyId === undefined) {
-    return next();
-  }
-
   try {
+    const requestId = formatNumber(req.extendedProperties.requestId);
+    const { validatedFamilyId } = req.extendedProperties.validatedVariables;
+
+    // We are going to be modifying a pre-existing requestId and the userId should exist if this function is invoked
+    if (requestId === undefined || validatedFamilyId === undefined) {
+      return next();
+    }
+
+    const { databaseConnectionForLogging } = await getDatabaseConnections();
+
     await databaseQuery(
       databaseConnectionForLogging,
       `UPDATE previousRequests
-      SET requestFamilyId = ?
-      WHERE requestId = ?`,
+                            SET requestFamilyId = ?
+                            WHERE requestId = ?`,
       [validatedFamilyId, requestId],
     );
   }
@@ -144,7 +170,7 @@ async function addFamilyIdToLogRequest(req: express.Request, res: express.Respon
     logServerError(
       new HoundError(
         'Was not able to update previousRequest with requestFamilyId',
-        'logRequest',
+        logRequest,
         undefined,
         error,
       ),

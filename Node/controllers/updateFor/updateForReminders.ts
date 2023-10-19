@@ -39,14 +39,11 @@ async function updateReminderForDogIdReminder(
  *  If a problem is encountered, creates and throws custom error
  */
 async function updateRemindersForDogIdReminders(databaseConnection: Queryable, reminders: DogRemindersRow[]): Promise<void> {
-  const promises = [];
-  for (let i = 0; i < reminders.length; i += 1) {
-    // retrieve the original provided body AND the created id
-    promises.push(updateReminderForDogIdReminder(
-      databaseConnection,
-      reminders[i],
-    ));
-  }
+  const promises: Promise<void>[] = [];
+  reminders.forEach((reminder) => promises.push(updateReminderForDogIdReminder(
+    databaseConnection,
+    reminder,
+  )));
 
   await Promise.all(promises);
 }

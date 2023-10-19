@@ -24,8 +24,8 @@ function sendDevelopmentAPN(notification: apn.Notification, notificationToken: s
     .catch((error) => {
       logServerError(
         new HoundError(
-          'sendDevelopmentAPN response error',
           'sendDevelopmentAPN',
+          sendDevelopmentAPN,
           undefined,
           error,
         ),
@@ -54,8 +54,8 @@ function sendProductionAPN(notification: apn.Notification, notificationToken: st
     .catch((error) => {
       logServerError(
         new HoundError(
-          'sendProductionAPN response error',
           'sendProductionAPN',
+          sendProductionAPN,
           undefined,
           error,
         ),
