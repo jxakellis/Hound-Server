@@ -20,8 +20,8 @@ Known:
 */
 async function getLogs(req: express.Request, res: express.Response): Promise<void> {
   try {
-    const { databaseConnection } = req.extendedProperties;
-    const { validatedDogId, validatedLogId } = req.extendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndDeclarationExtendedProperties;
+    const { validatedDogId, validatedLogId } = req.houndDeclarationExtendedProperties.validatedVariables;
     const previousDogManagerSynchronization = formatDate(req.query['previousDogManagerSynchronization'] ?? req.query['userConfigurationPreviousDogManagerSynchronization']);
 
     if (databaseConnection === undefined) {
@@ -41,17 +41,17 @@ async function getLogs(req: express.Request, res: express.Response): Promise<voi
       throw new HoundError('result missing', getLogs, ERROR_CODES.VALUE.INVALID);
     }
 
-    return res.extendedProperties.sendSuccessResponse(result);
+    return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
   }
   catch (error) {
-    return res.extendedProperties.sendFailureResponse(error);
+    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 }
 
 async function createLog(req: express.Request, res: express.Response): Promise<void> {
   try {
-    const { databaseConnection } = req.extendedProperties;
-    const { validatedUserId, validatedFamilyId, validatedDogId } = req.extendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndDeclarationExtendedProperties;
+    const { validatedUserId, validatedFamilyId, validatedDogId } = req.houndDeclarationExtendedProperties.validatedVariables;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const logDate = formatDate(req.body['logDate']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -111,17 +111,17 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
       logCustomActionName,
     );
 
-    return res.extendedProperties.sendSuccessResponse(result);
+    return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
   }
   catch (error) {
-    return res.extendedProperties.sendFailureResponse(error);
+    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 }
 
 async function updateLog(req: express.Request, res: express.Response): Promise<void> {
   try {
-    const { databaseConnection } = req.extendedProperties;
-    const { validatedUserId, validatedDogId, validatedLogId } = req.extendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndDeclarationExtendedProperties;
+    const { validatedUserId, validatedDogId, validatedLogId } = req.houndDeclarationExtendedProperties.validatedVariables;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const logDate = formatDate(req.body['logDate']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -172,17 +172,17 @@ async function updateLog(req: express.Request, res: express.Response): Promise<v
         logIsDeleted: 0,
       },
     );
-    return res.extendedProperties.sendSuccessResponse({});
+    return res.houndDeclarationExtendedProperties.sendSuccessResponse({});
   }
   catch (error) {
-    return res.extendedProperties.sendFailureResponse(error);
+    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 }
 
 async function deleteLog(req: express.Request, res: express.Response): Promise<void> {
   try {
-    const { databaseConnection } = req.extendedProperties;
-    const { validatedLogId } = req.extendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndDeclarationExtendedProperties;
+    const { validatedLogId } = req.houndDeclarationExtendedProperties.validatedVariables;
 
     if (databaseConnection === undefined) {
       throw new HoundError('databaseConnection missing', deleteLog, ERROR_CODES.VALUE.INVALID);
@@ -193,10 +193,10 @@ async function deleteLog(req: express.Request, res: express.Response): Promise<v
 
     await deleteLogForLogId(databaseConnection, validatedLogId);
 
-    return res.extendedProperties.sendSuccessResponse({});
+    return res.houndDeclarationExtendedProperties.sendSuccessResponse({});
   }
   catch (error) {
-    return res.extendedProperties.sendFailureResponse(error);
+    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 }
 

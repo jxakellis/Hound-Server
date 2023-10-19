@@ -18,8 +18,8 @@ Known:
 */
 async function getDogs(req: express.Request, res: express.Response): Promise<void> {
   try {
-    const { databaseConnection } = req.extendedProperties;
-    const { validatedUserId, validatedFamilyId, validatedDogId } = req.extendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndDeclarationExtendedProperties;
+    const { validatedUserId, validatedFamilyId, validatedDogId } = req.houndDeclarationExtendedProperties.validatedVariables;
     const previousDogManagerSynchronization = formatDate(req.query['previousDogManagerSynchronization'] ?? req.query['userConfigurationPreviousDogManagerSynchronization']);
     const isRetrievingReminders = formatBoolean(req.query['isRetrievingReminders']) ?? false;
     const isRetrievingLogs = formatBoolean(req.query['isRetrievingLogs']) ?? false;
@@ -39,7 +39,7 @@ async function getDogs(req: express.Request, res: express.Response): Promise<voi
       if (result === undefined) {
         throw new HoundError('getDogForDogId  result undefined', getDogs, ERROR_CODES.VALUE.INVALID);
       }
-      return res.extendedProperties.sendSuccessResponse(result);
+      return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
     }
 
     if (validatedUserId === undefined) {
@@ -62,17 +62,17 @@ async function getDogs(req: express.Request, res: express.Response): Promise<voi
       throw new HoundError('getAllDogsForUserIdFamilyId result undefined', getDogs, ERROR_CODES.VALUE.INVALID);
     }
 
-    return res.extendedProperties.sendSuccessResponse(result);
+    return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
   }
   catch (error) {
-    return res.extendedProperties.sendFailureResponse(error);
+    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 }
 
 async function createDog(req: express.Request, res: express.Response): Promise<void> {
   try {
-    const { databaseConnection } = req.extendedProperties;
-    const { validatedFamilyId } = req.extendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndDeclarationExtendedProperties;
+    const { validatedFamilyId } = req.houndDeclarationExtendedProperties.validatedVariables;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const dogName = formatUnknownString(req.body['dogName']);
     if (databaseConnection === undefined) {
@@ -87,17 +87,17 @@ async function createDog(req: express.Request, res: express.Response): Promise<v
 
     const result = await createDogForFamilyId(databaseConnection, validatedFamilyId, dogName);
 
-    return res.extendedProperties.sendSuccessResponse(result);
+    return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
   }
   catch (error) {
-    return res.extendedProperties.sendFailureResponse(error);
+    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 }
 
 async function updateDog(req: express.Request, res: express.Response): Promise<void> {
   try {
-    const { databaseConnection } = req.extendedProperties;
-    const { validatedDogId } = req.extendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndDeclarationExtendedProperties;
+    const { validatedDogId } = req.houndDeclarationExtendedProperties.validatedVariables;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const dogName = formatUnknownString(req.body['dogName']);
     if (databaseConnection === undefined) {
@@ -112,17 +112,17 @@ async function updateDog(req: express.Request, res: express.Response): Promise<v
 
     await updateDogForDogId(databaseConnection, validatedDogId, dogName);
 
-    return res.extendedProperties.sendSuccessResponse({});
+    return res.houndDeclarationExtendedProperties.sendSuccessResponse({});
   }
   catch (error) {
-    return res.extendedProperties.sendFailureResponse(error);
+    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 }
 
 async function deleteDog(req: express.Request, res: express.Response): Promise<void> {
   try {
-    const { databaseConnection } = req.extendedProperties;
-    const { validatedFamilyId, validatedDogId } = req.extendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndDeclarationExtendedProperties;
+    const { validatedFamilyId, validatedDogId } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined) {
       throw new HoundError('databaseConnection missing', deleteDog, ERROR_CODES.VALUE.INVALID);
     }
@@ -135,10 +135,10 @@ async function deleteDog(req: express.Request, res: express.Response): Promise<v
 
     await deleteDogForFamilyIdDogId(databaseConnection, validatedFamilyId, validatedDogId);
 
-    return res.extendedProperties.sendSuccessResponse({});
+    return res.houndDeclarationExtendedProperties.sendSuccessResponse({});
   }
   catch (error) {
-    return res.extendedProperties.sendFailureResponse(error);
+    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 }
 

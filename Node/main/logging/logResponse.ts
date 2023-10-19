@@ -14,7 +14,7 @@ async function logResponse(req: express.Request, res: express.Response, response
 
   responseLogger.debug(`Response for ${req.method} ${originalUrl}\n With body: ${JSON.stringify(responseBody)}`);
 
-  if (req.extendedProperties.requestId === undefined || res.extendedProperties.responseId !== undefined) {
+  if (req.houndDeclarationExtendedProperties.requestId === undefined || res.houndDeclarationExtendedProperties.responseId !== undefined) {
     return;
   }
 
@@ -36,13 +36,13 @@ async function logResponse(req: express.Request, res: express.Response, response
           CURRENT_TIMESTAMP(), 
           ?)`,
       [
-        req.extendedProperties.requestId,
+        req.houndDeclarationExtendedProperties.requestId,
         responseStatus,
         // none, default value
         responseBody,
       ],
     );
-    res.extendedProperties.responseId = result.insertId;
+    res.houndDeclarationExtendedProperties.responseId = result.insertId;
   }
   catch (error) {
     logServerError(

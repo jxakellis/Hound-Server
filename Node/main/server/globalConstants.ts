@@ -3,7 +3,10 @@
 import * as fs from 'fs';
 import { TransactionsRow } from '../types/TransactionsRow';
 
-const IS_PRODUCTION_DATABASE = fs.existsSync(`${__dirname}/../../../../productionIndicator.txt`);
+// Move this productionIndicator.txt's path from /parent_dir/Hound-Server/Node/productionIndicator.txt into /parent_dir/productionIndicator.txt to trigger indication to Hound node server.
+const IS_PRODUCTION_DATABASE = fs.existsSync(`${__dirname}/../../../../../productionIndicator.txt`) || fs.existsSync(`${__dirname}/../../../../productionIndicator.txt`);
+console.log(fs.existsSync(`${__dirname}/../../../../productionIndicator.txt`));
+console.log(fs.existsSync(`${__dirname}/../../../../../productionIndicator.txt`));
 
 const SERVER = {
   // True if we are using the production database that houses real users, false if we are launching a development server for testing

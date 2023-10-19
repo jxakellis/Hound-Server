@@ -3,13 +3,13 @@ import { TransactionsRow } from '../types/TransactionsRow';
 
 declare global {
     interface Error {
-        code?: string;
+        houndDeclarationCode?: string;
     }
 }
 
 declare module 'express-serve-static-core' {
     export interface Request {
-        extendedProperties: {
+        houndDeclarationExtendedProperties: {
             requestId?: number;
 
             databaseConnection?: PoolConnection
@@ -35,7 +35,7 @@ declare module 'express-serve-static-core' {
         }
     }
     export interface Response {
-        extendedProperties: {
+        houndDeclarationExtendedProperties: {
             responseId?: number;
 
             hasSentResponse: boolean;

@@ -32,7 +32,7 @@ async function logRequest(req: express.Request, res: express.Response, next: exp
     }
 
     // Inserts request information into the previousRequests table.
-    if (req.extendedProperties.requestId !== undefined) {
+    if (req.houndDeclarationExtendedProperties.requestId !== undefined) {
       const { databaseConnectionForLogging } = await getDatabaseConnections();
       const result = await databaseQuery<ResultSetHeader>(
         databaseConnectionForLogging,
@@ -61,7 +61,7 @@ async function logRequest(req: express.Request, res: express.Response, next: exp
         ],
       );
       const requestId = result.insertId;
-      req.extendedProperties.requestId = requestId;
+      req.houndDeclarationExtendedProperties.requestId = requestId;
     }
   }
   catch (error) {
@@ -73,7 +73,7 @@ async function logRequest(req: express.Request, res: express.Response, next: exp
         error,
       ),
     );
-    return res.extendedProperties.sendFailureResponse(error);
+    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 
   return next();
@@ -81,7 +81,7 @@ async function logRequest(req: express.Request, res: express.Response, next: exp
 
 async function addAppVersionToLogRequest(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
-    const requestId = formatNumber(req.extendedProperties.requestId);
+    const requestId = formatNumber(req.houndDeclarationExtendedProperties.requestId);
     const appVersion = formatUnknownString(req.params['appVersion']);
 
     // We are going to be modifying a pre-existing requestId and the appVersion should exist if this function is invoked
@@ -115,8 +115,8 @@ async function addAppVersionToLogRequest(req: express.Request, res: express.Resp
 
 async function addUserIdToLogRequest(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
-    const requestId = formatNumber(req.extendedProperties.requestId);
-    const { validatedUserId } = req.extendedProperties.validatedVariables;
+    const requestId = formatNumber(req.houndDeclarationExtendedProperties.requestId);
+    const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
 
     if (requestId === undefined || validatedUserId === undefined) {
       return next();
@@ -148,8 +148,8 @@ async function addUserIdToLogRequest(req: express.Request, res: express.Response
 
 async function addFamilyIdToLogRequest(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
-    const requestId = formatNumber(req.extendedProperties.requestId);
-    const { validatedFamilyId } = req.extendedProperties.validatedVariables;
+    const requestId = formatNumber(req.houndDeclarationExtendedProperties.requestId);
+    const { validatedFamilyId } = req.houndDeclarationExtendedProperties.validatedVariables;
 
     // We are going to be modifying a pre-existing requestId and the userId should exist if this function is invoked
     if (requestId === undefined || validatedFamilyId === undefined) {

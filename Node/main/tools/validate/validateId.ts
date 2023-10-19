@@ -35,7 +35,7 @@ async function validateAppVersion(req: express.Request, res: express.Response, n
     }
   }
   catch (error) {
-    return res.extendedProperties.sendFailureResponse(error);
+    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 
   return next();
@@ -46,7 +46,7 @@ async function validateAppVersion(req: express.Request, res: express.Response, n
   */
 async function validateUserIdentifier(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
-    const { databaseConnection } = req.extendedProperties;
+    const { databaseConnection } = req.houndDeclarationExtendedProperties;
     // unhashedUserIdentifier: unhashed, 44-length apple identifier or 64-length sha-256 hash of apple identifier
     const userIdentifier = formatUnknownString(req.query['userIdentifier']);
 
@@ -101,11 +101,11 @@ async function validateUserIdentifier(req: express.Request, res: express.Respons
       throw new HoundError('No user found or invalid permissions', validateUserIdentifier, ERROR_CODES.PERMISSION.NO.USER);
     }
 
-    req.extendedProperties.validatedVariables.validatedUserIdentifier = userIdentifier;
+    req.houndDeclarationExtendedProperties.validatedVariables.validatedUserIdentifier = userIdentifier;
   }
   catch (error) {
     // couldn't query database to find userId
-    return res.extendedProperties.sendFailureResponse(error);
+    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 
   return next();
@@ -118,8 +118,8 @@ async function validateUserId(req: express.Request, res: express.Response, next:
   try {
     // later on use a token here to validate that they have permission to use the userId
     const userId = formatUnknownString(req.params['userId']);
-    const { validatedUserIdentifier } = req.extendedProperties.validatedVariables;
-    const { databaseConnection } = req.extendedProperties;
+    const { validatedUserIdentifier } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndDeclarationExtendedProperties;
 
     if (userId === undefined) {
       throw new HoundError('userId missing', validateUserId, ERROR_CODES.VALUE.INVALID);
@@ -174,11 +174,11 @@ async function validateUserId(req: express.Request, res: express.Response, next:
       throw new HoundError('No user found or invalid permissions', validateUserId, ERROR_CODES.PERMISSION.NO.USER);
     }
 
-    req.extendedProperties.validatedVariables.validatedUserId = userId;
+    req.houndDeclarationExtendedProperties.validatedVariables.validatedUserId = userId;
   }
   catch (error) {
     // couldn't query database to find userId
-    return res.extendedProperties.sendFailureResponse(error);
+    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 
   return next();
@@ -189,9 +189,9 @@ async function validateUserId(req: express.Request, res: express.Response, next:
         */
 async function validateFamilyId(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
-    const { validatedUserId } = req.extendedProperties.validatedVariables;
+    const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
     const familyId = formatUnknownString(req.params['familyId']);
-    const { databaseConnection } = req.extendedProperties;
+    const { databaseConnection } = req.houndDeclarationExtendedProperties;
 
     if (validatedUserId === undefined) {
       throw new HoundError('validatedUserId missing', validateFamilyId, ERROR_CODES.VALUE.INVALID);
@@ -220,11 +220,11 @@ async function validateFamilyId(req: express.Request, res: express.Response, nex
       throw new HoundError('No family found or invalid permissions', validateFamilyId, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
 
-    req.extendedProperties.validatedVariables.validatedFamilyId = familyId;
+    req.houndDeclarationExtendedProperties.validatedVariables.validatedFamilyId = familyId;
   }
   catch (error) {
     // couldn't query database to find familyId
-    return res.extendedProperties.sendFailureResponse(error);
+    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 
   return next();
@@ -236,9 +236,9 @@ async function validateFamilyId(req: express.Request, res: express.Response, nex
           */
 async function validateDogId(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
-    const { validatedFamilyId } = req.extendedProperties.validatedVariables;
+    const { validatedFamilyId } = req.houndDeclarationExtendedProperties.validatedVariables;
     const dogId = formatNumber(req.params['dogId']);
-    const { databaseConnection } = req.extendedProperties;
+    const { databaseConnection } = req.houndDeclarationExtendedProperties;
 
     if (validatedFamilyId === undefined) {
       throw new HoundError('validatedFamilyId missing', validateDogId, ERROR_CODES.VALUE.INVALID);
@@ -275,10 +275,10 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
     }
 
     // the dogId exists and it is linked to the familyId, valid
-    req.extendedProperties.validatedVariables.validatedDogId = dogId;
+    req.houndDeclarationExtendedProperties.validatedVariables.validatedDogId = dogId;
   }
   catch (error) {
-    return res.extendedProperties.sendFailureResponse(error);
+    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 
   return next();
@@ -289,9 +289,9 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
             * If it does then the dog owns that log and invokes next().
             */
 async function validateLogId(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
-  const { validatedDogId } = req.extendedProperties.validatedVariables;
+  const { validatedDogId } = req.houndDeclarationExtendedProperties.validatedVariables;
   const logId = formatNumber(req.params['logId']);
-  const { databaseConnection } = req.extendedProperties;
+  const { databaseConnection } = req.houndDeclarationExtendedProperties;
 
   if (validatedDogId === undefined) {
     throw new HoundError('validatedDogId missing', validateLogId, ERROR_CODES.VALUE.INVALID);
@@ -330,10 +330,10 @@ async function validateLogId(req: express.Request, res: express.Response, next: 
     }
 
     // the logId exists and it is linked to the dogId, valid
-    req.extendedProperties.validatedVariables.validatedLogId = logId;
+    req.houndDeclarationExtendedProperties.validatedVariables.validatedLogId = logId;
   }
   catch (error) {
-    return res.extendedProperties.sendFailureResponse(error);
+    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 
   return next();
@@ -345,9 +345,9 @@ async function validateLogId(req: express.Request, res: express.Response, next: 
               */
 async function validateParamsReminderId(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
-    const { validatedDogId } = req.extendedProperties.validatedVariables;
+    const { validatedDogId } = req.houndDeclarationExtendedProperties.validatedVariables;
     const reminderId = formatNumber(req.params['reminderId']);
-    const { databaseConnection } = req.extendedProperties;
+    const { databaseConnection } = req.houndDeclarationExtendedProperties;
 
     if (validatedDogId === undefined) {
       throw new HoundError('validatedDogId missing', validateParamsReminderId, ERROR_CODES.VALUE.INVALID);
@@ -385,10 +385,10 @@ async function validateParamsReminderId(req: express.Request, res: express.Respo
       throw new HoundError('Reminder has been deleted', validateParamsReminderId, ERROR_CODES.FAMILY.DELETED.REMINDER);
     }
 
-    req.extendedProperties.validatedVariables.validatedReminderIds = (req.extendedProperties.validatedVariables.validatedReminderIds ?? []).concat(reminderId);
+    req.houndDeclarationExtendedProperties.validatedVariables.validatedReminderIds = (req.houndDeclarationExtendedProperties.validatedVariables.validatedReminderIds ?? []).concat(reminderId);
   }
   catch (error) {
-    return res.extendedProperties.sendFailureResponse(error);
+    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 
   return next();
@@ -396,10 +396,10 @@ async function validateParamsReminderId(req: express.Request, res: express.Respo
 
 async function validateBodyReminderId(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
-    const { validatedDogId } = req.extendedProperties.validatedVariables;
+    const { validatedDogId } = req.houndDeclarationExtendedProperties.validatedVariables;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const remindersDictionary = formatArray(req.body['reminders'] ?? [req.body]) as (Dictionary[] | undefined);
-    const { databaseConnection } = req.extendedProperties;
+    const { databaseConnection } = req.houndDeclarationExtendedProperties;
 
     if (databaseConnection === undefined) {
       throw new HoundError('databaseConnection missing', validateBodyReminderId, ERROR_CODES.VALUE.INVALID);
@@ -449,11 +449,11 @@ async function validateBodyReminderId(req: express.Request, res: express.Respons
       }
 
       // reminderId has been validated. Save it to validatedVariables
-      req.extendedProperties.validatedVariables.validatedReminderIds.push(queriedReminder.reminderId);
+      req.houndDeclarationExtendedProperties.validatedVariables.validatedReminderIds.push(queriedReminder.reminderId);
     });
   }
   catch (error) {
-    return res.extendedProperties.sendFailureResponse(error);
+    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 
   return next();

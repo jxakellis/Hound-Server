@@ -18,8 +18,8 @@ Known:
 */
 async function getFamily(req: express.Request, res: express.Response): Promise<void> {
   try {
-    const { databaseConnection, familyActiveSubscription } = req.extendedProperties;
-    const { validatedFamilyId } = req.extendedProperties.validatedVariables;
+    const { databaseConnection, familyActiveSubscription } = req.houndDeclarationExtendedProperties;
+    const { validatedFamilyId } = req.houndDeclarationExtendedProperties.validatedVariables;
 
     if (databaseConnection === undefined) {
       throw new HoundError('databaseConnection missing', getFamily, ERROR_CODES.VALUE.INVALID);
@@ -37,17 +37,17 @@ async function getFamily(req: express.Request, res: express.Response): Promise<v
       throw new HoundError('result missing', getFamily, ERROR_CODES.VALUE.INVALID);
     }
 
-    return res.extendedProperties.sendSuccessResponse(result);
+    return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
   }
   catch (error) {
-    return res.extendedProperties.sendFailureResponse(error);
+    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 }
 
 async function createFamily(req: express.Request, res: express.Response): Promise<void> {
   try {
-    const { databaseConnection } = req.extendedProperties;
-    const { validatedUserId } = req.extendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndDeclarationExtendedProperties;
+    const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
 
     if (databaseConnection === undefined) {
       throw new HoundError('databaseConnection missing', createFamily, ERROR_CODES.VALUE.INVALID);
@@ -58,17 +58,17 @@ async function createFamily(req: express.Request, res: express.Response): Promis
 
     const result = await createFamilyForUserId(databaseConnection, validatedUserId);
 
-    return res.extendedProperties.sendSuccessResponse(result);
+    return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
   }
   catch (error) {
-    return res.extendedProperties.sendFailureResponse(error);
+    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 }
 
 async function updateFamily(req: express.Request, res: express.Response): Promise<void> {
   try {
-    const { databaseConnection } = req.extendedProperties;
-    const { validatedUserId, validatedFamilyId } = req.extendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndDeclarationExtendedProperties;
+    const { validatedUserId, validatedFamilyId } = req.houndDeclarationExtendedProperties.validatedVariables;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const familyCode = formatUnknownString(req.body['familyCode']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -85,17 +85,17 @@ async function updateFamily(req: express.Request, res: express.Response): Promis
     }
 
     await updateFamilyForUserIdFamilyId(databaseConnection, validatedUserId, validatedFamilyId, familyCode, familyIsLocked);
-    return res.extendedProperties.sendSuccessResponse({});
+    return res.houndDeclarationExtendedProperties.sendSuccessResponse({});
   }
   catch (error) {
-    return res.extendedProperties.sendFailureResponse(error);
+    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 }
 
 async function deleteFamily(req: express.Request, res: express.Response): Promise<void> {
   try {
-    const { databaseConnection, familyActiveSubscription } = req.extendedProperties;
-    const { validatedUserId, validatedFamilyId } = req.extendedProperties.validatedVariables;
+    const { databaseConnection, familyActiveSubscription } = req.houndDeclarationExtendedProperties;
+    const { validatedUserId, validatedFamilyId } = req.houndDeclarationExtendedProperties.validatedVariables;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const familyKickUserId = formatUnknownString(req.body['familyKickUserId']);
 
@@ -119,10 +119,10 @@ async function deleteFamily(req: express.Request, res: express.Response): Promis
       await deleteFamilyLeaveFamilyForUserIdFamilyId(databaseConnection, validatedUserId, validatedFamilyId, familyActiveSubscription);
     }
 
-    return res.extendedProperties.sendSuccessResponse({});
+    return res.houndDeclarationExtendedProperties.sendSuccessResponse({});
   }
   catch (error) {
-    return res.extendedProperties.sendFailureResponse(error);
+    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 }
 

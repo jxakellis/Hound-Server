@@ -186,7 +186,7 @@ process.on('uncaughtException', async (error, origin) => {
   await shutdown()
     .catch((shutdownError) => serverLogger.error(`Experienced error while attempting to shutdown (shutdown): ${shutdownError}`));
 
-  if (error.code === 'EADDRINUSE') {
+  if (error.message || error.stack || error.name || error.cause || error.houndDeclarationCode === 'EADDRINUSE') {
     /**
    * The previous Node Application did not shut down properly
    * process.on('exit', ...) isn't called when the process crashes or is killed.

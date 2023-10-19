@@ -9,7 +9,7 @@ const alertRouter = express.Router({ mergeParams: true });
 // User has done some action that warrents us sending them a special notification
 alertRouter.post('/:alertType', async (req: express.Request, res: express.Response) => {
   try {
-    const { validatedUserId } = req.extendedProperties.validatedVariables;
+    const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
     const alertType = formatUnknownString(req.params['alertType']);
 
     if (validatedUserId === undefined) {
@@ -24,10 +24,10 @@ alertRouter.post('/:alertType', async (req: express.Request, res: express.Respon
       createTerminateNotification(validatedUserId);
     }
 
-    return res.extendedProperties.sendSuccessResponse({});
+    return res.houndDeclarationExtendedProperties.sendSuccessResponse({});
   }
   catch (error) {
-    return res.extendedProperties.sendFailureResponse(error);
+    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 });
 // no body

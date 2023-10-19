@@ -14,8 +14,7 @@ async function createDogForFamilyId(databaseConnection: Queryable, familyId: str
     FROM dogs d
     WHERE dogIsDeleted = 0 AND familyId = ?
     LIMIT 18446744073709551615`,
-    
-    ,
+    [familyId],
   );
 
   // Creating a new dog would exceed the limit

@@ -15,8 +15,8 @@ Known:
 
 async function getUser(req: express.Request, res: express.Response): Promise<void> {
   try {
-    const { databaseConnection } = req.extendedProperties;
-    const { validatedUserIdentifier } = req.extendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndDeclarationExtendedProperties;
+    const { validatedUserIdentifier } = req.houndDeclarationExtendedProperties.validatedVariables;
 
     if (databaseConnection === undefined) {
       throw new HoundError('databaseConnection missing', getUser, ERROR_CODES.VALUE.INVALID);
@@ -31,17 +31,17 @@ async function getUser(req: express.Request, res: express.Response): Promise<voi
       throw new HoundError('No user found or invalid permissions', getUser, ERROR_CODES.PERMISSION.NO.USER);
     }
 
-    return res.extendedProperties.sendSuccessResponse(result);
+    return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
   }
   catch (error) {
-    return res.extendedProperties.sendFailureResponse(error);
+    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 }
 
 async function createUser(req: express.Request, res: express.Response): Promise<void> {
   try {
-    const { databaseConnection } = req.extendedProperties;
-    const { validatedUserIdentifier } = req.extendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndDeclarationExtendedProperties;
+    const { validatedUserIdentifier } = req.houndDeclarationExtendedProperties.validatedVariables;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const userEmail = formatUnknownString(req.body['userEmail']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -153,17 +153,17 @@ async function createUser(req: express.Request, res: express.Response): Promise<
       userNotificationToken,
     );
 
-    return res.extendedProperties.sendSuccessResponse(result);
+    return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
   }
   catch (error) {
-    return res.extendedProperties.sendFailureResponse(error);
+    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 }
 
 async function updateUser(req: express.Request, res: express.Response): Promise<void> {
   try {
-    const { databaseConnection } = req.extendedProperties;
-    const { validatedUserId } = req.extendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndDeclarationExtendedProperties;
+    const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const userNotificationToken = formatUnknownString(req.body['userNotificationToken']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -224,17 +224,17 @@ async function updateUser(req: express.Request, res: express.Response): Promise<
       userNotificationToken,
     );
 
-    return res.extendedProperties.sendSuccessResponse({});
+    return res.houndDeclarationExtendedProperties.sendSuccessResponse({});
   }
   catch (error) {
-    return res.extendedProperties.sendFailureResponse(error);
+    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 }
 
 async function deleteUser(req: express.Request, res: express.Response): Promise<void> {
   try {
-    const { databaseConnection } = req.extendedProperties;
-    const { validatedUserId } = req.extendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndDeclarationExtendedProperties;
+    const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined) {
       throw new HoundError('databaseConnection missing', deleteUser, ERROR_CODES.VALUE.INVALID);
     }
@@ -247,10 +247,10 @@ async function deleteUser(req: express.Request, res: express.Response): Promise<
       validatedUserId,
     );
 
-    return res.extendedProperties.sendSuccessResponse({});
+    return res.houndDeclarationExtendedProperties.sendSuccessResponse({});
   }
   catch (error) {
-    return res.extendedProperties.sendFailureResponse(error);
+    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 }
 

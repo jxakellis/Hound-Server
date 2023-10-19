@@ -26,8 +26,8 @@ Known:
 
 async function getReminders(req: express.Request, res: express.Response): Promise<void> {
   try {
-    const { databaseConnection } = req.extendedProperties;
-    const { validatedDogId, validatedReminderIds } = req.extendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndDeclarationExtendedProperties;
+    const { validatedDogId, validatedReminderIds } = req.houndDeclarationExtendedProperties.validatedVariables;
     const previousDogManagerSynchronization = formatDate(req.query['previousDogManagerSynchronization'] ?? req.query['userConfigurationPreviousDogManagerSynchronization']);
 
     if (databaseConnection === undefined) {
@@ -45,21 +45,21 @@ async function getReminders(req: express.Request, res: express.Response): Promis
         throw new HoundError('result missing', getReminders, ERROR_CODES.VALUE.INVALID);
       }
 
-      return res.extendedProperties.sendSuccessResponse(result);
+      return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
     }
 
     const result = await getAllRemindersForDogId(databaseConnection, validatedDogId, previousDogManagerSynchronization);
-    return res.extendedProperties.sendSuccessResponse(result);
+    return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
   }
   catch (error) {
-    return res.extendedProperties.sendFailureResponse(error);
+    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 }
 
 async function createReminder(req: express.Request, res: express.Response): Promise<void> {
   try {
-    const { databaseConnection } = req.extendedProperties;
-    const { validatedFamilyId, validatedDogId } = req.extendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndDeclarationExtendedProperties;
+    const { validatedFamilyId, validatedDogId } = req.houndDeclarationExtendedProperties.validatedVariables;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const remindersDictionary = formatArray(req.body['reminders'] ?? [req.body]) as (Dictionary[] | undefined);
 
@@ -79,7 +79,7 @@ async function createReminder(req: express.Request, res: express.Response): Prom
     const reminders: DogRemindersRow[] = [];
     remindersDictionary.forEach((reminder) => {
       // validate reminder id against validatedReminders
-      const reminderId = req.extendedProperties.validatedVariables.validatedReminderIds.find((validatedReminderId) => validatedReminderId === formatNumber(reminder['reminderId']));
+      const reminderId = req.houndDeclarationExtendedProperties.validatedVariables.validatedReminderIds.find((validatedReminderId) => validatedReminderId === formatNumber(reminder['reminderId']));
       const reminderAction = formatUnknownString(reminder['reminderAction']);
       const reminderCustomActionName = formatUnknownString(reminder['reminderCustomActionName']);
       const reminderType = formatUnknownString(reminder['reminderType']);
@@ -215,17 +215,17 @@ async function createReminder(req: express.Request, res: express.Response): Prom
       );
     });
 
-    return res.extendedProperties.sendSuccessResponse(results);
+    return res.houndDeclarationExtendedProperties.sendSuccessResponse(results);
   }
   catch (error) {
-    return res.extendedProperties.sendFailureResponse(error);
+    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 }
 
 async function updateReminder(req: express.Request, res: express.Response): Promise<void> {
   try {
-    const { databaseConnection } = req.extendedProperties;
-    const { validatedFamilyId, validatedDogId } = req.extendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndDeclarationExtendedProperties;
+    const { validatedFamilyId, validatedDogId } = req.houndDeclarationExtendedProperties.validatedVariables;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const remindersDictionary = formatArray(req.body['reminders'] ?? [req.body]) as (Dictionary[] | undefined);
 
@@ -245,7 +245,7 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
     const reminders: DogRemindersRow[] = [];
     remindersDictionary.forEach((reminder) => {
       // validate reminder id against validatedReminders
-      const reminderId = req.extendedProperties.validatedVariables.validatedReminderIds.find((validatedReminderId) => validatedReminderId === formatNumber(reminder['reminderId']));
+      const reminderId = req.houndDeclarationExtendedProperties.validatedVariables.validatedReminderIds.find((validatedReminderId) => validatedReminderId === formatNumber(reminder['reminderId']));
       const reminderAction = formatUnknownString(reminder['reminderAction']);
       const reminderCustomActionName = formatUnknownString(reminder['reminderCustomActionName']);
       const reminderType = formatUnknownString(reminder['reminderType']);
@@ -381,17 +381,17 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
       );
     });
 
-    return res.extendedProperties.sendSuccessResponse({});
+    return res.houndDeclarationExtendedProperties.sendSuccessResponse({});
   }
   catch (error) {
-    return res.extendedProperties.sendFailureResponse(error);
+    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 }
 
 async function deleteReminder(req: express.Request, res: express.Response): Promise<void> {
   try {
-    const { databaseConnection } = req.extendedProperties;
-    const { validatedFamilyId, validatedReminderIds } = req.extendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndDeclarationExtendedProperties;
+    const { validatedFamilyId, validatedReminderIds } = req.houndDeclarationExtendedProperties.validatedVariables;
 
     if (databaseConnection === undefined) {
       throw new HoundError('databaseConnection missing', deleteReminder, ERROR_CODES.VALUE.INVALID);
@@ -405,10 +405,10 @@ async function deleteReminder(req: express.Request, res: express.Response): Prom
 
     await deleteRemindersForFamilyIdDogIdReminderIds(databaseConnection, validatedFamilyId, validatedReminderIds);
 
-    return res.extendedProperties.sendSuccessResponse({});
+    return res.houndDeclarationExtendedProperties.sendSuccessResponse({});
   }
   catch (error) {
-    return res.extendedProperties.sendFailureResponse(error);
+    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 }
 

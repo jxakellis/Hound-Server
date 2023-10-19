@@ -66,12 +66,12 @@ class HoundError extends Error {
 
     super(customMessage);
 
-    this.code = forCode?.ERROR_CODE_FROM_ERROR_CODES;
+    this.houndDeclarationCode = forCode?.ERROR_CODE_FROM_ERROR_CODES;
     this.sourceFunction = forSourceFunction?.name;
     // Attempt to set other parameters, using the parameters first, then fromError seconds if no value found
     if (fromError !== undefined && fromError instanceof Error) {
       // code and sourceFunction are set by us. Therefore, our manual values take priority
-      this.code = this.code ?? fromError.code;
+      this.houndDeclarationCode = this.houndDeclarationCode ?? fromError.houndDeclarationCode;
       this.sourceFunction = this.sourceFunction ?? fromError.name;
       // cause, name, and stack aren't set by us. Therefore, override their values with fromError
       this.cause = fromError.cause;
@@ -84,7 +84,7 @@ class HoundError extends Error {
 function convertErrorToJSON(houndError?: HoundError): {code: string, message: string, sourceFunction: string, name: string, stack: string} {
   return {
     sourceFunction: formatKnownString(houndError?.sourceFunction ?? 'Unknown Source Function', 100),
-    code: formatKnownString(houndError?.code ?? 'Unknown Code', 500),
+    code: formatKnownString(houndError?.houndDeclarationCode ?? 'Unknown Code', 500),
     // Remove all newlines, remove all carriage returns, and make all >1 length spaces into 1 length spaces
     message: formatKnownString(houndError?.message.replace('/\r?\n|\r/g', '').replace(/\s+/g, ' ') ?? 'Unknown Message', 500),
     name: formatKnownString(houndError?.name ?? 'Unknown Name', 500),

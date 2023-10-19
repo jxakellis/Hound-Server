@@ -8,8 +8,8 @@ import { formatUnknownString } from '../../main/format/formatObject';
 
 async function getTransactions(req: express.Request, res: express.Response): Promise<void> {
   try {
-    const { databaseConnection } = req.extendedProperties;
-    const { validatedUserId } = req.extendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndDeclarationExtendedProperties;
+    const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
 
     if (databaseConnection === undefined) {
       throw new HoundError('databaseConnection missing', getTransactions, ERROR_CODES.VALUE.INVALID);
@@ -24,17 +24,17 @@ async function getTransactions(req: express.Request, res: express.Response): Pro
       throw new HoundError('result missing', getTransactions, ERROR_CODES.VALUE.INVALID);
     }
 
-    return res.extendedProperties.sendSuccessResponse(result);
+    return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
   }
   catch (error) {
-    return res.extendedProperties.sendFailureResponse(error);
+    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 }
 
 async function createTransactions(req: express.Request, res: express.Response): Promise<void> {
   try {
-    const { databaseConnection } = req.extendedProperties;
-    const { validatedUserId } = req.extendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndDeclarationExtendedProperties;
+    const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const appStoreReceiptURL = formatUnknownString(req.body['appStoreReceiptURL']);
 
@@ -57,10 +57,10 @@ async function createTransactions(req: express.Request, res: express.Response): 
       throw new HoundError('result missing', createTransactions, ERROR_CODES.VALUE.INVALID);
     }
 
-    return res.extendedProperties.sendSuccessResponse(result);
+    return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
   }
   catch (error) {
-    return res.extendedProperties.sendFailureResponse(error);
+    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 }
 
