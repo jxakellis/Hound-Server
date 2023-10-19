@@ -1,13 +1,13 @@
-import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
+import { type Queryable, databaseQuery } from '../../main/database/databaseQuery';
 
 import { getFamilyHeadUserId } from '../getFor/getForFamily';
 
 import { createFamilyMemberLeaveNotification } from '../../main/tools/notifications/alert/createFamilyNotification';
 import { createUserKickedNotification } from '../../main/tools/notifications/alert/createUserKickedNotification';
-import { TransactionsRow } from '../../main/types/TransactionsRow';
+import { type TransactionsRow } from '../../main/types/TransactionsRow';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
 import { SUBSCRIPTION } from '../../main/server/globalConstants';
-import { FamilyMembersRow, familyMembersColumns } from '../../main/types/FamilyMembersRow';
+import { type FamilyMembersRow, familyMembersColumns } from '../../main/types/FamilyMembersRow';
 
 /**
 * Helper function for deleteFamilyLeaveFamilyForUserIdFamilyId

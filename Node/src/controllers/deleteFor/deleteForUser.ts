@@ -1,4 +1,4 @@
-import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
+import { type Queryable, databaseQuery } from '../../main/database/databaseQuery';
 
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
 

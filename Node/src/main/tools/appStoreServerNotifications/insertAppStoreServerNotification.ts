@@ -1,11 +1,11 @@
 import {
-  JWSTransactionDecodedPayload, JWSRenewalInfoDecodedPayload, DecodedNotificationPayload, NotificationData,
+  type JWSTransactionDecodedPayload, type JWSRenewalInfoDecodedPayload, type DecodedNotificationPayload, type NotificationData,
 } from 'app-store-server-api';
-import { Queryable, databaseQuery } from '../../database/databaseQuery';
+import { type Queryable, databaseQuery } from '../../database/databaseQuery';
 import {
   formatDate, formatNumber, formatBoolean,
 } from '../../format/formatObject';
-import { AppStoreServerNotificationsRow, appStoreServerNotificationsColumns } from '../../types/AppStoreServerNotificationsRow';
+import { type AppStoreServerNotificationsRow, appStoreServerNotificationsColumns } from '../../types/AppStoreServerNotificationsRow';
 
 /**
 * Extracts data from parameters provided and attempts to insert a corresponding notification into the appStoreServerNotification table.

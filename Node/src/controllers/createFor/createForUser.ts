@@ -1,10 +1,10 @@
 import crypto from 'crypto';
 
-import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
+import { type Queryable, databaseQuery } from '../../main/database/databaseQuery';
 import { hash } from '../../main/format/hash';
 
 import { getPublicUser } from '../getFor/getForUser';
-import { UserConfigurationRow } from '../../main/types/UserConfigurationRow';
+import { type UserConfigurationRow } from '../../main/types/UserConfigurationRow';
 import { formatEmail, formatUnknownString } from '../../main/format/formatObject';
 
 /**

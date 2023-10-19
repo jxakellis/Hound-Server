@@ -33,8 +33,8 @@ type PublicUsersRow = {
 };
 
 export {
-  PrivateUsersRow,
+  type PrivateUsersRow,
   privateUsersColumns,
-  PublicUsersRow,
+  type PublicUsersRow,
   publicUsersColumns,
 };

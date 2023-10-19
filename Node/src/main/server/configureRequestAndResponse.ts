@@ -4,7 +4,7 @@ import { logResponse } from '../logging/logResponse';
 import { logServerError } from '../logging/logServerError';
 import { databaseQuery } from '../database/databaseQuery';
 import { getDatabaseConnections } from '../database/databaseConnections';
-import { ResponseBodyType } from '../types/ResponseBodyType';
+import { type ResponseBodyType } from '../types/ResponseBodyType';
 
 function releaseDatabaseConnection(req: express.Request): void {
   if (req.houndDeclarationExtendedProperties.databaseConnection === undefined) {

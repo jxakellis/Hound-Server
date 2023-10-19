@@ -1,5 +1,5 @@
-import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
-import { DogsRow, dogsColumns } from '../../main/types/DogsRow';
+import { type Queryable, databaseQuery } from '../../main/database/databaseQuery';
+import { type DogsRow, dogsColumns } from '../../main/types/DogsRow';
 
 import { deleteAllLogsForDogId } from './deleteForLogs';
 import { deleteAllRemindersForFamilyIdDogId } from './deleteForReminders';

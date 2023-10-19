@@ -35,6 +35,6 @@ type TransactionsRow = {
 };
 
 export {
-  TransactionsRow,
+  type TransactionsRow,
   transactionsColumns,
 };

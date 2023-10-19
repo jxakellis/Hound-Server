@@ -1,4 +1,4 @@
-import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
+import { type Queryable, databaseQuery } from '../../main/database/databaseQuery';
 
 /**
  * Queries all the tables to check if they are on line

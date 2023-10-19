@@ -4,7 +4,7 @@ import { databaseQuery } from '../../../database/databaseQuery';
 
 import { logServerError } from '../../../logging/logServerError';
 import { cancelJobForFamilyForReminder } from './cancelJob';
-import { DogRemindersRow, dogRemindersColumns } from '../../../types/DogRemindersRow';
+import { type DogRemindersRow, dogRemindersColumns } from '../../../types/DogRemindersRow';
 import { HoundError } from '../../../server/globalErrors';
 
 async function deleteAlarmNotificationsForFamily(familyId: string): Promise<void> {

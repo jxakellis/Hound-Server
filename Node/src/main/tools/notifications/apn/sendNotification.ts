@@ -5,7 +5,7 @@ import { logServerError } from '../../../logging/logServerError';
 import { sendAPN } from './sendAPN';
 import { getUserToken, getAllFamilyMemberTokens, getOtherFamilyMemberTokens } from './apnTokens';
 import { HoundError } from '../../../server/globalErrors';
-import { Dictionary } from '../../../types/Dictionary';
+import { type Dictionary } from '../../../types/Dictionary';
 
 /**
 * Takes a userId and retrieves the userNotificationToken for the user

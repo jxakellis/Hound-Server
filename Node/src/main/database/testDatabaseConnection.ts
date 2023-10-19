@@ -1,4 +1,4 @@
-import { Queryable, databaseQuery } from './databaseQuery';
+import { type Queryable, databaseQuery } from './databaseQuery';
 import { serverLogger } from '../logging/loggers';
 
 /// Performs basic query on user table to establish if the databaseConnection is valid

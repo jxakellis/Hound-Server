@@ -1,5 +1,5 @@
-import { Queryable, databaseQuery } from '../../database/databaseQuery';
-import { AppStoreServerNotificationsRow, appStoreServerNotificationsColumns } from '../../types/AppStoreServerNotificationsRow';
+import { type Queryable, databaseQuery } from '../../database/databaseQuery';
+import { type AppStoreServerNotificationsRow, appStoreServerNotificationsColumns } from '../../types/AppStoreServerNotificationsRow';
 
 /**
  * Attempts to find the App Store Server Notification associated with the notificationUUID provided

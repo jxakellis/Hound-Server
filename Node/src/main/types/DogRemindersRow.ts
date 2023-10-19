@@ -60,6 +60,6 @@ type DogRemindersRow = {
 };
 
 export {
-  DogRemindersRow,
+  type DogRemindersRow,
   dogRemindersColumns,
 };

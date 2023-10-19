@@ -1,6 +1,6 @@
-import { DogRemindersRow, dogRemindersColumns } from '../../main/types/DogRemindersRow';
+import { type DogRemindersRow, dogRemindersColumns } from '../../main/types/DogRemindersRow';
 
-import { Queryable, ResultSetHeader, databaseQuery } from '../../main/database/databaseQuery';
+import { type Queryable, type ResultSetHeader, databaseQuery } from '../../main/database/databaseQuery';
 import { LIMIT } from '../../main/server/globalConstants';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
 

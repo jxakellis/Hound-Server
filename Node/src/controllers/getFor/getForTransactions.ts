@@ -1,7 +1,7 @@
-import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
+import { type Queryable, databaseQuery } from '../../main/database/databaseQuery';
 import { SUBSCRIPTION } from '../../main/server/globalConstants';
-import { TransactionsRow, transactionsColumns } from '../../main/types/TransactionsRow';
-import { PublicUsersRow, publicUsersColumns } from '../../main/types/UsersRow';
+import { type TransactionsRow, transactionsColumns } from '../../main/types/TransactionsRow';
+import { type PublicUsersRow, publicUsersColumns } from '../../main/types/UsersRow';
 
 import { getFamilyHeadUserId } from './getForFamily';
 

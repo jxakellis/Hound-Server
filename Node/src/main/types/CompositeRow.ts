@@ -1,9 +1,9 @@
-import { FamiliesRow } from './FamiliesRow';
-import { FamilyMembersRow } from './FamilyMembersRow';
-import { PreviousFamilyMembersRow } from './PreviousFamilyMembersRow';
-import { TransactionsRow } from './TransactionsRow';
-import { UserConfigurationRow } from './UserConfigurationRow';
-import { PrivateUsersRow, PublicUsersRow } from './UsersRow';
+import { type FamiliesRow } from './FamiliesRow';
+import { type FamilyMembersRow } from './FamilyMembersRow';
+import { type PreviousFamilyMembersRow } from './PreviousFamilyMembersRow';
+import { type TransactionsRow } from './TransactionsRow';
+import { type UserConfigurationRow } from './UserConfigurationRow';
+import { type PrivateUsersRow, type PublicUsersRow } from './UsersRow';
 
 type UserConfigurationWithPartialPrivateUsers = UserConfigurationRow & Partial<PrivateUsersRow>
 
@@ -16,7 +16,7 @@ type FamilyInformation = FamiliesRow & {
 }
 
 export {
-  UserConfigurationWithPartialPrivateUsers,
-  PrivateCombinedUsersInformation,
-  FamilyInformation,
+  type UserConfigurationWithPartialPrivateUsers,
+  type PrivateCombinedUsersInformation,
+  type FamilyInformation,
 };

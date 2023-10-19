@@ -1,5 +1,5 @@
-import { DogLogsRow } from './DogLogsRow';
-import { DogRemindersRow } from './DogRemindersRow';
+import { type DogLogsRow } from './DogLogsRow';
+import { type DogRemindersRow } from './DogRemindersRow';
 
 const dogsColumns = `
 d.dogId,
@@ -21,6 +21,6 @@ type DogsRow = {
 };
 
 export {
-  DogsRow,
+  type DogsRow,
   dogsColumns,
 };

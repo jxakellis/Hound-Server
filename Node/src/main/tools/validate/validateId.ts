@@ -1,5 +1,5 @@
 import express from 'express';
-import { databaseQuery } from '../../database/databaseQuery';
+import { databaseQuery } from '../../database/databaseQuery.js';
 import {
   formatUnknownString, formatNumber, formatArray,
 } from '../../format/formatObject';
@@ -8,12 +8,12 @@ import { hash } from '../../format/hash';
 
 import { updateUserForUserIdentifierHashedUserIdentifier } from '../../../controllers/updateFor/updateForUser';
 import { SERVER } from '../../server/globalConstants';
-import { PublicUsersRow, publicUsersColumns } from '../../types/UsersRow';
-import { FamilyMembersRow, familyMembersColumns } from '../../types/FamilyMembersRow';
-import { DogsRow, dogsColumns } from '../../types/DogsRow';
-import { DogLogsRow, dogLogsColumns } from '../../types/DogLogsRow';
-import { DogRemindersRow, dogRemindersColumns } from '../../types/DogRemindersRow';
-import { Dictionary } from '../../types/Dictionary';
+import { type PublicUsersRow, publicUsersColumns } from '../../types/UsersRow';
+import { type FamilyMembersRow, familyMembersColumns } from '../../types/FamilyMembersRow';
+import { type DogsRow, dogsColumns } from '../../types/DogsRow';
+import { type DogLogsRow, dogLogsColumns } from '../../types/DogLogsRow';
+import { type DogRemindersRow, dogRemindersColumns } from '../../types/DogRemindersRow';
+import { type Dictionary } from '../../types/Dictionary';
 
 /**
 * Checks to see that the appVersion of the requester is compatible

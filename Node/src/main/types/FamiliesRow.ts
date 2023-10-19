@@ -18,6 +18,6 @@ type FamiliesRow = {
 };
 
 export {
-  FamiliesRow,
+  type FamiliesRow,
   familiesColumns,
 };

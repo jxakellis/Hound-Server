@@ -1,6 +1,6 @@
 import {
   decodeNotificationPayload, decodeTransaction, decodeRenewalInfo,
-  DecodedNotificationPayload, NotificationData, JWSTransactionDecodedPayload, JWSRenewalInfoDecodedPayload,
+  type DecodedNotificationPayload, type NotificationData, type JWSTransactionDecodedPayload, type JWSRenewalInfoDecodedPayload,
 } from 'app-store-server-api';
 import { HoundError, ERROR_CODES } from '../../server/globalErrors';
 import { logServerError } from '../../logging/logServerError';

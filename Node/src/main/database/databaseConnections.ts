@@ -1,4 +1,4 @@
-import mysql2, { PoolConnection } from 'mysql2';
+import mysql2, { type PoolConnection } from 'mysql2';
 import {
   developmentHoundUser,
   developmentHoundHost,
@@ -15,8 +15,8 @@ import { HoundError } from '../server/globalErrors';
 
 import { serverLogger } from '../logging/loggers';
 import { testDatabaseConnections } from './testDatabaseConnection';
-import { Queryable, databaseQuery } from './databaseQuery';
-import { StatusResultRow } from '../types/StatusResultRow';
+import { type Queryable, databaseQuery } from './databaseQuery';
+import { type StatusResultRow } from '../types/StatusResultRow';
 
 // CREATE CONFIGURATION FOR DATABSE CONNECTIONS
 

@@ -24,6 +24,6 @@ type DogLogsRow = {
 };
 
 export {
-  DogLogsRow,
+  type DogLogsRow,
   dogLogsColumns,
 };

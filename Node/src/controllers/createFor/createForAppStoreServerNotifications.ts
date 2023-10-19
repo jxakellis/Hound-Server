@@ -12,7 +12,7 @@ import { getTransactionOwner } from '../getFor/getForTransactions';
 
 import { createUpdateTransaction } from './createForTransactions';
 
-import { Queryable } from '../../main/types/Queryable';
+import { type Queryable } from '../../main/types/Queryable';
 
 /**
 * Processes an App Store Server Notification

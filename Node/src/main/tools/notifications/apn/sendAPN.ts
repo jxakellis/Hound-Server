@@ -3,11 +3,11 @@ import { apnLogger } from '../../../logging/loggers';
 import { logServerError } from '../../../logging/logServerError';
 import { formatKnownString } from '../../../format/formatObject';
 
-import { apn, productionAPNProvider, developmentAPNProvider } from './apnProvider';
+import { apn, productionAPNProvider, developmentAPNProvider } from './apnProvider'; 
 import { NOTIFICATION } from '../../../server/globalConstants';
-import { UserConfigurationWithPartialPrivateUsers } from '../../../types/CompositeRow';
+import { type UserConfigurationWithPartialPrivateUsers } from '../../../types/CompositeRow';
 import { HoundError } from '../../../server/globalErrors';
-import { Dictionary } from '../../../types/Dictionary';
+import { type Dictionary } from '../../../types/Dictionary';
 
 function sendDevelopmentAPN(notification: apn.Notification, notificationToken: string): void {
   developmentAPNProvider.send(notification, notificationToken)

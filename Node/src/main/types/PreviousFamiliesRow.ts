@@ -18,6 +18,6 @@ type PreviousFamiliesRow = {
 };
 
 export {
-  PreviousFamiliesRow,
+  type PreviousFamiliesRow,
   previousFamiliesColumns,
 };

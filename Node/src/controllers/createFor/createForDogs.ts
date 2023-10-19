@@ -1,7 +1,7 @@
-import { Queryable, ResultSetHeader, databaseQuery } from '../../main/database/databaseQuery';
+import { type Queryable, type ResultSetHeader, databaseQuery } from '../../main/database/databaseQuery';
 import { LIMIT } from '../../main/server/globalConstants';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
-import { DogsRow, dogsColumns } from '../../main/types/DogsRow';
+import { type DogsRow, dogsColumns } from '../../main/types/DogsRow';
 
 /**
 *  Queries the database to create a dog. If the query is successful, then returns the dogId.

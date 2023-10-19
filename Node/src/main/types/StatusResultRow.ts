@@ -4,4 +4,4 @@ type StatusResultRow = {
     Value: string;
 };
 
-export { StatusResultRow };
+export { type StatusResultRow };

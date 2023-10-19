@@ -1,5 +1,5 @@
-import { JWSRenewalInfoDecodedPayload, JWSTransactionDecodedPayload } from 'app-store-server-api';
-import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
+import { type JWSRenewalInfoDecodedPayload, type JWSTransactionDecodedPayload } from 'app-store-server-api';
+import { type Queryable, databaseQuery } from '../../main/database/databaseQuery';
 
 import { extractTransactionIdFromAppStoreReceiptURL } from '../../main/tools/appStoreConnectAPI/extractTransactionId';
 import { queryAllSubscriptionsForTransactionId } from '../../main/tools/appStoreConnectAPI/queryTransactions';

@@ -1,7 +1,7 @@
-import { ResultSetHeader, RowDataPacket } from 'mysql2';
+import { type ResultSetHeader, type RowDataPacket } from 'mysql2';
 import { poolLogger } from '../logging/loggers';
 import { HoundError } from '../server/globalErrors';
-import { Queryable } from '../types/Queryable';
+import { type Queryable } from '../types/Queryable';
 
 // Define the "impossible" type to force callers to specify a type parameter for the function.
 type MustSpecifyType<T> = T & { __mustSpecifyType__: void };
@@ -16,7 +16,7 @@ const databaseQuery = <T>(
   forSQLString: string,
   forSQLVariables: SQLVariableType[] = [],
 ): Promise<MustSpecifyType<T>> => {
-  // Remove all newlines, remove all carriage returns, and make all >1 length spaces into 1 length spaces
+  // Remove all newlines, remove all ca rriage returns, and make all >1 length spaces into 1 length spaces
   const SQLString = forSQLString.replace(/\r?\n|\r/g, '').replace(/\s+/g, ' ');
 
   const SQLVariables = forSQLVariables.map((variable) => {
@@ -47,5 +47,5 @@ const databaseQuery = <T>(
 };
 
 export {
-  Queryable, ResultSetHeader, RowDataPacket, databaseQuery,
+  type Queryable, type ResultSetHeader, type RowDataPacket, databaseQuery,
 };

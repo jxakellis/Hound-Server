@@ -1,6 +1,6 @@
 import { getDatabaseConnections } from '../../../database/databaseConnections';
 import { databaseQuery } from '../../../database/databaseQuery';
-import { UserConfigurationWithPartialPrivateUsers } from '../../../types/CompositeRow';
+import { type UserConfigurationWithPartialPrivateUsers } from '../../../types/CompositeRow';
 import { userConfigurationColumns } from '../../../types/UserConfigurationRow';
 
 /**

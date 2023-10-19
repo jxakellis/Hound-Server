@@ -1,7 +1,7 @@
-import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
-import { DogLogsRow } from '../../main/types/DogLogsRow';
-import { DogRemindersRow } from '../../main/types/DogRemindersRow';
-import { DogsRow, dogsColumns } from '../../main/types/DogsRow';
+import { type Queryable, databaseQuery } from '../../main/database/databaseQuery';
+import { type DogLogsRow } from '../../main/types/DogLogsRow';
+import { type DogRemindersRow } from '../../main/types/DogRemindersRow';
+import { type DogsRow, dogsColumns } from '../../main/types/DogsRow';
 
 import { getAllLogsForDogId } from './getForLogs';
 import { getAllRemindersForDogId } from './getForReminders';

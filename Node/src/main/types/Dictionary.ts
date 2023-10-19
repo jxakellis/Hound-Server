@@ -1,5 +1,5 @@
 type Dictionary = { [key: string]: unknown }
 
 export {
-  Dictionary,
+  type Dictionary,
 };

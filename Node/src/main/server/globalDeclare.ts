@@ -1,5 +1,5 @@
-import { PoolConnection } from 'mysql2';
-import { TransactionsRow } from '../types/TransactionsRow';
+import { type PoolConnection } from 'mysql2';
+import { type TransactionsRow } from '../types/TransactionsRow';
 
 declare global {
     interface Error {

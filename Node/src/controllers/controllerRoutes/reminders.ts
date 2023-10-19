@@ -13,8 +13,8 @@ import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
 import {
   formatArray, formatDate, formatNumber, formatUnknownString,
 } from '../../main/format/formatObject';
-import { Dictionary } from '../../main/types/Dictionary';
-import { DogRemindersRow } from '../../main/types/DogRemindersRow';
+import { type Dictionary } from '../../main/types/Dictionary';
+import { type DogRemindersRow } from '../../main/types/DogRemindersRow';
 
 /*
 Known:

@@ -9,8 +9,8 @@ import { sendNotificationForFamily } from '../apn/sendNotification';
 import { logServerError } from '../../../logging/logServerError';
 import { deleteAlarmNotificationsForReminder } from './deleteAlarmNotification';
 import { formatReminderAction } from '../../../format/formatName';
-import { DogsRow, dogsColumns } from '../../../types/DogsRow';
-import { DogRemindersRow, dogRemindersColumns } from '../../../types/DogRemindersRow';
+import { type DogsRow, dogsColumns } from '../../../types/DogsRow';
+import { type DogRemindersRow, dogRemindersColumns } from '../../../types/DogRemindersRow';
 import { NOTIFICATION } from '../../../server/globalConstants';
 import { HoundError } from '../../../server/globalErrors';
 

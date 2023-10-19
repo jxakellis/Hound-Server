@@ -34,5 +34,5 @@ type UserConfigurationRow = {
 };
 
 export {
-  UserConfigurationRow, userConfigurationColumns,
+  type UserConfigurationRow, userConfigurationColumns,
 };

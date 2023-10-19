@@ -1,5 +1,5 @@
 import {
-  SortParameter, decodeTransactions, decodeRenewalInfo, decodeTransaction, HistoryResponse, JWSTransactionDecodedPayload, StatusResponse, JWSRenewalInfoDecodedPayload,
+  SortParameter, decodeTransactions, decodeRenewalInfo, decodeTransaction, type HistoryResponse, type JWSTransactionDecodedPayload, type StatusResponse, type JWSRenewalInfoDecodedPayload,
 } from 'app-store-server-api';
 import { api } from './api';
 import { logServerError } from '../../logging/logServerError';

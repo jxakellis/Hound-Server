@@ -1,8 +1,8 @@
-import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
+import { type Queryable, databaseQuery } from '../../main/database/databaseQuery';
 import { hash } from '../../main/format/hash';
-import { PrivateCombinedUsersInformation } from '../../main/types/CompositeRow';
+import { type PrivateCombinedUsersInformation } from '../../main/types/CompositeRow';
 import { userConfigurationColumns } from '../../main/types/UserConfigurationRow';
-import { PublicUsersRow, privateUsersColumns, publicUsersColumns } from '../../main/types/UsersRow';
+import { type PublicUsersRow, privateUsersColumns, publicUsersColumns } from '../../main/types/UsersRow';
 
 import { updateUserForUserIdentifierHashedUserIdentifier } from '../updateFor/updateForUser';
 

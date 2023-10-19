@@ -1,10 +1,10 @@
-import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
-import { FamilyInformation } from '../../main/types/CompositeRow';
-import { FamiliesRow, familiesColumns } from '../../main/types/FamiliesRow';
-import { FamilyMembersRow, familyMembersColumns } from '../../main/types/FamilyMembersRow';
-import { PreviousFamilyMembersRow, previousFamilyMembersColumns } from '../../main/types/PreviousFamilyMembersRow';
-import { TransactionsRow } from '../../main/types/TransactionsRow';
-import { PublicUsersRow, publicUsersColumns } from '../../main/types/UsersRow';
+import { type Queryable, databaseQuery } from '../../main/database/databaseQuery';
+import { type FamilyInformation } from '../../main/types/CompositeRow';
+import { type FamiliesRow, familiesColumns } from '../../main/types/FamiliesRow';
+import { type FamilyMembersRow, familyMembersColumns } from '../../main/types/FamilyMembersRow';
+import { type PreviousFamilyMembersRow, previousFamilyMembersColumns } from '../../main/types/PreviousFamilyMembersRow';
+import { type TransactionsRow } from '../../main/types/TransactionsRow';
+import { type PublicUsersRow, publicUsersColumns } from '../../main/types/UsersRow';
 
 /**
  * @param {*} databaseConnection

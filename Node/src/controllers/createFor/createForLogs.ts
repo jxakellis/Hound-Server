@@ -1,7 +1,7 @@
-import { Queryable, ResultSetHeader, databaseQuery } from '../../main/database/databaseQuery';
+import { type Queryable, type ResultSetHeader, databaseQuery } from '../../main/database/databaseQuery';
 import { LIMIT } from '../../main/server/globalConstants';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
-import { DogLogsRow, dogLogsColumns } from '../../main/types/DogLogsRow';
+import { type DogLogsRow, dogLogsColumns } from '../../main/types/DogLogsRow';
 
 /**
 *  Queries the database to create a log. If the query is successful, then returns the logId.

@@ -1,6 +1,6 @@
-import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
+import { type Queryable, databaseQuery } from '../../main/database/databaseQuery';
 import { hash } from '../../main/format/hash';
-import { UserConfigurationRow } from '../../main/types/UserConfigurationRow';
+import { type UserConfigurationRow } from '../../main/types/UserConfigurationRow';
 
 /**
  *  Queries the database to update a user. If the query is successful, then returns

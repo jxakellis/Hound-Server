@@ -12,4 +12,4 @@ type ResponseBodyType = {
     responseId?: number
 };
 
-export { ResponseBodyType };
+export { type ResponseBodyType };

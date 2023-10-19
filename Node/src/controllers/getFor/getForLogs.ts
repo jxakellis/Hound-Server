@@ -1,5 +1,5 @@
-import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
-import { DogLogsRow, dogLogsColumns } from '../../main/types/DogLogsRow';
+import { type Queryable, databaseQuery } from '../../main/database/databaseQuery';
+import { type DogLogsRow, dogLogsColumns } from '../../main/types/DogLogsRow';
 
 /**
  *  If the query is successful, returns the log for the dogId.

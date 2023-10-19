@@ -3,9 +3,10 @@
     // The ECMAScript target version for the emitted JS files.
     "target": "es2022",
     // Specifies the module code generation: "None", "CommonJS", "AMD", "System", "UMD", "ES6", "ES2015", "ESNext"
-    "module": "es2022",
+    "module": "ESNext",
     // Determines how module resolution works, "node" works in the Node.js-style module resolution.
     "moduleResolution": "node",
+    "verbatimModuleSyntax": true,
     // Specifies the location where the compiled JS files will be.
     "outDir": "./built",
     "baseUrl": ".",

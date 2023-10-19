@@ -1,4 +1,4 @@
-import { Queryable, RowDataPacket, databaseQuery } from '../../main/database/databaseQuery';
+import { type Queryable, type RowDataPacket, databaseQuery } from '../../main/database/databaseQuery';
 import { hash } from '../../main/format/hash';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors';
 

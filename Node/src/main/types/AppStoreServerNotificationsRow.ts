@@ -93,4 +93,4 @@ type AppStoreServerNotificationsRow = {
     transactionInfoWebOrderLineItemId?: number,
 };
 
-export { AppStoreServerNotificationsRow, appStoreServerNotificationsColumns };
+export { type AppStoreServerNotificationsRow, appStoreServerNotificationsColumns };

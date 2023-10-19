@@ -12,6 +12,6 @@ type FamilyMembersRow = {
 };
 
 export {
-  FamilyMembersRow,
+  type FamilyMembersRow,
   familyMembersColumns,
 };

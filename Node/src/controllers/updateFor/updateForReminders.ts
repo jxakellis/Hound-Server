@@ -1,6 +1,6 @@
-import { DogRemindersRow } from '../../main/types/DogRemindersRow';
+import { type DogRemindersRow } from '../../main/types/DogRemindersRow';
 
-import { Queryable, databaseQuery } from '../../main/database/databaseQuery';
+import { type Queryable, databaseQuery } from '../../main/database/databaseQuery';
 
 /**
  *  Queries the database to create a update reminder. If the query is successful, then returns the provided reminder

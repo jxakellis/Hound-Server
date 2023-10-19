@@ -24,6 +24,6 @@ type PreviousUsersRow = {
 };
 
 export {
-  PreviousUsersRow,
+  type PreviousUsersRow,
   previousUsersColumns,
 };

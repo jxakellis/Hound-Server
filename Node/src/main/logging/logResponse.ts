@@ -2,7 +2,7 @@ import express from 'express';
 import { responseLogger } from './loggers';
 import { logServerError } from './logServerError';
 import { getDatabaseConnections } from '../database/databaseConnections';
-import { ResultSetHeader, databaseQuery } from '../database/databaseQuery';
+import { type ResultSetHeader, databaseQuery } from '../database/databaseQuery';
 import { formatUnknownString } from '../format/formatObject';
 import { HoundError } from '../server/globalErrors';
 
