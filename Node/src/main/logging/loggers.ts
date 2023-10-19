@@ -1,8 +1,8 @@
-import pino from 'pino';
+import * as Pino from 'pino';
 
 import { SERVER } from '../server/globalConstants.js';
 
-const parentLogger = pino();
+const parentLogger = Pino.pino();
 
 // Important server state information. This should always be logged to the console as it indicates critical functions
 const serverLogger = parentLogger.child({ name: 'Server' });

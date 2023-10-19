@@ -10,7 +10,7 @@ import express from 'express';
 
 // Import the global constant values to instantiate them
 import { SERVER } from './globalConstants.js';
-import './globalDeclare';
+import './globalDeclare.js';
 
 import { serverLogger } from '../logging/loggers.js';
 import { key, cert } from '../secrets/houndOrganizerHTTPS.js';

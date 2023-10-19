@@ -29,6 +29,7 @@ module.exports = {
     // Off
     'import/extensions': 'off',
     'import/prefer-default-export': 'off',
+    'import/no-unresolved': 'off',
     // no-shadow is disabled in favor of enabling @typescript-eslint/no-shadow
     "no-shadow": "off",
     "dot-notation": "off",
@@ -36,9 +37,10 @@ module.exports = {
   settings: {
     "import/resolver": {
       "node": {
+        "alwaysTryTypes": true,
         "extensions": [".js", ".jsx", ".ts", ".tsx"]
-      }
+      },
     }
   },
-  ignorePatterns: ['.eslintrc.cjs', 'built/'],
+  ignorePatterns: ['.eslintrc.cjs', 'built/', 'pm2.config.js'],
 };

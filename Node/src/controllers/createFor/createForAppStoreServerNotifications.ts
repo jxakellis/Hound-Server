@@ -1,27 +1,21 @@
 import { NotificationType } from 'app-store-server-api';
 import {
-  formatNumber,
+  type JWSTransactionDecodedPayload, type JWSRenewalInfoDecodedPayload, type DecodedNotificationPayload, type NotificationData,
+} from 'app-store-server-api';
+import {
+  formatDate, formatNumber, formatBoolean,
 } from '../../main/format/formatObject.js';
 import { HoundError, ERROR_CODES } from '../../main/server/globalErrors.js';
 import { requestLogger } from '../../main/logging/loggers.js';
 
 import { validateSignedPayload } from '../../main/tools/appStoreConnectAPI/validateSignedPayload.js';
-import { insertAppStoreServerNotification } from '../../main/tools/appStoreServerNotifications/insertAppStoreServerNotification.js';
 
 import { getTransactionOwner } from '../getFor/getForTransactions.js';
 
 import { createUpdateTransaction } from './createForTransactions.js';
 
-import { type Queryable } from '../../main/types/Queryable.js';
-
-import {
-  type JWSTransactionDecodedPayload, type JWSRenewalInfoDecodedPayload, type DecodedNotificationPayload, type NotificationData,
-} from 'app-store-server-api';
-import { type Queryable, databaseQuery } from '../../database/databaseQuery.js';
-import {
-  formatDate, formatNumber, formatBoolean,
-} from '../../format/formatObject.js';
-import { type AppStoreServerNotificationsRow, appStoreServerNotificationsColumns } from '../../types/AppStoreServerNotificationsRow.js';
+import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
+import { type AppStoreServerNotificationsRow, appStoreServerNotificationsColumns } from '../../main/types/AppStoreServerNotificationsRow.js';
 /**
 * Extracts data from parameters provided and attempts to insert a corresponding notification into the appStoreServerNotification table.
 * If a duplicate key is found for notificationUUID, a no-op operation is performed.
