@@ -16,8 +16,10 @@ const databaseQuery = <T>(
   forSQLString: string,
   forSQLVariables: SQLVariableType[] = [],
 ): Promise<MustSpecifyType<T>> => {
-  // Remove all newlines, remove all ca rriage returns, and make all >1 length spaces into 1 length spaces
-  const SQLString = forSQLString.replace(/\r?\n|\r/g, '').replace(/\s+/g, ' ');
+  // Remove all newlines remove all carriage returns
+  // Then makes all >1 length spaces into 1 length spaces
+  // Then if it find a common SQL syntax error ( a comma before a closing parathesis "  ..., reminderId, ) VALUES (...  " ), it fixes it
+  const SQLString = forSQLString.replace(/\r?\n|\r/g, '').replace(/\s+/g, ' ').replace(/,\s*\)/g, ')');
 
   const SQLVariables = forSQLVariables.map((variable) => {
     if (variable === undefined || variable === null) {

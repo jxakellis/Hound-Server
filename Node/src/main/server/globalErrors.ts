@@ -73,6 +73,7 @@ class HoundError extends Error {
     super(customMessage);
 
     this.houndDeclarationCode = forCode?.ERROR_CODE_FROM_ERROR_CODES;
+    // TODO NOW make sourceFunction an array of names.
     this.sourceFunction = forSourceFunction?.name;
     // Attempt to set other parameters, using the parameters first, then fromError seconds if no value found
     if (fromError !== undefined && fromError !== null && fromError instanceof Error) {
