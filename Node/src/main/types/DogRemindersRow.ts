@@ -59,7 +59,12 @@ type DogRemindersRow = {
     oneTimeDate: Date
 };
 
+type NotYetCreatedDogRemindersRow = Omit<DogRemindersRow, 'reminderId' | 'reminderIsDeleted' | 'reminderLastModified'>;
+type NotYetUpdatedDogRemindersRow = Omit<DogRemindersRow, 'reminderIsDeleted' | 'reminderLastModified'>;
+
 export {
   type DogRemindersRow,
+  type NotYetCreatedDogRemindersRow,
+  type NotYetUpdatedDogRemindersRow,
   dogRemindersColumns,
 };

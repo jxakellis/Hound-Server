@@ -91,16 +91,10 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
       {
         userId: validatedUserId,
         dogId: validatedDogId,
-        // this value is unused, we just need a placeholder for a valid DogLogsRow
-        logId: -1,
         logDate,
         logAction,
         logCustomActionName,
         logNote,
-        // this value is unused, we just need a placeholder for a valid DogLogsRow
-        logLastModified: new Date(),
-        // this value is unused, we just need a placeholder for a valid DogLogsRow
-        logIsDeleted: 0,
       },
     );
     createLogNotification(
@@ -166,10 +160,6 @@ async function updateLog(req: express.Request, res: express.Response): Promise<v
         logAction,
         logCustomActionName,
         logNote,
-        // this value is unused, we just need a placeholder for a valid DogLogsRow
-        logLastModified: new Date(),
-        // this value is unused, we just need a placeholder for a valid DogLogsRow
-        logIsDeleted: 0,
       },
     );
     return res.houndDeclarationExtendedProperties.sendSuccessResponse('');

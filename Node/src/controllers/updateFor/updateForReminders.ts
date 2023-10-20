@@ -1,4 +1,4 @@
-import { type DogRemindersRow } from '../../main/types/DogRemindersRow.js';
+import { type NotYetUpdatedDogRemindersRow } from '../../main/types/DogRemindersRow.js';
 
 import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
 
@@ -8,7 +8,7 @@ import { type Queryable, databaseQuery } from '../../main/database/databaseQuery
  */
 async function updateReminderForDogIdReminder(
   databaseConnection: Queryable,
-  reminder: DogRemindersRow,
+  reminder: NotYetUpdatedDogRemindersRow,
 ): Promise<void> {
   await databaseQuery(
     databaseConnection,
@@ -38,7 +38,7 @@ async function updateReminderForDogIdReminder(
  *  Queries the database to update multiple reminders. If the query is successful, then return the provided reminders
  *  If a problem is encountered, creates and throws custom error
  */
-async function updateRemindersForDogIdReminders(databaseConnection: Queryable, reminders: DogRemindersRow[]): Promise<void> {
+async function updateRemindersForDogIdReminders(databaseConnection: Queryable, reminders: NotYetUpdatedDogRemindersRow[]): Promise<void> {
   const promises: Promise<void>[] = [];
   reminders.forEach((reminder) => promises.push(updateReminderForDogIdReminder(
     databaseConnection,

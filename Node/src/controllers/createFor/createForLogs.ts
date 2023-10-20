@@ -1,13 +1,13 @@
 import { type Queryable, type ResultSetHeader, databaseQuery } from '../../main/database/databaseQuery.js';
 import { LIMIT } from '../../main/server/globalConstants.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
-import { type DogLogsRow, dogLogsColumns } from '../../main/types/DogLogsRow.js';
+import { type DogLogsRow, dogLogsColumns, type NotYetCreatedDogLogsRow } from '../../main/types/DogLogsRow.js';
 
 /**
 *  Queries the database to create a log. If the query is successful, then returns the logId.
 *  If a problem is encountered, creates and throws custom error
 */
-async function createLogForUserIdDogId(databaseConnection: Queryable, log: DogLogsRow): Promise<number> {
+async function createLogForUserIdDogId(databaseConnection: Queryable, log: NotYetCreatedDogLogsRow): Promise<number> {
   // only retrieve enough not deleted logs that would exceed the limit
   const logs = await databaseQuery<DogLogsRow[]>(
     databaseConnection,

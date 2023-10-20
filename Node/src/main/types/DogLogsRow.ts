@@ -23,7 +23,12 @@ type DogLogsRow = {
     logIsDeleted: number
 };
 
+type NotYetCreatedDogLogsRow = Omit<DogLogsRow, 'logId' | 'logIsDeleted' | 'logLastModified'>;
+type NotYetUpdatedDogLogsRow = Omit<DogLogsRow, 'logIsDeleted' | 'logLastModified'>;
+
 export {
   type DogLogsRow,
+  type NotYetCreatedDogLogsRow,
+  type NotYetUpdatedDogLogsRow,
   dogLogsColumns,
 };

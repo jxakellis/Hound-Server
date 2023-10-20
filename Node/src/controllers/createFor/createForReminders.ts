@@ -1,8 +1,9 @@
-import { type DogRemindersRow, dogRemindersColumns } from '../../main/types/DogRemindersRow.js';
+import { type DogRemindersRow, dogRemindersColumns, type NotYetCreatedDogRemindersRow } from '../../main/types/DogRemindersRow.js';
 
 import { type Queryable, type ResultSetHeader, databaseQuery } from '../../main/database/databaseQuery.js';
 import { LIMIT } from '../../main/server/globalConstants.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
+import { getAllRemindersForDogId } from '../getFor/getForReminders.js';
 
 /**
 *  Queries the database to create a single reminder. If the query is successful, then returns the reminder with created reminderId added to it.
@@ -10,7 +11,7 @@ import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 */
 async function createReminderForDogIdReminder(
   databaseConnection: Queryable,
-  reminder: DogRemindersRow,
+  reminder: NotYetCreatedDogRemindersRow,
 ): Promise<number> {
   // only retrieve enough not deleted reminders that would exceed the limit
   const reminders = await databaseQuery<DogRemindersRow[]>(
@@ -80,7 +81,10 @@ async function createReminderForDogIdReminder(
           * Queries the database to create a multiple reminders. If the query is successful, then returns the reminders with their created reminderIds added to them.
           *  If a problem is encountered, creates and throws custom error
           */
-async function createRemindersForDogIdReminders(databaseConnection: Queryable, reminders: DogRemindersRow[]): Promise<DogRemindersRow[]> {
+async function createRemindersForDogIdReminders(
+  databaseConnection: Queryable,
+  reminders: NotYetCreatedDogRemindersRow[],
+): Promise<DogRemindersRow[]> {
   const promises: Promise<number>[] = [];
   reminders.forEach((reminder) => {
     // retrieve the original provided body AND the created id
@@ -92,11 +96,16 @@ async function createRemindersForDogIdReminders(databaseConnection: Queryable, r
 
   const reminderIds = await Promise.all(promises);
 
-  const returnReminders = reminders;
-  for (let i = 0; i < promises.length; i += 1) {
-    // We got the newly created reminderId back from inserting each reminder, add it back to the original reminder body
-    returnReminders[i].reminderId = reminderIds[i];
+  const someReminder = reminders.safeIndex(0);
+
+  if (someReminder === undefined || someReminder === null) {
+    // Only way this happens is if reminders is an empty array
+    return [];
   }
+
+  // Once we have created all of the reminders, we need to return them to the user. Its hard to link the omit and non-omit types, so just use the dogId to query the reminders, and only include the ones we just created
+  const returnReminders = (await getAllRemindersForDogId(databaseConnection, someReminder.dogId))
+    .filter((reminderFromDatabase) => reminderIds.includes(reminderFromDatabase.reminderId));
 
   return returnReminders;
 }

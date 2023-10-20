@@ -14,7 +14,7 @@ import {
   formatArray, formatDate, formatNumber, formatUnknownString,
 } from '../../main/format/formatObject.js';
 import { type Dictionary } from '../../main/types/Dictionary.js';
-import { type DogRemindersRow } from '../../main/types/DogRemindersRow.js';
+import { type NotYetCreatedDogRemindersRow, type NotYetUpdatedDogRemindersRow } from '../../main/types/DogRemindersRow.js';
 
 /*
 Known:
@@ -63,8 +63,6 @@ async function createReminder(req: express.Request, res: express.Response): Prom
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const remindersDictionary = formatArray(req.body['reminders'] ?? [req.body]) as (Dictionary[] | undefined);
 
-    console.log(remindersDictionary);
-
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', createReminder, ERROR_CODES.VALUE.INVALID);
     }
@@ -78,12 +76,8 @@ async function createReminder(req: express.Request, res: express.Response): Prom
       throw new HoundError('remindersDictionary missing', createReminder, ERROR_CODES.VALUE.INVALID);
     }
 
-    console.log(req.houndDeclarationExtendedProperties.validatedVariables.validatedReminderIds);
-    const reminders: DogRemindersRow[] = [];
+    const reminders: NotYetCreatedDogRemindersRow[] = [];
     remindersDictionary.forEach((reminder) => {
-      console.log('forEach', reminder);
-      // validate reminder id against validatedReminders
-      const reminderId = req.houndDeclarationExtendedProperties.validatedVariables.validatedReminderIds.find((validatedReminderId) => validatedReminderId === formatNumber(reminder['reminderId']));
       const reminderAction = formatUnknownString(reminder['reminderAction']);
       const reminderCustomActionName = formatUnknownString(reminder['reminderCustomActionName']);
       const reminderType = formatUnknownString(reminder['reminderType']);
@@ -110,9 +104,6 @@ async function createReminder(req: express.Request, res: express.Response): Prom
 
       const oneTimeDate = formatDate(reminder['oneTimeDate']);
 
-      if (reminderId === undefined || reminderId === null) {
-        throw new HoundError('reminderId missing', createReminder, ERROR_CODES.VALUE.MISSING);
-      }
       if (reminderAction === undefined || reminderAction === null) {
         throw new HoundError('reminderAction missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
@@ -176,7 +167,6 @@ async function createReminder(req: express.Request, res: express.Response): Prom
       }
 
       reminders.push({
-        reminderId,
         dogId: validatedDogId,
         reminderAction,
         reminderCustomActionName,
@@ -184,10 +174,6 @@ async function createReminder(req: express.Request, res: express.Response): Prom
         reminderIsEnabled,
         reminderExecutionBasis,
         reminderExecutionDate,
-        // this value is unused, we just need a placeholder for a valid DogRemindersRow
-        reminderLastModified: new Date(),
-        // this value is unused, we just need a placeholder for a valid DogRemindersRow
-        reminderIsDeleted: 0,
         snoozeExecutionInterval,
         countdownExecutionInterval,
         weeklyUTCHour,
@@ -246,7 +232,7 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
       throw new HoundError('remindersDictionary missing', updateReminder, ERROR_CODES.VALUE.INVALID);
     }
 
-    const reminders: DogRemindersRow[] = [];
+    const reminders: NotYetUpdatedDogRemindersRow[] = [];
     remindersDictionary.forEach((reminder) => {
       // validate reminder id against validatedReminders
       const reminderId = req.houndDeclarationExtendedProperties.validatedVariables.validatedReminderIds.find((validatedReminderId) => validatedReminderId === formatNumber(reminder['reminderId']));
@@ -350,10 +336,6 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
         reminderIsEnabled,
         reminderExecutionBasis,
         reminderExecutionDate,
-        // this value is unused, we just need a placeholder for a valid DogRemindersRow
-        reminderLastModified: new Date(),
-        // this value is unused, we just need a placeholder for a valid DogRemindersRow
-        reminderIsDeleted: 0,
         snoozeExecutionInterval,
         countdownExecutionInterval,
         weeklyUTCHour,
