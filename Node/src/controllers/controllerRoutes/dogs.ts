@@ -23,14 +23,9 @@ async function getDogs(req: express.Request, res: express.Response): Promise<voi
     const previousDogManagerSynchronization = formatDate(req.query['previousDogManagerSynchronization'] ?? req.query['userConfigurationPreviousDogManagerSynchronization']);
     const isRetrievingReminders = formatBoolean(req.query['isRetrievingReminders']) ?? false;
     const isRetrievingLogs = formatBoolean(req.query['isRetrievingLogs']) ?? false;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const signedPayload = formatUnknownString(req.body['signedPayload']);
 
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', getDogs, ERROR_CODES.VALUE.INVALID);
-    }
-    if (signedPayload === undefined || signedPayload === null) {
-      throw new HoundError('signedPayload missing', getDogs, ERROR_CODES.VALUE.INVALID);
     }
 
     if (validatedDogId !== undefined && validatedDogId !== null) {
