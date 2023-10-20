@@ -80,7 +80,7 @@ async function createDog(req: express.Request, res: express.Response): Promise<v
       throw new HoundError('dogName missing', createDog, ERROR_CODES.VALUE.INVALID);
     }
 
-    const result = await createDogForFamilyId(databaseConnection, validatedFamilyId, dogName);
+    const result = await createDogForFamilyId(databaseConnection, { familyId: validatedFamilyId, dogName });
 
     return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
   }
@@ -92,11 +92,14 @@ async function createDog(req: express.Request, res: express.Response): Promise<v
 async function updateDog(req: express.Request, res: express.Response): Promise<void> {
   try {
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedDogId } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { validatedFamilyId, validatedDogId } = req.houndDeclarationExtendedProperties.validatedVariables;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const dogName = formatUnknownString(req.body['dogName']);
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', updateDog, ERROR_CODES.VALUE.INVALID);
+    }
+    if (validatedFamilyId === undefined || validatedDogId === null) {
+      throw new HoundError('validatedFamilyId missing', updateDog, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedDogId === undefined || validatedDogId === null) {
       throw new HoundError('validatedDogId missing', updateDog, ERROR_CODES.VALUE.INVALID);
@@ -105,7 +108,7 @@ async function updateDog(req: express.Request, res: express.Response): Promise<v
       throw new HoundError('dogName missing', updateDog, ERROR_CODES.VALUE.INVALID);
     }
 
-    await updateDogForDogId(databaseConnection, validatedDogId, dogName);
+    await updateDogForDogId(databaseConnection, { familyId: validatedFamilyId, dogId: validatedDogId, dogName });
 
     return res.houndDeclarationExtendedProperties.sendSuccessResponse('');
   }

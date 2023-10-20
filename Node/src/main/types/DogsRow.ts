@@ -20,7 +20,12 @@ type DogsRow = {
     reminders?: DogRemindersRow[]
 };
 
+type NotYetCreatedDogsRow = Omit<DogsRow, 'dogId' | 'dogIsDeleted' | 'dogLastModified'>;
+type NotYetUpdatedDogsRow = Omit<DogsRow, 'dogIsDeleted' | 'dogLastModified'>;
+
 export {
   type DogsRow,
+  type NotYetCreatedDogsRow,
+  type NotYetUpdatedDogsRow,
   dogsColumns,
 };
