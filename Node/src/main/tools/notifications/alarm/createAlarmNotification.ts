@@ -48,7 +48,7 @@ DogsRow & DogRemindersRow)[]>(
     // Maximum possible length of message: 17 (raw) + 32 (variable) = 49 (<= ALERT_BODY_LIMIT)
     let alertBody = `Lend a hand with ${formatReminderAction(reminder.reminderAction, reminder.reminderCustomActionName)}`;
 
-    if (reminder.snoozeExecutionInterval !== undefined) {
+    if (reminder.snoozeExecutionInterval !== undefined && reminder.snoozeExecutionInterval !== null) {
       // Maximum possible length of message: 45 (raw) + 32 (variable) = 77 (<= ALERT_BODY_LIMIT)
       alertBody = `It's been a bit, remember to lend a hand with ${formatReminderAction(reminder.reminderAction, reminder.reminderCustomActionName)}`;
     }

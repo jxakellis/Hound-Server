@@ -17,7 +17,10 @@ async function logResponse(req: express.Request, res: express.Response, response
   \n AT URL ${originalUrl}
   \n WITH BODY ${responseBody}`);
 
-  if (req.houndDeclarationExtendedProperties.requestId === undefined || res.houndDeclarationExtendedProperties.responseId !== undefined) {
+  if (req.houndDeclarationExtendedProperties.requestId === undefined || req.houndDeclarationExtendedProperties.requestId === null) {
+    return;
+  }
+  if (res.houndDeclarationExtendedProperties.responseId !== undefined && res.houndDeclarationExtendedProperties.responseId !== null) {
     return;
   }
 

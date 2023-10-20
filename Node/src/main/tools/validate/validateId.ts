@@ -13,7 +13,7 @@ import { type FamilyMembersRow, familyMembersColumns } from '../../types/FamilyM
 import { type DogsRow, dogsColumns } from '../../types/DogsRow.js';
 import { type DogLogsRow, dogLogsColumns } from '../../types/DogLogsRow.js';
 import { type DogRemindersRow, dogRemindersColumns } from '../../types/DogRemindersRow.js';
-import { type Dictionary } from '../../types/Dictionary.js'; 
+import { type Dictionary } from '../../types/Dictionary.js';
 
 /**
 * Checks to see that the appVersion of the requester is compatible

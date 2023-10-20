@@ -3,7 +3,7 @@ import { apnLogger } from '../../../logging/loggers.js';
 import { logServerError } from '../../../logging/logServerError.js';
 import { formatKnownString } from '../../../format/formatObject.js';
 
-import { apn, productionAPNProvider, developmentAPNProvider } from './apnProvider.js'; 
+import { apn, productionAPNProvider, developmentAPNProvider } from './apnProvider.js';
 import { NOTIFICATION } from '../../../server/globalConstants.js';
 import { type UserConfigurationWithPartialPrivateUsers } from '../../../types/CompositeRow.js';
 import { HoundError } from '../../../server/globalErrors.js';
@@ -84,7 +84,7 @@ function sendAPN(
     return;
   }
 
-  const userConfigurationNotificationSound = userNotificationConfiguration.userConfigurationIsLoudNotificationEnabled
+  const userConfigurationNotificationSound = userNotificationConfiguration.userConfigurationIsLoudNotificationEnabled === 1
     // loud notification is enabled therefore the Hound app itself plays an audio file (APN shouldn't specify a notification sound)
     ? undefined
     // loud notification is disabled therefore the notification itself plays a sound (APN needs to specify a notification sound)
@@ -162,7 +162,7 @@ function sendAPN(
       'mutable-content': 1,
       // A string that indicates the importance and delivery timing of a notification
       // The string values “passive”, “active”, “time-sensitive”, or “critical” correspond to the
-      'interruption-level': NOTIFICATION.CATEGORY.REMINDER.ALARM ? 'time-sensitive' : 'active',
+      'interruption-level': category === NOTIFICATION.CATEGORY.REMINDER.ALARM ? 'time-sensitive' : 'active',
       // The number to display in a badge on your app’s icon. Specify 0 to remove the current badge, if any.
       badge: 0,
       // alert Dictionary
@@ -172,7 +172,7 @@ function sendAPN(
         // The content of the alert message.
         body: alertBody,
       },
-      sound: category === NOTIFICATION.CATEGORY.REMINDER.ALARM && userConfigurationNotificationSound !== undefined
+      sound: category === NOTIFICATION.CATEGORY.REMINDER.ALARM && userConfigurationNotificationSound !== undefined && userConfigurationNotificationSound !== null
         ? `${userConfigurationNotificationSound}30.wav`
         : undefined,
     },

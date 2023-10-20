@@ -62,7 +62,7 @@ function formatArray(array?: unknown): unknown[] | undefined {
 function formatEmail(email?: string): string | undefined {
   let userEmail = formatUnknownString(email, maximumEmailLengthWithAngleBrackets);
 
-  if (!userEmail) {
+  if (userEmail === undefined || userEmail == null) {
     return undefined;
   }
 

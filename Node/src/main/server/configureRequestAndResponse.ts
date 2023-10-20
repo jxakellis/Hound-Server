@@ -7,7 +7,7 @@ import { getDatabaseConnections } from '../database/databaseConnections.js';
 import { type ResponseBodyType } from '../types/ResponseBodyType.js';
 
 function releaseDatabaseConnection(req: express.Request): void {
-  if (req.houndDeclarationExtendedProperties.databaseConnection === undefined) {
+  if (req.houndDeclarationExtendedProperties.databaseConnection === undefined || req.houndDeclarationExtendedProperties.databaseConnection === null) {
     return;
   }
 
@@ -99,7 +99,7 @@ function configureRequestAndResponseExtendedProperties(req: express.Request, res
       // Check to see if the request has an active databaseConnection
       // If it does, then we attempt to COMMIT or ROLLBACK (and if they fail, the functions release() anyways)
       // if there is no active transaction, then we attempt to release the databaseConnection
-      if (req.houndDeclarationExtendedProperties.databaseConnection !== undefined) {
+      if (req.houndDeclarationExtendedProperties.databaseConnection !== undefined && req.houndDeclarationExtendedProperties.databaseConnection !== null) {
         if (req.houndDeclarationExtendedProperties.hasActiveDatabaseTransaction === false) {
           releaseDatabaseConnection(req);
         }
@@ -116,7 +116,7 @@ function configureRequestAndResponseExtendedProperties(req: express.Request, res
 
       const socketDestroyed = res?.socket?.destroyed;
 
-      if (socketDestroyed === undefined || socketDestroyed === true) {
+      if (socketDestroyed === undefined || socketDestroyed === null || socketDestroyed === true) {
         return;
       }
 
@@ -140,7 +140,7 @@ function configureRequestAndResponseExtendedProperties(req: express.Request, res
       // Check to see if the request has an active databaseConnection
       // If it does, then we attempt to COMMIT or ROLLBACK (and if they fail, the functions release() anyways)
       // if there is no active transaction, then we attempt to release the databaseConnection
-      if (req.houndDeclarationExtendedProperties.databaseConnection !== undefined) {
+      if (req.houndDeclarationExtendedProperties.databaseConnection !== undefined && req.houndDeclarationExtendedProperties.databaseConnection !== null) {
         if (req.houndDeclarationExtendedProperties.hasActiveDatabaseTransaction === false) {
           releaseDatabaseConnection(req);
         }
@@ -157,13 +157,13 @@ function configureRequestAndResponseExtendedProperties(req: express.Request, res
 
       const socketDestroyed = res?.socket?.destroyed;
 
-      if (socketDestroyed === undefined || socketDestroyed === true) {
+      if (socketDestroyed === undefined || socketDestroyed === null || socketDestroyed === true) {
         return;
       }
 
       // If we user provided an error, then we convert that error to JSON and use it as the body
 
-      const unsafeForUsersReponseDoNotSendWithoutRemovingStack = (error !== undefined && error instanceof Error) ? convertErrorToJSON(error) : convertErrorToJSON(undefined);
+      const unsafeForUsersReponseDoNotSendWithoutRemovingStack = (error !== undefined && error !== null && error instanceof Error) ? convertErrorToJSON(error) : convertErrorToJSON(undefined);
 
       await logResponse(req, res, status, JSON.stringify(unsafeForUsersReponseDoNotSendWithoutRemovingStack));
 
@@ -187,7 +187,10 @@ function configureRequestAndResponseExtendedProperties(req: express.Request, res
 async function configureRequestAndResponse(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   configureRequestAndResponseExtendedProperties(req, res);
 
-  if (req.houndDeclarationExtendedProperties.databaseConnection !== undefined || req.houndDeclarationExtendedProperties.hasActiveDatabaseTransaction === true) {
+  if (req.houndDeclarationExtendedProperties.databaseConnection !== undefined && req.houndDeclarationExtendedProperties.databaseConnection !== null) {
+    return next();
+  }
+  if (req.houndDeclarationExtendedProperties.hasActiveDatabaseTransaction === true) {
     return next();
   }
 

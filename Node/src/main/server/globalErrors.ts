@@ -59,7 +59,7 @@ class HoundError extends Error {
     // We want the message to be the customMessage (if supplied), otherwise try to extract it fromError, otherwise result to default
     let customMessage = forCustomMessage;
 
-    if (fromError !== undefined && fromError instanceof Error) {
+    if (fromError !== undefined && fromError !== null && fromError instanceof Error) {
       if (customMessage === undefined || customMessage === null) {
         customMessage = fromError.message;
       }
@@ -75,7 +75,7 @@ class HoundError extends Error {
     this.houndDeclarationCode = forCode?.ERROR_CODE_FROM_ERROR_CODES;
     this.sourceFunction = forSourceFunction?.name;
     // Attempt to set other parameters, using the parameters first, then fromError seconds if no value found
-    if (fromError !== undefined && fromError instanceof Error) {
+    if (fromError !== undefined && fromError !== null && fromError instanceof Error) {
       // code and sourceFunction are set by us. Therefore, our manual values take priority
       this.houndDeclarationCode = this.houndDeclarationCode ?? fromError.houndDeclarationCode;
       this.sourceFunction = this.sourceFunction ?? fromError.name;
