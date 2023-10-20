@@ -139,20 +139,6 @@ async function getAllDogsForUserIdFamilyId(
     });
   }
 
-  // If the user retrieved the most updated information from the dog (by getting reminders and logs and providing a lastSynchronization), we update
-  if (previousDogManagerSynchronization !== undefined && isRetrievingReminders && isRetrievingLogs) {
-    // This function is retrieving the all dogs for a given familyId.
-    // If the user also specified to get reminders and logs, that means this query is retrieving the ENTIRE dog manager
-    // Therefore, the user's previousDogManagerSynchronization should be saved as this counts as a dogManagerSyncronization
-    await databaseQuery(
-      databaseConnection,
-      `UPDATE userConfiguration
-      SET previousDogManagerSynchronization = ?
-      WHERE userId = ?`,
-      [previousDogManagerSynchronization, userId],
-    );
-  }
-
   return dogs;
 }
 
