@@ -112,7 +112,7 @@ async function updateDog(req: express.Request, res: express.Response): Promise<v
 
     await updateDogForDogId(databaseConnection, validatedDogId, dogName);
 
-    return res.houndDeclarationExtendedProperties.sendSuccessResponse({});
+    return res.houndDeclarationExtendedProperties.sendSuccessResponse('');
   }
   catch (error) {
     return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
@@ -135,7 +135,7 @@ async function deleteDog(req: express.Request, res: express.Response): Promise<v
 
     await deleteDogForFamilyIdDogId(databaseConnection, validatedFamilyId, validatedDogId);
 
-    return res.houndDeclarationExtendedProperties.sendSuccessResponse({});
+    return res.houndDeclarationExtendedProperties.sendSuccessResponse('');
   }
   catch (error) {
     return res.houndDeclarationExtendedProperties.sendFailureResponse(error);

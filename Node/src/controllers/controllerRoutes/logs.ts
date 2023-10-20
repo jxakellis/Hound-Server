@@ -172,7 +172,7 @@ async function updateLog(req: express.Request, res: express.Response): Promise<v
         logIsDeleted: 0,
       },
     );
-    return res.houndDeclarationExtendedProperties.sendSuccessResponse({});
+    return res.houndDeclarationExtendedProperties.sendSuccessResponse('');
   }
   catch (error) {
     return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
@@ -193,7 +193,7 @@ async function deleteLog(req: express.Request, res: express.Response): Promise<v
 
     await deleteLogForLogId(databaseConnection, validatedLogId);
 
-    return res.houndDeclarationExtendedProperties.sendSuccessResponse({});
+    return res.houndDeclarationExtendedProperties.sendSuccessResponse('');
   }
   catch (error) {
     return res.houndDeclarationExtendedProperties.sendFailureResponse(error);

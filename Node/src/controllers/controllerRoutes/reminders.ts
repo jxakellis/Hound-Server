@@ -381,7 +381,7 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
       );
     });
 
-    return res.houndDeclarationExtendedProperties.sendSuccessResponse({});
+    return res.houndDeclarationExtendedProperties.sendSuccessResponse('');
   }
   catch (error) {
     return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
@@ -405,7 +405,7 @@ async function deleteReminder(req: express.Request, res: express.Response): Prom
 
     await deleteRemindersForFamilyIdDogIdReminderIds(databaseConnection, validatedFamilyId, validatedReminderIds);
 
-    return res.houndDeclarationExtendedProperties.sendSuccessResponse({});
+    return res.houndDeclarationExtendedProperties.sendSuccessResponse('');
   }
   catch (error) {
     return res.houndDeclarationExtendedProperties.sendFailureResponse(error);

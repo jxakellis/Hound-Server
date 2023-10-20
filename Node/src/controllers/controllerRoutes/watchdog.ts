@@ -12,7 +12,7 @@ async function getWatchdog(req: express.Request, res: express.Response): Promise
     }
 
     await getDatabaseStatusForWatchdog(databaseConnection);
-    return res.houndDeclarationExtendedProperties.sendSuccessResponse({});
+    return res.houndDeclarationExtendedProperties.sendSuccessResponse('');
   }
   catch (error) {
     return res.houndDeclarationExtendedProperties.sendFailureResponse(error);

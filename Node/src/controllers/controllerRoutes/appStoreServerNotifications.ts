@@ -21,7 +21,7 @@ async function createAppStoreServerNotification(req: express.Request, res: expre
 
     await createASSNForSignedPayload(databaseConnection, signedPayload);
 
-    return res.houndDeclarationExtendedProperties.sendSuccessResponse({});
+    return res.houndDeclarationExtendedProperties.sendSuccessResponse('');
   }
   catch (error) {
     // Errors shouldn't occur when dealing with App Store Server Notifications

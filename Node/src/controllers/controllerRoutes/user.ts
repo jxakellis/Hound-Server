@@ -224,7 +224,7 @@ async function updateUser(req: express.Request, res: express.Response): Promise<
       userNotificationToken,
     );
 
-    return res.houndDeclarationExtendedProperties.sendSuccessResponse({});
+    return res.houndDeclarationExtendedProperties.sendSuccessResponse('');
   }
   catch (error) {
     return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
@@ -247,7 +247,7 @@ async function deleteUser(req: express.Request, res: express.Response): Promise<
       validatedUserId,
     );
 
-    return res.houndDeclarationExtendedProperties.sendSuccessResponse({});
+    return res.houndDeclarationExtendedProperties.sendSuccessResponse('');
   }
   catch (error) {
     return res.houndDeclarationExtendedProperties.sendFailureResponse(error);

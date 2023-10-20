@@ -24,7 +24,7 @@ alertRouter.post('/:alertType', async (req: express.Request, res: express.Respon
       createTerminateNotification(validatedUserId);
     }
 
-    return res.houndDeclarationExtendedProperties.sendSuccessResponse({});
+    return res.houndDeclarationExtendedProperties.sendSuccessResponse('');
   }
   catch (error) {
     return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
