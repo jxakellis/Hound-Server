@@ -63,6 +63,8 @@ async function createReminder(req: express.Request, res: express.Response): Prom
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const remindersDictionary = formatArray(req.body['reminders'] ?? [req.body]) as (Dictionary[] | undefined);
 
+    console.log(remindersDictionary);
+
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', createReminder, ERROR_CODES.VALUE.INVALID);
     }
@@ -76,8 +78,10 @@ async function createReminder(req: express.Request, res: express.Response): Prom
       throw new HoundError('remindersDictionary missing', createReminder, ERROR_CODES.VALUE.INVALID);
     }
 
+    console.log(req.houndDeclarationExtendedProperties.validatedVariables.validatedReminderIds);
     const reminders: DogRemindersRow[] = [];
     remindersDictionary.forEach((reminder) => {
+      console.log('forEach', reminder);
       // validate reminder id against validatedReminders
       const reminderId = req.houndDeclarationExtendedProperties.validatedVariables.validatedReminderIds.find((validatedReminderId) => validatedReminderId === formatNumber(reminder['reminderId']));
       const reminderAction = formatUnknownString(reminder['reminderAction']);
