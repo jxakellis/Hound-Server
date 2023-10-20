@@ -15,7 +15,9 @@ async function logResponse(req: express.Request, res: express.Response, response
   responseLogger.debug(`
   \n RESPONSE FOR ${req.method}
   \n AT URL ${originalUrl}
-  \n WITH BODY ${responseBody}`);
+  \n WITH BODY (if error, .stack has been omitted for real body but not this one):
+  \n${responseBody}
+  `);
 
   if (req.houndDeclarationExtendedProperties.requestId === undefined || req.houndDeclarationExtendedProperties.requestId === null) {
     return;

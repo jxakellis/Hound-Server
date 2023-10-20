@@ -33,7 +33,7 @@ const databaseQuery = <T>(
       SQLString,
       SQLVariables,
       (error, result) => {
-        if (error) {
+        if (result === undefined || result === null) {
           // error when trying to do query to database
           reject(new HoundError(undefined, databaseQuery, undefined, error));
         }
