@@ -83,12 +83,12 @@ class HoundError extends Error {
 
 function convertErrorToJSON(houndError?: HoundError): {code: string, message: string, sourceFunction: string, name: string, stack: string} {
   return {
-    sourceFunction: formatKnownString(houndError?.sourceFunction ?? 'Unknown Source Function', 100),
-    code: formatKnownString(houndError?.houndDeclarationCode ?? 'Unknown Code', 500),
+    sourceFunction: formatKnownString(houndError?.sourceFunction ?? 'Unknown Source Function'), // , 100),
+    code: formatKnownString(houndError?.houndDeclarationCode ?? 'Unknown Code'), // , 500),
     // Remove all newlines, remove all carriage returns, and make all >1 length spaces into 1 length spaces
-    message: formatKnownString(houndError?.message.replace('/\r?\n|\r/g', '').replace(/\s+/g, ' ') ?? 'Unknown Message', 500),
-    name: formatKnownString(houndError?.name ?? 'Unknown Name', 500),
-    stack: formatKnownString(houndError?.stack ?? 'Unknown Stack', 2500),
+    message: formatKnownString(houndError?.message.replace('/\r?\n|\r/g', '').replace(/\s+/g, ' ') ?? 'Unknown Message'), // , 500),
+    name: formatKnownString(houndError?.name ?? 'Unknown Name'), // , 500),
+    stack: formatKnownString(houndError?.stack ?? 'Unknown Stack'), // , 2500),
   };
 }
 

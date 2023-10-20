@@ -10,19 +10,9 @@ const fileName = fileURLToPath(import.meta.url);
 const dirName = path.dirname(fileName);
 // Move this productionIndicator.txt's path from /parent_dir/Hound-Server/Node/productionIndicator.txt into /parent_dir/productionIndicator.txt to trigger indication to Hound node server.
 
-const IS_PRODUCTION_DATABASE = false;
-console.log(`3 PI above: ${fs.existsSync(`${dirName}/../../../productionIndicator.txt`)}`);
-console.log(`4 PI above: ${fs.existsSync(`${dirName}/../../../../productionIndicator.txt`)}`);
-console.log(`5 PI above: ${fs.existsSync(`${dirName}/../../../../../productionIndicator.txt`)}`);
-console.log(`6 PI above: ${fs.existsSync(`${dirName}/../../../../../../productionIndicator.txt`)}`);
-
-console.log(`3 HS above: ${fs.existsSync(`${dirName}/../../../Hound-Server`)}`);
-console.log(`4 HS above: ${fs.existsSync(`${dirName}/../../../../Hound-Server`)}`);
-console.log(`5 HS above: ${fs.existsSync(`${dirName}/../../../../../Hound-Server`)}`);
-console.log(`6 HS above: ${fs.existsSync(`${dirName}/../../../../../../Hound-Server`)}`);
-
-console.log(`5 PD above: ${fs.existsSync(`${dirName}/../../../../../parent_dir`)}`);
-console.log(`6 PD above: ${fs.existsSync(`${dirName}/../../../../../../parent_dir`)}`);
+const IS_PRODUCTION_DATABASE = fs.existsSync(`${dirName}/../../../../../productionIndicator.txt`)
+&& fs.existsSync(`${dirName}/../../../../../Hound-Server`)
+&& fs.existsSync(`${dirName}/../../../../../../parent_dir`);
 
 const SERVER = {
   // True if we are using the production database that houses real users, false if we are launching a development server for testing

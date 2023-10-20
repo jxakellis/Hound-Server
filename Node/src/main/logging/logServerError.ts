@@ -2,6 +2,7 @@ import { serverLogger } from './loggers.js';
 import { getDatabaseConnections } from '../database/databaseConnections.js';
 import { databaseQuery } from '../database/databaseQuery.js';
 import { HoundError, convertErrorToJSON } from '../server/globalErrors.js';
+import { formatKnownString } from '../format/formatObject.js';
 
 function printServerError(houndError: HoundError): void {
   const readableError = convertErrorToJSON(houndError);
@@ -44,11 +45,11 @@ async function logServerError(houndError: HoundError): Promise<void> {
           )`,
       [
       // none, default value
-        readableError.sourceFunction,
-        readableError.name,
-        readableError.message,
-        readableError.code,
-        readableError.stack,
+        formatKnownString(readableError.sourceFunction, 100),
+        formatKnownString(readableError.name, 500),
+        formatKnownString(readableError.message, 500),
+        formatKnownString(readableError.code, 500),
+        formatKnownString(readableError.stack, 2500),
       ],
     );
   }
