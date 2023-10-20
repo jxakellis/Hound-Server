@@ -62,6 +62,9 @@ async function getPoolConnection(): Promise<PoolConnection> {
   return new Promise((resolve, reject) => {
     databaseConnectionPoolForRequests.getConnection(
       (error, connection) => {
+        console.log('getPoolConnection');
+        console.log(error);
+        console.log(connection);
         if (error !== undefined || connection === undefined) {
           // error when trying to do query to database
           reject(new HoundError(undefined, getPoolConnection, undefined, error));

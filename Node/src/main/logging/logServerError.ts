@@ -8,10 +8,10 @@ function printServerError(houndError: HoundError): void {
   const readableError = convertErrorToJSON(houndError);
 
   serverLogger.error(
-    `UNCAUGHT '${readableError}' FROM SOURCE FUNCTION: ${readableError.sourceFunction}
-    MESSAGE: ${readableError.message}
-    CODE: ${readableError.code}
-    STACK: ${readableError.stack}`,
+    `\nUNCAUGHT '${readableError}' FROM SOURCE FUNCTION: ${readableError.sourceFunction}
+    \nMESSAGE: ${readableError.message}
+    \nCODE: ${readableError.code}
+    \nSTACK: ${readableError.stack}\n`,
   );
 }
 
