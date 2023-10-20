@@ -163,18 +163,23 @@ function configureRequestAndResponseExtendedProperties(req: express.Request, res
 
       // If we user provided an error, then we convert that error to JSON and use it as the body
 
-      const response: ResponseBodyType = (error !== undefined && error instanceof Error) ? convertErrorToJSON(error) : convertErrorToJSON(undefined);
+      const unsafeForUsersReponseDoNotSendWithoutRemovingStack = (error !== undefined && error instanceof Error) ? convertErrorToJSON(error) : convertErrorToJSON(undefined);
 
-      await logResponse(req, res, status, JSON.stringify(response));
+      await logResponse(req, res, status, JSON.stringify(unsafeForUsersReponseDoNotSendWithoutRemovingStack));
+
+      const safeResponse: ResponseBodyType = {
+        ...unsafeForUsersReponseDoNotSendWithoutRemovingStack,
+        stack: undefined,
+      };
 
       if (req.originalUrl !== '/watchdog') {
         // need to update watchdog so it recognizes pattern of requestId and responseId. currently can only recognize {"result":""} as success
-        response.requestId = req.houndDeclarationExtendedProperties.requestId ?? -1;
-        response.responseId = res.houndDeclarationExtendedProperties.responseId ?? -1;
+        safeResponse.requestId = req.houndDeclarationExtendedProperties.requestId ?? -1;
+        safeResponse.responseId = res.houndDeclarationExtendedProperties.responseId ?? -1;
       }
 
       res.houndDeclarationExtendedProperties.hasSentResponse = true;
-      res.status(status).json(response);
+      res.status(status).json(safeResponse);
     },
   };
 }
