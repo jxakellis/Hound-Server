@@ -86,7 +86,7 @@ async function findNumberOfThreadsConnectedToDatabase(databaseConnection: Querya
 
   const threadsConnected = result.safeIndex(0);
 
-  if (threadsConnected === undefined) {
+  if (threadsConnected === undefined || threadsConnected === null) {
     return undefined;
   }
 

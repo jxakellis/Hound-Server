@@ -26,26 +26,26 @@ async function getDogs(req: express.Request, res: express.Response): Promise<voi
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const signedPayload = formatUnknownString(req.body['signedPayload']);
 
-    if (databaseConnection === undefined) {
+    if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', getDogs, ERROR_CODES.VALUE.INVALID);
     }
-    if (signedPayload === undefined) {
+    if (signedPayload === undefined || signedPayload === null) {
       throw new HoundError('signedPayload missing', getDogs, ERROR_CODES.VALUE.INVALID);
     }
 
-    if (validatedDogId !== undefined) {
+    if (validatedDogId !== undefined && validatedDogId !== null) {
       const result = await getDogForDogId(databaseConnection, validatedDogId, isRetrievingReminders, isRetrievingLogs, previousDogManagerSynchronization);
 
-      if (result === undefined) {
+      if (result === undefined || result === null) {
         throw new HoundError('getDogForDogId result undefined', getDogs, ERROR_CODES.VALUE.INVALID);
       }
       return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
     }
 
-    if (validatedUserId === undefined) {
+    if (validatedUserId === undefined || validatedUserId === null) {
       throw new HoundError('validatedUserId missing', getDogs, ERROR_CODES.VALUE.INVALID);
     }
-    if (validatedFamilyId === undefined) {
+    if (validatedFamilyId === undefined || validatedFamilyId === null) {
       throw new HoundError('validatedFamilyId missing', getDogs, ERROR_CODES.VALUE.INVALID);
     }
 
@@ -58,7 +58,7 @@ async function getDogs(req: express.Request, res: express.Response): Promise<voi
       previousDogManagerSynchronization,
     );
 
-    if (result === undefined) {
+    if (result === undefined || result === null) {
       throw new HoundError('getAllDogsForUserIdFamilyId result undefined', getDogs, ERROR_CODES.VALUE.INVALID);
     }
 
@@ -75,13 +75,13 @@ async function createDog(req: express.Request, res: express.Response): Promise<v
     const { validatedFamilyId } = req.houndDeclarationExtendedProperties.validatedVariables;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const dogName = formatUnknownString(req.body['dogName']);
-    if (databaseConnection === undefined) {
+    if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', createDog, ERROR_CODES.VALUE.INVALID);
     }
-    if (validatedFamilyId === undefined) {
+    if (validatedFamilyId === undefined || validatedFamilyId === null) {
       throw new HoundError('validatedFamilyId missing', createDog, ERROR_CODES.VALUE.INVALID);
     }
-    if (dogName === undefined) {
+    if (dogName === undefined || dogName === null) {
       throw new HoundError('dogName missing', createDog, ERROR_CODES.VALUE.INVALID);
     }
 
@@ -100,13 +100,13 @@ async function updateDog(req: express.Request, res: express.Response): Promise<v
     const { validatedDogId } = req.houndDeclarationExtendedProperties.validatedVariables;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const dogName = formatUnknownString(req.body['dogName']);
-    if (databaseConnection === undefined) {
+    if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', updateDog, ERROR_CODES.VALUE.INVALID);
     }
-    if (validatedDogId === undefined) {
+    if (validatedDogId === undefined || validatedDogId === null) {
       throw new HoundError('validatedDogId missing', updateDog, ERROR_CODES.VALUE.INVALID);
     }
-    if (dogName === undefined) {
+    if (dogName === undefined || dogName === null) {
       throw new HoundError('dogName missing', updateDog, ERROR_CODES.VALUE.INVALID);
     }
 
@@ -123,13 +123,13 @@ async function deleteDog(req: express.Request, res: express.Response): Promise<v
   try {
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedFamilyId, validatedDogId } = req.houndDeclarationExtendedProperties.validatedVariables;
-    if (databaseConnection === undefined) {
+    if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', deleteDog, ERROR_CODES.VALUE.INVALID);
     }
-    if (validatedFamilyId === undefined) {
+    if (validatedFamilyId === undefined || validatedFamilyId === null) {
       throw new HoundError('validatedFamilyId missing', deleteDog, ERROR_CODES.VALUE.INVALID);
     }
-    if (validatedDogId === undefined) {
+    if (validatedDogId === undefined || validatedDogId === null) {
       throw new HoundError('validatedDogId missing', deleteDog, ERROR_CODES.VALUE.INVALID);
     }
 

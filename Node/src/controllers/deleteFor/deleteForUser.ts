@@ -17,11 +17,11 @@ async function deleteUserForUserId(databaseConnection: Queryable, userId: string
   const familyId = await getFamilyId(databaseConnection, userId);
 
   // The user is in a family, either attempt to delete the family or have the user leave the family
-  if (familyId !== undefined) {
+  if (familyId !== undefined && familyId !== null) {
     // Since the path for delete user doesn't have familyId attached (as it predicates the family path), no active subscription is attached
     const familyActiveSubscription = await getActiveTransaction(databaseConnection, userId);
 
-    if (familyActiveSubscription === undefined) {
+    if (familyActiveSubscription === undefined || familyActiveSubscription === null) {
       throw new HoundError('familyActiveSubscription missing', deleteUserForUserId, ERROR_CODES.VALUE.MISSING);
     }
 

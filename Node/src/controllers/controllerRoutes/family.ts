@@ -21,19 +21,19 @@ async function getFamily(req: express.Request, res: express.Response): Promise<v
     const { databaseConnection, familyActiveSubscription } = req.houndDeclarationExtendedProperties;
     const { validatedFamilyId } = req.houndDeclarationExtendedProperties.validatedVariables;
 
-    if (databaseConnection === undefined) {
+    if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', getFamily, ERROR_CODES.VALUE.INVALID);
     }
-    if (familyActiveSubscription === undefined) {
+    if (familyActiveSubscription === undefined || familyActiveSubscription === null) {
       throw new HoundError('familyActiveSubscription missing', getFamily, ERROR_CODES.VALUE.INVALID);
     }
-    if (validatedFamilyId === undefined) {
+    if (validatedFamilyId === undefined || validatedFamilyId === null) {
       throw new HoundError('validatedFamilyId missing', getFamily, ERROR_CODES.VALUE.INVALID);
     }
 
     const result = await getAllFamilyInformationForFamilyId(databaseConnection, validatedFamilyId, familyActiveSubscription);
 
-    if (result === undefined) {
+    if (result === undefined || result === null) {
       throw new HoundError('result missing', getFamily, ERROR_CODES.VALUE.INVALID);
     }
 
@@ -49,10 +49,10 @@ async function createFamily(req: express.Request, res: express.Response): Promis
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
 
-    if (databaseConnection === undefined) {
+    if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', createFamily, ERROR_CODES.VALUE.INVALID);
     }
-    if (validatedUserId === undefined) {
+    if (validatedUserId === undefined || validatedUserId === null) {
       throw new HoundError('validatedUserId missing', createFamily, ERROR_CODES.VALUE.INVALID);
     }
 
@@ -74,13 +74,13 @@ async function updateFamily(req: express.Request, res: express.Response): Promis
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const familyIsLocked = formatBoolean(req.body['familyIsLocked']);
 
-    if (databaseConnection === undefined) {
+    if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', updateFamily, ERROR_CODES.VALUE.INVALID);
     }
-    if (validatedUserId === undefined) {
+    if (validatedUserId === undefined || validatedUserId === null) {
       throw new HoundError('validatedUserId missing', updateFamily, ERROR_CODES.VALUE.INVALID);
     }
-    if (validatedFamilyId === undefined) {
+    if (validatedFamilyId === undefined || validatedFamilyId === null) {
       throw new HoundError('validatedFamilyId missing', updateFamily, ERROR_CODES.VALUE.INVALID);
     }
 
@@ -99,20 +99,20 @@ async function deleteFamily(req: express.Request, res: express.Response): Promis
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const familyKickUserId = formatUnknownString(req.body['familyKickUserId']);
 
-    if (databaseConnection === undefined) {
+    if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', deleteFamily, ERROR_CODES.VALUE.INVALID);
     }
-    if (familyActiveSubscription === undefined) {
+    if (familyActiveSubscription === undefined || familyActiveSubscription === null) {
       throw new HoundError('familyActiveSubscription missing', deleteFamily, ERROR_CODES.VALUE.INVALID);
     }
-    if (validatedUserId === undefined) {
+    if (validatedUserId === undefined || validatedUserId === null) {
       throw new HoundError('validatedUserId missing', deleteFamily, ERROR_CODES.VALUE.INVALID);
     }
-    if (validatedFamilyId === undefined) {
+    if (validatedFamilyId === undefined || validatedFamilyId === null) {
       throw new HoundError('validatedFamilyId missing', deleteFamily, ERROR_CODES.VALUE.INVALID);
     }
 
-    if (familyKickUserId !== undefined) {
+    if (familyKickUserId !== undefined && familyKickUserId !== null) {
       await kickFamilyMemberForUserIdFamilyId(databaseConnection, validatedUserId, validatedFamilyId, familyKickUserId);
     }
     else {

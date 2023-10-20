@@ -25,7 +25,7 @@ async function addFamilyMember(databaseConnection: Queryable, userId: string, fo
   const family = families.safeIndex(0);
 
   // make sure the familyCode was valid by checking if it matched a family
-  if (family === undefined) {
+  if (family === undefined || family === null) {
     // result length is zero so there are no families with that familyCode
     throw new HoundError('family missing; familyCode is not linked to any family', addFamilyMember, ERROR_CODES.FAMILY.JOIN.FAMILY_CODE_INVALID);
   }
@@ -45,7 +45,7 @@ async function addFamilyMember(databaseConnection: Queryable, userId: string, fo
   const familyActiveSubscription = await getActiveTransaction(databaseConnection, userId);
   const familyMembers = await getAllFamilyMembersForFamilyId(databaseConnection, family.familyId);
 
-  if (familyActiveSubscription === undefined) {
+  if (familyActiveSubscription === undefined || familyActiveSubscription === null) {
     throw new HoundError('familyActiveSubscription missing', addFamilyMember, ERROR_CODES.VALUE.MISSING);
   }
 
@@ -78,7 +78,7 @@ async function addFamilyMember(databaseConnection: Queryable, userId: string, fo
 
   const { offerIdentifier, transactionId } = familyActiveSubscription;
 
-  if (offerIdentifier !== undefined) {
+  if (offerIdentifier !== undefined && offerIdentifier !== null) {
     // A new family member joined a family with a subscription that has an offer code, keep track that offer identifer was utilized
     await databaseQuery(
       databaseConnection,
@@ -115,14 +115,14 @@ async function updateIsLocked(databaseConnection: Queryable, userId: string, fam
             *  If a problem is encountered, creates and throws custom error
             */
 async function updateFamilyForUserIdFamilyId(databaseConnection: Queryable, userId: string, familyId?: string, familyCode?: string, familyIsLocked?: boolean): Promise<void> {
-  if (familyId === undefined) {
-    if (familyCode !== undefined) {
+  if (familyId === undefined || familyId === null) {
+    if (familyCode !== undefined && familyCode !== null) {
       await addFamilyMember(databaseConnection, userId, familyCode);
       return;
     }
   }
-  else if (familyId !== undefined) {
-    if (familyIsLocked !== undefined) {
+  else if (familyId !== undefined && familyId !== null) {
+    if (familyIsLocked !== undefined && familyIsLocked !== null) {
       await updateIsLocked(databaseConnection, userId, familyId, familyIsLocked);
       return;
     }

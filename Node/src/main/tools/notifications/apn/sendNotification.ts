@@ -18,7 +18,7 @@ async function sendNotificationForUser(userId: string, category: string, alertTi
     // get tokens of all qualifying family members that aren't the user
     const userNotificationConfiguration = await getUserToken(userId);
 
-    if (userNotificationConfiguration === undefined) {
+    if (userNotificationConfiguration === undefined || userNotificationConfiguration === null) {
       return;
     }
 
@@ -47,7 +47,7 @@ async function sendNotificationForFamily(familyId: string, category: string, ale
     // get notification tokens of all qualifying family members
     const userNotificationConfigurations = await getAllFamilyMemberTokens(familyId);
 
-    if (userNotificationConfigurations === undefined) {
+    if (userNotificationConfigurations === undefined || userNotificationConfigurations === null) {
       return;
     }
 
@@ -84,7 +84,7 @@ async function sendNotificationForFamilyExcludingUser(
     // get tokens of all qualifying family members that aren't the user
     const userNotificationConfigurations = await getOtherFamilyMemberTokens(userId, familyId);
 
-    if (userNotificationConfigurations === undefined) {
+    if (userNotificationConfigurations === undefined || userNotificationConfigurations === null) {
       return;
     }
 

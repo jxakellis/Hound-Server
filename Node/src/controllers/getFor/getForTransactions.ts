@@ -12,7 +12,7 @@ import { getFamilyHeadUserId } from './getForFamily.js';
 async function getActiveTransaction(databaseConnection: Queryable, familyMemberUserId: string): Promise<TransactionsRow | undefined> {
   const familyHeadUserId = await getFamilyHeadUserId(databaseConnection, familyMemberUserId);
 
-  if (familyHeadUserId === undefined) {
+  if (familyHeadUserId === undefined || familyHeadUserId === null) {
     return undefined;
   }
 
@@ -50,7 +50,7 @@ async function getActiveTransaction(databaseConnection: Queryable, familyMemberU
   const familySubscription = familySubscriptionResult.safeIndex(0) ?? SUBSCRIPTION.SUBSCRIPTIONS.find((subscription) => subscription.productId === SUBSCRIPTION.DEFAULT_SUBSCRIPTION_PRODUCT_ID);
 
   // since we found no family subscription, assign the family to the default subscription
-  if (familySubscription === undefined) {
+  if (familySubscription === undefined || familySubscription === null) {
     return undefined;
   }
 
@@ -66,7 +66,7 @@ async function getActiveTransaction(databaseConnection: Queryable, familyMemberU
 async function getAllTransactions(databaseConnection: Queryable, familyMemberUserId: string): Promise<TransactionsRow[] | undefined> {
   const familyHeadUserId = await getFamilyHeadUserId(databaseConnection, familyMemberUserId);
 
-  if (familyHeadUserId === undefined) {
+  if (familyHeadUserId === undefined || familyHeadUserId === null) {
     return undefined;
   }
 
@@ -84,7 +84,7 @@ async function getAllTransactions(databaseConnection: Queryable, familyMemberUse
   // Don't use .familyActiveSubscription property: Want to make sure this function always returns the most updated/accurate information
   const familyActiveSubscription = await getActiveTransaction(databaseConnection, familyMemberUserId);
 
-  if (familyActiveSubscription !== undefined) {
+  if (familyActiveSubscription !== undefined && familyActiveSubscription !== null) {
     for (let i = 0; i < transactionsHistory.length; i += 1) {
       const subscription = transactionsHistory[i];
       subscription.isActive = (subscription.transactionId === familyActiveSubscription.transactionId) ? 1 : 0;
@@ -107,7 +107,7 @@ async function getAllTransactions(databaseConnection: Queryable, familyMemberUse
  * @returns
  */
 async function getTransactionOwner(databaseConnection: Queryable, appAccountToken?: string, transactionId?: number, originalTransactionId?: number): Promise<string | undefined> {
-  if (appAccountToken !== undefined) {
+  if (appAccountToken !== undefined && appAccountToken !== null) {
     const result = await databaseQuery<PublicUsersRow[]>(
       databaseConnection,
       `SELECT ${publicUsersColumns} 
@@ -119,13 +119,13 @@ async function getTransactionOwner(databaseConnection: Queryable, appAccountToke
 
     const user = result.safeIndex(0);
 
-    if (user !== undefined) {
+    if (user !== undefined && user !== null) {
       return user.userId;
     }
   }
 
   // If the user supplied an originalTransactionId, search with this first to attempt to find the userId for the most recent associated transaction
-  if (originalTransactionId !== undefined) {
+  if (originalTransactionId !== undefined && originalTransactionId !== null) {
     // ALLOW TRANSACTIONS WITH revocationReason IS NOT NULL FOR MATCHING PURPOSES
     const result = await databaseQuery<TransactionsRow[]>(
       databaseConnection,
@@ -139,13 +139,13 @@ async function getTransactionOwner(databaseConnection: Queryable, appAccountToke
 
     const transaction = result.safeIndex(0);
 
-    if (transaction !== undefined) {
+    if (transaction !== undefined && transaction !== null) {
       return transaction.userId;
     }
   }
 
   // If the user supplied an transactionId, attempt to find the userId for the most recent associated transaction
-  if (transactionId !== undefined) {
+  if (transactionId !== undefined && transactionId !== null) {
     // ALLOW TRANSACTIONS WITH revocationReason IS NOT NULL FOR MATCHING PURPOSES
     const result = await databaseQuery<TransactionsRow[]>(
       databaseConnection,
@@ -159,7 +159,7 @@ async function getTransactionOwner(databaseConnection: Queryable, appAccountToke
 
     const transaction = result.safeIndex(0);
 
-    if (transaction !== undefined) {
+    if (transaction !== undefined && transaction !== null) {
       return transaction.userId;
     }
   }

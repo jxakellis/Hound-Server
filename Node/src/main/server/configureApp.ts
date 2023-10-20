@@ -19,7 +19,7 @@ function parseFormData(req: express.Request, res: express.Response, next: expres
     extended: true,
     limit: '4mb',
   })(req, res, (error) => {
-    if (error !== undefined) {
+    if (error !== undefined && error !== null) {
       const houndError = new HoundError('Unable to parse form data', parseFormData, ERROR_CODES.GENERAL.PARSE_FORM_DATA_FAILED, error);
       logServerError(houndError);
       return res.houndDeclarationExtendedProperties.sendFailureResponse(houndError);
@@ -33,7 +33,7 @@ function parseJSON(req: express.Request, res: express.Response, next: express.Ne
   bodyParser.json({
     limit: '4mb',
   })(req, res, (error) => {
-    if (error !== undefined) {
+    if (error !== undefined && error !== null) {
       const houndError = new HoundError('Unable to parse json', parseJSON, ERROR_CODES.GENERAL.PARSE_JSON_FAILED, error);
       logServerError(houndError);
       return res.houndDeclarationExtendedProperties.sendFailureResponse(houndError);

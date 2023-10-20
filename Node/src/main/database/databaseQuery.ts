@@ -20,7 +20,7 @@ const databaseQuery = <T>(
   const SQLString = forSQLString.replace(/\r?\n|\r/g, '').replace(/\s+/g, ' ');
 
   const SQLVariables = forSQLVariables.map((variable) => {
-    if (variable === undefined) {
+    if (variable === undefined || variable === null) {
       return null;
     }
     return variable;

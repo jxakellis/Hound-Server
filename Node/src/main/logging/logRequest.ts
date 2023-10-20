@@ -19,7 +19,7 @@ async function logRequest(req: express.Request, res: express.Response, next: exp
 
     requestLogger.debug(`Request for ${method} ${originalUrl}`);
 
-    if (method === undefined) {
+    if (method === undefined || method === null) {
       throw new HoundError('method missing', logRequest, ERROR_CODES.VALUE.MISSING);
     }
 
@@ -27,7 +27,7 @@ async function logRequest(req: express.Request, res: express.Response, next: exp
       throw new HoundError('method invalid', logRequest, ERROR_CODES.VALUE.INVALID);
     }
 
-    if (originalUrl === undefined) {
+    if (originalUrl === undefined || originalUrl === null) {
       throw new HoundError('originalUrl missing', logRequest, ERROR_CODES.VALUE.MISSING);
     }
 

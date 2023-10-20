@@ -27,7 +27,7 @@ async function getPrivateCombinedUsersInformation(databaseConnection: Queryable,
   let userInformation = result1.safeIndex(0);
 
   const hashedUserIdentifier = hash(userIdentifier);
-  if (userInformation === undefined) {
+  if (userInformation === undefined || userInformation === null) {
     // If we can't find a user for a userIdentifier, hash that userIdentifier and then try again.
     // This is because we switched from hashing the Apple provided userIdentifier to directly storing it.
     // If query is successful, change saved userIdentifier and return result
@@ -44,7 +44,7 @@ async function getPrivateCombinedUsersInformation(databaseConnection: Queryable,
     );
     userInformation = result2.safeIndex(0);
 
-    if (userInformation !== undefined) {
+    if (userInformation !== undefined && userInformation !== null) {
       await updateUserForUserIdentifierHashedUserIdentifier(
         databaseConnection,
         userIdentifier,

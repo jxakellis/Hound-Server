@@ -12,10 +12,10 @@ async function createAppStoreServerNotification(req: express.Request, res: expre
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const signedPayload = formatUnknownString(req.body['signedPayload']);
 
-    if (databaseConnection === undefined) {
+    if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', createAppStoreServerNotification, ERROR_CODES.VALUE.INVALID);
     }
-    if (signedPayload === undefined) {
+    if (signedPayload === undefined || signedPayload === null) {
       throw new HoundError('signedPayload missing', createAppStoreServerNotification, ERROR_CODES.VALUE.INVALID);
     }
 

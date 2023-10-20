@@ -30,18 +30,18 @@ async function getReminders(req: express.Request, res: express.Response): Promis
     const { validatedDogId, validatedReminderIds } = req.houndDeclarationExtendedProperties.validatedVariables;
     const previousDogManagerSynchronization = formatDate(req.query['previousDogManagerSynchronization'] ?? req.query['userConfigurationPreviousDogManagerSynchronization']);
 
-    if (databaseConnection === undefined) {
+    if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', getReminders, ERROR_CODES.VALUE.INVALID);
     }
-    if (validatedDogId === undefined) {
+    if (validatedDogId === undefined || validatedDogId === null) {
       throw new HoundError('validatedDogId missing', getReminders, ERROR_CODES.VALUE.INVALID);
     }
 
     const validatedReminderId = validatedReminderIds.safeIndex(0);
-    if (validatedReminderId !== undefined) {
+    if (validatedReminderId !== undefined && validatedReminderId !== null) {
       const result = await getReminderForReminderId(databaseConnection, validatedReminderId, previousDogManagerSynchronization);
 
-      if (result === undefined) {
+      if (result === undefined || result === null) {
         throw new HoundError('result missing', getReminders, ERROR_CODES.VALUE.INVALID);
       }
 
@@ -63,16 +63,16 @@ async function createReminder(req: express.Request, res: express.Response): Prom
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const remindersDictionary = formatArray(req.body['reminders'] ?? [req.body]) as (Dictionary[] | undefined);
 
-    if (databaseConnection === undefined) {
+    if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', createReminder, ERROR_CODES.VALUE.INVALID);
     }
-    if (validatedFamilyId === undefined) {
+    if (validatedFamilyId === undefined || validatedFamilyId === null) {
       throw new HoundError('validatedFamilyId missing', createReminder, ERROR_CODES.VALUE.INVALID);
     }
-    if (validatedDogId === undefined) {
+    if (validatedDogId === undefined || validatedDogId === null) {
       throw new HoundError('validatedDogId missing', createReminder, ERROR_CODES.VALUE.INVALID);
     }
-    if (remindersDictionary === undefined) {
+    if (remindersDictionary === undefined || remindersDictionary === null) {
       throw new HoundError('remindersDictionary missing', createReminder, ERROR_CODES.VALUE.INVALID);
     }
 
@@ -106,68 +106,68 @@ async function createReminder(req: express.Request, res: express.Response): Prom
 
       const oneTimeDate = formatDate(reminder['oneTimeDate']);
 
-      if (reminderId === undefined) {
+      if (reminderId === undefined || reminderId === null) {
         throw new HoundError('reminderId missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (reminderAction === undefined) {
+      if (reminderAction === undefined || reminderAction === null) {
         throw new HoundError('reminderAction missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (reminderCustomActionName === undefined) {
+      if (reminderCustomActionName === undefined || reminderCustomActionName === null) {
         throw new HoundError('reminderCustomActionName missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (reminderType === undefined) {
+      if (reminderType === undefined || reminderType === null) {
         throw new HoundError('reminderType missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (reminderIsEnabled === undefined) {
+      if (reminderIsEnabled === undefined || reminderIsEnabled === null) {
         throw new HoundError('reminderIsEnabled missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
       // reminderExecutionDate optional
-      if (reminderExecutionBasis === undefined) {
+      if (reminderExecutionBasis === undefined || reminderExecutionBasis === null) {
         throw new HoundError('reminderExecutionBasis missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
       // snoozeExecutionInterval optional
-      if (countdownExecutionInterval === undefined) {
+      if (countdownExecutionInterval === undefined || countdownExecutionInterval === null) {
         throw new HoundError('countdownExecutionInterval missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (weeklyUTCHour === undefined) {
+      if (weeklyUTCHour === undefined || weeklyUTCHour === null) {
         throw new HoundError('weeklyUTCHour missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (weeklyUTCMinute === undefined) {
+      if (weeklyUTCMinute === undefined || weeklyUTCMinute === null) {
         throw new HoundError('weeklyUTCMinute missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (weeklySunday === undefined) {
+      if (weeklySunday === undefined || weeklySunday === null) {
         throw new HoundError('weeklySunday missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (weeklyMonday === undefined) {
+      if (weeklyMonday === undefined || weeklyMonday === null) {
         throw new HoundError('weeklyMonday missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (weeklyTuesday === undefined) {
+      if (weeklyTuesday === undefined || weeklyTuesday === null) {
         throw new HoundError('weeklyTuesday missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (weeklyWednesday === undefined) {
+      if (weeklyWednesday === undefined || weeklyWednesday === null) {
         throw new HoundError('weeklyWednesday missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (weeklyThursday === undefined) {
+      if (weeklyThursday === undefined || weeklyThursday === null) {
         throw new HoundError('weeklyThursday missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (weeklyFriday === undefined) {
+      if (weeklyFriday === undefined || weeklyFriday === null) {
         throw new HoundError('weeklyFriday missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (weeklySaturday === undefined) {
+      if (weeklySaturday === undefined || weeklySaturday === null) {
         throw new HoundError('weeklySaturday missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
       // weeklySkippedDate optional
-      if (monthlyUTCDay === undefined) {
+      if (monthlyUTCDay === undefined || monthlyUTCDay === null) {
         throw new HoundError('monthlyUTCDay missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (monthlyUTCHour === undefined) {
+      if (monthlyUTCHour === undefined || monthlyUTCHour === null) {
         throw new HoundError('monthlyUTCHour missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (monthlyUTCMinute === undefined) {
+      if (monthlyUTCMinute === undefined || monthlyUTCMinute === null) {
         throw new HoundError('monthlyUTCMinute missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
       // monthlySkippedDate optional
-      if (oneTimeDate === undefined) {
+      if (oneTimeDate === undefined || oneTimeDate === null) {
         throw new HoundError('oneTimeDate missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
 
@@ -229,16 +229,16 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const remindersDictionary = formatArray(req.body['reminders'] ?? [req.body]) as (Dictionary[] | undefined);
 
-    if (databaseConnection === undefined) {
+    if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', updateReminder, ERROR_CODES.VALUE.INVALID);
     }
-    if (validatedFamilyId === undefined) {
+    if (validatedFamilyId === undefined || validatedFamilyId === null) {
       throw new HoundError('validatedFamilyId missing', updateReminder, ERROR_CODES.VALUE.INVALID);
     }
-    if (validatedDogId === undefined) {
+    if (validatedDogId === undefined || validatedDogId === null) {
       throw new HoundError('validatedDogId missing', updateReminder, ERROR_CODES.VALUE.INVALID);
     }
-    if (remindersDictionary === undefined) {
+    if (remindersDictionary === undefined || remindersDictionary === null) {
       throw new HoundError('remindersDictionary missing', updateReminder, ERROR_CODES.VALUE.INVALID);
     }
 
@@ -272,68 +272,68 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
 
       const oneTimeDate = formatDate(reminder['oneTimeDate']);
 
-      if (reminderId === undefined) {
+      if (reminderId === undefined || reminderId === null) {
         throw new HoundError('reminderId missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (reminderAction === undefined) {
+      if (reminderAction === undefined || reminderAction === null) {
         throw new HoundError('reminderAction missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (reminderCustomActionName === undefined) {
+      if (reminderCustomActionName === undefined || reminderCustomActionName === null) {
         throw new HoundError('reminderCustomActionName missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (reminderType === undefined) {
+      if (reminderType === undefined || reminderType === null) {
         throw new HoundError('reminderType missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (reminderIsEnabled === undefined) {
+      if (reminderIsEnabled === undefined || reminderIsEnabled === null) {
         throw new HoundError('reminderIsEnabled missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
       // reminderExecutionDate optional
-      if (reminderExecutionBasis === undefined) {
+      if (reminderExecutionBasis === undefined || reminderExecutionBasis === null) {
         throw new HoundError('reminderExecutionBasis missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
       // snoozeExecutionInterval optional
-      if (countdownExecutionInterval === undefined) {
+      if (countdownExecutionInterval === undefined || countdownExecutionInterval === null) {
         throw new HoundError('countdownExecutionInterval missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (weeklyUTCHour === undefined) {
+      if (weeklyUTCHour === undefined || weeklyUTCHour === null) {
         throw new HoundError('weeklyUTCHour missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (weeklyUTCMinute === undefined) {
+      if (weeklyUTCMinute === undefined || weeklyUTCMinute === null) {
         throw new HoundError('weeklyUTCMinute missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (weeklySunday === undefined) {
+      if (weeklySunday === undefined || weeklySunday === null) {
         throw new HoundError('weeklySunday missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (weeklyMonday === undefined) {
+      if (weeklyMonday === undefined || weeklyMonday === null) {
         throw new HoundError('weeklyMonday missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (weeklyTuesday === undefined) {
+      if (weeklyTuesday === undefined || weeklyTuesday === null) {
         throw new HoundError('weeklyTuesday missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (weeklyWednesday === undefined) {
+      if (weeklyWednesday === undefined || weeklyWednesday === null) {
         throw new HoundError('weeklyWednesday missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (weeklyThursday === undefined) {
+      if (weeklyThursday === undefined || weeklyThursday === null) {
         throw new HoundError('weeklyThursday missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (weeklyFriday === undefined) {
+      if (weeklyFriday === undefined || weeklyFriday === null) {
         throw new HoundError('weeklyFriday missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (weeklySaturday === undefined) {
+      if (weeklySaturday === undefined || weeklySaturday === null) {
         throw new HoundError('weeklySaturday missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
       // weeklySkippedDate optional
-      if (monthlyUTCDay === undefined) {
+      if (monthlyUTCDay === undefined || monthlyUTCDay === null) {
         throw new HoundError('monthlyUTCDay missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (monthlyUTCHour === undefined) {
+      if (monthlyUTCHour === undefined || monthlyUTCHour === null) {
         throw new HoundError('monthlyUTCHour missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (monthlyUTCMinute === undefined) {
+      if (monthlyUTCMinute === undefined || monthlyUTCMinute === null) {
         throw new HoundError('monthlyUTCMinute missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
       // monthlySkippedDate optional
-      if (oneTimeDate === undefined) {
+      if (oneTimeDate === undefined || oneTimeDate === null) {
         throw new HoundError('oneTimeDate missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
 
@@ -393,13 +393,13 @@ async function deleteReminder(req: express.Request, res: express.Response): Prom
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedFamilyId, validatedReminderIds } = req.houndDeclarationExtendedProperties.validatedVariables;
 
-    if (databaseConnection === undefined) {
+    if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', deleteReminder, ERROR_CODES.VALUE.INVALID);
     }
-    if (validatedFamilyId === undefined) {
+    if (validatedFamilyId === undefined || validatedFamilyId === null) {
       throw new HoundError('validatedFamilyId missing', deleteReminder, ERROR_CODES.VALUE.INVALID);
     }
-    if (validatedReminderIds === undefined) {
+    if (validatedReminderIds === undefined || validatedReminderIds === null) {
       throw new HoundError('validatedReminderIds missing', deleteReminder, ERROR_CODES.VALUE.INVALID);
     }
 

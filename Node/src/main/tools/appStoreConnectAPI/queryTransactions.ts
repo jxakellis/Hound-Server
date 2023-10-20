@@ -191,7 +191,7 @@ async function queryAllSubscriptionsForTransactionId(transactionId: string): Pro
   const randomSingleTransaction = transactions.safeIndex(0);
 
   // If there are no transactions, return an empty array.
-  if (randomSingleTransaction === undefined) {
+  if (randomSingleTransaction === undefined || randomSingleTransaction === null) {
     return [];
   }
 

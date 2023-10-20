@@ -19,7 +19,7 @@ async function testDatabaseConnections(...databaseConnections: Queryable[]): Pro
   for (let i = 0; i < databaseConnections.length; i += 1) {
     const databaseConnection = databaseConnections.safeIndex(i);
 
-    if (databaseConnection !== undefined) {
+    if (databaseConnection !== undefined && databaseConnection !== null) {
       promises.push(testDatabaseConnection(databaseConnection));
     }
   }

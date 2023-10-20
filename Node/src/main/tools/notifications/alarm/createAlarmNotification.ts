@@ -37,7 +37,7 @@ DogsRow & DogRemindersRow)[]>(
     const reminder = result.safeIndex(0);
 
     // Check to make sure the required information of the reminder exists
-    if (reminder === undefined) {
+    if (reminder === undefined || reminder === null) {
       return;
     }
 
@@ -83,7 +83,7 @@ async function createAlarmNotificationForFamily(familyId: string, reminderId: nu
 
     // If a user updates a reminder, this function is invoked. When a reminder is updated, is reminderExecutionDate can be null
     // Therefore we want to delete the old alarm notifications for that reminder and (if it has a reminderExecutionDate) create new alarm notifications
-    if (reminderExecutionDate === undefined) {
+    if (reminderExecutionDate === undefined || reminderExecutionDate === null) {
       return;
     }
     // The date that is further in the future is greater

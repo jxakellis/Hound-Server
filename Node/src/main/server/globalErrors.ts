@@ -60,7 +60,7 @@ class HoundError extends Error {
     let customMessage = forCustomMessage;
 
     if (fromError !== undefined && fromError instanceof Error) {
-      if (customMessage === undefined) {
+      if (customMessage === undefined || customMessage === null) {
         customMessage = fromError.message;
       }
       else {

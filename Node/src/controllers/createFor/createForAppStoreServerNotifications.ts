@@ -142,7 +142,7 @@ async function insertAppStoreServerNotification(
   const existingAppStoreServerNotification = result.safeIndex(0);
 
   // If the ASSN already exists, we don't want to try and reinsert it, so we ignore it.
-  if (existingAppStoreServerNotification === undefined) {
+  if (existingAppStoreServerNotification === undefined || existingAppStoreServerNotification === null) {
     return false;
   }
 
@@ -271,7 +271,7 @@ async function createASSNForSignedPayload(databaseConnection: Queryable, signedP
   const transactionId = formatNumber(transactionInfo.transactionId);
 
   // Check to see if the notification provided a transactionId
-  if (transactionId === undefined) {
+  if (transactionId === undefined || transactionId === null) {
     throw new HoundError('transactionId missing', createASSNForSignedPayload, ERROR_CODES.VALUE.MISSING);
   }
 
@@ -282,7 +282,7 @@ async function createASSNForSignedPayload(databaseConnection: Queryable, signedP
     formatNumber(transactionInfo.originalTransactionId),
   );
 
-  if (userId === undefined) {
+  if (userId === undefined || userId === null) {
     // Unable to find the userId associated with the transaction.
     // This likely means this is the user's first transaction with Hound and it wasn't done through the app (i.e. through Apple's external offer code or IAP page  )
     return;

@@ -20,6 +20,20 @@ module.exports = {
     '@typescript-eslint/no-use-before-define': ['error', { functions: false, classes: true, variables: true }],
     // Error
     '@typescript-eslint/no-unsafe-member-access': ['error'],
+    "@typescript-eslint/strict-boolean-expressions": [
+      "error",
+      {
+        "allowString": false,
+        "allowNumber": false,
+        "allowNullableObject": false,
+        "allowNullableBoolean": false,
+        "allowNullableString": false,
+        "allowNullableNumber": false,
+        "allowNullableEnum": false,
+        "allowAny": false,
+        "allowRuleToRunWithoutStrictNullChecksIKnowWhatIAmDoing": false
+      }
+    ],
     'array-callback-return': ['error'],
     // Warn
     "@typescript-eslint/explicit-function-return-type": ['warn'],

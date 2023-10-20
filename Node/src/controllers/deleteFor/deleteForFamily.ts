@@ -181,7 +181,7 @@ async function kickFamilyMemberForUserIdFamilyId(databaseConnection: Queryable, 
 async function deleteFamilyLeaveFamilyForUserIdFamilyId(databaseConnection: Queryable, userId: string, familyId: string, familyActiveSubscription: TransactionsRow): Promise<void> {
   const familyHeadUserId = await getFamilyHeadUserId(databaseConnection, userId);
 
-  if (familyHeadUserId === undefined) {
+  if (familyHeadUserId === undefined || familyHeadUserId === null) {
     throw new HoundError('No corresponding familyHeadUserId for userId', deleteFamilyLeaveFamilyForUserIdFamilyId, ERROR_CODES.VALUE.MISSING);
   }
 

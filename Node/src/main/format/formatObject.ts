@@ -177,7 +177,7 @@ function formatNumber(forNumber?: unknown): number | undefined {
 function formatBase64EncodedString(forString?: unknown): string | undefined {
   const string = formatUnknownString(forString);
 
-  if (string === undefined) {
+  if (string === undefined || string === null) {
     return undefined;
   }
 

@@ -12,10 +12,10 @@ alertRouter.post('/:alertType', async (req: express.Request, res: express.Respon
     const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
     const alertType = formatUnknownString(req.params['alertType']);
 
-    if (validatedUserId === undefined) {
+    if (validatedUserId === undefined || validatedUserId === null) {
       throw new HoundError('validatedUserId missing', alertRouter.post, ERROR_CODES.VALUE.INVALID);
     }
-    if (alertType === undefined) {
+    if (alertType === undefined || alertType === null) {
       throw new HoundError('alertType missing', alertRouter.post, ERROR_CODES.VALUE.INVALID);
     }
 

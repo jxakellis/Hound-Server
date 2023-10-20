@@ -453,7 +453,7 @@ function generateCode(): string {
 // Generate a verified unique code for a family to use that consists of A-Z and 0-9 (excludes I, L, O, and 0 due to how similar they look)
 async function generateUniqueFamilyCode(databaseConnection: Queryable): Promise<string> {
   let uniqueFamilyCode;
-  while (uniqueFamilyCode === undefined) {
+  while (uniqueFamilyCode === undefined || uniqueFamilyCode === null) {
     const potentialFamilyCode = generateCode();
     // Necessary to disable no-await-in-loop as we can't use Promise.all() for a while loop. We have a unknown amount of promises
     // eslint-disable-next-line no-await-in-loop

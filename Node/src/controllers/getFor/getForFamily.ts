@@ -139,7 +139,7 @@ async function getAllFamilyInformationForFamilyId(databaseConnection: Queryable,
   );
   const family = familiesResult.safeIndex(0);
 
-  if (family === undefined) {
+  if (family === undefined || family === null) {
     return undefined;
   }
 

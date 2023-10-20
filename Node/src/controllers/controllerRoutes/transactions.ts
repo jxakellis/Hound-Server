@@ -11,16 +11,16 @@ async function getTransactions(req: express.Request, res: express.Response): Pro
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
 
-    if (databaseConnection === undefined) {
+    if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', getTransactions, ERROR_CODES.VALUE.INVALID);
     }
-    if (validatedUserId === undefined) {
+    if (validatedUserId === undefined || validatedUserId === null) {
       throw new HoundError('validatedUserId missing', getTransactions, ERROR_CODES.VALUE.INVALID);
     }
 
     const result = await getAllTransactions(databaseConnection, validatedUserId);
 
-    if (result === undefined) {
+    if (result === undefined || result === null) {
       throw new HoundError('result missing', getTransactions, ERROR_CODES.VALUE.INVALID);
     }
 
@@ -38,13 +38,13 @@ async function createTransactions(req: express.Request, res: express.Response): 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const appStoreReceiptURL = formatUnknownString(req.body['appStoreReceiptURL']);
 
-    if (databaseConnection === undefined) {
+    if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', createTransactions, ERROR_CODES.VALUE.INVALID);
     }
-    if (validatedUserId === undefined) {
+    if (validatedUserId === undefined || validatedUserId === null) {
       throw new HoundError('validatedUserId missing', createTransactions, ERROR_CODES.VALUE.INVALID);
     }
-    if (appStoreReceiptURL === undefined) {
+    if (appStoreReceiptURL === undefined || appStoreReceiptURL === null) {
       throw new HoundError('appStoreReceiptURL missing', createTransactions, ERROR_CODES.VALUE.INVALID);
     }
 
@@ -53,7 +53,7 @@ async function createTransactions(req: express.Request, res: express.Response): 
     // After we have updated the stored transactions, we want to return the new active subscription to the user.
     const result = await getActiveTransaction(databaseConnection, validatedUserId);
 
-    if (result === undefined) {
+    if (result === undefined || result === null) {
       throw new HoundError('result missing', createTransactions, ERROR_CODES.VALUE.INVALID);
     }
 

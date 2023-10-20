@@ -74,7 +74,7 @@ async function shutdown(): Promise<void> {
     const numberOfShutdownsNeeded = 6;
     let numberOfShutdownsCompleted = 0;
 
-    if (testDatabaseConnectionInterval !== undefined) {
+    if (testDatabaseConnectionInterval !== undefined && testDatabaseConnectionInterval !== null) {
       clearInterval(testDatabaseConnectionInterval);
     }
 
@@ -98,7 +98,7 @@ async function shutdown(): Promise<void> {
       });
 
     httpsServer.close((error) => {
-      if (error) {
+      if (error !== undefined && error !== null) {
         serverLogger.info('Server Couldn\'t Shutdown', error);
       }
       else {
@@ -109,7 +109,7 @@ async function shutdown(): Promise<void> {
     });
 
     databaseConnectionForGeneral.end((error) => {
-      if (error) {
+      if (error !== undefined && error !== null) {
         serverLogger.info('General Database Connection Couldn\'t Shutdown', error);
       }
       else {
@@ -120,7 +120,7 @@ async function shutdown(): Promise<void> {
     });
 
     databaseConnectionForLogging.end((error) => {
-      if (error) {
+      if (error !== undefined && error !== null) {
         serverLogger.info('Logging Database Connection Couldn\'t Shutdown', error);
       }
       else {
@@ -131,7 +131,7 @@ async function shutdown(): Promise<void> {
     });
 
     databaseConnectionForAlarms.end((error) => {
-      if (error) {
+      if (error !== undefined && error !== null) {
         serverLogger.info('Alarms Database Connection Couldn\'t Shutdown', error);
       }
       else {
@@ -142,7 +142,7 @@ async function shutdown(): Promise<void> {
     });
 
     databaseConnectionPoolForRequests.end((error) => {
-      if (error) {
+      if (error !== undefined && error !== null) {
         serverLogger.info('Pool For Requests Couldn\'t Shutdown', error);
       }
       else {
@@ -186,7 +186,7 @@ process.on('uncaughtException', async (error, origin) => {
   await shutdown()
     .catch((shutdownError) => serverLogger.error(`Experienced error while attempting to shutdown (shutdown): ${shutdownError}`));
 
-  if (error.message || error.stack || error.name || error.cause || error.houndDeclarationCode === 'EADDRINUSE') {
+  if (error.message === 'EADDRINUSE' || error.stack === 'EADDRINUSE' || error.name === 'EADDRINUSE' || error.cause === 'EADDRINUSE' || error.houndDeclarationCode === 'EADDRINUSE') {
     /**
    * The previous Node Application did not shut down properly
    * process.on('exit', ...) isn't called when the process crashes or is killed.

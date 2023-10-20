@@ -70,7 +70,7 @@ async function createUpdateTransaction(
 
   const correspondingProduct = SUBSCRIPTION.SUBSCRIPTIONS.find((subscription) => subscription.productId === transactionInfo.productId);
 
-  if (correspondingProduct === undefined) {
+  if (correspondingProduct === undefined || correspondingProduct === null) {
     throw new HoundError('correspondingProduct missing', createUpdateTransaction, ERROR_CODES.VALUE.MISSING);
   }
 
@@ -157,7 +157,7 @@ async function createUpdateTransaction(
 async function createTransactionForAppStoreReceiptURL(databaseConnection: Queryable, userId: string, appStoreReceiptURL: string): Promise<void> {
   const transactionId = extractTransactionIdFromAppStoreReceiptURL(appStoreReceiptURL);
 
-  if (transactionId === undefined) {
+  if (transactionId === undefined || transactionId === null) {
     throw new HoundError('transactionId couldn\'t be constructed with extractTransactionIdFromAppStoreReceiptURL', createTransactionForAppStoreReceiptURL, ERROR_CODES.VALUE.INVALID);
   }
 

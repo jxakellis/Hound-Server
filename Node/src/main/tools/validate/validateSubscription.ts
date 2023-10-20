@@ -13,10 +13,10 @@ async function attachActiveSubscription(req: express.Request, res: express.Respo
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
 
-    if (databaseConnection === undefined) {
+    if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', attachActiveSubscription, ERROR_CODES.VALUE.MISSING);
     }
-    if (validatedUserId === undefined) {
+    if (validatedUserId === undefined || validatedUserId === null) {
       throw new HoundError('validatedUserId missing', attachActiveSubscription, ERROR_CODES.VALUE.MISSING);
     }
 
@@ -42,19 +42,19 @@ async function validateSubscription(req: express.Request, res: express.Response,
     const numberOfFamilyMembers = req.houndDeclarationExtendedProperties.familyActiveSubscription?.numberOfFamilyMembers;
     const numberOfDogs = req.houndDeclarationExtendedProperties.familyActiveSubscription?.numberOfDogs;
 
-    if (databaseConnection === undefined) {
+    if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', validateSubscription, ERROR_CODES.VALUE.MISSING);
     }
-    if (validatedUserId === undefined) {
+    if (validatedUserId === undefined || validatedUserId === null) {
       throw new HoundError('validatedUserId missing', validateSubscription, ERROR_CODES.VALUE.MISSING);
     }
-    if (validatedFamilyId === undefined) {
+    if (validatedFamilyId === undefined || validatedFamilyId === null) {
       throw new HoundError('validatedFamilyId missing', validateSubscription, ERROR_CODES.VALUE.MISSING);
     }
-    if (numberOfFamilyMembers === undefined) {
+    if (numberOfFamilyMembers === undefined || numberOfFamilyMembers === null) {
       throw new HoundError('numberOfFamilyMembers missing', validateSubscription, ERROR_CODES.VALUE.MISSING);
     }
-    if (numberOfDogs === undefined) {
+    if (numberOfDogs === undefined || numberOfDogs === null) {
       throw new HoundError('numberOfDogs missing', validateSubscription, ERROR_CODES.VALUE.MISSING);
     }
 

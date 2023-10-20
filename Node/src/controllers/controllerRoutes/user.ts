@@ -18,16 +18,16 @@ async function getUser(req: express.Request, res: express.Response): Promise<voi
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedUserIdentifier } = req.houndDeclarationExtendedProperties.validatedVariables;
 
-    if (databaseConnection === undefined) {
+    if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', getUser, ERROR_CODES.VALUE.INVALID);
     }
-    if (validatedUserIdentifier === undefined) {
+    if (validatedUserIdentifier === undefined || validatedUserIdentifier === null) {
       throw new HoundError('validatedUserIdentifier missing', getUser, ERROR_CODES.VALUE.INVALID);
     }
 
     const result = await getPrivateCombinedUsersInformation(databaseConnection, validatedUserIdentifier);
 
-    if (result === undefined) {
+    if (result === undefined || result === null) {
       throw new HoundError('No user found or invalid permissions', getUser, ERROR_CODES.PERMISSION.NO.USER);
     }
 
@@ -79,52 +79,52 @@ async function createUser(req: express.Request, res: express.Response): Promise<
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const userConfigurationSilentModeEndUTCMinute = formatNumber(req.body['userConfigurationSilentModeEndUTCMinute']);
 
-    if (databaseConnection === undefined) {
+    if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', createUser, ERROR_CODES.VALUE.INVALID);
     }
-    if (validatedUserIdentifier === undefined) {
+    if (validatedUserIdentifier === undefined || validatedUserIdentifier === null) {
       throw new HoundError('validatedUserIdentifier missing', createUser, ERROR_CODES.VALUE.INVALID);
     }
-    if (userConfigurationIsNotificationEnabled === undefined) {
+    if (userConfigurationIsNotificationEnabled === undefined || userConfigurationIsNotificationEnabled === null) {
       throw new HoundError('userConfigurationIsNotificationEnabled missing', createUser, ERROR_CODES.VALUE.INVALID);
     }
-    if (userConfigurationIsLoudNotificationEnabled === undefined) {
+    if (userConfigurationIsLoudNotificationEnabled === undefined || userConfigurationIsLoudNotificationEnabled === null) {
       throw new HoundError('userConfigurationIsLoudNotificationEnabled missing', createUser, ERROR_CODES.VALUE.INVALID);
     }
-    if (userConfigurationIsLogNotificationEnabled === undefined) {
+    if (userConfigurationIsLogNotificationEnabled === undefined || userConfigurationIsLogNotificationEnabled === null) {
       throw new HoundError('userConfigurationIsLogNotificationEnabled missing', createUser, ERROR_CODES.VALUE.INVALID);
     }
-    if (userConfigurationIsReminderNotificationEnabled === undefined) {
+    if (userConfigurationIsReminderNotificationEnabled === undefined || userConfigurationIsReminderNotificationEnabled === null) {
       throw new HoundError('userConfigurationIsReminderNotificationEnabled missing', createUser, ERROR_CODES.VALUE.INVALID);
     }
-    if (userConfigurationInterfaceStyle === undefined) {
+    if (userConfigurationInterfaceStyle === undefined || userConfigurationInterfaceStyle === null) {
       throw new HoundError('userConfigurationInterfaceStyle missing', createUser, ERROR_CODES.VALUE.INVALID);
     }
-    if (userConfigurationSnoozeLength === undefined) {
+    if (userConfigurationSnoozeLength === undefined || userConfigurationSnoozeLength === null) {
       throw new HoundError('userConfigurationSnoozeLength missing', createUser, ERROR_CODES.VALUE.INVALID);
     }
-    if (userConfigurationNotificationSound === undefined) {
+    if (userConfigurationNotificationSound === undefined || userConfigurationNotificationSound === null) {
       throw new HoundError('userConfigurationNotificationSound missing', createUser, ERROR_CODES.VALUE.INVALID);
     }
-    if (userConfigurationLogsInterfaceScale === undefined) {
+    if (userConfigurationLogsInterfaceScale === undefined || userConfigurationLogsInterfaceScale === null) {
       throw new HoundError('userConfigurationLogsInterfaceScale missing', createUser, ERROR_CODES.VALUE.INVALID);
     }
-    if (userConfigurationRemindersInterfaceScale === undefined) {
+    if (userConfigurationRemindersInterfaceScale === undefined || userConfigurationRemindersInterfaceScale === null) {
       throw new HoundError('userConfigurationRemindersInterfaceScale missing', createUser, ERROR_CODES.VALUE.INVALID);
     }
-    if (userConfigurationIsSilentModeEnabled === undefined) {
+    if (userConfigurationIsSilentModeEnabled === undefined || userConfigurationIsSilentModeEnabled === null) {
       throw new HoundError('userConfigurationIsSilentModeEnabled missing', createUser, ERROR_CODES.VALUE.INVALID);
     }
-    if (userConfigurationSilentModeStartUTCHour === undefined) {
+    if (userConfigurationSilentModeStartUTCHour === undefined || userConfigurationSilentModeStartUTCHour === null) {
       throw new HoundError('userConfigurationSilentModeStartUTCHour missing', createUser, ERROR_CODES.VALUE.INVALID);
     }
-    if (userConfigurationSilentModeEndUTCHour === undefined) {
+    if (userConfigurationSilentModeEndUTCHour === undefined || userConfigurationSilentModeEndUTCHour === null) {
       throw new HoundError('userConfigurationSilentModeEndUTCHour missing', createUser, ERROR_CODES.VALUE.INVALID);
     }
-    if (userConfigurationSilentModeStartUTCMinute === undefined) {
+    if (userConfigurationSilentModeStartUTCMinute === undefined || userConfigurationSilentModeStartUTCMinute === null) {
       throw new HoundError('userConfigurationSilentModeStartUTCMinute missing', createUser, ERROR_CODES.VALUE.INVALID);
     }
-    if (userConfigurationSilentModeEndUTCMinute === undefined) {
+    if (userConfigurationSilentModeEndUTCMinute === undefined || userConfigurationSilentModeEndUTCMinute === null) {
       throw new HoundError('userConfigurationSilentModeEndUTCMinute missing', createUser, ERROR_CODES.VALUE.INVALID);
     }
 
@@ -195,10 +195,10 @@ async function updateUser(req: express.Request, res: express.Response): Promise<
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const userConfigurationSilentModeEndUTCMinute = formatNumber(req.body['userConfigurationSilentModeEndUTCMinute']);
 
-    if (databaseConnection === undefined) {
+    if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', updateUser, ERROR_CODES.VALUE.INVALID);
     }
-    if (validatedUserId === undefined) {
+    if (validatedUserId === undefined || validatedUserId === null) {
       throw new HoundError('validatedUserId missing', updateUser, ERROR_CODES.VALUE.INVALID);
     }
 
@@ -235,10 +235,10 @@ async function deleteUser(req: express.Request, res: express.Response): Promise<
   try {
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
-    if (databaseConnection === undefined) {
+    if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', deleteUser, ERROR_CODES.VALUE.INVALID);
     }
-    if (validatedUserId === undefined) {
+    if (validatedUserId === undefined || validatedUserId === null) {
       throw new HoundError('validatedUserId missing', deleteUser, ERROR_CODES.VALUE.INVALID);
     }
 

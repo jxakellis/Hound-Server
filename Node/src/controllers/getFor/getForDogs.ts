@@ -52,7 +52,7 @@ async function getDogForDogId(
   const dog = dogs.safeIndex(0);
 
   // no need to do anything else as there are no dogs
-  if (dog === undefined) {
+  if (dog === undefined || dog === null) {
     return undefined;
   }
 

@@ -22,7 +22,7 @@ async function validateAppVersion(req: express.Request, res: express.Response, n
   try {
     const appVersion = formatUnknownString(req.params['appVersion']);
 
-    if (appVersion === undefined) {
+    if (appVersion === undefined || appVersion === null) {
       throw new HoundError('appVersion missing', validateAppVersion, ERROR_CODES.VALUE.MISSING);
     }
     // the user isn't on the previous or current app version
@@ -50,10 +50,10 @@ async function validateUserIdentifier(req: express.Request, res: express.Respons
     // unhashedUserIdentifier: unhashed, 44-length apple identifier or 64-length sha-256 hash of apple identifier
     const userIdentifier = formatUnknownString(req.query['userIdentifier']);
 
-    if (databaseConnection === undefined) {
+    if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', validateUserIdentifier, ERROR_CODES.VALUE.INVALID);
     }
-    if (userIdentifier === undefined) {
+    if (userIdentifier === undefined || userIdentifier === null) {
       throw new HoundError('userIdentifier missing', validateUserIdentifier, ERROR_CODES.VALUE.INVALID);
     }
 
@@ -69,7 +69,7 @@ async function validateUserIdentifier(req: express.Request, res: express.Respons
 
     let user = regularResult.safeIndex(0);
 
-    if (user === undefined) {
+    if (user === undefined || user === null) {
       const hashedUserIdentifier = hash(userIdentifier);
       // If we can't find a user for a userIdentifier, hash that userIdentifier and then try again.
       // This is because we switched from hashing the Apple provided userIdentifier to directly storing it.
@@ -86,7 +86,7 @@ async function validateUserIdentifier(req: express.Request, res: express.Respons
 
       user = hashedResult.safeIndex(0);
 
-      if (user !== undefined) {
+      if (user !== undefined && user !== null) {
         await updateUserForUserIdentifierHashedUserIdentifier(
           databaseConnection,
           userIdentifier,
@@ -96,7 +96,7 @@ async function validateUserIdentifier(req: express.Request, res: express.Respons
     }
 
     // Its acceptable for user to be undefined. This is because the request could be creating a user.
-    if (user === undefined) {
+    if (user === undefined || user === null) {
       // userId does not exist in the table
       throw new HoundError('No user found or invalid permissions', validateUserIdentifier, ERROR_CODES.PERMISSION.NO.USER);
     }
@@ -121,13 +121,13 @@ async function validateUserId(req: express.Request, res: express.Response, next:
     const { validatedUserIdentifier } = req.houndDeclarationExtendedProperties.validatedVariables;
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
 
-    if (userId === undefined) {
+    if (userId === undefined || userId === null) {
       throw new HoundError('userId missing', validateUserId, ERROR_CODES.VALUE.INVALID);
     }
-    if (validatedUserIdentifier === undefined) {
+    if (validatedUserIdentifier === undefined || validatedUserIdentifier === null) {
       throw new HoundError('validatedUserIdentifier missing', validateUserId, ERROR_CODES.VALUE.INVALID);
     }
-    if (databaseConnection === undefined) {
+    if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', validateUserId, ERROR_CODES.VALUE.INVALID);
     }
 
@@ -143,7 +143,7 @@ async function validateUserId(req: express.Request, res: express.Response, next:
 
     let user = regularResult.safeIndex(0);
 
-    if (user === undefined) {
+    if (user === undefined || user === null) {
       const hashedUserIdentifier = hash(validatedUserIdentifier);
       // If we can't find a user for a userIdentifier, hash that userIdentifier and then try again.
       // This is because we switched from hashing the Apple provided userIdentifier to directly storing it.
@@ -160,7 +160,7 @@ async function validateUserId(req: express.Request, res: express.Response, next:
 
       user = hashedResult.safeIndex(0);
 
-      if (user !== undefined) {
+      if (user !== undefined && user !== null) {
         await updateUserForUserIdentifierHashedUserIdentifier(
           databaseConnection,
           validatedUserIdentifier,
@@ -169,7 +169,7 @@ async function validateUserId(req: express.Request, res: express.Response, next:
       }
     }
 
-    if (user === undefined) {
+    if (user === undefined || user === null) {
       // userId does not exist in the table
       throw new HoundError('No user found or invalid permissions', validateUserId, ERROR_CODES.PERMISSION.NO.USER);
     }
@@ -193,13 +193,13 @@ async function validateFamilyId(req: express.Request, res: express.Response, nex
     const familyId = formatUnknownString(req.params['familyId']);
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
 
-    if (validatedUserId === undefined) {
+    if (validatedUserId === undefined || validatedUserId === null) {
       throw new HoundError('validatedUserId missing', validateFamilyId, ERROR_CODES.VALUE.INVALID);
     }
-    if (familyId === undefined) {
+    if (familyId === undefined || familyId === null) {
       throw new HoundError('familyId missing', validateFamilyId, ERROR_CODES.VALUE.INVALID);
     }
-    if (databaseConnection === undefined) {
+    if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', validateFamilyId, ERROR_CODES.VALUE.INVALID);
     }
 
@@ -215,7 +215,7 @@ async function validateFamilyId(req: express.Request, res: express.Response, nex
 
     const family = result.safeIndex(0);
 
-    if (family === undefined) {
+    if (family === undefined || family === null) {
       // familyId does not exist in the table
       throw new HoundError('No family found or invalid permissions', validateFamilyId, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
@@ -240,13 +240,13 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
     const dogId = formatNumber(req.params['dogId']);
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
 
-    if (validatedFamilyId === undefined) {
+    if (validatedFamilyId === undefined || validatedFamilyId === null) {
       throw new HoundError('validatedFamilyId missing', validateDogId, ERROR_CODES.VALUE.INVALID);
     }
-    if (dogId === undefined) {
+    if (dogId === undefined || dogId === null) {
       throw new HoundError('dogId missing', validateDogId, ERROR_CODES.VALUE.INVALID);
     }
-    if (databaseConnection === undefined) {
+    if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', validateDogId, ERROR_CODES.VALUE.INVALID);
     }
 
@@ -264,7 +264,7 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
 
     const dog = dogs.safeIndex(0);
 
-    if (dog === undefined) {
+    if (dog === undefined || dog === null) {
       // the dogId does not exist and/or the user does not have access to that dogId
       throw new HoundError('No dog found or invalid permissions', validateDogId, ERROR_CODES.PERMISSION.NO.DOG);
     }
@@ -293,13 +293,13 @@ async function validateLogId(req: express.Request, res: express.Response, next: 
   const logId = formatNumber(req.params['logId']);
   const { databaseConnection } = req.houndDeclarationExtendedProperties;
 
-  if (validatedDogId === undefined) {
+  if (validatedDogId === undefined || validatedDogId === null) {
     throw new HoundError('validatedDogId missing', validateLogId, ERROR_CODES.VALUE.INVALID);
   }
-  if (logId === undefined) {
+  if (logId === undefined || logId === null) {
     throw new HoundError('logId missing', validateLogId, ERROR_CODES.VALUE.INVALID);
   }
-  if (databaseConnection === undefined) {
+  if (databaseConnection === undefined || databaseConnection === null) {
     throw new HoundError('databaseConnection missing', validateLogId, ERROR_CODES.VALUE.INVALID);
   }
 
@@ -319,7 +319,7 @@ async function validateLogId(req: express.Request, res: express.Response, next: 
     const log = logs.safeIndex(0);
     // search query result to find if the logIds linked to the dogIds match the logId provided, match means the user owns that logId
 
-    if (log === undefined) {
+    if (log === undefined || log === null) {
       // the logId does not exist and/or the dog does not have access to that logId
       throw new HoundError('No logs found or invalid permissions', validateLogId, ERROR_CODES.PERMISSION.NO.LOG);
     }
@@ -349,13 +349,13 @@ async function validateParamsReminderId(req: express.Request, res: express.Respo
     const reminderId = formatNumber(req.params['reminderId']);
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
 
-    if (validatedDogId === undefined) {
+    if (validatedDogId === undefined || validatedDogId === null) {
       throw new HoundError('validatedDogId missing', validateParamsReminderId, ERROR_CODES.VALUE.INVALID);
     }
-    if (reminderId === undefined) {
+    if (reminderId === undefined || reminderId === null) {
       throw new HoundError('reminderId missing', validateParamsReminderId, ERROR_CODES.VALUE.INVALID);
     }
-    if (databaseConnection === undefined) {
+    if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', validateParamsReminderId, ERROR_CODES.VALUE.INVALID);
     }
 
@@ -375,7 +375,7 @@ async function validateParamsReminderId(req: express.Request, res: express.Respo
 
     // search query result to find if the reminderIds linked to the dogIds match the reminderId provided, match means the user owns that reminderId
 
-    if (reminder === undefined) {
+    if (reminder === undefined || reminder === null) {
       // the reminderId does not exist and/or the dog does not have access to that reminderId
       throw new HoundError('No reminders found or invalid permissions', validateParamsReminderId, ERROR_CODES.PERMISSION.NO.REMINDER);
     }
@@ -401,13 +401,13 @@ async function validateBodyReminderId(req: express.Request, res: express.Respons
     const remindersDictionary = formatArray(req.body['reminders'] ?? [req.body]) as (Dictionary[] | undefined);
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
 
-    if (databaseConnection === undefined) {
+    if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', validateBodyReminderId, ERROR_CODES.VALUE.INVALID);
     }
-    if (validatedDogId === undefined) {
+    if (validatedDogId === undefined || validatedDogId === null) {
       throw new HoundError('validatedDogId missing', validateBodyReminderId, ERROR_CODES.VALUE.INVALID);
     }
-    if (remindersDictionary === undefined) {
+    if (remindersDictionary === undefined || remindersDictionary === null) {
       throw new HoundError('remindersDictionary missing', validateBodyReminderId, ERROR_CODES.VALUE.INVALID);
     }
 
@@ -416,7 +416,7 @@ async function validateBodyReminderId(req: express.Request, res: express.Respons
     remindersDictionary.forEach((reminderDictionary) => {
       const reminderId = formatNumber(reminderDictionary['reminderId']);
 
-      if (reminderId === undefined) {
+      if (reminderId === undefined || reminderId === null) {
         throw new HoundError('reminderId missing', validateBodyReminderId, ERROR_CODES.VALUE.INVALID);
       }
 
@@ -437,7 +437,7 @@ async function validateBodyReminderId(req: express.Request, res: express.Respons
     queriedReminders.forEach((queriedReminderResult) => {
       const queriedReminder = queriedReminderResult.safeIndex(0);
 
-      if (queriedReminder === undefined) {
+      if (queriedReminder === undefined || queriedReminder === null) {
         // the reminderId does not exist and/or the dog does not have access to that reminderId
         // eslint-disable-next-line no-await-in-loop
         throw new HoundError('No reminders found or invalid permissions', validateBodyReminderId, ERROR_CODES.PERMISSION.NO.REMINDER);

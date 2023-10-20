@@ -80,7 +80,7 @@ function sendAPN(
 ): void {
   const { userNotificationToken } = userNotificationConfiguration;
 
-  if (userNotificationToken === undefined) {
+  if (userNotificationToken === undefined || userNotificationToken === null) {
     return;
   }
 

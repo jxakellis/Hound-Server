@@ -93,7 +93,7 @@ async function validateSignedPayload(signedPayload: string): Promise<{
 }> {
   const notification = await validateNotificationSignedPayload(signedPayload);
 
-  if (notification === undefined) {
+  if (notification === undefined || notification === null) {
     throw new HoundError('notification missing', validateSignedPayload, ERROR_CODES.VALUE.MISSING);
   }
 
@@ -103,10 +103,10 @@ async function validateSignedPayload(signedPayload: string): Promise<{
   const transactionInfo = await validateTransactionSignedPayload(data.signedTransactionInfo);
   const renewalInfo = await validateRenewalInfoSignedPayload(data.signedRenewalInfo);
 
-  if (transactionInfo === undefined) {
+  if (transactionInfo === undefined || transactionInfo === null) {
     throw new HoundError('transactionInfo missing', validateSignedPayload, ERROR_CODES.VALUE.MISSING);
   }
-  if (renewalInfo === undefined) {
+  if (renewalInfo === undefined || renewalInfo === null) {
     throw new HoundError('renewalInfo missing', validateSignedPayload, ERROR_CODES.VALUE.MISSING);
   }
 
