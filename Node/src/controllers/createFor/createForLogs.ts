@@ -29,12 +29,12 @@ async function createLogForUserIdDogId(databaseConnection: Queryable, log: NotYe
       (
         dogId, userId,
         logDate, logNote, logAction, logCustomActionName,
-        logLastModified, logIsDeleted
+        logLastModified, logIsDeleted,
         )
         VALUES (
           ?, ?, 
           ?, ?, ?, ?,
-          CURRENT_TIMESTAMP(), 0
+          CURRENT_TIMESTAMP(), 0,
           )`,
     [
       log.dogId, log.userId,
