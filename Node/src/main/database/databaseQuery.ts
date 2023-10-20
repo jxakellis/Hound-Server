@@ -34,6 +34,9 @@ const databaseQuery = <T>(
       SQLVariables,
       (error, result) => {
         if (result === undefined || result === null) {
+          console.log(SQLString);
+          console.log(SQLVariables);
+          console.log(error);
           // error when trying to do query to database
           reject(new HoundError(undefined, databaseQuery, undefined, error));
         }
