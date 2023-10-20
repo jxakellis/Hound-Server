@@ -56,6 +56,11 @@ class HoundError extends Error {
   sourceFunction: (string | undefined);
 
   constructor(forCustomMessage?: string, forSourceFunction?: { name: string }, forCode?: { ERROR_CODE_FROM_ERROR_CODES: string }, fromError?: unknown) {
+    console.log('HoundError');
+    console.log(forCustomMessage);
+    console.log(forSourceFunction);
+    console.log(forCode);
+    console.log(fromError);
     // We want the message to be the customMessage (if supplied), otherwise try to extract it fromError, otherwise result to default
     let customMessage = forCustomMessage;
 
