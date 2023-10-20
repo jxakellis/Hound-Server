@@ -96,10 +96,6 @@ async function validateUserIdentifier(req: express.Request, res: express.Respons
     }
 
     // Its acceptable for user to be undefined. This is because the request could be creating a user.
-    if (user === undefined || user === null) {
-      // userId does not exist in the table
-      throw new HoundError('No user found or invalid permissions', validateUserIdentifier, ERROR_CODES.PERMISSION.NO.USER);
-    }
 
     req.houndDeclarationExtendedProperties.validatedVariables.validatedUserIdentifier = userIdentifier;
   }
@@ -132,7 +128,7 @@ async function validateUserId(req: express.Request, res: express.Response, next:
     }
 
     // we are verifying that a user is able to use the provided userId, and to do so they must know the corresponding secret (the userIdentifier)
-    const regularResult = await databaseQuery<PublicUsersRow[]>(
+    const result = await databaseQuery<PublicUsersRow[]>(
       databaseConnection,
       `SELECT ${publicUsersColumns}
         FROM users u
@@ -141,33 +137,7 @@ async function validateUserId(req: express.Request, res: express.Response, next:
       [userId, validatedUserIdentifier],
     );
 
-    let user = regularResult.safeIndex(0);
-
-    if (user === undefined || user === null) {
-      const hashedUserIdentifier = hash(validatedUserIdentifier);
-      // If we can't find a user for a userIdentifier, hash that userIdentifier and then try again.
-      // This is because we switched from hashing the Apple provided userIdentifier to directly storing it.
-      // If query is successful, change saved userIdentifier and return result
-
-      const hashedResult = await databaseQuery<PublicUsersRow[]>(
-        databaseConnection,
-        `SELECT ${publicUsersColumns}
-            FROM users u
-            WHERE userId = ? AND userIdentifier = ?
-            LIMIT 1`,
-        [userId, hashedUserIdentifier],
-      );
-
-      user = hashedResult.safeIndex(0);
-
-      if (user !== undefined && user !== null) {
-        await updateUserForUserIdentifierHashedUserIdentifier(
-          databaseConnection,
-          validatedUserIdentifier,
-          hashedUserIdentifier,
-        );
-      }
-    }
+    const user = result.safeIndex(0);
 
     if (user === undefined || user === null) {
       // userId does not exist in the table
