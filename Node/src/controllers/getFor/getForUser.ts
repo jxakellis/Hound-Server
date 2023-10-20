@@ -13,7 +13,7 @@ import { updateUserForUserIdentifierHashedUserIdentifier } from '../updateFor/up
 async function getPrivateCombinedUsersInformation(databaseConnection: Queryable, userIdentifier: string): Promise<PrivateCombinedUsersInformation | undefined> {
   // userIdentifier method of finding corresponding user(s)
   // have to specifically reference the columns, otherwise fm.userId will override u.userId.
-  // Therefore setting userId to null (if there is no family member) even though the userId isn't null.
+  // Therefore setting userId to undefined (if there is no family member) even though the userId isn't undefined.
   const result1 = await databaseQuery<PrivateCombinedUsersInformation[]>(
     databaseConnection,
     `SELECT ${privateUsersColumns}, fm.familyId, ${userConfigurationColumns}

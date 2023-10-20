@@ -99,7 +99,7 @@ async function getAllTransactions(databaseConnection: Queryable, familyMemberUse
  * 1. Attempts to find users record with same appAccountToken, returns userId if found
  * 2. Attempts to find transactions record with same originalTransactionId, returns userId if found
  * 3. Attempts to find transactions record with same transactionId, returns userId if found
- * 4. Returns null
+ * 4. Returns undefined
  * @param {*} databaseConnection
  * @param {*} appAccountToken
  * @param {*} transactionId

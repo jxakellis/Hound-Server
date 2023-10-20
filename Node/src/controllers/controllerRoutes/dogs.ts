@@ -37,7 +37,7 @@ async function getDogs(req: express.Request, res: express.Response): Promise<voi
       const result = await getDogForDogId(databaseConnection, validatedDogId, isRetrievingReminders, isRetrievingLogs, previousDogManagerSynchronization);
 
       if (result === undefined) {
-        throw new HoundError('getDogForDogId  result undefined', getDogs, ERROR_CODES.VALUE.INVALID);
+        throw new HoundError('getDogForDogId result undefined', getDogs, ERROR_CODES.VALUE.INVALID);
       }
       return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
     }

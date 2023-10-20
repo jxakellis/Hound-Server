@@ -74,7 +74,7 @@ async function isUserIdInFamily(databaseConnection: Queryable, userId: string): 
 /**
  * @param {*} databaseConnection
  * @param {*} familyId
- * @returns userId of family's head or null
+ * @returns userId of family's head or undefined
  * @throws If an error is encountered
  */
 async function getFamilyHeadUserId(databaseConnection: Queryable, userId: string): Promise<string | undefined> {
@@ -98,7 +98,7 @@ async function getFamilyHeadUserId(databaseConnection: Queryable, userId: string
 /**
  * @param {*} databaseConnection
  * @param {*} userId the userId of a family member of some family
- * @returns familyId of the user's family or null
+ * @returns familyId of the user's family or undefined
  * @throws If an error is encountered
  */
 async function getFamilyId(databaseConnection: Queryable, userId: string): Promise<string | undefined> {

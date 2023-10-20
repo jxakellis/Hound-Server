@@ -32,7 +32,7 @@ async function deleteFamily(databaseConnection: Queryable, familyId: string, fam
 
   /*
     If the active subscription's productId isn't DEFAULT_SUBSCRIPTION_PRODUCT_ID, that means the family has an active subscription
-    If the active subscription is auto-renewal status is true or null, then we can't let the user delete their family.
+    If the active subscription is auto-renewal status is true or undefined, then we can't let the user delete their family.
     This is because the subscription could auto-renew after the user left their existing family.
     This would cause problems, as if they are in a new family as a non-family head or are in no family, as the subscription cannot attach anywhere.
 

@@ -7,7 +7,7 @@ import { logServerError } from '../../logging/logServerError.js';
 import { formatUnknownString } from '../../format/formatObject.js';
 import { SERVER } from '../../server/globalConstants.js';
 
-/// Takes a signedPayload from an App Store Server Notificatio. Returns payload if successfully decoded, otherwise returns null.
+/// Takes a signedPayload from an App Store Server Notificatio. Returns payload if successfully decoded, otherwise returns undefined.
 async function validateNotificationSignedPayload(signedPayload: string): Promise<DecodedNotificationPayload | undefined> {
   let payload: DecodedNotificationPayload;
   try {
@@ -32,7 +32,7 @@ async function validateNotificationSignedPayload(signedPayload: string): Promise
   return payload;
 }
 
-/// Takes a signedTransactionInfo from the payload of an App Store Server Notification. Returns payload if successfully decoded, otherwise returns null.
+/// Takes a signedTransactionInfo from the payload of an App Store Server Notification. Returns payload if successfully decoded, otherwise returns undefined.
 async function validateTransactionSignedPayload(signedTransactionInfo: string): Promise<JWSTransactionDecodedPayload | undefined> {
   let payload: JWSTransactionDecodedPayload;
   try {
@@ -57,7 +57,7 @@ async function validateTransactionSignedPayload(signedTransactionInfo: string): 
   return payload;
 }
 
-/// Takes a signedRenewalInfo from the payload of an App Store Server Notification. Returns payload if successfully decoded, otherwise returns null.
+/// Takes a signedRenewalInfo from the payload of an App Store Server Notification. Returns payload if successfully decoded, otherwise returns undefined.
 async function validateRenewalInfoSignedPayload(signedRenewalInfo: string): Promise<JWSRenewalInfoDecodedPayload | undefined> {
   let payload: JWSRenewalInfoDecodedPayload;
   try {
@@ -93,7 +93,7 @@ async function validateSignedPayload(signedPayload: string): Promise<{
 }> {
   const notification = await validateNotificationSignedPayload(signedPayload);
 
-  if (notification === null || notification === undefined) {
+  if (notification === undefined) {
     throw new HoundError('notification missing', validateSignedPayload, ERROR_CODES.VALUE.MISSING);
   }
 

@@ -12,7 +12,10 @@ async function logResponse(req: express.Request, res: express.Response, response
 
   const responseBody = formatUnknownString(forResponseBody, 500);
 
-  responseLogger.debug(`Response for ${req.method} ${originalUrl}\n With body: ${JSON.stringify(responseBody)}`);
+  responseLogger.debug(`
+  \n RESPONSE FOR ${req.method}
+  \n AT URL ${originalUrl}
+  \n WITH BODY ${responseBody}`);
 
   if (req.houndDeclarationExtendedProperties.requestId === undefined || res.houndDeclarationExtendedProperties.responseId !== undefined) {
     return;

@@ -84,7 +84,7 @@ async function createUpdateTransaction(
 
   // We attempt to insert the transaction.
   // If we encounter a duplicate key error, attempt to update values that could have possible been updated since the transaction was last created
-  // We only update these values if they have been provided a value, as its possible to invoke this function with null, e.g. autoRenewProductId, and then we defaul it to a value, e.g. productId
+  // We only update these values if they have been provided a value, as its possible to invoke this function with undefined, e.g. autoRenewProductId, and then we defaul it to a value, e.g. productId
   await databaseQuery(
     databaseConnection,
     `INSERT INTO transactions
@@ -114,13 +114,13 @@ async function createUpdateTransaction(
     [
       userId,
       numberOfFamilyMembers, numberOfDogs,
-      // We null-coaless the values here in the case they don't exist
+      // We undefined-coaless the values here in the case they don't exist
       renewalInfo?.autoRenewProductId ?? transactionInfo.productId, renewalInfo?.autoRenewStatus ?? 1,
       transactionInfo.environment, transactionInfo.expiresDate, transactionInfo.inAppOwnershipType,
       transactionInfo.offerIdentifier, transactionInfo.offerType, transactionInfo.originalTransactionId, transactionInfo.productId,
       transactionInfo.purchaseDate, transactionInfo.quantity, transactionInfo.revocationReason, transactionInfo.subscriptionGroupIdentifier,
       transactionInfo.transactionId, transactionInfo.transactionReason, transactionInfo.webOrderLineItemId,
-      // We pass through the true, non null-coalessed, values here for the UPDATE statement
+      // We pass through the true, non undefined-coalessed, values here for the UPDATE statement
       renewalInfo?.autoRenewProductId,
       renewalInfo?.autoRenewStatus,
     ],
@@ -183,7 +183,7 @@ async function createTransactionForAppStoreReceiptURL(databaseConnection: Querya
         error,
       ),
     );
-    return null;
+    return undefined;
   }));
 
   // Execute all Promises concurrently
