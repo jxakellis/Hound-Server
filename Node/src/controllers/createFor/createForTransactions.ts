@@ -8,6 +8,7 @@ import { SERVER, SUBSCRIPTION } from '../../main/server/globalConstants.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 import { logServerError } from '../../main/logging/logServerError.js';
 import { formatDate } from '../../main/format/formatObject.js';
+import { getActiveTransaction } from '../getFor/getForTransactions.js';
 
 /**
  * Processes and updates a transaction in the database.
@@ -83,6 +84,8 @@ async function createUpdateTransaction(
     throw new HoundError('You are not the family head. Only the family head can modify the family subscription', createUpdateTransaction, ERROR_CODES.PERMISSION.INVALID.FAMILY);
   }
 
+  console.log(await getActiveTransaction(databaseConnection, userId));
+
   // We attempt to insert the transaction.
   // If we encounter a duplicate key error, attempt to update values that could have possible been updated since the transaction was last created
   // We only update these values if they have been provided a value, as its possible to invoke this function with undefined, e.g. autoRenewProductId, and then we defaul it to a value, e.g. productId
@@ -134,6 +137,8 @@ async function createUpdateTransaction(
           * Upgrades make new transactions (so new transaction is now renewing) and downgrades update existing transactions (so existing transaction is still renewing)
           */
 
+  console.log(await getActiveTransaction(databaseConnection, userId));
+
   await databaseQuery(
     databaseConnection,
     `
@@ -153,6 +158,8 @@ async function createUpdateTransaction(
               END`,
     [userId, userId],
   );
+
+  console.log(await getActiveTransaction(databaseConnection, userId));
 }
 
 async function createTransactionForAppStoreReceiptURL(databaseConnection: Queryable, userId: string, appStoreReceiptURL: string): Promise<void> {
