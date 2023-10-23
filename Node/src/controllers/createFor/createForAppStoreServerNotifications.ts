@@ -44,7 +44,7 @@ async function insertAppStoreServerNotification(
   // A string that indicates the App Store Server Notification version number.
   const { version } = notification;
   // The UNIX time, in milliseconds, that the App Store signed the JSON Web Signature data.
-  const signedDate = formatDate(notification.signedDate);
+  const signedDate = formatDate(formatNumber(notification.signedDate));
 
   // https://developer.apple.com/documentation/appstoreservernotifications/data
   // The unique identifier of the app that the notification applies to. This property is available for apps that are downloaded from the App Store; it isn’t present in the sandbox environment.
@@ -96,7 +96,7 @@ async function insertAppStoreServerNotification(
   // The server environment, either sandbox or production.
   const transactionInfoEnvironment = transactionInfo.environment;
   // The UNIX time, in milliseconds, the subscription expires or renews.
-  const transactionInfoExpiresDate = formatDate(transactionInfo.expiresDate);
+  const transactionInfoExpiresDate = formatDate(formatNumber(transactionInfo.expiresDate));
   // A string that describes whether the transaction was purchased by the user, or is available to them through Family Sharing.
   const transactionInfoInAppOwnershipType = transactionInfo.inAppOwnershipType;
   // A Boolean value that indicates whether the user upgraded to another subscription.
@@ -106,21 +106,21 @@ async function insertAppStoreServerNotification(
   // A value that represents the promotional offer type.
   const transactionInfoOfferType = transactionInfo.offerType;
   // The UNIX time, in milliseconds, that represents the purchase date of the original transaction identifier.
-  const transactionInfoOriginalPurchaseDate = formatDate(transactionInfo.originalPurchaseDate);
+  const transactionInfoOriginalPurchaseDate = formatDate(formatNumber(transactionInfo.originalPurchaseDate));
   // The transaction identifier of the original purchase.
   const transactionInfoOriginalTransactionId = transactionInfo.originalTransactionId;
   // The product identifier of the in-app purchase.
   const transactionInfoProductId = transactionInfo.productId;
   // The UNIX time, in milliseconds, that the App Store charged the user’s account for a purchase, restored product, subscription, or subscription renewal after a lapse.
-  const transactionInfoPurchaseDate = formatDate(transactionInfo.purchaseDate);
+  const transactionInfoPurchaseDate = formatDate(formatNumber(transactionInfo.purchaseDate));
   // The number of consumable products the user purchased.
   const transactionInfoQuantity = transactionInfo.quantity;
   // The UNIX time, in milliseconds, that the App Store refunded the transaction or revoked it from Family Sharing.
-  const transactionInfoRevocationDate = formatDate(transactionInfo.revocationDate);
+  const transactionInfoRevocationDate = formatDate(formatNumber(transactionInfo.revocationDate));
   // The reason that the App Store refunded the transaction or revoked it from Family Sharing.
   const transactionInfoRevocationReason = transactionInfo.revocationReason;
   // The UNIX time, in milliseconds, that the App Store signed the JSON Web Signature (JWS) data.
-  const transactionInfoSignedDate = formatDate(transactionInfo.signedDate);
+  const transactionInfoSignedDate = formatDate(formatNumber(transactionInfo.signedDate));
   // The identifier of the subscription group the subscription belongs to.
   const transactionInfoSubscriptionGroupIdentifier = transactionInfo.subscriptionGroupIdentifier;
   // The unique identifier of the transaction.
