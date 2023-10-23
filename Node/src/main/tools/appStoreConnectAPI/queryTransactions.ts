@@ -18,12 +18,11 @@ import { HoundError } from '../../server/globalErrors.js';
 async function queryTransactionHistoryFromAppStoreServerAPI(transactionId: string, revision?: string): Promise<{ transactionInfo: JWSTransactionDecodedPayload}[]> {
   // Query Apple's servers to attempt to get the transaction history linked to a transactionId from an AppStoreReceiptURL
   let response: HistoryResponse;
-  console.log(transactionId, revision);
   try {
+    // If we have no revision, it must be completely excluded from the body
     response = await api.getTransactionHistory(transactionId, revision !== undefined && revision !== null
       ? {
         sort: SortParameter.Descending,
-        // must be undefined, not null
         revision,
       }
       : {

@@ -157,13 +157,9 @@ async function createUpdateTransaction(
 async function createTransactionForAppStoreReceiptURL(databaseConnection: Queryable, userId: string, appStoreReceiptURL: string): Promise<void> {
   const transactionId = extractTransactionIdFromAppStoreReceiptURL(appStoreReceiptURL);
 
-  console.log(transactionId);
-
   if (transactionId === undefined || transactionId === null) {
     throw new HoundError('transactionId couldn\'t be constructed with extractTransactionIdFromAppStoreReceiptURL', createTransactionForAppStoreReceiptURL, ERROR_CODES.VALUE.INVALID);
   }
-
-  console.log(transactionId);
 
   const subscriptions = await queryAllSubscriptionsForTransactionId(transactionId.toString());
 
