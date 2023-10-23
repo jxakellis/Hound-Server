@@ -1,5 +1,5 @@
 import express from 'express';
-import { addAppVersionToLogRequest, addFamilyIdToLogRequest, addUserIdToLogRequest } from 'src/main/logging/logRequest.js';
+import { addAppVersionToLogRequest, addFamilyIdToLogRequest, addUserIdToLogRequest } from '../../logging/logRequest.js';
 import { databaseQuery } from '../../database/databaseQuery.js';
 import {
   formatUnknownString, formatNumber, formatArray,
