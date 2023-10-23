@@ -84,6 +84,7 @@ async function createUpdateTransaction(
     throw new HoundError('You are not the family head. Only the family head can modify the family subscription', createUpdateTransaction, ERROR_CODES.PERMISSION.INVALID.FAMILY);
   }
 
+  console.log(`\nbefore inserting ${transactionInfo.productId}, ${renewalInfo?.autoRenewProductId}`);
   console.log(await getActiveTransaction(databaseConnection, userId));
 
   // We attempt to insert the transaction.
