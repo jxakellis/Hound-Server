@@ -226,7 +226,7 @@ async function createASSNForSignedPayload(databaseConnection: Queryable, signedP
 
   console.log('createASSNForSignedPayload didInsertAppStoreServerNotification', didInsertAppStoreServerNotification);
   // If the ASSN already existed in our database, then the function returns false. This means the ASSN has already been processed and we shouldn't attempt to process it again.
-  if (didInsertAppStoreServerNotification === false) {
+  if (didInsertAppStoreServerNotification === true) {
     return;
   }
 
