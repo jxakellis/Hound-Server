@@ -20,11 +20,15 @@ async function queryTransactionHistoryFromAppStoreServerAPI(transactionId: strin
   let response: HistoryResponse;
   console.log(transactionId, revision);
   try {
-    response = await api.getTransactionHistory(transactionId, {
-      sort: SortParameter.Descending,
-      // must be undefined, not null
-      revision,
-    });
+    response = await api.getTransactionHistory(transactionId, revision !== undefined && revision !== null
+      ? {
+        sort: SortParameter.Descending,
+        // must be undefined, not null
+        revision,
+      }
+      : {
+        sort: SortParameter.Descending,
+      });
   }
   catch (error) {
     logServerError(
