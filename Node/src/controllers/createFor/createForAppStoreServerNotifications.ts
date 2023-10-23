@@ -211,8 +211,6 @@ async function createASSNForSignedPayload(databaseConnection: Queryable, signedP
     notification, data, renewalInfo, transactionInfo,
   } = await validateSignedPayload(signedPayload);
 
-  console.log('createASSNForSignedPayload');
-
   // The in-app purchase event for which the App Store sent this version 2 notification.
   const { notificationType } = notification;
   // Additional information that identifies the notification event, or an empty string. The subtype applies only to select version 2 notifications.
@@ -224,18 +222,15 @@ async function createASSNForSignedPayload(databaseConnection: Queryable, signedP
 
   const didInsertAppStoreServerNotification = await insertAppStoreServerNotification(databaseConnection, notification, data, renewalInfo, transactionInfo);
 
-  console.log('createASSNForSignedPayload didInsertAppStoreServerNotification', didInsertAppStoreServerNotification);
   // If the ASSN already existed in our database, then the function returns false. This means the ASSN has already been processed and we shouldn't attempt to process it again.
   if (didInsertAppStoreServerNotification === true) {
     return;
   }
 
-  console.log('createASSNForSignedPayload transactionInfo.type', transactionInfo.type);
   if (transactionInfo.type !== 'Auto-Renewable Subscription') {
     return;
   }
 
-  console.log('createASSNForSignedPayload notificationType', notificationType);
   // New notificationTypes could be added
   switch (notificationType) {
     case NotificationType.DidRenew:
@@ -275,7 +270,6 @@ async function createASSNForSignedPayload(databaseConnection: Queryable, signedP
 
   const transactionId = formatNumber(transactionInfo.transactionId);
 
-  console.log('createASSNForSignedPayload transactionId', transactionId);
   // Check to see if the notification provided a transactionId
   if (transactionId === undefined || transactionId === null) {
     throw new HoundError('transactionId missing', createASSNForSignedPayload, ERROR_CODES.VALUE.MISSING);
@@ -288,14 +282,11 @@ async function createASSNForSignedPayload(databaseConnection: Queryable, signedP
     formatNumber(transactionInfo.originalTransactionId),
   );
 
-  console.log('createASSNForSignedPayload userId', userId);
   if (userId === undefined || userId === null) {
     // Unable to find the userId associated with the transaction.
     // This likely means this is the user's first transaction with Hound and it wasn't done through the app (i.e. through Apple's external offer code or IAP page  )
     return;
   }
-
-  console.log(`ASSN createUpdateTransaction ${transactionInfo.productId} ${renewalInfo.autoRenewProductId} ${transactionInfo.purchaseDate}`);
 
   await createUpdateTransaction(
     databaseConnection,

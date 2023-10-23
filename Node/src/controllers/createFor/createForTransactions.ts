@@ -84,8 +84,6 @@ async function createUpdateTransaction(
     throw new HoundError('You are not the family head. Only the family head can modify the family subscription', createUpdateTransaction, ERROR_CODES.PERMISSION.INVALID.FAMILY);
   }
 
-  const beforeInsAct = await getActiveTransaction(databaseConnection, userId);
-
   // We attempt to insert the transaction.
   // If we encounter a duplicate key error, attempt to update values that could have possible been updated since the transaction was last created
   // We only update these values if they have been provided a value, as its possible to invoke this function with undefined, e.g. autoRenewProductId, and then we defaul it to a value, e.g. productId
@@ -138,8 +136,6 @@ async function createUpdateTransaction(
           * Upgrades make new transactions (so new transaction is now renewing) and downgrades update existing transactions (so existing transaction is still renewing)
           */
 
-  const afterInsAct = await getActiveTransaction(databaseConnection, userId);
-
   await databaseQuery(
     databaseConnection,
     `
@@ -159,12 +155,6 @@ async function createUpdateTransaction(
               END`,
     [userId, userId],
   );
-
-  const afterUpAct = await getActiveTransaction(databaseConnection, userId);
-  console.log(`\n\ncreateUpdateTransaction for ${transactionInfo.productId}, ${renewalInfo?.autoRenewProductId} ${formatDate(transactionInfo.purchaseDate)}`);
-  console.log('Before INSERT INTO transactions', beforeInsAct);
-  console.log('After INSERT INTO transactions', afterInsAct);
-  console.log('After UPDATE transactions', afterUpAct, '\n');
 }
 
 async function createTransactionForAppStoreReceiptURL(databaseConnection: Queryable, userId: string, appStoreReceiptURL: string): Promise<void> {

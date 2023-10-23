@@ -94,7 +94,6 @@ async function querySubscriptionStatusesFromAppStoreAPI(transactionId: string): 
   // We can add a status filter(s) to filter subscriptions by their status (e.g. active, expired...), however, for now we get everything.
   try {
     statusResponse = await api.getSubscriptionStatuses(transactionId);
-    console.log('querySubscriptionStatusesFromAppStoreAPI getSubscriptionStatuses', statusResponse);
   }
   catch (error) {
     logServerError(
@@ -108,12 +107,10 @@ async function querySubscriptionStatusesFromAppStoreAPI(transactionId: string): 
     return [];
   }
 
-  console.log('querySubscriptionStatusesFromAppStoreAPI statusResponse.bundleId', statusResponse.bundleId);
   if (formatUnknownString(statusResponse.bundleId) !== SERVER.APP_BUNDLE_ID) {
     return [];
   }
 
-  console.log('querySubscriptionStatusesFromAppStoreAPI statusResponse.environment', statusResponse.environment);
   if (formatUnknownString(statusResponse.environment) !== SERVER.ENVIRONMENT) {
     return [];
   }
@@ -124,7 +121,6 @@ async function querySubscriptionStatusesFromAppStoreAPI(transactionId: string): 
 
   // statusResponse.data is an array of SubscriptionGroupIdentifierItem
   const subscriptionGroupIdentifierItems = statusResponse.data;
-  console.log('querySubscriptionStatusesFromAppStoreAPI subscriptionGroupIdentifierItems', subscriptionGroupIdentifierItems);
 
   subscriptionGroupIdentifierItems.forEach((subscriptionGroupIdentifierItem) => {
     // https://developer.apple.com/documentation/appstoreserverapi/subscriptiongroupidentifieritem
@@ -132,7 +128,6 @@ async function querySubscriptionStatusesFromAppStoreAPI(transactionId: string): 
     const lastTransactionsItems = subscriptionGroupIdentifierItem.lastTransactions;
 
     lastTransactionsItems.forEach((lastTransactionsItem) => {
-      console.log('querySubscriptionStatusesFromAppStoreAPI lastTransactionsItem', lastTransactionsItem);
       // https://developer.apple.com/documentation/appstoreserverapi/lasttransactionsitem
       // each lastTransactionsItem has an originalTransactionId, status, signedRenewalInfo, and signedTransactionInfo
 
@@ -158,8 +153,6 @@ async function querySubscriptionStatusesFromAppStoreAPI(transactionId: string): 
     return [];
   }
 
-  console.log('querySubscriptionStatusesFromAppStoreAPI decodedTransactionInfos', decodedTransactionInfos);
-
   let decodedRenewalInfos: JWSRenewalInfoDecodedPayload[] = [];
   try {
     decodedRenewalInfos = decodedRenewalInfos.concat(await Promise.all(renewalInfoPromises));
@@ -176,8 +169,6 @@ async function querySubscriptionStatusesFromAppStoreAPI(transactionId: string): 
     return [];
   }
 
-  console.log('querySubscriptionStatusesFromAppStoreAPI decodedRenewalInfos', decodedRenewalInfos);
-
   // Combines renewalInfo with a transactionInfo (allowing renewalInfo to override) into one key-value object
   const results: { transactionInfo: JWSTransactionDecodedPayload; renewalInfo: JWSRenewalInfoDecodedPayload }[] = decodedTransactionInfos.map(
     (transactionInfo, index) => ({
@@ -185,8 +176,6 @@ async function querySubscriptionStatusesFromAppStoreAPI(transactionId: string): 
       renewalInfo: decodedRenewalInfos[index],
     }),
   );
-
-  console.log('querySubscriptionStatusesFromAppStoreAPI results', results);
 
   return results;
 }
