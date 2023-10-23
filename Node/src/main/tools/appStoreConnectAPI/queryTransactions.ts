@@ -176,6 +176,8 @@ async function querySubscriptionStatusesFromAppStoreAPI(transactionId: string): 
     }),
   );
 
+  console.log('querySubscriptionStatusesFromAppStoreAPI results', results);
+
   return results;
 }
 
