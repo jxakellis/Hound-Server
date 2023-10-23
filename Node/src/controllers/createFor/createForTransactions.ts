@@ -121,8 +121,8 @@ async function createUpdateTransaction(
       transactionInfo.purchaseDate, transactionInfo.quantity, transactionInfo.revocationReason, transactionInfo.subscriptionGroupIdentifier,
       transactionInfo.transactionId, transactionInfo.transactionReason, transactionInfo.webOrderLineItemId,
       // We pass through the true, non undefined-coalessed, values here for the UPDATE statement
-      renewalInfo?.autoRenewProductId,
-      renewalInfo?.autoRenewStatus,
+      renewalInfo?.autoRenewProductId, renewalInfo?.autoRenewProductId,
+      renewalInfo?.autoRenewStatus, renewalInfo?.autoRenewStatus,
     ],
   );
 
