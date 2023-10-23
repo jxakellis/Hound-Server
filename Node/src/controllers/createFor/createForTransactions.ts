@@ -33,7 +33,6 @@ async function createUpdateTransaction(
   renewalInfo: JWSRenewalInfoDecodedPayload | undefined,
   transactionInfo: JWSTransactionDecodedPayload,
 ): Promise<void> {
-  console.log(`\n\ncreateUpdateTransaction for ${transactionInfo.productId}, ${renewalInfo?.autoRenewProductId}`);
   // userId
 
   // https://developer.apple.com/documentation/appstoreservernotifications/jwstransactiondecodedpayload
@@ -85,8 +84,7 @@ async function createUpdateTransaction(
     throw new HoundError('You are not the family head. Only the family head can modify the family subscription', createUpdateTransaction, ERROR_CODES.PERMISSION.INVALID.FAMILY);
   }
 
-  console.log('Before INSERT INTO transactions');
-  console.log(await getActiveTransaction(databaseConnection, userId));
+  const beforeInsAct = await getActiveTransaction(databaseConnection, userId);
 
   // We attempt to insert the transaction.
   // If we encounter a duplicate key error, attempt to update values that could have possible been updated since the transaction was last created
@@ -139,8 +137,7 @@ async function createUpdateTransaction(
           * Upgrades make new transactions (so new transaction is now renewing) and downgrades update existing transactions (so existing transaction is still renewing)
           */
 
-  console.log('After INSERT INTO transactions');
-  console.log(await getActiveTransaction(databaseConnection, userId));
+  const afterInsAct = await getActiveTransaction(databaseConnection, userId);
 
   await databaseQuery(
     databaseConnection,
@@ -162,8 +159,11 @@ async function createUpdateTransaction(
     [userId, userId],
   );
 
-  console.log('After UPDATE transactions');
-  console.log(await getActiveTransaction(databaseConnection, userId));
+  const afterUpAct = await getActiveTransaction(databaseConnection, userId);
+  console.log(`\n\ncreateUpdateTransaction for ${transactionInfo.productId}, ${renewalInfo?.autoRenewProductId}`);
+  console.log('Before INSERT INTO transactions', beforeInsAct);
+  console.log('After INSERT INTO transactions', afterInsAct);
+  console.log('After UPDATE transactions', afterUpAct);
 }
 
 async function createTransactionForAppStoreReceiptURL(databaseConnection: Queryable, userId: string, appStoreReceiptURL: string): Promise<void> {
