@@ -1,4 +1,5 @@
 import express from 'express';
+import { addAppVersionToLogRequest, addFamilyIdToLogRequest, addUserIdToLogRequest } from 'src/main/logging/logRequest.js';
 import { databaseQuery } from '../../database/databaseQuery.js';
 import {
   formatUnknownString, formatNumber, formatArray,
@@ -25,6 +26,14 @@ async function validateAppVersion(req: express.Request, res: express.Response, n
     if (appVersion === undefined || appVersion === null) {
       throw new HoundError('appVersion missing', validateAppVersion, ERROR_CODES.VALUE.MISSING);
     }
+
+    const requestId = formatNumber(req.houndDeclarationExtendedProperties.requestId);
+
+    // We want to add app version even before its validated
+    if (requestId !== undefined && requestId !== null) {
+      addAppVersionToLogRequest(requestId, appVersion);
+    }
+
     // the user isn't on the previous or current app version
     if (SERVER.COMPATIBLE_IOS_APP_VERSIONS.includes(appVersion) === false) {
       throw new HoundError(
@@ -145,6 +154,10 @@ async function validateUserId(req: express.Request, res: express.Response, next:
     }
 
     req.houndDeclarationExtendedProperties.validatedVariables.validatedUserId = userId;
+    const requestId = formatNumber(req.houndDeclarationExtendedProperties.requestId);
+    if (requestId !== undefined && requestId !== null) {
+      addUserIdToLogRequest(requestId, userId);
+    }
   }
   catch (error) {
     // couldn't query database to find userId
@@ -191,6 +204,10 @@ async function validateFamilyId(req: express.Request, res: express.Response, nex
     }
 
     req.houndDeclarationExtendedProperties.validatedVariables.validatedFamilyId = familyId;
+    const requestId = formatNumber(req.houndDeclarationExtendedProperties.requestId);
+    if (requestId !== undefined && requestId !== null) {
+      addFamilyIdToLogRequest(requestId, familyId);
+    }
   }
   catch (error) {
     // couldn't query database to find familyId

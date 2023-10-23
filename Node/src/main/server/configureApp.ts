@@ -1,7 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 
-import { logRequest, addAppVersionToLogRequest } from '../logging/logRequest.js';
+import { logRequest } from '../logging/logRequest.js';
 import { logServerError } from '../logging/logServerError.js';
 import { configureRequestAndResponse } from './configureRequestAndResponse.js';
 import { validateAppVersion } from '../tools/validate/validateId.js';
@@ -64,7 +64,7 @@ function configureApp(app: express.Application): void {
 
   // Make sure the user is on an updated version
 
-  app.use(userPath, addAppVersionToLogRequest, validateAppVersion);
+  app.use(userPath, validateAppVersion);
 
   // Route the request to the userRouter
 

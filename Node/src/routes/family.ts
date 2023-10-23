@@ -1,7 +1,5 @@
 import express from 'express';
 
-import { addFamilyIdToLogRequest } from '../main/logging/logRequest.js';
-
 import {
   getFamily, createFamily, updateFamily, deleteFamily,
 } from '../controllers/controllerRoutes/family.js';
@@ -19,7 +17,6 @@ import { transactionsRouter } from './transactions.js';
 const familyRouter = express.Router({ mergeParams: true });
 
 familyRouter.param('familyId', validateFamilyId);
-familyRouter.param('familyId', addFamilyIdToLogRequest);
 
 familyRouter.use('/:familyId', attachActiveSubscription);
 

@@ -53,7 +53,7 @@ const ERROR_CODES = {
 };
 
 class HoundError extends Error {
-  sourceFunction: (string | undefined);
+  sourceFunctions: (string[] | undefined);
 
   constructor(forCustomMessage?: string, forSourceFunction?: { name: string }, forCode?: { ERROR_CODE_FROM_ERROR_CODES: string }, fromError?: unknown) {
     // We want the message to be the customMessage (if supplied), otherwise try to extract it fromError, otherwise result to default
@@ -73,13 +73,17 @@ class HoundError extends Error {
     super(customMessage);
 
     this.houndDeclarationCode = forCode?.ERROR_CODE_FROM_ERROR_CODES;
-    // TODO NOW make sourceFunction an array of names.
-    this.sourceFunction = forSourceFunction?.name;
+
+    this.sourceFunctions = this.sourceFunctions ?? [];
+    if (forSourceFunction !== undefined && forSourceFunction !== null) {
+      this.sourceFunctions.push(forSourceFunction?.name);
+    }
+
     // Attempt to set other parameters, using the parameters first, then fromError seconds if no value found
     if (fromError !== undefined && fromError !== null && fromError instanceof Error) {
       // code and sourceFunction are set by us. Therefore, our manual values take priority
       this.houndDeclarationCode = this.houndDeclarationCode ?? fromError.houndDeclarationCode;
-      this.sourceFunction = this.sourceFunction ?? fromError.name;
+      this.sourceFunctions.push(fromError.name);
       // cause, name, and stack aren't set by us. Therefore, override their values with fromError
       this.cause = fromError.cause;
       this.name = fromError.name;
@@ -88,9 +92,9 @@ class HoundError extends Error {
   }
 }
 
-function convertErrorToJSON(houndError?: HoundError): {code: string, message: string, sourceFunction: string, name: string, stack: string} {
+function convertErrorToJSON(houndError?: HoundError): {code: string, message: string, sourceFunctions: string, name: string, stack: string} {
   return {
-    sourceFunction: formatKnownString(houndError?.sourceFunction ?? 'Unknown Source Function'), // , 100),
+    sourceFunctions: formatKnownString(houndError?.sourceFunctions?.toString() ?? 'Unknown Source Functions'), // , 100),
     code: formatKnownString(houndError?.houndDeclarationCode ?? 'Unknown Code'), // , 500),
     // Remove all newlines, remove all carriage returns, and make all >1 length spaces into 1 length spaces
     message: formatKnownString(houndError?.message.replace('/\r?\n|\r/g', '').replace(/\s+/g, ' ') ?? 'Unknown Message'), // , 500),

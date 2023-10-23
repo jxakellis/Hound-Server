@@ -3,7 +3,7 @@ import { requestLogger } from './loggers.js';
 import { logServerError } from './logServerError.js';
 import { getDatabaseConnections } from '../database/databaseConnections.js';
 import { type ResultSetHeader, databaseQuery } from '../database/databaseQuery.js';
-import { formatUnknownString, formatNumber } from '../format/formatObject.js';
+import { formatUnknownString } from '../format/formatObject.js';
 import { HoundError, ERROR_CODES } from '../server/globalErrors.js';
 
 // Outputs request to the console and logs to database
@@ -80,19 +80,8 @@ async function logRequest(req: express.Request, res: express.Response, next: exp
   return next();
 }
 
-async function addAppVersionToLogRequest(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
+async function addAppVersionToLogRequest(requestId: number, appVersion: string): Promise<void> {
   try {
-    const requestId = formatNumber(req.houndDeclarationExtendedProperties.requestId);
-    const appVersion = formatUnknownString(req.params['appVersion']);
-
-    // We are going to be modifying a pre-existing requestId and the appVersion should exist if this function is invoked
-    if (requestId === undefined || requestId === null) {
-      return next();
-    }
-    if (appVersion === undefined || appVersion === null) {
-      return next();
-    }
-
     const { databaseConnectionForLogging } = await getDatabaseConnections();
 
     await databaseQuery(
@@ -113,22 +102,10 @@ async function addAppVersionToLogRequest(req: express.Request, res: express.Resp
       ),
     );
   }
-
-  return next();
 }
 
-async function addUserIdToLogRequest(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
+async function addUserIdToLogRequest(requestId: number, validatedUserId: string): Promise<void> {
   try {
-    const requestId = formatNumber(req.houndDeclarationExtendedProperties.requestId);
-    const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
-
-    if (requestId === undefined || requestId === null) {
-      return next();
-    }
-    if (validatedUserId === undefined || validatedUserId === null) {
-      return next();
-    }
-
     const { databaseConnectionForLogging } = await getDatabaseConnections();
 
     await databaseQuery(
@@ -149,12 +126,11 @@ async function addUserIdToLogRequest(req: express.Request, res: express.Response
       ),
     );
   }
-
-  return next();
 }
 
-async function addFamilyIdToLogRequest(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
+async function addFamilyIdToLogRequest(requestId: number, validatedFamilyId: string): Promise<void> {
   try {
+    /*
     const requestId = formatNumber(req.houndDeclarationExtendedProperties.requestId);
     const { validatedFamilyId } = req.houndDeclarationExtendedProperties.validatedVariables;
 
@@ -165,6 +141,7 @@ async function addFamilyIdToLogRequest(req: express.Request, res: express.Respon
     if (validatedFamilyId === undefined || validatedFamilyId === null) {
       return next();
     }
+    */
 
     const { databaseConnectionForLogging } = await getDatabaseConnections();
 
@@ -186,8 +163,6 @@ async function addFamilyIdToLogRequest(req: express.Request, res: express.Respon
       ),
     );
   }
-
-  return next();
 }
 
 export {

@@ -8,7 +8,7 @@ function printServerError(houndError: HoundError): void {
   const readableError = convertErrorToJSON(houndError);
 
   serverLogger.error(
-    `\nUNCAUGHT '${readableError}' FROM SOURCE FUNCTION: ${readableError.sourceFunction}
+    `\nUNCAUGHT '${readableError}' FROM SOURCE FUNCTION: ${readableError.sourceFunctions}
     \nMESSAGE: ${readableError.message}
     \nCODE: ${readableError.code}
     \nSTACK: ${readableError.stack}\n`,
@@ -29,7 +29,7 @@ async function logServerError(houndError: HoundError): Promise<void> {
       `INSERT INTO previousServerErrors
       (
         errorDate,
-        errorFunction, 
+        errorSourceFunctions, 
         errorName, 
         errorMessage, 
         errorCode, 
@@ -45,7 +45,7 @@ async function logServerError(houndError: HoundError): Promise<void> {
           )`,
       [
       // none, default value
-        formatKnownString(readableError.sourceFunction, 100),
+        formatKnownString(readableError.sourceFunctions, 500),
         formatKnownString(readableError.name, 500),
         formatKnownString(readableError.message, 500),
         formatKnownString(readableError.code, 500),

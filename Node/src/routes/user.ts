@@ -1,7 +1,5 @@
 import express from 'express';
 
-import { addUserIdToLogRequest } from '../main/logging/logRequest.js';
-
 import {
   getUser, createUser, updateUser, deleteUser,
 } from '../controllers/controllerRoutes/user.js';
@@ -20,7 +18,6 @@ const userRouter = express.Router({ mergeParams: true });
 
 userRouter.use(validateUserIdentifier);
 userRouter.param('userId', validateUserId);
-userRouter.param('userId', addUserIdToLogRequest);
 
 userRouter.use('/:userId/alert', alertRouter);
 

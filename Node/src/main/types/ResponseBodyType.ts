@@ -1,7 +1,7 @@
 type ResponseBodyType = {
     message: string
     code: string
-    sourceFunction: string
+    sourceFunctions: string
     name: string
     stack: undefined
     // THE RESPONSE SHOULD NEVER INCLUDE THE STACK. THAT IS CONFIDENTIAL
