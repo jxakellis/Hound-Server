@@ -114,7 +114,7 @@ async function createUpdateTransaction(
           ON DUPLICATE KEY UPDATE
           autoRenewProductId = CASE WHEN ? IS NOT NULL THEN ? ELSE autoRenewProductId END,
           autoRenewStatus = CASE WHEN ? IS NOT NULL THEN ? ELSE autoRenewStatus END,
-          revocationReason = VALUES(revocationReason)`,
+          revocationReason = ?`,
     [
       userId,
       numberOfFamilyMembers, numberOfDogs,
@@ -127,6 +127,7 @@ async function createUpdateTransaction(
       // We pass through the true, non undefined-coalessed, values here for the UPDATE statement
       renewalInfo?.autoRenewProductId, renewalInfo?.autoRenewProductId,
       renewalInfo?.autoRenewStatus, renewalInfo?.autoRenewStatus,
+      transactionInfo.revocationReason,
     ],
   );
 
@@ -160,10 +161,10 @@ async function createUpdateTransaction(
   );
 
   const afterUpAct = await getActiveTransaction(databaseConnection, userId);
-  console.log(`\n\ncreateUpdateTransaction for ${transactionInfo.productId}, ${renewalInfo?.autoRenewProductId}`);
+  console.log(`\n\ncreateUpdateTransaction for ${transactionInfo.productId}, ${renewalInfo?.autoRenewProductId} ${formatDate(transactionInfo.purchaseDate)}`);
   console.log('Before INSERT INTO transactions', beforeInsAct);
   console.log('After INSERT INTO transactions', afterInsAct);
-  console.log('After UPDATE transactions', afterUpAct);
+  console.log('After UPDATE transactions', afterUpAct, '\n');
 }
 
 async function createTransactionForAppStoreReceiptURL(databaseConnection: Queryable, userId: string, appStoreReceiptURL: string): Promise<void> {
