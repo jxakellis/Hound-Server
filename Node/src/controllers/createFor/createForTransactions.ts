@@ -33,7 +33,7 @@ async function createUpdateTransaction(
   renewalInfo: JWSRenewalInfoDecodedPayload | undefined,
   transactionInfo: JWSTransactionDecodedPayload,
 ): Promise<void> {
-  console.log(`createUpdateTransaction for ${transactionInfo.productId}, ${renewalInfo?.autoRenewProductId}`);
+  console.log(`\n\ncreateUpdateTransaction for ${transactionInfo.productId}, ${renewalInfo?.autoRenewProductId}`);
   // userId
 
   // https://developer.apple.com/documentation/appstoreservernotifications/jwstransactiondecodedpayload
