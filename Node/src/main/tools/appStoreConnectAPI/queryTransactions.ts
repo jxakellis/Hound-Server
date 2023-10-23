@@ -93,6 +93,7 @@ async function querySubscriptionStatusesFromAppStoreAPI(transactionId: string): 
   // We can add a status filter(s) to filter subscriptions by their status (e.g. active, expired...), however, for now we get everything.
   try {
     statusResponse = await api.getSubscriptionStatuses(transactionId);
+    console.log('querySubscriptionStatusesFromAppStoreAPI getSubscriptionStatuses', statusResponse);
   }
   catch (error) {
     logServerError(
