@@ -106,10 +106,13 @@ async function querySubscriptionStatusesFromAppStoreAPI(transactionId: string): 
     );
     return [];
   }
+
+  console.log('querySubscriptionStatusesFromAppStoreAPI statusResponse.bundleId', statusResponse.bundleId);
   if (formatUnknownString(statusResponse.bundleId) !== SERVER.APP_BUNDLE_ID) {
     return [];
   }
 
+  console.log('querySubscriptionStatusesFromAppStoreAPI statusResponse.environment', statusResponse.environment);
   if (formatUnknownString(statusResponse.environment) !== SERVER.ENVIRONMENT) {
     return [];
   }
@@ -120,6 +123,7 @@ async function querySubscriptionStatusesFromAppStoreAPI(transactionId: string): 
 
   // statusResponse.data is an array of SubscriptionGroupIdentifierItem
   const subscriptionGroupIdentifierItems = statusResponse.data;
+  console.log('querySubscriptionStatusesFromAppStoreAPI subscriptionGroupIdentifierItems', subscriptionGroupIdentifierItems);
 
   subscriptionGroupIdentifierItems.forEach((subscriptionGroupIdentifierItem) => {
     // https://developer.apple.com/documentation/appstoreserverapi/subscriptiongroupidentifieritem
@@ -127,6 +131,7 @@ async function querySubscriptionStatusesFromAppStoreAPI(transactionId: string): 
     const lastTransactionsItems = subscriptionGroupIdentifierItem.lastTransactions;
 
     lastTransactionsItems.forEach((lastTransactionsItem) => {
+      console.log('querySubscriptionStatusesFromAppStoreAPI lastTransactionsItem', lastTransactionsItem);
       // https://developer.apple.com/documentation/appstoreserverapi/lasttransactionsitem
       // each lastTransactionsItem has an originalTransactionId, status, signedRenewalInfo, and signedTransactionInfo
 
