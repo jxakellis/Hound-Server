@@ -33,6 +33,7 @@ async function createUpdateTransaction(
   renewalInfo: JWSRenewalInfoDecodedPayload | undefined,
   transactionInfo: JWSTransactionDecodedPayload,
 ): Promise<void> {
+  console.log(`createUpdateTransaction for ${transactionInfo.productId}, ${renewalInfo?.autoRenewProductId}`);
   // userId
 
   // https://developer.apple.com/documentation/appstoreservernotifications/jwstransactiondecodedpayload
@@ -84,7 +85,7 @@ async function createUpdateTransaction(
     throw new HoundError('You are not the family head. Only the family head can modify the family subscription', createUpdateTransaction, ERROR_CODES.PERMISSION.INVALID.FAMILY);
   }
 
-  console.log(`\nbefore inserting ${transactionInfo.productId}, ${renewalInfo?.autoRenewProductId}`);
+  console.log('Before INSERT INTO transactions');
   console.log(await getActiveTransaction(databaseConnection, userId));
 
   // We attempt to insert the transaction.
@@ -138,6 +139,7 @@ async function createUpdateTransaction(
           * Upgrades make new transactions (so new transaction is now renewing) and downgrades update existing transactions (so existing transaction is still renewing)
           */
 
+  console.log('After INSERT INTO transactions');
   console.log(await getActiveTransaction(databaseConnection, userId));
 
   await databaseQuery(
@@ -160,6 +162,7 @@ async function createUpdateTransaction(
     [userId, userId],
   );
 
+  console.log('After UPDATE transactions');
   console.log(await getActiveTransaction(databaseConnection, userId));
 }
 
