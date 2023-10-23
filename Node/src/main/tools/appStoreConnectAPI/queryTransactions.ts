@@ -72,7 +72,8 @@ async function queryTransactionHistoryFromAppStoreServerAPI(transactionId: strin
   // The response contains at most 20 entries. You can check to see if there are more.
   if (formatBoolean(response.hasMore) === true) {
     const nextTransactions: { transactionInfo: JWSTransactionDecodedPayload}[] = await queryTransactionHistoryFromAppStoreServerAPI(transactionId, response.revision);
-    return transactions.concat(nextTransactions);
+    transactions = transactions.concat(nextTransactions);
+    return transactions;
   }
 
   return transactions;
@@ -141,9 +142,9 @@ async function querySubscriptionStatusesFromAppStoreAPI(transactionId: string): 
   });
 
   // Now we have two arrays of promises, await them to get our results
-  const decodedTransactionInfos: JWSTransactionDecodedPayload[] = [];
+  let decodedTransactionInfos: JWSTransactionDecodedPayload[] = [];
   try {
-    decodedTransactionInfos.concat(await Promise.all(transactionInfoPromises));
+    decodedTransactionInfos = decodedTransactionInfos.concat(await Promise.all(transactionInfoPromises));
   }
   catch (error) {
     logServerError(
@@ -159,9 +160,9 @@ async function querySubscriptionStatusesFromAppStoreAPI(transactionId: string): 
 
   console.log('querySubscriptionStatusesFromAppStoreAPI decodedTransactionInfos', decodedTransactionInfos);
 
-  const decodedRenewalInfos: JWSRenewalInfoDecodedPayload[] = [];
+  let decodedRenewalInfos: JWSRenewalInfoDecodedPayload[] = [];
   try {
-    decodedRenewalInfos.concat(await Promise.all(renewalInfoPromises));
+    decodedRenewalInfos = decodedRenewalInfos.concat(await Promise.all(renewalInfoPromises));
   }
   catch (error) {
     logServerError(
