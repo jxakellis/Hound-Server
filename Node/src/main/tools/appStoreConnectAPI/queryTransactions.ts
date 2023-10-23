@@ -157,6 +157,8 @@ async function querySubscriptionStatusesFromAppStoreAPI(transactionId: string): 
     return [];
   }
 
+  console.log('querySubscriptionStatusesFromAppStoreAPI decodedTransactionInfos', decodedTransactionInfos);
+
   const decodedRenewalInfos: JWSRenewalInfoDecodedPayload[] = [];
   try {
     decodedRenewalInfos.concat(await Promise.all(renewalInfoPromises));
@@ -172,6 +174,8 @@ async function querySubscriptionStatusesFromAppStoreAPI(transactionId: string): 
     );
     return [];
   }
+
+  console.log('querySubscriptionStatusesFromAppStoreAPI decodedRenewalInfos', decodedRenewalInfos);
 
   // Combines renewalInfo with a transactionInfo (allowing renewalInfo to override) into one key-value object
   const results: { transactionInfo: JWSTransactionDecodedPayload; renewalInfo: JWSRenewalInfoDecodedPayload }[] = decodedTransactionInfos.map(
