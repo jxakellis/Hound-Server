@@ -64,7 +64,7 @@ class HoundError extends Error {
         customMessage = fromError.message;
       }
       else {
-        customMessage += (fromError.message);
+        customMessage += ` ${fromError.message}`;
       }
     }
 
