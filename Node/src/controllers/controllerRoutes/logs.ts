@@ -65,7 +65,7 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
       throw new HoundError('databaseConnection missing', createLog, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedUserId === undefined || validatedUserId === null) {
-      throw new HoundError('validatedUserId missing', createLog, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('No user found or invalid permissions', createLog, ERROR_CODES.PERMISSION.NO.USER);
     }
     if (validatedFamilyId === undefined || validatedFamilyId === null) {
       throw new HoundError('No family found or invalid permissions', createLog, ERROR_CODES.PERMISSION.NO.FAMILY);
@@ -129,7 +129,7 @@ async function updateLog(req: express.Request, res: express.Response): Promise<v
       throw new HoundError('databaseConnection missing', updateLog, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedUserId === undefined || validatedUserId === null) {
-      throw new HoundError('validatedUserId missing', updateLog, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('No user found or invalid permissions', updateLog, ERROR_CODES.PERMISSION.NO.USER);
     }
     if (validatedDogId === undefined || validatedDogId === null) {
       throw new HoundError('validatedDogId missing', updateLog, ERROR_CODES.VALUE.INVALID);

@@ -17,30 +17,23 @@ const userRouter = express.Router({ mergeParams: true });
 // TODO FUTURE we pass userId, userIdentifier, familyId, and appVersion through as headers in >= 3.0.1. Once users updated, depreciate old way of using them as param paths.
 
 userRouter.use(validateUserIdentifier);
-userRouter.param('userId', validateUserId);
+userRouter.use(validateUserId);
 
+userRouter.use('/alert', alertRouter);
 userRouter.use('/:userId/alert', alertRouter);
 
+userRouter.use('/family', familyRouter);
 userRouter.use('/:userId/family', familyRouter);
 
-// gets user with userIdentifier then return information from users and userConfiguration table
 userRouter.get('/', getUser);
 userRouter.get('/:userId', getUser);
-// no body
 
-// creates user and userConfiguration
 userRouter.post('/', createUser);
-/* BODY:
-Single: { userInfo }
-*/
 
-// updates user
+userRouter.put('/', updateUser);
 userRouter.put('/:userId', updateUser);
-/* BODY:
-Single: { userInfo }
-*/
 
-// deletes a user
+userRouter.delete('/', deleteUser);
 userRouter.delete('/:userId', deleteUser);
 
 export { userRouter };

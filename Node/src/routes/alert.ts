@@ -13,7 +13,7 @@ alertRouter.post('/:alertType', async (req: express.Request, res: express.Respon
     const alertType = formatUnknownString(req.params['alertType']);
 
     if (validatedUserId === undefined || validatedUserId === null) {
-      throw new HoundError('validatedUserId missing', alertRouter.post, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('No user found or invalid permissions', alertRouter.post, ERROR_CODES.PERMISSION.NO.USER);
     }
     if (alertType === undefined || alertType === null) {
       throw new HoundError('alertType missing', alertRouter.post, ERROR_CODES.VALUE.INVALID);

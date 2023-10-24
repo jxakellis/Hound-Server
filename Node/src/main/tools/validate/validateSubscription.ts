@@ -17,7 +17,7 @@ async function attachActiveSubscription(req: express.Request, res: express.Respo
       throw new HoundError('databaseConnection missing', attachActiveSubscription, ERROR_CODES.VALUE.MISSING);
     }
     if (validatedUserId === undefined || validatedUserId === null) {
-      throw new HoundError('validatedUserId missing', attachActiveSubscription, ERROR_CODES.VALUE.MISSING);
+      throw new HoundError('No user found or invalid permissions', attachActiveSubscription, ERROR_CODES.PERMISSION.NO.USER);
     }
 
     const familyActiveSubscription = await getActiveTransaction(databaseConnection, validatedUserId);
@@ -46,7 +46,7 @@ async function validateSubscription(req: express.Request, res: express.Response,
       throw new HoundError('databaseConnection missing', validateSubscription, ERROR_CODES.VALUE.MISSING);
     }
     if (validatedUserId === undefined || validatedUserId === null) {
-      throw new HoundError('validatedUserId missing', validateSubscription, ERROR_CODES.VALUE.MISSING);
+      throw new HoundError('No user found or invalid permissions', validateSubscription, ERROR_CODES.PERMISSION.NO.USER);
     }
     if (validatedFamilyId === undefined || validatedFamilyId === null) {
       throw new HoundError('No family found or invalid permissions', validateSubscription, ERROR_CODES.PERMISSION.NO.FAMILY);

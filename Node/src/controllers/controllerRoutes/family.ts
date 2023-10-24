@@ -53,7 +53,7 @@ async function createFamily(req: express.Request, res: express.Response): Promis
       throw new HoundError('databaseConnection missing', createFamily, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedUserId === undefined || validatedUserId === null) {
-      throw new HoundError('validatedUserId missing', createFamily, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('No user found or invalid permissions', createFamily, ERROR_CODES.PERMISSION.NO.USER);
     }
 
     const result = await createFamilyForUserId(databaseConnection, validatedUserId);
@@ -78,7 +78,7 @@ async function updateFamily(req: express.Request, res: express.Response): Promis
       throw new HoundError('databaseConnection missing', updateFamily, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedUserId === undefined || validatedUserId === null) {
-      throw new HoundError('validatedUserId missing', updateFamily, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('No user found or invalid permissions', updateFamily, ERROR_CODES.PERMISSION.NO.USER);
     }
 
     await updateFamilyForUserIdFamilyId(databaseConnection, validatedUserId, validatedFamilyId, familyCode, familyIsLocked);
@@ -103,7 +103,7 @@ async function deleteFamily(req: express.Request, res: express.Response): Promis
       throw new HoundError('familyActiveSubscription missing', deleteFamily, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedUserId === undefined || validatedUserId === null) {
-      throw new HoundError('validatedUserId missing', deleteFamily, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('No user found or invalid permissions', deleteFamily, ERROR_CODES.PERMISSION.NO.USER);
     }
     if (validatedFamilyId === undefined || validatedFamilyId === null) {
       throw new HoundError('No family found or invalid permissions', deleteFamily, ERROR_CODES.PERMISSION.NO.FAMILY);

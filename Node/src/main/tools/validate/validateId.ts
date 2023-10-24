@@ -121,14 +121,9 @@ async function validateUserIdentifier(req: express.Request, res: express.Respons
   */
 async function validateUserId(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
-    // later on use a token here to validate that they have permission to use the userId
-    const userId = formatUnknownString(req.params['userId']);
     const { validatedUserIdentifier } = req.houndDeclarationExtendedProperties.validatedVariables;
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
 
-    if (userId === undefined || userId === null) {
-      throw new HoundError('userId missing', validateUserId, ERROR_CODES.VALUE.INVALID);
-    }
     if (validatedUserIdentifier === undefined || validatedUserIdentifier === null) {
       throw new HoundError('validatedUserIdentifier missing', validateUserId, ERROR_CODES.VALUE.INVALID);
     }
@@ -141,16 +136,16 @@ async function validateUserId(req: express.Request, res: express.Response, next:
       databaseConnection,
       `SELECT ${publicUsersColumns}
         FROM users u
-        WHERE userId = ? AND userIdentifier = ?
+        WHERE userIdentifier = ?
         LIMIT 1`,
-      [userId, validatedUserIdentifier],
+      [validatedUserIdentifier],
     );
 
-    const user = result.safeIndex(0);
+    const userId = result.safeIndex(0)?.userId;
 
-    if (user === undefined || user === null) {
+    if (userId === undefined || userId === null) {
       // userId does not exist in the table
-      throw new HoundError('No user found or invalid permissions', validateUserId, ERROR_CODES.PERMISSION.NO.USER);
+      return next();
     }
 
     req.houndDeclarationExtendedProperties.validatedVariables.validatedUserId = userId;
@@ -176,7 +171,7 @@ async function validateFamilyId(req: express.Request, res: express.Response, nex
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
 
     if (validatedUserId === undefined || validatedUserId === null) {
-      throw new HoundError('validatedUserId missing', validateFamilyId, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('No user found or invalid permissions', validateFamilyId, ERROR_CODES.PERMISSION.NO.USER);
     }
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', validateFamilyId, ERROR_CODES.VALUE.INVALID);

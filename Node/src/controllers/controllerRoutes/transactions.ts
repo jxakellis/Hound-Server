@@ -15,7 +15,7 @@ async function getTransactions(req: express.Request, res: express.Response): Pro
       throw new HoundError('databaseConnection missing', getTransactions, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedUserId === undefined || validatedUserId === null) {
-      throw new HoundError('validatedUserId missing', getTransactions, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('No user found or invalid permissions', getTransactions, ERROR_CODES.PERMISSION.NO.USER);
     }
 
     const result = await getAllTransactions(databaseConnection, validatedUserId);
@@ -42,7 +42,7 @@ async function createTransactions(req: express.Request, res: express.Response): 
       throw new HoundError('databaseConnection missing', createTransactions, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedUserId === undefined || validatedUserId === null) {
-      throw new HoundError('validatedUserId missing', createTransactions, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('No user found or invalid permissions', createTransactions, ERROR_CODES.PERMISSION.NO.USER);
     }
     if (appStoreReceiptURL === undefined || appStoreReceiptURL === null) {
       throw new HoundError('appStoreReceiptURL missing', createTransactions, ERROR_CODES.VALUE.INVALID);

@@ -1,5 +1,4 @@
 import { type ResultSetHeader, type RowDataPacket } from 'mysql2';
-import { poolLogger } from '../logging/loggers.js';
 import { HoundError } from '../server/globalErrors.js';
 import { type Queryable } from '../types/Queryable.js';
 

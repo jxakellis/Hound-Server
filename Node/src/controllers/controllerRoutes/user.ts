@@ -199,7 +199,7 @@ async function updateUser(req: express.Request, res: express.Response): Promise<
       throw new HoundError('databaseConnection missing', updateUser, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedUserId === undefined || validatedUserId === null) {
-      throw new HoundError('validatedUserId missing', updateUser, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('No user found or invalid permissions', updateUser, ERROR_CODES.PERMISSION.NO.USER);
     }
 
     await updateUserForUserId(
@@ -239,7 +239,7 @@ async function deleteUser(req: express.Request, res: express.Response): Promise<
       throw new HoundError('databaseConnection missing', deleteUser, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedUserId === undefined || validatedUserId === null) {
-      throw new HoundError('validatedUserId missing', deleteUser, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('No user found or invalid permissions', deleteUser, ERROR_CODES.PERMISSION.NO.USER);
     }
 
     await deleteUserForUserId(
