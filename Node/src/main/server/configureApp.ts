@@ -68,8 +68,8 @@ function configureApp(app: express.Application): void {
   // Route the request to the userRouter
 
   // TODO FUTURE depreciate appVersion paths, last used <= 3.0.0
-  app.use('/app/user', userRouter);
   app.use('/app/:appVersion/user', userRouter);
+  app.use('/app/user', userRouter);
 
   // Throw back the request if an unknown path is used
   app.use(

@@ -19,21 +19,21 @@ const userRouter = express.Router({ mergeParams: true });
 userRouter.use(validateUserIdentifier);
 userRouter.use(validateUserId);
 
-userRouter.use('/alert', alertRouter);
 userRouter.use('/:userId/alert', alertRouter);
+userRouter.use('/alert', alertRouter);
 
-userRouter.use('/family', familyRouter);
 userRouter.use('/:userId/family', familyRouter);
+userRouter.use('/family', familyRouter);
 
-userRouter.get('/', getUser);
 userRouter.get('/:userId', getUser);
+userRouter.get('/', getUser);
 
 userRouter.post('/', createUser);
 
-userRouter.put('/', updateUser);
 userRouter.put('/:userId', updateUser);
+userRouter.put('/', updateUser);
 
-userRouter.delete('/', deleteUser);
 userRouter.delete('/:userId', deleteUser);
+userRouter.delete('/', deleteUser);
 
 export { userRouter };
