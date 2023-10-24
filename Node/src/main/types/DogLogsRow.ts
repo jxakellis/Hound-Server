@@ -6,6 +6,8 @@ dl.logDate,
 dl.logNote,
 dl.logAction,
 dl.logCustomActionName,
+dl.logUnit,
+dl.logNumberOfLogUnits,
 dl.logLastModified,
 dl.logIsDeleted
 `;
@@ -19,6 +21,8 @@ type DogLogsRow = {
     logNote: string
     logAction: string
     logCustomActionName: string
+    logUnit?: string
+    logNumberOfLogUnits?: number
     logLastModified: Date
     logIsDeleted: number
 };

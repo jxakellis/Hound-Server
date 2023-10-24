@@ -29,6 +29,7 @@ async function createLogForUserIdDogId(databaseConnection: Queryable, log: NotYe
       (
         dogId, userId,
         logDate, logNote, logAction, logCustomActionName,
+        logUnit, logNumberOfLogUnits,
         logLastModified, logIsDeleted,
         )
         VALUES (
@@ -39,6 +40,7 @@ async function createLogForUserIdDogId(databaseConnection: Queryable, log: NotYe
     [
       log.dogId, log.userId,
       log.logDate, log.logNote, log.logAction, log.logCustomActionName,
+      log.logUnit, log.logNumberOfLogUnits,
       // none, default values
     ],
   );

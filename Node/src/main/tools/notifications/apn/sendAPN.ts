@@ -118,14 +118,12 @@ function sendAPN(
     // Two ways the silent mode start and end could be setup:
     // One the same day: 8.5 -> 20.5 (silent mode during day time)
     if (userConfigurationSilentModeStart <= userConfigurationSilentModeEnd && (currentUTCHour >= userConfigurationSilentModeStart && currentUTCHour <= userConfigurationSilentModeEnd)) {
-      console.log(userConfigurationSilentModeStart, userConfigurationSilentModeEnd, currentUTCHour);
       // WOULD RETURN: silent mode start 8.5 -> 20.5 AND currentUTCHour 14.5125
       // WOULDN'T RETURN: silent mode start 8.5 -> 20.5 AND currentUTCHour 6.0
       return;
     }
     // Overlapping two days: 20.5 -> 8.5 (silent mode during night time)
     if (userConfigurationSilentModeStart >= userConfigurationSilentModeEnd && (currentUTCHour >= userConfigurationSilentModeStart || currentUTCHour <= userConfigurationSilentModeEnd)) {
-      console.log(userConfigurationSilentModeStart, userConfigurationSilentModeEnd, currentUTCHour);
       // WOULD RETURN: silent mode start 20.5 -> 8.5 AND currentUTCHour 6.0
       // WOULDN'T RETURN: silent mode start 20.5 -> 8.5 AND currentUTCHour 14.5125
       return;

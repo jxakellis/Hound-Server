@@ -10,7 +10,7 @@ import { updateLogForDogIdLogId } from '../updateFor/updateForLogs.js';
 import { deleteLogForLogId } from '../deleteFor/deleteForLogs.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 
-import { formatDate, formatUnknownString } from '../../main/format/formatObject.js';
+import { formatDate, formatNumber, formatUnknownString } from '../../main/format/formatObject.js';
 
 /*
 Known:
@@ -79,6 +79,10 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
     const logCustomActionName = formatUnknownString(req.body['logCustomActionName']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const logNote = formatUnknownString(req.body['logNote']);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const logUnit = formatUnknownString(req.body['logUnit']);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const logNumberOfLogUnits = formatNumber(req.body['logNumberOfLogUnits']);
 
     if (logDate === undefined || logDate === null) {
       throw new HoundError('logDate missing', createLog, ERROR_CODES.VALUE.INVALID);
@@ -102,6 +106,8 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
         logAction,
         logCustomActionName,
         logNote,
+        logUnit,
+        logNumberOfLogUnits,
       },
     );
     createLogNotification(
@@ -144,6 +150,10 @@ async function updateLog(req: express.Request, res: express.Response): Promise<v
     const logCustomActionName = formatUnknownString(req.body['logCustomActionName']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const logNote = formatUnknownString(req.body['logNote']);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const logUnit = formatUnknownString(req.body['logUnit']);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const logNumberOfLogUnits = formatNumber(req.body['logNumberOfLogUnits']);
 
     if (logDate === undefined || logDate === null) {
       throw new HoundError('logDate missing', updateLog, ERROR_CODES.VALUE.INVALID);
@@ -168,6 +178,8 @@ async function updateLog(req: express.Request, res: express.Response): Promise<v
         logAction,
         logCustomActionName,
         logNote,
+        logUnit,
+        logNumberOfLogUnits,
       },
     );
     return res.houndDeclarationExtendedProperties.sendSuccessResponse('');
@@ -179,7 +191,6 @@ async function updateLog(req: express.Request, res: express.Response): Promise<v
 
 async function deleteLog(req: express.Request, res: express.Response): Promise<void> {
   try {
-    console.log('deleteLog');
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs

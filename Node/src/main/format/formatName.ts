@@ -46,6 +46,8 @@ function formatLogAction(logAction: string, logCustomActionName?: string): strin
       return `${logAction} 🛁`;
     case 'Medicine':
       return `${logAction} 💊`;
+    case 'Weight':
+      return `${logAction} ⚖️`;
     case 'Wake Up':
       return `${logAction} ☀️`;
     case 'Sleep':
