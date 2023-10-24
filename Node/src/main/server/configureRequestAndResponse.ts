@@ -86,9 +86,14 @@ function configureRequestAndResponseExtendedProperties(req: express.Request, res
       validatedUserId: undefined,
       validatedUserIdentifier: undefined,
       validatedFamilyId: undefined,
-      validatedDogIds: [],
-      validatedLogIds: [],
-      validatedReminderIds: [],
+      validatedDogs: [],
+      validatedLogs: [],
+      validatedReminders: [],
+    },
+    unvalidatedVariables: {
+      unvalidatedDogsDictionary: [],
+      unvalidatedLogsDictionary: [],
+      unvalidatedRemindersDictionary: [],
     },
   };
   res.houndDeclarationExtendedProperties = {

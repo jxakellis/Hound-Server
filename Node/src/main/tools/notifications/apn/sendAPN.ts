@@ -7,7 +7,7 @@ import { apn, productionAPNProvider, developmentAPNProvider } from './apnProvide
 import { NOTIFICATION } from '../../../server/globalConstants.js';
 import { type UserConfigurationWithPartialPrivateUsers } from '../../../types/CompositeRow.js';
 import { HoundError } from '../../../server/globalErrors.js';
-import { type Dictionary } from '../../../types/Dictionary.js';
+import { type StringKeyDictionary } from '../../../types/StringKeyDictionary.js';
 
 function sendDevelopmentAPN(notification: apn.Notification, notificationToken: string): void {
   apnLogger.debug('sendDevelopmentAPN');
@@ -78,7 +78,7 @@ function sendAPN(
   category: string,
   forAlertTitle: string,
   forAlertBody: string,
-  customPayload: Dictionary,
+  customPayload: StringKeyDictionary,
 ): void {
   const { userNotificationToken } = userNotificationConfiguration;
 
@@ -167,7 +167,7 @@ function sendAPN(
       'interruption-level': category === NOTIFICATION.CATEGORY.REMINDER.ALARM ? 'time-sensitive' : 'active',
       // The number to display in a badge on your app’s icon. Specify 0 to remove the current badge, if any.
       badge: 0,
-      // alert Dictionary
+      // alert StringKeyDictionary
       alert: {
         // The title of the notification. Apple Watch displays this string in the short look notification interface. Specify a string that’s quickly understood by the user.
         title: alertTitle,
@@ -180,13 +180,13 @@ function sendAPN(
     },
   };
 
-  // aps Dictionary Keys
+  // aps StringKeyDictionary Keys
   // https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification#2943363
 
-  // alert Dictionary Keys
+  // alert StringKeyDictionary Keys
   // https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification#2943365
 
-  // sound Dictionary Keys
+  // sound StringKeyDictionary Keys
   // https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification#2990112
   sendProductionAPN(notification, userNotificationToken);
 }

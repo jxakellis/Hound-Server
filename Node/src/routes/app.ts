@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { validateAppVersion } from '../main/tools/validate/validateId.js';
+import { validateAppVersion } from '../main/tools/validate/validateAppVersion.js';
 
 import { userRouter } from './user.js';
 

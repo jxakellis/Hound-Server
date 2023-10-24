@@ -1,5 +1,5 @@
 import express from 'express';
-import { addAppVersionToLogRequest, addFamilyIdToLogRequest, addUserIdToLogRequest } from '../../logging/logRequest.js';
+import { addFamilyIdToLogRequest, addUserIdToLogRequest } from '../../logging/logRequest.js';
 import { databaseQuery } from '../../database/databaseQuery.js';
 import {
   formatUnknownString, formatNumber, formatArray,
@@ -8,49 +8,12 @@ import { HoundError, ERROR_CODES } from '../../server/globalErrors.js';
 import { hash } from '../../format/hash.js';
 
 import { updateUserForUserIdentifierHashedUserIdentifier } from '../../../controllers/updateFor/updateForUser.js';
-import { SERVER } from '../../server/globalConstants.js';
 import { type PublicUsersRow, publicUsersColumns } from '../../types/UsersRow.js';
 import { type FamilyMembersRow, familyMembersColumns } from '../../types/FamilyMembersRow.js';
 import { type DogsRow, dogsColumns } from '../../types/DogsRow.js';
 import { type DogLogsRow, dogLogsColumns } from '../../types/DogLogsRow.js';
 import { type DogRemindersRow, dogRemindersColumns } from '../../types/DogRemindersRow.js';
-import { type Dictionary } from '../../types/Dictionary.js';
-
-async function validateAppVersion(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
-  try {
-    // TODO FUTURE depreciate and remove req.params, last used <= 3.0.0
-    const appVersion = formatUnknownString(req.headers['houndheader-appversion']) ?? formatUnknownString(req.params['appVersion']);
-
-    if (appVersion === undefined || appVersion === null) {
-      throw new HoundError(
-        `App version of ${appVersion} is incompatible. Compatible version(s): ${SERVER.COMPATIBLE_IOS_APP_VERSIONS}`,
-        validateAppVersion,
-        ERROR_CODES.GENERAL.APP_VERSION_OUTDATED,
-      );
-    }
-
-    const requestId = formatNumber(req.houndDeclarationExtendedProperties.requestId);
-
-    // We want to add app version even before its validated
-    if (requestId !== undefined && requestId !== null) {
-      addAppVersionToLogRequest(requestId, appVersion);
-    }
-
-    // the user isn't on the previous or current app version
-    if (SERVER.COMPATIBLE_IOS_APP_VERSIONS.includes(appVersion) === false) {
-      throw new HoundError(
-        `App version of ${appVersion} is incompatible. Compatible version(s): ${SERVER.COMPATIBLE_IOS_APP_VERSIONS}`,
-        validateAppVersion,
-        ERROR_CODES.GENERAL.APP_VERSION_OUTDATED,
-      );
-    }
-  }
-  catch (error) {
-    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
-  }
-
-  return next();
-}
+import { type StringKeyDictionary } from '../../types/StringKeyDictionary.js';
 
 async function validateUserIdentifier(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
@@ -221,16 +184,18 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    let dogsDictionary = formatArray(req.body['dogs'] ?? req.body['reminders'] ?? req.body['logs']) as (Dictionary[] | undefined);
+    let dogsDictionary = formatArray(req.body['dogs'] ?? req.body['reminders'] ?? req.body['logs']) as (StringKeyDictionary[] | undefined);
     // TODO FUTURE remove backwards compatibility for .params <= 3.0.0
     const paramsDogId = formatNumber(req.params['dogId']);
     if (paramsDogId !== undefined && paramsDogId !== null) {
-      dogsDictionary = dogsDictionary ?? formatArray([{ paramsDogId }]) as (Dictionary[] | undefined);
+      dogsDictionary = dogsDictionary ?? formatArray([{ paramsDogId }]) as (StringKeyDictionary[] | undefined);
     }
     // Check to make sure req.body isn't {}
     if (Object.keys(req.body).length > 0) {
-      dogsDictionary = dogsDictionary ?? formatArray([req.body]) as (Dictionary[] | undefined);
+      dogsDictionary = dogsDictionary ?? formatArray([req.body]) as (StringKeyDictionary[] | undefined);
     }
+
+    console.log(dogsDictionary);
 
     if (dogsDictionary === undefined || dogsDictionary === null) {
       // We have no dogIds to validate
@@ -242,8 +207,10 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
     dogsDictionary.forEach((dogDictionary) => {
       const dogId = formatNumber(dogDictionary['dogId']);
 
-      if (dogId === undefined || dogId === null) {
-        throw new HoundError('dogId missing', validateDogId, ERROR_CODES.VALUE.INVALID);
+      if (dogId === undefined || dogId === null || dogId === -1) {
+        // If dogId is missing or -1, it means a dog body could have been provided, but we are creating the dog
+        req.houndDeclarationExtendedProperties.unvalidatedVariables.unvalidatedDogsDictionary.push(dogDictionary);
+        return;
       }
 
       // Attempt to locate a reminder. It must match the reminderId provided while being attached to a dog that the user has permission to use
@@ -275,14 +242,23 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
         throw new HoundError('Dog has been deleted', validateDogId, ERROR_CODES.FAMILY.DELETED.DOG);
       }
 
+      console.log(dogsDictionary);
+      console.log(req.houndDeclarationExtendedProperties.validatedVariables.validatedDogs);
       // dogId has been validated. Save it to validatedVariables
-      req.houndDeclarationExtendedProperties.validatedVariables.validatedDogIds.push(queriedDog.dogId);
+      req.houndDeclarationExtendedProperties.validatedVariables.validatedDogs.push(
+        {
+          validatedDogId: queriedDog.dogId,
+          unvalidatedDogDictionary: dogsDictionary?.find((unvalidatedDogDictionary) => formatNumber(unvalidatedDogDictionary['dogId']) === queriedDog.dogId),
+        },
+      );
+      console.log(req.houndDeclarationExtendedProperties.validatedVariables.validatedDogs);
     });
   }
   catch (error) {
     return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 
+  console.log(req.houndDeclarationExtendedProperties.validatedVariables.validatedDogs);
   return next();
 }
 
@@ -292,24 +268,26 @@ async function validateLogId(req: express.Request, res: express.Response, next: 
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedDogIds } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { validatedDogs } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', validateLogId, ERROR_CODES.VALUE.INVALID);
     }
-    if (validatedDogIds === undefined || validatedDogIds === null) {
-      throw new HoundError('validatedDogIds missing', validateLogId, ERROR_CODES.VALUE.INVALID);
+    if (validatedDogs === undefined || validatedDogs === null) {
+      throw new HoundError('validatedDogs missing', validateLogId, ERROR_CODES.VALUE.INVALID);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    let logsDictionary = formatArray(req.body['logs']) as (Dictionary[] | undefined);
+    let logsDictionary = formatArray(req.body['logs']) as (StringKeyDictionary[] | undefined);
     const paramsLogId = formatNumber(req.params['logId']);
     if (paramsLogId !== undefined && paramsLogId !== null) {
-      logsDictionary = logsDictionary ?? formatArray([{ paramsLogId }]) as (Dictionary[] | undefined);
+      logsDictionary = logsDictionary ?? formatArray([{ paramsLogId }]) as (StringKeyDictionary[] | undefined);
     }
     // Check to make sure req.body isn't {}
     if (Object.keys(req.body).length > 0) {
-      logsDictionary = logsDictionary ?? formatArray([req.body]) as (Dictionary[] | undefined);
+      logsDictionary = logsDictionary ?? formatArray([req.body]) as (StringKeyDictionary[] | undefined);
     }
+
+    console.log(logsDictionary);
 
     if (logsDictionary === undefined || logsDictionary === null) {
       // We have no logIds to validate
@@ -319,10 +297,12 @@ async function validateLogId(req: express.Request, res: express.Response, next: 
     const promises: Promise<DogLogsRow[]>[] = [];
     // query for all logs provided
     logsDictionary.forEach((logDictionary) => {
-      const logId = formatNumber(logDictionary['logId']) ?? formatNumber(req.params['logId']);
+      const logId = formatNumber(logDictionary['logId']);
 
-      if (logId === undefined || logId === null) {
-        throw new HoundError('logId missing', validateLogId, ERROR_CODES.VALUE.INVALID);
+      if (logId === undefined || logId === null || logId === -1) {
+        // If logId is missing or -1, it means a log body could have been provided, but we are creating the log
+        req.houndDeclarationExtendedProperties.unvalidatedVariables.unvalidatedLogsDictionary.push(logDictionary);
+        return;
       }
 
       // Attempt to locate a log. It must match the logId provided while being attached to a dog that the user has permission to use
@@ -346,7 +326,7 @@ async function validateLogId(req: express.Request, res: express.Response, next: 
         throw new HoundError('Log could not be located', validateLogId, ERROR_CODES.PERMISSION.NO.LOG);
       }
 
-      if (validatedDogIds.findIndex((dogId) => dogId === queriedLog.dogId) === -1) {
+      if (validatedDogs.findIndex((dog) => dog.validatedDogId === queriedLog.dogId) === -1) {
         throw new HoundError('Log has invalid permissions', validateLogId, ERROR_CODES.PERMISSION.NO.LOG);
       }
 
@@ -354,14 +334,24 @@ async function validateLogId(req: express.Request, res: express.Response, next: 
         throw new HoundError('Log has been deleted', validateLogId, ERROR_CODES.FAMILY.DELETED.LOG);
       }
 
+      console.log(logsDictionary);
+      console.log(req.houndDeclarationExtendedProperties.validatedVariables.validatedLogs);
       // logId has been validated. Save it to validatedVariables
-      req.houndDeclarationExtendedProperties.validatedVariables.validatedLogIds.push(queriedLog.logId);
+      req.houndDeclarationExtendedProperties.validatedVariables.validatedLogs.push(
+        {
+          validatedDogId: queriedLog.dogId,
+          validatedLogId: queriedLog.logId,
+          unvalidatedLogDictionary: logsDictionary?.find((unvalidatedLogDictionary) => formatNumber(unvalidatedLogDictionary['logId']) === queriedLog.logId),
+        },
+      );
+      console.log(req.houndDeclarationExtendedProperties.validatedVariables.validatedLogs);
     });
   }
   catch (error) {
     return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 
+  console.log(req.houndDeclarationExtendedProperties.validatedVariables.validatedLogs);
   return next();
 }
 
@@ -371,24 +361,26 @@ async function validateReminderId(req: express.Request, res: express.Response, n
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedDogIds } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { validatedDogs } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', validateReminderId, ERROR_CODES.VALUE.INVALID);
     }
-    if (validatedDogIds === undefined || validatedDogIds === null) {
-      throw new HoundError('validatedDogIds missing', validateReminderId, ERROR_CODES.VALUE.INVALID);
+    if (validatedDogs === undefined || validatedDogs === null) {
+      throw new HoundError('validatedDogs missing', validateReminderId, ERROR_CODES.VALUE.INVALID);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    let remindersDictionary = formatArray(req.body['reminders']) as (Dictionary[] | undefined);
+    let remindersDictionary = formatArray(req.body['reminders']) as (StringKeyDictionary[] | undefined);
     const paramsReminderId = formatNumber(req.params['reminderId']);
     if (paramsReminderId !== undefined && paramsReminderId !== null) {
-      remindersDictionary = remindersDictionary ?? formatArray([{ paramsReminderId }]) as (Dictionary[] | undefined);
+      remindersDictionary = remindersDictionary ?? formatArray([{ paramsReminderId }]) as (StringKeyDictionary[] | undefined);
     }
     // Check to make sure req.body isn't {}
     if (Object.keys(req.body).length > 0) {
-      remindersDictionary = remindersDictionary ?? formatArray([req.body]) as (Dictionary[] | undefined);
+      remindersDictionary = remindersDictionary ?? formatArray([req.body]) as (StringKeyDictionary[] | undefined);
     }
+
+    console.log(remindersDictionary);
 
     if (remindersDictionary === undefined || remindersDictionary === null) {
       // We have no reminderIds to validate
@@ -400,8 +392,10 @@ async function validateReminderId(req: express.Request, res: express.Response, n
     remindersDictionary.forEach((reminderDictionary) => {
       const reminderId = formatNumber(reminderDictionary['reminderId']);
 
-      if (reminderId === undefined || reminderId === null) {
-        throw new HoundError('reminderId missing', validateReminderId, ERROR_CODES.VALUE.INVALID);
+      if (reminderId === undefined || reminderId === null || reminderId === -1) {
+        // If reminderId is missing or -1, it means a reminder body could have been provided, but we are creating the reminder
+        req.houndDeclarationExtendedProperties.unvalidatedVariables.unvalidatedRemindersDictionary.push(reminderDictionary);
+        return;
       }
 
       // Attempt to locate a reminder. It must match the reminderId provided while being attached to a dog that the user has permission to use
@@ -426,7 +420,7 @@ async function validateReminderId(req: express.Request, res: express.Response, n
         throw new HoundError('Reminder could not be located', validateReminderId, ERROR_CODES.PERMISSION.NO.REMINDER);
       }
 
-      if (validatedDogIds.findIndex((dogId) => dogId === queriedReminder.dogId) === -1) {
+      if (validatedDogs.findIndex((dog) => dog.validatedDogId === queriedReminder.dogId) === -1) {
         throw new HoundError('Reminder has invalid permissions', validateReminderId, ERROR_CODES.PERMISSION.NO.REMINDER);
       }
 
@@ -435,17 +429,27 @@ async function validateReminderId(req: express.Request, res: express.Response, n
         throw new HoundError('Reminder has been deleted', validateReminderId, ERROR_CODES.FAMILY.DELETED.REMINDER);
       }
 
+      console.log(remindersDictionary);
+      console.log(req.houndDeclarationExtendedProperties.validatedVariables.validatedReminders);
       // reminderId has been validated. Save it to validatedVariables
-      req.houndDeclarationExtendedProperties.validatedVariables.validatedReminderIds.push(queriedReminder.reminderId);
+      req.houndDeclarationExtendedProperties.validatedVariables.validatedReminders.push(
+        {
+          validatedDogId: queriedReminder.dogId,
+          validatedReminderId: queriedReminder.reminderId,
+          unvalidatedReminderDictionary: remindersDictionary?.find((unvalidatedReminderDictionary) => formatNumber(unvalidatedReminderDictionary['reminderId']) === queriedReminder.reminderId),
+        },
+      );
+      console.log(req.houndDeclarationExtendedProperties.validatedVariables.validatedReminders);
     });
   }
   catch (error) {
     return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 
+  console.log(req.houndDeclarationExtendedProperties.validatedVariables.validatedReminders);
   return next();
 }
 
 export {
-  validateAppVersion, validateUserIdentifier, validateUserId, validateFamilyId, validateDogId, validateLogId, validateReminderId,
+  validateUserIdentifier, validateUserId, validateFamilyId, validateDogId, validateLogId, validateReminderId,
 };
