@@ -3,7 +3,7 @@ import express from 'express';
 import {
   getLogs, createLog, updateLog, deleteLog,
 } from '../controllers/controllerRoutes/logs.js';
-import { validateLogId } from '../main/tools/validate/validateId.js';
+import { validateLogId } from '../main/tools/validate/validateDogRelatedId.js';
 
 const logsRouter = express.Router({ mergeParams: true });
 

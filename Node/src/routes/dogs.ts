@@ -5,7 +5,7 @@ import { validateSubscription } from '../main/tools/validate/validateSubscriptio
 import {
   getDogs, createDog, updateDog, deleteDog,
 } from '../controllers/controllerRoutes/dogs.js';
-import { validateDogId } from '../main/tools/validate/validateId.js';
+import { validateDogId } from '../main/tools/validate/validateDogRelatedId.js';
 
 // route to dogs
 import { logsRouter } from './logs.js';

@@ -4,7 +4,7 @@ import {
   getFamily, createFamily, updateFamily, deleteFamily,
 } from '../controllers/controllerRoutes/family.js';
 
-import { validateFamilyId } from '../main/tools/validate/validateId.js';
+import { validateFamilyId } from '../main/tools/validate/validateUserRelatedId.js';
 
 import { attachActiveSubscription } from '../main/tools/validate/validateSubscription.js';
 

@@ -4,7 +4,7 @@ import {
   getUser, createUser, updateUser, deleteUser,
 } from '../controllers/controllerRoutes/user.js';
 
-import { validateUserIdentifier, validateUserId } from '../main/tools/validate/validateId.js';
+import { validateUserIdentifier, validateUserId } from '../main/tools/validate/validateUserRelatedId.js';
 
 // Route for an alert to send to the suer
 import { alertRouter } from './alert.js';
