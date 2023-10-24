@@ -16,21 +16,17 @@ import { type DogLogsRow, dogLogsColumns } from '../../types/DogLogsRow.js';
 import { type DogRemindersRow, dogRemindersColumns } from '../../types/DogRemindersRow.js';
 import { type Dictionary } from '../../types/Dictionary.js';
 
-/**
-* Checks to see that the appVersion of the requester is compatible
-*/
 async function validateAppVersion(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
-    // TODO NOW bug, not backwards compatible
-    // TODO FUTURE depreciate appVersion in params, last used <= 3.0.0
-    const appVersion = formatUnknownString(req.params['appVersion']) ?? formatUnknownString(req.headers['houndheader-appversion']);
-    console.log('\n\nappVersion', appVersion);
-    console.log('req.body', req.body);
-    console.log('req.params', req.params);
-    console.log('req.url', req.url);
+    // TODO FUTURE depreciate and remove req.params, last used <= 3.0.0
+    const appVersion = formatUnknownString(req.headers['houndheader-appversion']) ?? formatUnknownString(req.params['appVersion']);
 
     if (appVersion === undefined || appVersion === null) {
-      throw new HoundError('appVersion missing', validateAppVersion, ERROR_CODES.VALUE.MISSING);
+      throw new HoundError(
+        `App version of ${appVersion} is incompatible. Compatible version(s): ${SERVER.COMPATIBLE_IOS_APP_VERSIONS}`,
+        validateAppVersion,
+        ERROR_CODES.GENERAL.APP_VERSION_OUTDATED,
+      );
     }
 
     const requestId = formatNumber(req.houndDeclarationExtendedProperties.requestId);
@@ -56,19 +52,12 @@ async function validateAppVersion(req: express.Request, res: express.Response, n
   return next();
 }
 
-/**
-  * Checks to see that userId and userIdentifier are defined, are valid, and exist in the database.
-  */
 async function validateUserIdentifier(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     // TODO FUTURE depeciate req.query userIdentifier, last used <= 3.0.0
     // unhashedUserIdentifier: unhashed, 44-length apple identifier or 64-length sha-256 hash of apple identifier
-    const userIdentifier = formatUnknownString(req.query['userIdentifier']) ?? formatUnknownString(req.headers['houndheader-useridentifier']);
-    console.log('\n\nuserIdentifier', userIdentifier);
-    console.log('req.body', req.body);
-    console.log('req.params', req.params);
-    console.log('req.url', req.url);
+    const userIdentifier = formatUnknownString(req.headers['houndheader-useridentifier']) ?? formatUnknownString(req.query['userIdentifier']);
 
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', validateUserIdentifier, ERROR_CODES.VALUE.INVALID);
@@ -127,9 +116,6 @@ async function validateUserIdentifier(req: express.Request, res: express.Respons
   return next();
 }
 
-/**
-  * Checks to see that userId and userIdentifier are defined, are valid, and exist in the database.
-  */
 async function validateUserId(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
@@ -175,9 +161,6 @@ async function validateUserId(req: express.Request, res: express.Response, next:
   return next();
 }
 
-/**
-        * Checks to see that familyId is defined, is a number, and exists in the database
-        */
 async function validateFamilyId(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
@@ -223,17 +206,8 @@ async function validateFamilyId(req: express.Request, res: express.Response, nex
   return next();
 }
 
-/**
-          * Checks to see that dogId is defined, a number, and exists in the database under familyId provided. Dog can be deleted.
-          * If it does then the user owns the dog and invokes next().
-          */
 async function validateDogId(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
-    // TODO NOW cntrl f for dog, reminder, and log (case insenitive), if found in wrong validateBody (because I copy pasted), fix it
-    // TODO NOW for validateDogId, remidnerId, and logId, have it validate through the body method.
-    // Follow the general path layed out by validateBodyReminderId
-    // Remember to ?? in params.someId to be backwards compatible.
-
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
@@ -248,20 +222,15 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     let dogsDictionary = formatArray(req.body['dogs'] ?? req.body['reminders'] ?? req.body['logs']) as (Dictionary[] | undefined);
-    console.log('dogsDictionary', dogsDictionary);
     // TODO FUTURE remove backwards compatibility for .params <= 3.0.0
-    const dogId = formatNumber(req.params['dogId']);
-    if (dogId !== undefined && dogId !== null) {
-      dogsDictionary = dogsDictionary ?? formatArray([{ dogId }]) as (Dictionary[] | undefined);
+    const paramsDogId = formatNumber(req.params['dogId']);
+    if (paramsDogId !== undefined && paramsDogId !== null) {
+      dogsDictionary = dogsDictionary ?? formatArray([{ paramsDogId }]) as (Dictionary[] | undefined);
     }
-    console.log('dogsDictionary', dogsDictionary);
+    // Check to make sure req.body isn't {}
     if (Object.keys(req.body).length > 0) {
       dogsDictionary = dogsDictionary ?? formatArray([req.body]) as (Dictionary[] | undefined);
     }
-    console.log('dogsDictionary', dogsDictionary);
-    console.log('req.body', req.body);
-    console.log('req.params', req.params);
-    console.log('req.url', req.url);
 
     if (dogsDictionary === undefined || dogsDictionary === null) {
       // We have no dogIds to validate
@@ -282,10 +251,9 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
         databaseConnection,
         `SELECT ${dogsColumns}
                   FROM dogs d
-                  JOIN families f ON d.familyId = f.familyId
-                  WHERE d.familyId = ? AND d.dogId = ?
+                  WHERE d.dogId = ?
                   LIMIT 1`,
-        [validatedFamilyId, dogId],
+        [dogId],
       ));
     });
 
@@ -295,13 +263,15 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
       const queriedDog = queriedDogResult.safeIndex(0);
 
       if (queriedDog === undefined || queriedDog === null) {
-        // the dogId does not exist and/or the dog does not have access to that dogId
         // eslint-disable-next-line no-await-in-loop
-        throw new HoundError('No dog found or invalid permissions', validateDogId, ERROR_CODES.PERMISSION.NO.DOG);
+        throw new HoundError('Dog could not be located', validateDogId, ERROR_CODES.PERMISSION.NO.DOG);
+      }
+
+      if (validatedFamilyId !== queriedDog.familyId) {
+        throw new HoundError('Dog has invalid permissions', validateDogId, ERROR_CODES.PERMISSION.NO.DOG);
       }
 
       if (queriedDog.dogIsDeleted === 1) {
-        // the dog has been found but its been deleted
         throw new HoundError('Dog has been deleted', validateDogId, ERROR_CODES.FAMILY.DELETED.DOG);
       }
 
@@ -316,10 +286,6 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
   return next();
 }
 
-/**
-            * Checks to see that logId is defined, a number. and exists in the database under dogId provided. Log can be deleted.
-            * If it does then the dog owns that log and invokes next().
-            */
 async function validateLogId(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
   // Confirm that databaseConnection and validatedIds are defined and non-null first.
@@ -335,18 +301,23 @@ async function validateLogId(req: express.Request, res: express.Response, next: 
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const logsDictionary = formatArray(req.body['logs'] ?? [req.body]) as (Dictionary[] | undefined);
-    console.log('\n\nlogsDictionary', logsDictionary);
-    console.log('req.body', req.body);
-    console.log('req.params', req.params);
-    console.log('req.url', req.url);
+    let logsDictionary = formatArray(req.body['logs']) as (Dictionary[] | undefined);
+    const paramsLogId = formatNumber(req.params['logId']);
+    if (paramsLogId !== undefined && paramsLogId !== null) {
+      logsDictionary = logsDictionary ?? formatArray([{ paramsLogId }]) as (Dictionary[] | undefined);
+    }
+    // Check to make sure req.body isn't {}
+    if (Object.keys(req.body).length > 0) {
+      logsDictionary = logsDictionary ?? formatArray([req.body]) as (Dictionary[] | undefined);
+    }
 
     if (logsDictionary === undefined || logsDictionary === null) {
-      throw new HoundError('logsDictionary missing', validateLogId, ERROR_CODES.VALUE.INVALID);
+      // We have no logIds to validate
+      return next();
     }
 
     const promises: Promise<DogLogsRow[]>[] = [];
-    // query for all reminders provided
+    // query for all logs provided
     logsDictionary.forEach((logDictionary) => {
       const logId = formatNumber(logDictionary['logId']) ?? formatNumber(req.params['logId']);
 
@@ -354,7 +325,7 @@ async function validateLogId(req: express.Request, res: express.Response, next: 
         throw new HoundError('logId missing', validateLogId, ERROR_CODES.VALUE.INVALID);
       }
 
-      // Attempt to locate a reminder. It must match the reminderId provided while being attached to a dog that the user has permission to use
+      // Attempt to locate a log. It must match the logId provided while being attached to a dog that the user has permission to use
       promises.push(databaseQuery<DogLogsRow[]>(
         databaseConnection,
         `SELECT ${dogLogsColumns}
@@ -371,21 +342,19 @@ async function validateLogId(req: express.Request, res: express.Response, next: 
       const queriedLog = queriedLogResult.safeIndex(0);
 
       if (queriedLog === undefined || queriedLog === null) {
-        // the reminderId does not exist and/or the dog does not have access to that reminderId
         // eslint-disable-next-line no-await-in-loop
-        throw new HoundError('No log found or invalid permissions', validateLogId, ERROR_CODES.PERMISSION.NO.LOG);
+        throw new HoundError('Log could not be located', validateLogId, ERROR_CODES.PERMISSION.NO.LOG);
       }
 
-      if (req.houndDeclarationExtendedProperties.validatedVariables.validatedDogIds.findIndex((dogId) => dogId === queriedLog.dogId) === -1) {
-        throw new HoundError('No log found or invalid permissions', validateLogId, ERROR_CODES.PERMISSION.NO.LOG);
+      if (validatedDogIds.findIndex((dogId) => dogId === queriedLog.dogId) === -1) {
+        throw new HoundError('Log has invalid permissions', validateLogId, ERROR_CODES.PERMISSION.NO.LOG);
       }
 
       if (queriedLog.logIsDeleted === 1) {
-        // the reminder has been found but its been deleted
         throw new HoundError('Log has been deleted', validateLogId, ERROR_CODES.FAMILY.DELETED.LOG);
       }
 
-      // reminderId has been validated. Save it to validatedVariables
+      // logId has been validated. Save it to validatedVariables
       req.houndDeclarationExtendedProperties.validatedVariables.validatedLogIds.push(queriedLog.logId);
     });
   }
@@ -411,14 +380,19 @@ async function validateReminderId(req: express.Request, res: express.Response, n
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const remindersDictionary = formatArray(req.body['reminders'] ?? [req.body]) as (Dictionary[] | undefined);
-    console.log('\n\nremindersDictionary', remindersDictionary);
-    console.log('req.body', req.body);
-    console.log('req.params', req.params);
-    console.log('req.url', req.url);
+    let remindersDictionary = formatArray(req.body['reminders']) as (Dictionary[] | undefined);
+    const paramsReminderId = formatNumber(req.params['reminderId']);
+    if (paramsReminderId !== undefined && paramsReminderId !== null) {
+      remindersDictionary = remindersDictionary ?? formatArray([{ paramsReminderId }]) as (Dictionary[] | undefined);
+    }
+    // Check to make sure req.body isn't {}
+    if (Object.keys(req.body).length > 0) {
+      remindersDictionary = remindersDictionary ?? formatArray([req.body]) as (Dictionary[] | undefined);
+    }
 
     if (remindersDictionary === undefined || remindersDictionary === null) {
-      throw new HoundError('remindersDictionary missing', validateReminderId, ERROR_CODES.VALUE.INVALID);
+      // We have no reminderIds to validate
+      return next();
     }
 
     const promises: Promise<DogRemindersRow[]>[] = [];
@@ -449,7 +423,11 @@ async function validateReminderId(req: express.Request, res: express.Response, n
       if (queriedReminder === undefined || queriedReminder === null) {
         // the reminderId does not exist and/or the dog does not have access to that reminderId
         // eslint-disable-next-line no-await-in-loop
-        throw new HoundError('No reminders found or invalid permissions', validateReminderId, ERROR_CODES.PERMISSION.NO.REMINDER);
+        throw new HoundError('Reminder could not be located', validateReminderId, ERROR_CODES.PERMISSION.NO.REMINDER);
+      }
+
+      if (validatedDogIds.findIndex((dogId) => dogId === queriedReminder.dogId) === -1) {
+        throw new HoundError('Reminder has invalid permissions', validateReminderId, ERROR_CODES.PERMISSION.NO.REMINDER);
       }
 
       if (queriedReminder.reminderIsDeleted === 1) {
