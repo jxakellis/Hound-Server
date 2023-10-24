@@ -10,7 +10,7 @@ import { HoundError } from '../../../server/globalErrors.js';
 import { type Dictionary } from '../../../types/Dictionary.js';
 
 function sendDevelopmentAPN(notification: apn.Notification, notificationToken: string): void {
-  apnLogger.debug(`sendDevelopmentAPN ${notification.rawPayload}`);
+  apnLogger.debug('sendDevelopmentAPN');
   developmentAPNProvider.send(notification, notificationToken)
     .then((response) => {
       // response.sent: Array of device tokens to which the notification was sent succesfully
@@ -86,6 +86,7 @@ function sendAPN(
     return;
   }
 
+  console.log(userNotificationConfiguration);
   const userConfigurationNotificationSound = userNotificationConfiguration.userConfigurationIsLoudNotificationEnabled === 1
     // loud notification is enabled therefore the Hound app itself plays an audio file (APN shouldn't specify a notification sound)
     ? undefined
@@ -183,6 +184,9 @@ function sendAPN(
         : undefined,
     },
   };
+
+  console.log(category, userConfigurationNotificationSound);
+  console.log(notification.rawPayload);
 
   // aps Dictionary Keys
   // https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification#2943363
