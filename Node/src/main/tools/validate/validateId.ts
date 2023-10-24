@@ -23,7 +23,7 @@ async function validateAppVersion(req: express.Request, res: express.Response, n
   try {
     // TODO FUTURE depreciate appVersion in params <= 3.0.0
     console.log('\nvalidateAppVersion headers:', req.headers, '\n\n');
-    const appVersion = formatUnknownString(req.params['appVersion']) ?? formatUnknownString(req.headers['appversion']);
+    const appVersion = formatUnknownString(req.params['appVersion']) ?? formatUnknownString(req.headers['appversion']) ?? formatUnknownString(req.headers['appVersion']);
 
     if (appVersion === undefined || appVersion === null) {
       throw new HoundError('appVersion missing', validateAppVersion, ERROR_CODES.VALUE.MISSING);
