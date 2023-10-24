@@ -10,6 +10,7 @@ import { getAllFamilyMembersForFamilyId } from '../../../controllers/getFor/getF
  */
 async function attachActiveSubscription(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
+    console.log('attachActiveSubscription');
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
 
@@ -21,6 +22,8 @@ async function attachActiveSubscription(req: express.Request, res: express.Respo
     }
 
     const familyActiveSubscription = await getActiveTransaction(databaseConnection, validatedUserId);
+
+    console.log(validatedUserId, familyActiveSubscription);
 
     req.houndDeclarationExtendedProperties.familyActiveSubscription = familyActiveSubscription;
   }

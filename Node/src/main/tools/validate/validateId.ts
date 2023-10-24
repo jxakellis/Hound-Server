@@ -21,9 +21,8 @@ import { type Dictionary } from '../../types/Dictionary.js';
 */
 async function validateAppVersion(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
-    // TODO FUTURE depreciate appVersion in params <= 3.0.0
-    console.log('\nvalidateAppVersion headers:', req.headers, '\n\n');
-    const appVersion = formatUnknownString(req.params['appVersion']) ?? formatUnknownString(req.headers['appversion']) ?? formatUnknownString(req.headers['appVersion']);
+    // TODO FUTURE depreciate appVersion in params, last used <= 3.0.0
+    const appVersion = formatUnknownString(req.params['appVersion']) ?? formatUnknownString(req.headers['appVersion']) ?? formatUnknownString(req.headers['appversion']);
 
     if (appVersion === undefined || appVersion === null) {
       throw new HoundError('appVersion missing', validateAppVersion, ERROR_CODES.VALUE.MISSING);
@@ -58,8 +57,9 @@ async function validateAppVersion(req: express.Request, res: express.Response, n
 async function validateUserIdentifier(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
+    // TODO FUTURE depeciate req.query userIdentifier, last used <= 3.0.0
     // unhashedUserIdentifier: unhashed, 44-length apple identifier or 64-length sha-256 hash of apple identifier
-    const userIdentifier = formatUnknownString(req.query['userIdentifier']);
+    const userIdentifier = formatUnknownString(req.query['userIdentifier']) ?? formatUnknownString(req.headers['userIdentifier']) ?? formatUnknownString(req.headers['useridentifier']);
 
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', validateUserIdentifier, ERROR_CODES.VALUE.INVALID);
