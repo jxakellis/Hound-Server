@@ -10,6 +10,7 @@ import { HoundError } from '../../../server/globalErrors.js';
 import { type Dictionary } from '../../../types/Dictionary.js';
 
 function sendDevelopmentAPN(notification: apn.Notification, notificationToken: string): void {
+  apnLogger.debug(`sendDevelopmentAPN ${notification.rawPayload}`);
   developmentAPNProvider.send(notification, notificationToken)
     .then((response) => {
       // response.sent: Array of device tokens to which the notification was sent succesfully
@@ -38,6 +39,7 @@ function sendDevelopmentAPN(notification: apn.Notification, notificationToken: s
     * If a .failed response is recieved
     */
 function sendProductionAPN(notification: apn.Notification, notificationToken: string): void {
+  apnLogger.debug(`sendDevelopmentAPN ${notification.rawPayload}`);
   productionAPNProvider.send(notification, notificationToken)
     .then((response) => {
       // response.sent: Array of device tokens to which the notification was sent succesfully
@@ -93,13 +95,15 @@ function sendAPN(
   const alertTitle = formatKnownString(forAlertTitle, NOTIFICATION.LENGTH.ALERT_TITLE_LIMIT);
   const alertBody = formatKnownString(forAlertBody, NOTIFICATION.LENGTH.ALERT_BODY_LIMIT);
 
-  apnLogger.debug(`sendAPN ${userNotificationConfiguration}, ${category}, ${alertTitle}, ${alertBody}`);
+  apnLogger.debug(`sendAPN ${category}, ${alertTitle}, ${alertBody}`, userNotificationConfiguration);
 
-  if (category === NOTIFICATION.CATEGORY.LOG.CREATED && userNotificationConfiguration.userConfigurationIsLogNotificationEnabled === 1) {
+  if (category === NOTIFICATION.CATEGORY.LOG.CREATED && userNotificationConfiguration.userConfigurationIsLogNotificationEnabled === 0) {
+    console.log(1);
     return;
   }
 
-  if (category === NOTIFICATION.CATEGORY.REMINDER.ALARM && userNotificationConfiguration.userConfigurationIsReminderNotificationEnabled === 1) {
+  if (category === NOTIFICATION.CATEGORY.REMINDER.ALARM && userNotificationConfiguration.userConfigurationIsReminderNotificationEnabled === 0) {
+    console.log(2);
     return;
   }
 
@@ -116,12 +120,14 @@ function sendAPN(
     // Two ways the silent mode start and end could be setup:
     // One the same day: 8.5 -> 20.5 (silent mode during day time)
     if (userConfigurationSilentModeStart <= userConfigurationSilentModeEnd && (currentUTCHour >= userConfigurationSilentModeStart && currentUTCHour <= userConfigurationSilentModeEnd)) {
+      console.log(userConfigurationSilentModeStart, userConfigurationSilentModeEnd, currentUTCHour);
       // WOULD RETURN: silent mode start 8.5 -> 20.5 AND currentUTCHour 14.5125
       // WOULDN'T RETURN: silent mode start 8.5 -> 20.5 AND currentUTCHour 6.0
       return;
     }
     // Overlapping two days: 20.5 -> 8.5 (silent mode during night time)
     if (userConfigurationSilentModeStart >= userConfigurationSilentModeEnd && (currentUTCHour >= userConfigurationSilentModeStart || currentUTCHour <= userConfigurationSilentModeEnd)) {
+      console.log(userConfigurationSilentModeStart, userConfigurationSilentModeEnd, currentUTCHour);
       // WOULD RETURN: silent mode start 20.5 -> 8.5 AND currentUTCHour 6.0
       // WOULDN'T RETURN: silent mode start 20.5 -> 8.5 AND currentUTCHour 14.5125
       return;

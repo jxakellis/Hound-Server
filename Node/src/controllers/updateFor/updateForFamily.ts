@@ -1,4 +1,3 @@
-import { type FamilyMembersRow, familyMembersColumns } from '../../main/types/FamilyMembersRow.js';
 import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 import { createFamilyMemberJoinNotification, createFamilyLockedNotification } from '../../main/tools/notifications/alert/createFamilyNotification.js';
