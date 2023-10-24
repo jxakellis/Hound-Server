@@ -80,9 +80,6 @@ async function updateFamily(req: express.Request, res: express.Response): Promis
     if (validatedUserId === undefined || validatedUserId === null) {
       throw new HoundError('validatedUserId missing', updateFamily, ERROR_CODES.VALUE.INVALID);
     }
-    if (validatedFamilyId === undefined || validatedFamilyId === null) {
-      throw new HoundError('validatedFamilyId missing', updateFamily, ERROR_CODES.VALUE.INVALID);
-    }
 
     await updateFamilyForUserIdFamilyId(databaseConnection, validatedUserId, validatedFamilyId, familyCode, familyIsLocked);
     return res.houndDeclarationExtendedProperties.sendSuccessResponse('');
