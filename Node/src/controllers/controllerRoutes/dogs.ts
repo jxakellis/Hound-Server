@@ -41,7 +41,7 @@ async function getDogs(req: express.Request, res: express.Response): Promise<voi
       throw new HoundError('validatedUserId missing', getDogs, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedFamilyId === undefined || validatedFamilyId === null) {
-      throw new HoundError('validatedFamilyId missing', getDogs, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('No family found or invalid permissions', getDogs, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
 
     const result = await getAllDogsForUserIdFamilyId(
@@ -74,7 +74,7 @@ async function createDog(req: express.Request, res: express.Response): Promise<v
       throw new HoundError('databaseConnection missing', createDog, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedFamilyId === undefined || validatedFamilyId === null) {
-      throw new HoundError('validatedFamilyId missing', createDog, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('No family found or invalid permissions', createDog, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
     if (dogName === undefined || dogName === null) {
       throw new HoundError('dogName missing', createDog, ERROR_CODES.VALUE.INVALID);
@@ -99,7 +99,7 @@ async function updateDog(req: express.Request, res: express.Response): Promise<v
       throw new HoundError('databaseConnection missing', updateDog, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedFamilyId === undefined || validatedDogId === null) {
-      throw new HoundError('validatedFamilyId missing', updateDog, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('No family found or invalid permissions', updateDog, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
     if (validatedDogId === undefined || validatedDogId === null) {
       throw new HoundError('validatedDogId missing', updateDog, ERROR_CODES.VALUE.INVALID);
@@ -125,7 +125,7 @@ async function deleteDog(req: express.Request, res: express.Response): Promise<v
       throw new HoundError('databaseConnection missing', deleteDog, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedFamilyId === undefined || validatedFamilyId === null) {
-      throw new HoundError('validatedFamilyId missing', deleteDog, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('No family found or invalid permissions', deleteDog, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
     if (validatedDogId === undefined || validatedDogId === null) {
       throw new HoundError('validatedDogId missing', deleteDog, ERROR_CODES.VALUE.INVALID);

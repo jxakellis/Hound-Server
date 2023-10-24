@@ -28,7 +28,7 @@ async function getFamily(req: express.Request, res: express.Response): Promise<v
       throw new HoundError('familyActiveSubscription missing', getFamily, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedFamilyId === undefined || validatedFamilyId === null) {
-      throw new HoundError('validatedFamilyId missing', getFamily, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('No family found or invalid permissions', getFamily, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
 
     const result = await getAllFamilyInformationForFamilyId(databaseConnection, validatedFamilyId, familyActiveSubscription);
@@ -106,7 +106,7 @@ async function deleteFamily(req: express.Request, res: express.Response): Promis
       throw new HoundError('validatedUserId missing', deleteFamily, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedFamilyId === undefined || validatedFamilyId === null) {
-      throw new HoundError('validatedFamilyId missing', deleteFamily, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('No family found or invalid permissions', deleteFamily, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
 
     if (familyKickUserId !== undefined && familyKickUserId !== null) {

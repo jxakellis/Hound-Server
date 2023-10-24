@@ -28,7 +28,7 @@ const databaseQuery = <T>(
     return variable;
   });
 
-  poolLogger.debug(`databaseQuery w/o variables: ${SQLString}`);
+  // poolLogger.debug(`databaseQuery w/o variables: ${SQLString}`);
 
   return new Promise<MustSpecifyType<T>>((resolve, reject) => {
     databaseConnection.query(

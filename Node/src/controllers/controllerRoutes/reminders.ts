@@ -67,7 +67,7 @@ async function createReminder(req: express.Request, res: express.Response): Prom
       throw new HoundError('databaseConnection missing', createReminder, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedFamilyId === undefined || validatedFamilyId === null) {
-      throw new HoundError('validatedFamilyId missing', createReminder, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('No family found or invalid permissions', createReminder, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
     if (validatedDogId === undefined || validatedDogId === null) {
       throw new HoundError('validatedDogId missing', createReminder, ERROR_CODES.VALUE.INVALID);
@@ -223,7 +223,7 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
       throw new HoundError('databaseConnection missing', updateReminder, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedFamilyId === undefined || validatedFamilyId === null) {
-      throw new HoundError('validatedFamilyId missing', updateReminder, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('No family found or invalid permissions', updateReminder, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
     if (validatedDogId === undefined || validatedDogId === null) {
       throw new HoundError('validatedDogId missing', updateReminder, ERROR_CODES.VALUE.INVALID);
@@ -383,7 +383,7 @@ async function deleteReminder(req: express.Request, res: express.Response): Prom
       throw new HoundError('databaseConnection missing', deleteReminder, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedFamilyId === undefined || validatedFamilyId === null) {
-      throw new HoundError('validatedFamilyId missing', deleteReminder, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('No family found or invalid permissions', deleteReminder, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
     if (validatedReminderIds === undefined || validatedReminderIds === null) {
       throw new HoundError('validatedReminderIds missing', deleteReminder, ERROR_CODES.VALUE.INVALID);

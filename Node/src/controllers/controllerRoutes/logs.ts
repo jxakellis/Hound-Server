@@ -68,7 +68,7 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
       throw new HoundError('validatedUserId missing', createLog, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedFamilyId === undefined || validatedFamilyId === null) {
-      throw new HoundError('validatedFamilyId missing', createLog, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('No family found or invalid permissions', createLog, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
     if (validatedDogId === undefined || validatedDogId === null) {
       throw new HoundError('validatedDogId missing', createLog, ERROR_CODES.VALUE.INVALID);

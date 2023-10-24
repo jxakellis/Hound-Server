@@ -173,14 +173,10 @@ async function validateUserId(req: express.Request, res: express.Response, next:
 async function validateFamilyId(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
     const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
-    const familyId = formatUnknownString(req.params['familyId']);
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
 
     if (validatedUserId === undefined || validatedUserId === null) {
       throw new HoundError('validatedUserId missing', validateFamilyId, ERROR_CODES.VALUE.INVALID);
-    }
-    if (familyId === undefined || familyId === null) {
-      throw new HoundError('familyId missing', validateFamilyId, ERROR_CODES.VALUE.INVALID);
     }
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', validateFamilyId, ERROR_CODES.VALUE.INVALID);
@@ -193,22 +189,15 @@ async function validateFamilyId(req: express.Request, res: express.Response, nex
               FROM familyMembers fm
               WHERE userId = ? AND familyId = ?
               LIMIT 1`,
-      [validatedUserId, familyId],
+      [validatedUserId],
     );
 
-    console.log(validatedUserId, familyId, result, await databaseQuery<FamilyMembersRow[]>(
-      databaseConnection,
-      `SELECT ${familyMembersColumns}
-              FROM familyMembers fm
-              WHERE familyId = ?`,
-      [familyId],
-    ));
+    const familyId = result.safeIndex(0)?.familyId;
 
-    const family = result.safeIndex(0);
-
-    if (family === undefined || family === null) {
+    if (familyId === undefined || familyId === null) {
       // familyId does not exist in the table
-      throw new HoundError('No family found or invalid permissions', validateFamilyId, ERROR_CODES.PERMISSION.NO.FAMILY);
+      return next();
+      // throw new HoundError('No family found or invalid permissions', validateFamilyId, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
 
     req.houndDeclarationExtendedProperties.validatedVariables.validatedFamilyId = familyId;
@@ -236,7 +225,7 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
 
     if (validatedFamilyId === undefined || validatedFamilyId === null) {
-      throw new HoundError('validatedFamilyId missing', validateDogId, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('No family found or invalid permissions', validateDogId, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
     if (dogId === undefined || dogId === null) {
       throw new HoundError('dogId missing', validateDogId, ERROR_CODES.VALUE.INVALID);

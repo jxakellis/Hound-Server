@@ -16,32 +16,29 @@ import { transactionsRouter } from './transactions.js';
 
 const familyRouter = express.Router({ mergeParams: true });
 
-familyRouter.param('familyId', validateFamilyId);
+// TODO FUTURE depreciate :familyId, last used 3.0.0
+familyRouter.use('/', validateFamilyId);
 
+familyRouter.use('/', attachActiveSubscription);
 familyRouter.use('/:familyId', attachActiveSubscription);
 
+familyRouter.use('/dogs', dogsRouter);
 familyRouter.use('/:familyId/dogs', dogsRouter);
 
+familyRouter.use('/subscriptions', transactionsRouter);
 familyRouter.use('/:familyId/subscriptions', transactionsRouter);
+familyRouter.use('/transactions', transactionsRouter);
 familyRouter.use('/:familyId/transactions', transactionsRouter);
 
-// gets family with familyId then return information from families and familyMembers table
+familyRouter.get('/', getFamily);
 familyRouter.get('/:familyId', getFamily);
-// no body
 
-// creates family
 familyRouter.post('/', createFamily);
-/* BODY:
-*/
 
-// updates family
-// no familyId indicates that the user might be joining a family with a familyCode.
 familyRouter.put('/', updateFamily);
-// familyId indicates that the user might be updating the family
 familyRouter.put('/:familyId', updateFamily);
 
-// deletes family
+familyRouter.delete('/', deleteFamily);
 familyRouter.delete('/:familyId', deleteFamily);
-// no body
 
 export { familyRouter };

@@ -49,7 +49,7 @@ async function validateSubscription(req: express.Request, res: express.Response,
       throw new HoundError('validatedUserId missing', validateSubscription, ERROR_CODES.VALUE.MISSING);
     }
     if (validatedFamilyId === undefined || validatedFamilyId === null) {
-      throw new HoundError('validatedFamilyId missing', validateSubscription, ERROR_CODES.VALUE.MISSING);
+      throw new HoundError('No family found or invalid permissions', validateSubscription, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
     if (numberOfFamilyMembers === undefined || numberOfFamilyMembers === null) {
       throw new HoundError('numberOfFamilyMembers missing', validateSubscription, ERROR_CODES.VALUE.MISSING);
