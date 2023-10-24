@@ -14,7 +14,7 @@ import { familyRouter } from './family.js';
 
 const userRouter = express.Router({ mergeParams: true });
 
-// TODO FUTURE we pass userId, userIdentifier, familyId, and appVersion through as headers in >= 3.0.1. Once users updated, depreciate old way of using them as param paths.
+// TODO FUTURE depreciate userId paths, last used <= 3.0.0
 
 userRouter.use(validateUserIdentifier);
 userRouter.use(validateUserId);

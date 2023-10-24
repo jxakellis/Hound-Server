@@ -12,7 +12,6 @@ import { HoundError, ERROR_CODES } from './globalErrors.js';
 
 const serverToServerPath = '/appStoreServerNotifications';
 const watchdogPath = '/watchdog';
-const userPath = '/app/:appVersion';
 
 function parseFormData(req: express.Request, res: express.Response, next: express.NextFunction): void {
   bodyParser.urlencoded({
@@ -64,11 +63,13 @@ function configureApp(app: express.Application): void {
 
   // Make sure the user is on an updated version
 
-  app.use(userPath, validateAppVersion);
+  app.use(validateAppVersion);
 
   // Route the request to the userRouter
 
-  app.use(`${userPath}/user`, userRouter);
+  // TODO FUTURE depreciate appVersion paths, last used <= 3.0.0
+  app.use('/app/user', userRouter);
+  app.use('/app/:appVersion/user', userRouter);
 
   // Throw back the request if an unknown path is used
   app.use(
