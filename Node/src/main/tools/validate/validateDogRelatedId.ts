@@ -36,7 +36,7 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
       dogsDictionary = dogsDictionary ?? formatArray([req.body]) as (StringKeyDictionary[] | undefined);
     }
 
-    console.log(dogsDictionary);
+    console.log('dogsDictionary at start', dogsDictionary);
 
     if (dogsDictionary === undefined || dogsDictionary === null) {
       // We have no dogIds to validate
@@ -49,7 +49,8 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
       const dogId = formatNumber(dogDictionary['dogId']);
 
       if (dogId === undefined || dogId === null || dogId === -1) {
-        // If dogId is missing or -1, it means a dog body could have been provided, but we are creating the dog
+        // If dogId is missing or -1, it either a dog body wasn't provided or it was provided but dogId is invalid because the dog is yet to be created
+        console.log('dogDictionary being added to unvalidatedDogsDictionary', dogDictionary);
         req.houndDeclarationExtendedProperties.unvalidatedVariables.unvalidatedDogsDictionary.push(dogDictionary);
         return;
       }
@@ -83,8 +84,7 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
         throw new HoundError('Dog has been deleted', validateDogId, ERROR_CODES.FAMILY.DELETED.DOG);
       }
 
-      console.log(dogsDictionary);
-      console.log(req.houndDeclarationExtendedProperties.validatedVariables.validatedDogs);
+      console.log('validatedDogs before', req.houndDeclarationExtendedProperties.validatedVariables.validatedDogs);
       // dogId has been validated. Save it to validatedVariables
       req.houndDeclarationExtendedProperties.validatedVariables.validatedDogs.push(
         {
@@ -92,14 +92,14 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
           unvalidatedDogDictionary: dogsDictionary?.find((unvalidatedDogDictionary) => formatNumber(unvalidatedDogDictionary['dogId']) === queriedDog.dogId),
         },
       );
-      console.log(req.houndDeclarationExtendedProperties.validatedVariables.validatedDogs);
+      console.log('validatedDogs before', req.houndDeclarationExtendedProperties.validatedVariables.validatedDogs);
     });
   }
   catch (error) {
     return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 
-  console.log(req.houndDeclarationExtendedProperties.validatedVariables.validatedDogs);
+  console.log('\validatedDogs final', req.houndDeclarationExtendedProperties.validatedVariables.validatedDogs);
   return next();
 }
 
@@ -128,7 +128,7 @@ async function validateLogId(req: express.Request, res: express.Response, next: 
       logsDictionary = logsDictionary ?? formatArray([req.body]) as (StringKeyDictionary[] | undefined);
     }
 
-    console.log(logsDictionary);
+    console.log('logsDictionary at start', logsDictionary);
 
     if (logsDictionary === undefined || logsDictionary === null) {
       // We have no logIds to validate
@@ -141,7 +141,8 @@ async function validateLogId(req: express.Request, res: express.Response, next: 
       const logId = formatNumber(logDictionary['logId']);
 
       if (logId === undefined || logId === null || logId === -1) {
-        // If logId is missing or -1, it means a log body could have been provided, but we are creating the log
+        // If logId is missing or -1, it either a log body wasn't provided or it was provided but logId is invalid because the log is yet to be created
+        console.log('logDictionary being added to unvalidatedLogsDictionary', logDictionary);
         req.houndDeclarationExtendedProperties.unvalidatedVariables.unvalidatedLogsDictionary.push(logDictionary);
         return;
       }
@@ -175,8 +176,7 @@ async function validateLogId(req: express.Request, res: express.Response, next: 
         throw new HoundError('Log has been deleted', validateLogId, ERROR_CODES.FAMILY.DELETED.LOG);
       }
 
-      console.log(logsDictionary);
-      console.log(req.houndDeclarationExtendedProperties.validatedVariables.validatedLogs);
+      console.log('validatedLogs before', req.houndDeclarationExtendedProperties.validatedVariables.validatedLogs);
       // logId has been validated. Save it to validatedVariables
       req.houndDeclarationExtendedProperties.validatedVariables.validatedLogs.push(
         {
@@ -185,14 +185,14 @@ async function validateLogId(req: express.Request, res: express.Response, next: 
           unvalidatedLogDictionary: logsDictionary?.find((unvalidatedLogDictionary) => formatNumber(unvalidatedLogDictionary['logId']) === queriedLog.logId),
         },
       );
-      console.log(req.houndDeclarationExtendedProperties.validatedVariables.validatedLogs);
+      console.log('validatedLogs after', req.houndDeclarationExtendedProperties.validatedVariables.validatedLogs);
     });
   }
   catch (error) {
     return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 
-  console.log(req.houndDeclarationExtendedProperties.validatedVariables.validatedLogs);
+  console.log('\nvalidatedLogs final', req.houndDeclarationExtendedProperties.validatedVariables.validatedLogs);
   return next();
 }
 
@@ -221,7 +221,7 @@ async function validateReminderId(req: express.Request, res: express.Response, n
       remindersDictionary = remindersDictionary ?? formatArray([req.body]) as (StringKeyDictionary[] | undefined);
     }
 
-    console.log(remindersDictionary);
+    console.log('remindersDictionary at start', remindersDictionary);
 
     if (remindersDictionary === undefined || remindersDictionary === null) {
       // We have no reminderIds to validate
@@ -234,7 +234,8 @@ async function validateReminderId(req: express.Request, res: express.Response, n
       const reminderId = formatNumber(reminderDictionary['reminderId']);
 
       if (reminderId === undefined || reminderId === null || reminderId === -1) {
-        // If reminderId is missing or -1, it means a reminder body could have been provided, but we are creating the reminder
+        // If reminderId is missing or -1, it either a reminder body wasn't provided or it was provided but reminderId is invalid because the reminder is yet to be created
+        console.log('reminderDictionary being added to unvalidatedRemindersDictionary', reminderDictionary);
         req.houndDeclarationExtendedProperties.unvalidatedVariables.unvalidatedRemindersDictionary.push(reminderDictionary);
         return;
       }
@@ -270,8 +271,7 @@ async function validateReminderId(req: express.Request, res: express.Response, n
         throw new HoundError('Reminder has been deleted', validateReminderId, ERROR_CODES.FAMILY.DELETED.REMINDER);
       }
 
-      console.log(remindersDictionary);
-      console.log(req.houndDeclarationExtendedProperties.validatedVariables.validatedReminders);
+      console.log('validatedReminders before', req.houndDeclarationExtendedProperties.validatedVariables.validatedReminders);
       // reminderId has been validated. Save it to validatedVariables
       req.houndDeclarationExtendedProperties.validatedVariables.validatedReminders.push(
         {
@@ -280,14 +280,14 @@ async function validateReminderId(req: express.Request, res: express.Response, n
           unvalidatedReminderDictionary: remindersDictionary?.find((unvalidatedReminderDictionary) => formatNumber(unvalidatedReminderDictionary['reminderId']) === queriedReminder.reminderId),
         },
       );
-      console.log(req.houndDeclarationExtendedProperties.validatedVariables.validatedReminders);
+      console.log('validatedReminders after', req.houndDeclarationExtendedProperties.validatedVariables.validatedReminders);
     });
   }
   catch (error) {
     return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 
-  console.log(req.houndDeclarationExtendedProperties.validatedVariables.validatedReminders);
+  console.log('\validatedReminders final', req.houndDeclarationExtendedProperties.validatedVariables.validatedReminders);
   return next();
 }
 
