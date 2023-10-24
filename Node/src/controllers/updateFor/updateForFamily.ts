@@ -1,3 +1,4 @@
+import { type FamilyMembersRow, familyMembersColumns } from '../../main/types/FamilyMembersRow.js';
 import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 import { createFamilyMemberJoinNotification, createFamilyLockedNotification } from '../../main/tools/notifications/alert/createFamilyNotification.js';
@@ -42,7 +43,7 @@ async function addFamilyMember(databaseConnection: Queryable, userId: string, fo
   }
 
   // Don't use .familyActiveSubscription property: the property wasn't assigned to the request due to the user not being in a family (only assigned with familyId is path param)
-  const familyActiveSubscription = await getActiveTransaction(databaseConnection, userId);
+  const familyActiveSubscription = await getActiveTransaction(databaseConnection, family.userId);
   const familyMembers = await getAllFamilyMembersForFamilyId(databaseConnection, family.familyId);
 
   if (familyActiveSubscription === undefined || familyActiveSubscription === null) {
