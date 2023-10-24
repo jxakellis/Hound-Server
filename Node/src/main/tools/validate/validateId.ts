@@ -196,7 +196,14 @@ async function validateFamilyId(req: express.Request, res: express.Response, nex
       [validatedUserId, familyId],
     );
 
-    console.log(validatedUserId, familyId, result);
+    console.log(validatedUserId, familyId, result, await databaseQuery<FamilyMembersRow[]>(
+      databaseConnection,
+      `SELECT ${familyMembersColumns}
+              FROM familyMembers fm
+              WHERE familyId = ?
+              LIMIT 1`,
+      [familyId],
+    ));
 
     const family = result.safeIndex(0);
 
