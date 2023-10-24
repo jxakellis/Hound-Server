@@ -86,7 +86,6 @@ function sendAPN(
     return;
   }
 
-  console.log(userNotificationConfiguration);
   const userConfigurationNotificationSound = userNotificationConfiguration.userConfigurationIsLoudNotificationEnabled === 1
     // loud notification is enabled therefore the Hound app itself plays an audio file (APN shouldn't specify a notification sound)
     ? undefined
@@ -99,12 +98,10 @@ function sendAPN(
   apnLogger.debug(`sendAPN ${category}, ${alertTitle}, ${alertBody}`, userNotificationConfiguration);
 
   if (category === NOTIFICATION.CATEGORY.LOG.CREATED && userNotificationConfiguration.userConfigurationIsLogNotificationEnabled === 0) {
-    console.log(1);
     return;
   }
 
   if (category === NOTIFICATION.CATEGORY.REMINDER.ALARM && userNotificationConfiguration.userConfigurationIsReminderNotificationEnabled === 0) {
-    console.log(2);
     return;
   }
 
@@ -184,9 +181,6 @@ function sendAPN(
         : undefined,
     },
   };
-
-  console.log(category, userConfigurationNotificationSound);
-  console.log(notification.rawPayload);
 
   // aps Dictionary Keys
   // https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification#2943363

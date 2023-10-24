@@ -5,6 +5,7 @@ import { type Queryable, databaseQuery } from '../../main/database/databaseQuery
  *  If an error is encountered, creates and throws custom error
  */
 async function deleteLogForLogId(databaseConnection: Queryable, logId: number): Promise<void> {
+  console.log('deleteLogForLogId', logId);
   await databaseQuery(
     databaseConnection,
     `UPDATE dogLogs
@@ -19,6 +20,7 @@ async function deleteLogForLogId(databaseConnection: Queryable, logId: number): 
  *  If an error is encountered, creates and throws custom error
  */
 async function deleteAllLogsForDogId(databaseConnection: Queryable, dogId: number): Promise<void> {
+  console.log('deleteAllLogsForDogId', dogId);
   await databaseQuery(
     databaseConnection,
     `UPDATE dogLogs

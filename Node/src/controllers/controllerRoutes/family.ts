@@ -124,11 +124,9 @@ async function deleteFamily(req: express.Request, res: express.Response): Promis
     }
 
     if (familyKickUserId !== undefined && familyKickUserId !== null) {
-      console.log(1);
       await kickFamilyMemberForUserIdFamilyId(databaseConnection, validatedUserId, validatedFamilyId, familyKickUserId);
     }
     else {
-      console.log(2);
       await deleteFamilyLeaveFamilyForUserIdFamilyId(databaseConnection, validatedUserId, validatedFamilyId, familyActiveSubscription);
     }
 

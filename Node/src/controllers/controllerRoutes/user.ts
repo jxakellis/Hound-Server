@@ -33,8 +33,6 @@ async function getUser(req: express.Request, res: express.Response): Promise<voi
       throw new HoundError('No user found or invalid permissions', getUser, ERROR_CODES.PERMISSION.NO.USER);
     }
 
-    console.log(result);
-
     return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
   }
   catch (error) {

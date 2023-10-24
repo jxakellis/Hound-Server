@@ -45,9 +45,6 @@ async function getAllPreviousFamilyMembersForFamilyId(databaseConnection: Querya
 
   // Only return one instance for each userId. I.e. if a user left a family multiple times, return the previousFamilyMember object for the most recent leave
   const uniquePreviousFamilyMembers = result.filter((previousFamilyMember, index) => index === result.findIndex((iter) => iter.userId === previousFamilyMember.userId));
-  // TODO NOW make sure this works
-  console.log(result);
-  console.log(uniquePreviousFamilyMembers);
 
   return uniquePreviousFamilyMembers;
 }
