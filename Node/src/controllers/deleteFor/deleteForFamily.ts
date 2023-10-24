@@ -15,6 +15,7 @@ import { type FamilyMembersRow, familyMembersColumns } from '../../main/types/Fa
 * They cannot leave, but they can delete their family (if there are no other family members and their subscription is non-renewing)
 */
 async function deleteFamily(databaseConnection: Queryable, familyId: string, familyActiveSubscription: TransactionsRow): Promise<void> {
+  console.log('deleteFamily', familyId);
   // find the amount of family members in the family
   const familyMembers = await databaseQuery<FamilyMembersRow[]>(
     databaseConnection,
@@ -110,6 +111,7 @@ async function deleteFamily(databaseConnection: Queryable, familyId: string, fam
                   * User is a member of a family. Therefore, they don't have an obligation to it and can leave.
                   */
 async function leaveFamily(databaseConnection: Queryable, userId: string): Promise<void> {
+  console.log('leaveFamily', userId);
   await databaseQuery(
     databaseConnection,
     `INSERT INTO previousFamilyMembers
@@ -136,6 +138,7 @@ async function leaveFamily(databaseConnection: Queryable, userId: string): Promi
                         * Helper method for deleteFamilyLeaveFamilyKickFamilyMemberForUserIdFamilyId, goes through checks to attempt to kick a user from the family
                         */
 async function kickFamilyMemberForUserIdFamilyId(databaseConnection: Queryable, userId: string, familyId: string, kickedUserId: string): Promise<void> {
+  console.log('kickFamilyMemberForUserIdFamilyId', userId, familyId, kickedUserId);
   // a user cannot kick themselves
   if (userId === kickedUserId) {
     throw new HoundError("You can't kick yourself from your own family", kickFamilyMemberForUserIdFamilyId, ERROR_CODES.VALUE.INVALID);

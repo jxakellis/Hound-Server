@@ -196,6 +196,8 @@ async function validateFamilyId(req: express.Request, res: express.Response, nex
       [validatedUserId, familyId],
     );
 
+    console.log(validatedUserId, familyId, result);
+
     const family = result.safeIndex(0);
 
     if (family === undefined || family === null) {
