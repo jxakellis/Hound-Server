@@ -26,10 +26,11 @@ Known:
 
 async function getReminders(req: express.Request, res: express.Response): Promise<void> {
   try {
+    // Confirm that databaseConnection and validatedIds are defined and non-null first.
+    // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
+    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedDogId, validatedReminderIds } = req.houndDeclarationExtendedProperties.validatedVariables;
-    const previousDogManagerSynchronization = formatDate(req.query['previousDogManagerSynchronization'] ?? req.query['userConfigurationPreviousDogManagerSynchronization']);
-
+    const { validatedDogId } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', getReminders, ERROR_CODES.VALUE.INVALID);
     }
@@ -37,6 +38,9 @@ async function getReminders(req: express.Request, res: express.Response): Promis
       throw new HoundError('validatedDogId missing', getReminders, ERROR_CODES.VALUE.INVALID);
     }
 
+    const previousDogManagerSynchronization = formatDate(req.query['previousDogManagerSynchronization'] ?? req.query['userConfigurationPreviousDogManagerSynchronization']);
+
+    const { validatedReminderIds } = req.houndDeclarationExtendedProperties.validatedVariables;
     const validatedReminderId = validatedReminderIds.safeIndex(0);
     if (validatedReminderId !== undefined && validatedReminderId !== null) {
       const result = await getReminderForReminderId(databaseConnection, validatedReminderId, previousDogManagerSynchronization);
@@ -58,11 +62,11 @@ async function getReminders(req: express.Request, res: express.Response): Promis
 
 async function createReminder(req: express.Request, res: express.Response): Promise<void> {
   try {
+    // Confirm that databaseConnection and validatedIds are defined and non-null first.
+    // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
+    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedFamilyId, validatedDogId } = req.houndDeclarationExtendedProperties.validatedVariables;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const remindersDictionary = formatArray(req.body['reminders'] ?? [req.body]) as (Dictionary[] | undefined);
-
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', createReminder, ERROR_CODES.VALUE.INVALID);
     }
@@ -72,6 +76,9 @@ async function createReminder(req: express.Request, res: express.Response): Prom
     if (validatedDogId === undefined || validatedDogId === null) {
       throw new HoundError('validatedDogId missing', createReminder, ERROR_CODES.VALUE.INVALID);
     }
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const remindersDictionary = formatArray(req.body['reminders'] ?? [req.body]) as (Dictionary[] | undefined);
     if (remindersDictionary === undefined || remindersDictionary === null) {
       throw new HoundError('remindersDictionary missing', createReminder, ERROR_CODES.VALUE.INVALID);
     }
@@ -214,11 +221,11 @@ async function createReminder(req: express.Request, res: express.Response): Prom
 
 async function updateReminder(req: express.Request, res: express.Response): Promise<void> {
   try {
+    // Confirm that databaseConnection and validatedIds are defined and non-null first.
+    // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
+    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedFamilyId, validatedDogId } = req.houndDeclarationExtendedProperties.validatedVariables;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const remindersDictionary = formatArray(req.body['reminders'] ?? [req.body]) as (Dictionary[] | undefined);
-
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', updateReminder, ERROR_CODES.VALUE.INVALID);
     }
@@ -228,6 +235,9 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
     if (validatedDogId === undefined || validatedDogId === null) {
       throw new HoundError('validatedDogId missing', updateReminder, ERROR_CODES.VALUE.INVALID);
     }
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const remindersDictionary = formatArray(req.body['reminders'] ?? [req.body]) as (Dictionary[] | undefined);
     if (remindersDictionary === undefined || remindersDictionary === null) {
       throw new HoundError('remindersDictionary missing', updateReminder, ERROR_CODES.VALUE.INVALID);
     }
@@ -376,9 +386,11 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
 
 async function deleteReminder(req: express.Request, res: express.Response): Promise<void> {
   try {
+    // Confirm that databaseConnection and validatedIds are defined and non-null first.
+    // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
+    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedFamilyId, validatedReminderIds } = req.houndDeclarationExtendedProperties.validatedVariables;
-
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', deleteReminder, ERROR_CODES.VALUE.INVALID);
     }

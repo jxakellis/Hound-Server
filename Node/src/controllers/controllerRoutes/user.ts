@@ -15,9 +15,11 @@ Known:
 
 async function getUser(req: express.Request, res: express.Response): Promise<void> {
   try {
+    // Confirm that databaseConnection and validatedIds are defined and non-null first.
+    // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
+    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedUserIdentifier } = req.houndDeclarationExtendedProperties.validatedVariables;
-
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', getUser, ERROR_CODES.VALUE.INVALID);
     }
@@ -31,6 +33,8 @@ async function getUser(req: express.Request, res: express.Response): Promise<voi
       throw new HoundError('No user found or invalid permissions', getUser, ERROR_CODES.PERMISSION.NO.USER);
     }
 
+    console.log(result);
+
     return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
   }
   catch (error) {
@@ -40,8 +44,18 @@ async function getUser(req: express.Request, res: express.Response): Promise<voi
 
 async function createUser(req: express.Request, res: express.Response): Promise<void> {
   try {
+    // Confirm that databaseConnection and validatedIds are defined and non-null first.
+    // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
+    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedUserIdentifier } = req.houndDeclarationExtendedProperties.validatedVariables;
+    if (databaseConnection === undefined || databaseConnection === null) {
+      throw new HoundError('databaseConnection missing', createUser, ERROR_CODES.VALUE.INVALID);
+    }
+    if (validatedUserIdentifier === undefined || validatedUserIdentifier === null) {
+      throw new HoundError('validatedUserIdentifier missing', createUser, ERROR_CODES.VALUE.INVALID);
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const userEmail = formatUnknownString(req.body['userEmail']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -79,12 +93,6 @@ async function createUser(req: express.Request, res: express.Response): Promise<
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const userConfigurationSilentModeEndUTCMinute = formatNumber(req.body['userConfigurationSilentModeEndUTCMinute']);
 
-    if (databaseConnection === undefined || databaseConnection === null) {
-      throw new HoundError('databaseConnection missing', createUser, ERROR_CODES.VALUE.INVALID);
-    }
-    if (validatedUserIdentifier === undefined || validatedUserIdentifier === null) {
-      throw new HoundError('validatedUserIdentifier missing', createUser, ERROR_CODES.VALUE.INVALID);
-    }
     if (userConfigurationIsNotificationEnabled === undefined || userConfigurationIsNotificationEnabled === null) {
       throw new HoundError('userConfigurationIsNotificationEnabled missing', createUser, ERROR_CODES.VALUE.INVALID);
     }
@@ -162,8 +170,18 @@ async function createUser(req: express.Request, res: express.Response): Promise<
 
 async function updateUser(req: express.Request, res: express.Response): Promise<void> {
   try {
+    // Confirm that databaseConnection and validatedIds are defined and non-null first.
+    // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
+    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
+    if (databaseConnection === undefined || databaseConnection === null) {
+      throw new HoundError('databaseConnection missing', updateUser, ERROR_CODES.VALUE.INVALID);
+    }
+    if (validatedUserId === undefined || validatedUserId === null) {
+      throw new HoundError('No user found or invalid permissions', updateUser, ERROR_CODES.PERMISSION.NO.USER);
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const userNotificationToken = formatUnknownString(req.body['userNotificationToken']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -194,13 +212,6 @@ async function updateUser(req: express.Request, res: express.Response): Promise<
     const userConfigurationSilentModeStartUTCMinute = formatNumber(req.body['userConfigurationSilentModeStartUTCMinute']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const userConfigurationSilentModeEndUTCMinute = formatNumber(req.body['userConfigurationSilentModeEndUTCMinute']);
-
-    if (databaseConnection === undefined || databaseConnection === null) {
-      throw new HoundError('databaseConnection missing', updateUser, ERROR_CODES.VALUE.INVALID);
-    }
-    if (validatedUserId === undefined || validatedUserId === null) {
-      throw new HoundError('No user found or invalid permissions', updateUser, ERROR_CODES.PERMISSION.NO.USER);
-    }
 
     await updateUserForUserId(
       databaseConnection,
@@ -233,6 +244,9 @@ async function updateUser(req: express.Request, res: express.Response): Promise<
 
 async function deleteUser(req: express.Request, res: express.Response): Promise<void> {
   try {
+    // Confirm that databaseConnection and validatedIds are defined and non-null first.
+    // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
+    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined || databaseConnection === null) {

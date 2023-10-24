@@ -18,17 +18,21 @@ Known:
 */
 async function getFamily(req: express.Request, res: express.Response): Promise<void> {
   try {
-    const { databaseConnection, familyActiveSubscription } = req.houndDeclarationExtendedProperties;
+    // Confirm that databaseConnection and validatedIds are defined and non-null first.
+    // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
+    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
+    const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedFamilyId } = req.houndDeclarationExtendedProperties.validatedVariables;
-
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', getFamily, ERROR_CODES.VALUE.INVALID);
     }
-    if (familyActiveSubscription === undefined || familyActiveSubscription === null) {
-      throw new HoundError('familyActiveSubscription missing', getFamily, ERROR_CODES.VALUE.INVALID);
-    }
     if (validatedFamilyId === undefined || validatedFamilyId === null) {
       throw new HoundError('No family found or invalid permissions', getFamily, ERROR_CODES.PERMISSION.NO.FAMILY);
+    }
+
+    const { familyActiveSubscription } = req.houndDeclarationExtendedProperties;
+    if (familyActiveSubscription === undefined || familyActiveSubscription === null) {
+      throw new HoundError('familyActiveSubscription missing', getFamily, ERROR_CODES.VALUE.INVALID);
     }
 
     const result = await getAllFamilyInformationForFamilyId(databaseConnection, validatedFamilyId, familyActiveSubscription);
@@ -46,9 +50,11 @@ async function getFamily(req: express.Request, res: express.Response): Promise<v
 
 async function createFamily(req: express.Request, res: express.Response): Promise<void> {
   try {
+    // Confirm that databaseConnection and validatedIds are defined and non-null first.
+    // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
+    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
-
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', createFamily, ERROR_CODES.VALUE.INVALID);
     }
@@ -67,19 +73,23 @@ async function createFamily(req: express.Request, res: express.Response): Promis
 
 async function updateFamily(req: express.Request, res: express.Response): Promise<void> {
   try {
+    // Confirm that databaseConnection and validatedIds are defined and non-null first.
+    // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
+    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedUserId, validatedFamilyId } = req.houndDeclarationExtendedProperties.validatedVariables;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const familyCode = formatUnknownString(req.body['familyCode']);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const familyIsLocked = formatBoolean(req.body['familyIsLocked']);
-
+    const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', updateFamily, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedUserId === undefined || validatedUserId === null) {
       throw new HoundError('No user found or invalid permissions', updateFamily, ERROR_CODES.PERMISSION.NO.USER);
     }
+
+    const { validatedFamilyId } = req.houndDeclarationExtendedProperties.validatedVariables;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const familyCode = formatUnknownString(req.body['familyCode']);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const familyIsLocked = formatBoolean(req.body['familyIsLocked']);
 
     await updateFamilyForUserIdFamilyId(databaseConnection, validatedUserId, validatedFamilyId, familyCode, familyIsLocked);
     return res.houndDeclarationExtendedProperties.sendSuccessResponse('');
@@ -91,22 +101,26 @@ async function updateFamily(req: express.Request, res: express.Response): Promis
 
 async function deleteFamily(req: express.Request, res: express.Response): Promise<void> {
   try {
-    const { databaseConnection, familyActiveSubscription } = req.houndDeclarationExtendedProperties;
+    // Confirm that databaseConnection and validatedIds are defined and non-null first.
+    // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
+    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
+    const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedUserId, validatedFamilyId } = req.houndDeclarationExtendedProperties.validatedVariables;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const familyKickUserId = formatUnknownString(req.body['familyKickUserId']);
-
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', deleteFamily, ERROR_CODES.VALUE.INVALID);
-    }
-    if (familyActiveSubscription === undefined || familyActiveSubscription === null) {
-      throw new HoundError('familyActiveSubscription missing', deleteFamily, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedUserId === undefined || validatedUserId === null) {
       throw new HoundError('No user found or invalid permissions', deleteFamily, ERROR_CODES.PERMISSION.NO.USER);
     }
     if (validatedFamilyId === undefined || validatedFamilyId === null) {
       throw new HoundError('No family found or invalid permissions', deleteFamily, ERROR_CODES.PERMISSION.NO.FAMILY);
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const familyKickUserId = formatUnknownString(req.body['familyKickUserId']);
+    const { familyActiveSubscription } = req.houndDeclarationExtendedProperties;
+    if (familyActiveSubscription === undefined || familyActiveSubscription === null) {
+      throw new HoundError('familyActiveSubscription missing', deleteFamily, ERROR_CODES.VALUE.INVALID);
     }
 
     if (familyKickUserId !== undefined && familyKickUserId !== null) {

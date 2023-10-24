@@ -18,15 +18,25 @@ Known:
 */
 async function getDogs(req: express.Request, res: express.Response): Promise<void> {
   try {
+    // Confirm that databaseConnection and validatedIds are defined and non-null first.
+    // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
+    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedUserId, validatedFamilyId, validatedDogId } = req.houndDeclarationExtendedProperties.validatedVariables;
-    const previousDogManagerSynchronization = formatDate(req.query['previousDogManagerSynchronization'] ?? req.query['userConfigurationPreviousDogManagerSynchronization']);
-    const isRetrievingReminders = formatBoolean(req.query['isRetrievingReminders']) ?? false;
-    const isRetrievingLogs = formatBoolean(req.query['isRetrievingLogs']) ?? false;
-
+    const { validatedUserId, validatedFamilyId } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', getDogs, ERROR_CODES.VALUE.INVALID);
     }
+    if (validatedUserId === undefined || validatedUserId === null) {
+      throw new HoundError('No user found or invalid permissions', getDogs, ERROR_CODES.PERMISSION.NO.USER);
+    }
+    if (validatedFamilyId === undefined || validatedFamilyId === null) {
+      throw new HoundError('No family found or invalid permissions', getDogs, ERROR_CODES.PERMISSION.NO.FAMILY);
+    }
+
+    const { validatedDogId } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const previousDogManagerSynchronization = formatDate(req.query['previousDogManagerSynchronization'] ?? req.query['userConfigurationPreviousDogManagerSynchronization']);
+    const isRetrievingReminders = formatBoolean(req.query['isRetrievingReminders']) ?? false;
+    const isRetrievingLogs = formatBoolean(req.query['isRetrievingLogs']) ?? false;
 
     if (validatedDogId !== undefined && validatedDogId !== null) {
       const result = await getDogForDogId(databaseConnection, validatedDogId, isRetrievingReminders, isRetrievingLogs, previousDogManagerSynchronization);
@@ -35,13 +45,6 @@ async function getDogs(req: express.Request, res: express.Response): Promise<voi
         throw new HoundError('getDogForDogId result undefined', getDogs, ERROR_CODES.VALUE.INVALID);
       }
       return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
-    }
-
-    if (validatedUserId === undefined || validatedUserId === null) {
-      throw new HoundError('No user found or invalid permissions', getDogs, ERROR_CODES.PERMISSION.NO.USER);
-    }
-    if (validatedFamilyId === undefined || validatedFamilyId === null) {
-      throw new HoundError('No family found or invalid permissions', getDogs, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
 
     const result = await getAllDogsForUserIdFamilyId(
@@ -66,16 +69,20 @@ async function getDogs(req: express.Request, res: express.Response): Promise<voi
 
 async function createDog(req: express.Request, res: express.Response): Promise<void> {
   try {
+    // Confirm that databaseConnection and validatedIds are defined and non-null first.
+    // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
+    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedFamilyId } = req.houndDeclarationExtendedProperties.validatedVariables;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const dogName = formatUnknownString(req.body['dogName']);
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', createDog, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedFamilyId === undefined || validatedFamilyId === null) {
       throw new HoundError('No family found or invalid permissions', createDog, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const dogName = formatUnknownString(req.body['dogName']);
     if (dogName === undefined || dogName === null) {
       throw new HoundError('dogName missing', createDog, ERROR_CODES.VALUE.INVALID);
     }
@@ -91,10 +98,11 @@ async function createDog(req: express.Request, res: express.Response): Promise<v
 
 async function updateDog(req: express.Request, res: express.Response): Promise<void> {
   try {
+    // Confirm that databaseConnection and validatedIds are defined and non-null first.
+    // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
+    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedFamilyId, validatedDogId } = req.houndDeclarationExtendedProperties.validatedVariables;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const dogName = formatUnknownString(req.body['dogName']);
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', updateDog, ERROR_CODES.VALUE.INVALID);
     }
@@ -104,6 +112,9 @@ async function updateDog(req: express.Request, res: express.Response): Promise<v
     if (validatedDogId === undefined || validatedDogId === null) {
       throw new HoundError('validatedDogId missing', updateDog, ERROR_CODES.VALUE.INVALID);
     }
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const dogName = formatUnknownString(req.body['dogName']);
     if (dogName === undefined || dogName === null) {
       throw new HoundError('dogName missing', updateDog, ERROR_CODES.VALUE.INVALID);
     }
@@ -119,6 +130,9 @@ async function updateDog(req: express.Request, res: express.Response): Promise<v
 
 async function deleteDog(req: express.Request, res: express.Response): Promise<void> {
   try {
+    // Confirm that databaseConnection and validatedIds are defined and non-null first.
+    // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
+    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedFamilyId, validatedDogId } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined || databaseConnection === null) {

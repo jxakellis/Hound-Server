@@ -130,19 +130,6 @@ async function addUserIdToLogRequest(requestId: number, validatedUserId: string)
 
 async function addFamilyIdToLogRequest(requestId: number, validatedFamilyId: string): Promise<void> {
   try {
-    /*
-    const requestId = formatNumber(req.houndDeclarationExtendedProperties.requestId);
-    const { validatedFamilyId } = req.houndDeclarationExtendedProperties.validatedVariables;
-
-    // We are going to be modifying a pre-existing requestId and the userId should exist if this function is invoked
-    if (requestId === undefined || requestId === null) {
-      return next();
-    }
-    if (validatedFamilyId === undefined || validatedFamilyId === null) {
-      return next();
-    }
-    */
-
     const { databaseConnectionForLogging } = await getDatabaseConnections();
 
     await databaseQuery(

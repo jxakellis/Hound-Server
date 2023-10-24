@@ -8,9 +8,11 @@ import { formatUnknownString } from '../../main/format/formatObject.js';
 
 async function getTransactions(req: express.Request, res: express.Response): Promise<void> {
   try {
+    // Confirm that databaseConnection and validatedIds are defined and non-null first.
+    // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
+    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
-
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', getTransactions, ERROR_CODES.VALUE.INVALID);
     }
@@ -35,15 +37,15 @@ async function createTransactions(req: express.Request, res: express.Response): 
   try {
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const appStoreReceiptURL = formatUnknownString(req.body['appStoreReceiptURL']);
-
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', createTransactions, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedUserId === undefined || validatedUserId === null) {
       throw new HoundError('No user found or invalid permissions', createTransactions, ERROR_CODES.PERMISSION.NO.USER);
     }
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const appStoreReceiptURL = formatUnknownString(req.body['appStoreReceiptURL']);
     if (appStoreReceiptURL === undefined || appStoreReceiptURL === null) {
       throw new HoundError('appStoreReceiptURL missing', createTransactions, ERROR_CODES.VALUE.INVALID);
     }

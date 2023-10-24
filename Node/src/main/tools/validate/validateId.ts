@@ -123,14 +123,16 @@ async function validateUserIdentifier(req: express.Request, res: express.Respons
   */
 async function validateUserId(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
-    const { validatedUserIdentifier } = req.houndDeclarationExtendedProperties.validatedVariables;
+    // Confirm that databaseConnection and validatedIds are defined and non-null first.
+    // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
+    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
-
-    if (validatedUserIdentifier === undefined || validatedUserIdentifier === null) {
-      throw new HoundError('validatedUserIdentifier missing', validateUserId, ERROR_CODES.VALUE.INVALID);
-    }
+    const { validatedUserIdentifier } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', validateUserId, ERROR_CODES.VALUE.INVALID);
+    }
+    if (validatedUserIdentifier === undefined || validatedUserIdentifier === null) {
+      throw new HoundError('validatedUserIdentifier missing', validateUserId, ERROR_CODES.VALUE.INVALID);
     }
 
     // we are verifying that a user is able to use the provided userId, and to do so they must know the corresponding secret (the userIdentifier)
@@ -169,14 +171,16 @@ async function validateUserId(req: express.Request, res: express.Response, next:
         */
 async function validateFamilyId(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
-    const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
+    // Confirm that databaseConnection and validatedIds are defined and non-null first.
+    // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
+    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
-
-    if (validatedUserId === undefined || validatedUserId === null) {
-      throw new HoundError('No user found or invalid permissions', validateFamilyId, ERROR_CODES.PERMISSION.NO.USER);
-    }
+    const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', validateFamilyId, ERROR_CODES.VALUE.INVALID);
+    }
+    if (validatedUserId === undefined || validatedUserId === null) {
+      throw new HoundError('No user found or invalid permissions', validateFamilyId, ERROR_CODES.PERMISSION.NO.USER);
     }
 
     // queries the database to find familyIds associated with the userId
@@ -217,18 +221,21 @@ async function validateFamilyId(req: express.Request, res: express.Response, nex
           */
 async function validateDogId(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
-    const { validatedFamilyId } = req.houndDeclarationExtendedProperties.validatedVariables;
-    const dogId = formatNumber(req.params['dogId']);
+    // Confirm that databaseConnection and validatedIds are defined and non-null first.
+    // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
+    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
-
+    const { validatedFamilyId } = req.houndDeclarationExtendedProperties.validatedVariables;
+    if (databaseConnection === undefined || databaseConnection === null) {
+      throw new HoundError('databaseConnection missing', validateDogId, ERROR_CODES.VALUE.INVALID);
+    }
     if (validatedFamilyId === undefined || validatedFamilyId === null) {
       throw new HoundError('No family found or invalid permissions', validateDogId, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
+
+    const dogId = formatNumber(req.params['dogId']);
     if (dogId === undefined || dogId === null) {
       throw new HoundError('dogId missing', validateDogId, ERROR_CODES.VALUE.INVALID);
-    }
-    if (databaseConnection === undefined || databaseConnection === null) {
-      throw new HoundError('databaseConnection missing', validateDogId, ERROR_CODES.VALUE.INVALID);
     }
 
     // finds what dogId (s) the user has linked to their familyId
@@ -270,21 +277,24 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
             * If it does then the dog owns that log and invokes next().
             */
 async function validateLogId(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
-  const { validatedDogId } = req.houndDeclarationExtendedProperties.validatedVariables;
-  const logId = formatNumber(req.params['logId']);
-  const { databaseConnection } = req.houndDeclarationExtendedProperties;
-
-  if (validatedDogId === undefined || validatedDogId === null) {
-    throw new HoundError('validatedDogId missing', validateLogId, ERROR_CODES.VALUE.INVALID);
-  }
-  if (logId === undefined || logId === null) {
-    throw new HoundError('logId missing', validateLogId, ERROR_CODES.VALUE.INVALID);
-  }
-  if (databaseConnection === undefined || databaseConnection === null) {
-    throw new HoundError('databaseConnection missing', validateLogId, ERROR_CODES.VALUE.INVALID);
-  }
-
   try {
+  // Confirm that databaseConnection and validatedIds are defined and non-null first.
+    // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
+    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
+    const { databaseConnection } = req.houndDeclarationExtendedProperties;
+    const { validatedDogId } = req.houndDeclarationExtendedProperties.validatedVariables;
+    if (databaseConnection === undefined || databaseConnection === null) {
+      throw new HoundError('databaseConnection missing', validateLogId, ERROR_CODES.VALUE.INVALID);
+    }
+    if (validatedDogId === undefined || validatedDogId === null) {
+      throw new HoundError('validatedDogId missing', validateLogId, ERROR_CODES.VALUE.INVALID);
+    }
+
+    const logId = formatNumber(req.params['logId']);
+
+    if (logId === undefined || logId === null) {
+      throw new HoundError('logId missing', validateLogId, ERROR_CODES.VALUE.INVALID);
+    }
     // finds what logId (s) the user has linked to their dogId
     // JOIN dogs d as log has to have dog still attached to it
     const logs = await databaseQuery<DogLogsRow[]>(
@@ -326,18 +336,22 @@ async function validateLogId(req: express.Request, res: express.Response, next: 
               */
 async function validateParamsReminderId(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
-    const { validatedDogId } = req.houndDeclarationExtendedProperties.validatedVariables;
-    const reminderId = formatNumber(req.params['reminderId']);
+    // Confirm that databaseConnection and validatedIds are defined and non-null first.
+    // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
+    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
-
+    const { validatedDogId } = req.houndDeclarationExtendedProperties.validatedVariables;
+    if (databaseConnection === undefined || databaseConnection === null) {
+      throw new HoundError('databaseConnection missing', validateParamsReminderId, ERROR_CODES.VALUE.INVALID);
+    }
     if (validatedDogId === undefined || validatedDogId === null) {
       throw new HoundError('validatedDogId missing', validateParamsReminderId, ERROR_CODES.VALUE.INVALID);
     }
+
+    const reminderId = formatNumber(req.params['reminderId']);
+
     if (reminderId === undefined || reminderId === null) {
       throw new HoundError('reminderId missing', validateParamsReminderId, ERROR_CODES.VALUE.INVALID);
-    }
-    if (databaseConnection === undefined || databaseConnection === null) {
-      throw new HoundError('databaseConnection missing', validateParamsReminderId, ERROR_CODES.VALUE.INVALID);
     }
 
     // finds what reminderId (s) the user has linked to their dogId
@@ -377,17 +391,21 @@ async function validateParamsReminderId(req: express.Request, res: express.Respo
 
 async function validateBodyReminderId(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
-    const { validatedDogId } = req.houndDeclarationExtendedProperties.validatedVariables;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const remindersDictionary = formatArray(req.body['reminders'] ?? [req.body]) as (Dictionary[] | undefined);
+    // Confirm that databaseConnection and validatedIds are defined and non-null first.
+    // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
+    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
-
+    const { validatedDogId } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', validateBodyReminderId, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedDogId === undefined || validatedDogId === null) {
       throw new HoundError('validatedDogId missing', validateBodyReminderId, ERROR_CODES.VALUE.INVALID);
     }
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const remindersDictionary = formatArray(req.body['reminders'] ?? [req.body]) as (Dictionary[] | undefined);
+
     if (remindersDictionary === undefined || remindersDictionary === null) {
       throw new HoundError('remindersDictionary missing', validateBodyReminderId, ERROR_CODES.VALUE.INVALID);
     }

@@ -20,16 +20,19 @@ Known:
 */
 async function getLogs(req: express.Request, res: express.Response): Promise<void> {
   try {
+    // Confirm that databaseConnection and validatedIds are defined and non-null first.
+    // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
+    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedDogId, validatedLogId } = req.houndDeclarationExtendedProperties.validatedVariables;
-    const previousDogManagerSynchronization = formatDate(req.query['previousDogManagerSynchronization'] ?? req.query['userConfigurationPreviousDogManagerSynchronization']);
-
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', getLogs, ERROR_CODES.VALUE.INVALID);
     }
     if (validatedDogId === undefined || validatedDogId === null) {
       throw new HoundError('validatedDogId missing', getLogs, ERROR_CODES.VALUE.INVALID);
     }
+
+    const previousDogManagerSynchronization = formatDate(req.query['previousDogManagerSynchronization'] ?? req.query['userConfigurationPreviousDogManagerSynchronization']);
 
     const result = validatedLogId !== undefined
     // if logId is defined and it is a number then continue to find a single log
@@ -50,17 +53,11 @@ async function getLogs(req: express.Request, res: express.Response): Promise<voi
 
 async function createLog(req: express.Request, res: express.Response): Promise<void> {
   try {
+    // Confirm that databaseConnection and validatedIds are defined and non-null first.
+    // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
+    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedUserId, validatedFamilyId, validatedDogId } = req.houndDeclarationExtendedProperties.validatedVariables;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const logDate = formatDate(req.body['logDate']);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const logAction = formatUnknownString(req.body['logAction']);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const logCustomActionName = formatUnknownString(req.body['logCustomActionName']);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const logNote = formatUnknownString(req.body['logNote']);
-
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', createLog, ERROR_CODES.VALUE.INVALID);
     }
@@ -73,6 +70,16 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
     if (validatedDogId === undefined || validatedDogId === null) {
       throw new HoundError('validatedDogId missing', createLog, ERROR_CODES.VALUE.INVALID);
     }
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const logDate = formatDate(req.body['logDate']);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const logAction = formatUnknownString(req.body['logAction']);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const logCustomActionName = formatUnknownString(req.body['logCustomActionName']);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const logNote = formatUnknownString(req.body['logNote']);
+
     if (logDate === undefined || logDate === null) {
       throw new HoundError('logDate missing', createLog, ERROR_CODES.VALUE.INVALID);
     }
@@ -116,15 +123,6 @@ async function updateLog(req: express.Request, res: express.Response): Promise<v
   try {
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedUserId, validatedDogId, validatedLogId } = req.houndDeclarationExtendedProperties.validatedVariables;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const logDate = formatDate(req.body['logDate']);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const logAction = formatUnknownString(req.body['logAction']);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const logCustomActionName = formatUnknownString(req.body['logCustomActionName']);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const logNote = formatUnknownString(req.body['logNote']);
-
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', updateLog, ERROR_CODES.VALUE.INVALID);
     }
@@ -137,6 +135,16 @@ async function updateLog(req: express.Request, res: express.Response): Promise<v
     if (validatedLogId === undefined || validatedLogId === null) {
       throw new HoundError('validatedLogId missing', updateLog, ERROR_CODES.VALUE.INVALID);
     }
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const logDate = formatDate(req.body['logDate']);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const logAction = formatUnknownString(req.body['logAction']);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const logCustomActionName = formatUnknownString(req.body['logCustomActionName']);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const logNote = formatUnknownString(req.body['logNote']);
+
     if (logDate === undefined || logDate === null) {
       throw new HoundError('logDate missing', updateLog, ERROR_CODES.VALUE.INVALID);
     }
@@ -171,9 +179,11 @@ async function updateLog(req: express.Request, res: express.Response): Promise<v
 
 async function deleteLog(req: express.Request, res: express.Response): Promise<void> {
   try {
+    // Confirm that databaseConnection and validatedIds are defined and non-null first.
+    // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
+    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedLogId } = req.houndDeclarationExtendedProperties.validatedVariables;
-
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', deleteLog, ERROR_CODES.VALUE.INVALID);
     }
