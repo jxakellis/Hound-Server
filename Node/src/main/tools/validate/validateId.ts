@@ -255,14 +255,17 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
       dogsDictionary = dogsDictionary ?? formatArray([{ dogId }]) as (Dictionary[] | undefined);
     }
     console.log('dogsDictionary', dogsDictionary);
-    dogsDictionary = dogsDictionary ?? formatArray([req.body]) as (Dictionary[] | undefined);
+    if (Object.keys(req.body).length > 0) {
+      dogsDictionary = dogsDictionary ?? formatArray([req.body]) as (Dictionary[] | undefined);
+    }
     console.log('dogsDictionary', dogsDictionary);
     console.log('req.body', req.body);
     console.log('req.params', req.params);
     console.log('req.url', req.url);
 
     if (dogsDictionary === undefined || dogsDictionary === null) {
-      throw new HoundError('dogsDictionary missing', validateDogId, ERROR_CODES.VALUE.INVALID);
+      // We have no dogIds to validate
+      return next();
     }
 
     const promises: Promise<DogsRow[]>[] = [];
