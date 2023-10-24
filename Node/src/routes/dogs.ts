@@ -15,37 +15,19 @@ import { remindersRouter } from './reminders.js';
 
 const dogsRouter = express.Router({ mergeParams: true });
 
-dogsRouter.use('/', validateSubscription);
-
-// validation that params are formatted correctly and have adequate permissions
-dogsRouter.param('dogId', validateDogId);
+dogsRouter.use(validateSubscription);
+dogsRouter.use(validateDogId);
 
 dogsRouter.use('/:dogId/logs', logsRouter);
 
 dogsRouter.use('/:dogId/reminders', remindersRouter);
 
-// gets all dogs, query parameter of ?all attaches the logs and the reminders to the dog
-dogsRouter.get('/', getDogs);
-// no body
+dogsRouter.get(['/:dogId', '/'], getDogs);
 
-// gets specific dog, query parameter of ?all attaches the logs and the reminders to the dogs
-dogsRouter.get('/:dogId', getDogs);
-// no body
-
-// creates dog
 dogsRouter.post('/', createDog);
-/* BODY:
-Single: { dogInfo }
-*/
 
-// updates dog
 dogsRouter.put('/:dogId', updateDog);
-/* BODY:
-Single: { dogInfo }
-*/
 
-// deletes dog
 dogsRouter.delete('/:dogId', deleteDog);
-// no body
 
 export { dogsRouter };

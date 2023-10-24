@@ -4,14 +4,10 @@ import bodyParser from 'body-parser';
 import { logRequest } from '../logging/logRequest.js';
 import { logServerError } from '../logging/logServerError.js';
 import { configureRequestAndResponse } from './configureRequestAndResponse.js';
-import { validateAppVersion } from '../tools/validate/validateId.js';
 import { watchdogRouter } from '../../routes/watchdog.js';
 import { appStoreServerNotificationsRouter } from '../../routes/appStoreServerNotifications.js';
-import { userRouter } from '../../routes/user.js';
 import { HoundError, ERROR_CODES } from './globalErrors.js';
-
-const serverToServerPath = '/appStoreServerNotifications';
-const watchdogPath = '/watchdog';
+import { appRouter } from '../../routes/app.js';
 
 function parseFormData(req: express.Request, res: express.Response, next: express.NextFunction): void {
   bodyParser.urlencoded({
@@ -43,33 +39,21 @@ function parseJSON(req: express.Request, res: express.Response, next: express.Ne
 }
 
 function configureApp(app: express.Application): void {
-  // Setup defaults and custom res.status method
+  // Setup houndDeclarationExtendedProperties
   app.use(configureRequestAndResponse);
 
-  // Parse information possible sent
-
+  // Parse data
   app.use(parseFormData);
   app.use(express.urlencoded({ extended: false }));
   app.use(parseJSON);
 
-  // Log request and setup logging for response
+  // Log request
+  app.use(logRequest);
 
-  app.use('*', logRequest);
-
-  app.use(watchdogPath, watchdogRouter);
-
-  // Check to see if the request is a server to server communication from Apple
-  app.use(serverToServerPath, appStoreServerNotificationsRouter);
-
-  // Make sure the user is on an updated version
-
-  app.use(validateAppVersion);
-
-  // Route the request to the userRouter
-
-  // TODO FUTURE depreciate appVersion paths, last used <= 3.0.0
-  app.use('/app/:appVersion/user', userRouter);
-  app.use('/app/user', userRouter);
+  // Match path
+  app.use('/watchdog', watchdogRouter);
+  app.use('/appStoreServerNotifications', appStoreServerNotificationsRouter);
+  app.use('/app', appRouter);
 
   // Throw back the request if an unknown path is used
   app.use(

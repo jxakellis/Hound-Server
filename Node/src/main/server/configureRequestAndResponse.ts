@@ -86,8 +86,8 @@ function configureRequestAndResponseExtendedProperties(req: express.Request, res
       validatedUserId: undefined,
       validatedUserIdentifier: undefined,
       validatedFamilyId: undefined,
-      validatedDogId: undefined,
-      validatedLogId: undefined,
+      validatedDogIds: [],
+      validatedLogIds: [],
       validatedReminderIds: [],
     },
   };

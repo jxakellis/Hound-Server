@@ -24,7 +24,9 @@ async function getLogs(req: express.Request, res: express.Response): Promise<voi
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedDogId, validatedLogId } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { validatedDogIds, validatedLogIds } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const validatedDogId = validatedDogIds.safeIndex(0);
+    const validatedLogId = validatedLogIds.safeIndex(0);
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', getLogs, ERROR_CODES.VALUE.INVALID);
     }
@@ -57,7 +59,8 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedUserId, validatedFamilyId, validatedDogId } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { validatedUserId, validatedFamilyId, validatedDogIds } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const validatedDogId = validatedDogIds.safeIndex(0);
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', createLog, ERROR_CODES.VALUE.INVALID);
     }
@@ -128,7 +131,9 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
 async function updateLog(req: express.Request, res: express.Response): Promise<void> {
   try {
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedUserId, validatedDogId, validatedLogId } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { validatedUserId, validatedDogIds, validatedLogIds } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const validatedDogId = validatedDogIds.safeIndex(0);
+    const validatedLogId = validatedLogIds.safeIndex(0);
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', updateLog, ERROR_CODES.VALUE.INVALID);
     }
@@ -195,7 +200,8 @@ async function deleteLog(req: express.Request, res: express.Response): Promise<v
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedLogId } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { validatedLogIds } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const validatedLogId = validatedLogIds.safeIndex(0);
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', deleteLog, ERROR_CODES.VALUE.INVALID);
     }

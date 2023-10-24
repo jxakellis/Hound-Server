@@ -26,9 +26,9 @@ declare module 'express-serve-static-core' {
                 // familyId of the request that has been verified with correct permissions
                 validatedFamilyId?: string
                 // dogId of the request that has been verified with correct permissions
-                validatedDogId?: number
+                validatedDogIds: number[]
                 // logId of the request that has been verified with correct permissions
-                validatedLogId?: number
+                validatedLogIds: number[]
                 // reminderIds of the request that have been verified with correct permissions
                 validatedReminderIds: number[]
             }

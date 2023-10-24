@@ -33,7 +33,8 @@ async function getDogs(req: express.Request, res: express.Response): Promise<voi
       throw new HoundError('No family found or invalid permissions', getDogs, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
 
-    const { validatedDogId } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { validatedDogIds } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const validatedDogId = validatedDogIds.safeIndex(0);
     const previousDogManagerSynchronization = formatDate(req.query['previousDogManagerSynchronization'] ?? req.query['userConfigurationPreviousDogManagerSynchronization']);
     const isRetrievingReminders = formatBoolean(req.query['isRetrievingReminders']) ?? false;
     const isRetrievingLogs = formatBoolean(req.query['isRetrievingLogs']) ?? false;
@@ -102,7 +103,8 @@ async function updateDog(req: express.Request, res: express.Response): Promise<v
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedFamilyId, validatedDogId } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { validatedFamilyId, validatedDogIds } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const validatedDogId = validatedDogIds.safeIndex(0);
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', updateDog, ERROR_CODES.VALUE.INVALID);
     }
@@ -134,7 +136,8 @@ async function deleteDog(req: express.Request, res: express.Response): Promise<v
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedFamilyId, validatedDogId } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { validatedFamilyId, validatedDogIds } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const validatedDogId = validatedDogIds.safeIndex(0);
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', deleteDog, ERROR_CODES.VALUE.INVALID);
     }

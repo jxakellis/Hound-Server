@@ -21,8 +21,9 @@ import { type Dictionary } from '../../types/Dictionary.js';
 */
 async function validateAppVersion(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
+    // TODO NOW bug, not backwards compatible
     // TODO FUTURE depreciate appVersion in params, last used <= 3.0.0
-    const appVersion = formatUnknownString(req.params['appVersion']) ?? formatUnknownString(req.headers['appVersion']) ?? formatUnknownString(req.headers['appversion']);
+    const appVersion = formatUnknownString(req.params['appVersion']) ?? formatUnknownString(req.headers['houndheader-appversion']);
 
     if (appVersion === undefined || appVersion === null) {
       throw new HoundError('appVersion missing', validateAppVersion, ERROR_CODES.VALUE.MISSING);
@@ -59,7 +60,7 @@ async function validateUserIdentifier(req: express.Request, res: express.Respons
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     // TODO FUTURE depeciate req.query userIdentifier, last used <= 3.0.0
     // unhashedUserIdentifier: unhashed, 44-length apple identifier or 64-length sha-256 hash of apple identifier
-    const userIdentifier = formatUnknownString(req.query['userIdentifier']) ?? formatUnknownString(req.headers['userIdentifier']) ?? formatUnknownString(req.headers['useridentifier']);
+    const userIdentifier = formatUnknownString(req.query['userIdentifier']) ?? formatUnknownString(req.headers['houndheader-useridentifier']);
 
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', validateUserIdentifier, ERROR_CODES.VALUE.INVALID);
@@ -221,6 +222,11 @@ async function validateFamilyId(req: express.Request, res: express.Response, nex
           */
 async function validateDogId(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
+    // TODO NOW cntrl f for dog, reminder, and log (case insenitive), if found in wrong validateBody (because I copy pasted), fix it
+    // TODO NOW for validateDogId, remidnerId, and logId, have it validate through the body method.
+    // Follow the general path layed out by validateBodyReminderId
+    // Remember to ?? in params.someId to be backwards compatible.
+
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
@@ -233,37 +239,56 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
       throw new HoundError('No family found or invalid permissions', validateDogId, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
 
-    const dogId = formatNumber(req.params['dogId']);
-    if (dogId === undefined || dogId === null) {
-      throw new HoundError('dogId missing', validateDogId, ERROR_CODES.VALUE.INVALID);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const dogsDictionary = formatArray(req.body['dogs'] ?? req.body['reminders'] ?? req.body['logs'] ?? [req.body] ?? [{ dogId: req.params['dogId'] }]) as (Dictionary[] | undefined);
+    console.log('dogsDictionary', dogsDictionary);
+    console.log('req.body', req.body);
+    console.log('req.params', req.params);
+
+    if (dogsDictionary === undefined || dogsDictionary === null) {
+      throw new HoundError('dogsDictionary missing', validateDogId, ERROR_CODES.VALUE.INVALID);
     }
 
-    // finds what dogId (s) the user has linked to their familyId
-    // JOIN families as dog must have a family attached to it
-    const dogs = await databaseQuery<DogsRow[]>(
-      databaseConnection,
-      `SELECT ${dogsColumns}
-                FROM dogs d
-                JOIN families f ON d.familyId = f.familyId
-                WHERE d.familyId = ? AND d.dogId = ?
-                LIMIT 1`,
-      [validatedFamilyId, dogId],
-    );
+    const promises: Promise<DogsRow[]>[] = [];
+    // query for all reminders provided
+    dogsDictionary.forEach((dogDictionary) => {
+      const dogId = formatNumber(dogDictionary['dogId']);
 
-    const dog = dogs.safeIndex(0);
+      if (dogId === undefined || dogId === null) {
+        throw new HoundError('dogId missing', validateDogId, ERROR_CODES.VALUE.INVALID);
+      }
 
-    if (dog === undefined || dog === null) {
-      // the dogId does not exist and/or the user does not have access to that dogId
-      throw new HoundError('No dog found or invalid permissions', validateDogId, ERROR_CODES.PERMISSION.NO.DOG);
-    }
+      // Attempt to locate a reminder. It must match the reminderId provided while being attached to a dog that the user has permission to use
+      promises.push(databaseQuery<DogsRow[]>(
+        databaseConnection,
+        `SELECT ${dogsColumns}
+                  FROM dogs d
+                  JOIN families f ON d.familyId = f.familyId
+                  WHERE d.familyId = ? AND d.dogId = ?
+                  LIMIT 1`,
+        [validatedFamilyId, dogId],
+      ));
+    });
 
-    if (dog.dogIsDeleted === 1) {
-      // the dog has been found but its been deleted
-      throw new HoundError('Dog has been deleted', validateDogId, ERROR_CODES.FAMILY.DELETED.DOG);
-    }
+    const queriedDogs = await Promise.all(promises);
 
-    // the dogId exists and it is linked to the familyId, valid
-    req.houndDeclarationExtendedProperties.validatedVariables.validatedDogId = dogId;
+    queriedDogs.forEach((queriedDogResult) => {
+      const queriedDog = queriedDogResult.safeIndex(0);
+
+      if (queriedDog === undefined || queriedDog === null) {
+        // the dogId does not exist and/or the dog does not have access to that dogId
+        // eslint-disable-next-line no-await-in-loop
+        throw new HoundError('No dog found or invalid permissions', validateDogId, ERROR_CODES.PERMISSION.NO.DOG);
+      }
+
+      if (queriedDog.dogIsDeleted === 1) {
+        // the dog has been found but its been deleted
+        throw new HoundError('Dog has been deleted', validateDogId, ERROR_CODES.FAMILY.DELETED.DOG);
+      }
+
+      // dogId has been validated. Save it to validatedVariables
+      req.houndDeclarationExtendedProperties.validatedVariables.validatedDogIds.push(queriedDog.dogId);
+    });
   }
   catch (error) {
     return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
@@ -282,105 +307,67 @@ async function validateLogId(req: express.Request, res: express.Response, next: 
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedDogId } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { validatedDogIds } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', validateLogId, ERROR_CODES.VALUE.INVALID);
     }
-    if (validatedDogId === undefined || validatedDogId === null) {
-      throw new HoundError('validatedDogId missing', validateLogId, ERROR_CODES.VALUE.INVALID);
+    if (validatedDogIds === undefined || validatedDogIds === null) {
+      throw new HoundError('validatedDogIds missing', validateLogId, ERROR_CODES.VALUE.INVALID);
     }
 
-    const logId = formatNumber(req.params['logId']);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const logsDictionary = formatArray(req.body['logs'] ?? [req.body]) as (Dictionary[] | undefined);
+    console.log('logsDictionary', logsDictionary);
+    console.log('req.body', req.body);
+    console.log('req.params', req.params);
 
-    if (logId === undefined || logId === null) {
-      throw new HoundError('logId missing', validateLogId, ERROR_CODES.VALUE.INVALID);
-    }
-    // finds what logId (s) the user has linked to their dogId
-    // JOIN dogs d as log has to have dog still attached to it
-    const logs = await databaseQuery<DogLogsRow[]>(
-      databaseConnection,
-      `SELECT ${dogLogsColumns}
-                  FROM dogLogs dl
-                  JOIN dogs d ON dl.dogId = d.dogId
-                  WHERE dl.dogId = ? AND dl.logId = ?
-                  LIMIT 1`,
-      [validatedDogId, logId],
-    );
-
-    const log = logs.safeIndex(0);
-    // search query result to find if the logIds linked to the dogIds match the logId provided, match means the user owns that logId
-
-    if (log === undefined || log === null) {
-      // the logId does not exist and/or the dog does not have access to that logId
-      throw new HoundError('No logs found or invalid permissions', validateLogId, ERROR_CODES.PERMISSION.NO.LOG);
+    if (logsDictionary === undefined || logsDictionary === null) {
+      throw new HoundError('logsDictionary missing', validateLogId, ERROR_CODES.VALUE.INVALID);
     }
 
-    if (log.logIsDeleted === 1) {
-      // the log has been found but its been deleted
-      throw new HoundError('Log has been deleted', validateLogId, ERROR_CODES.FAMILY.DELETED.LOG);
-    }
+    const promises: Promise<DogLogsRow[]>[] = [];
+    // query for all reminders provided
+    logsDictionary.forEach((logDictionary) => {
+      const logId = formatNumber(logDictionary['logId']) ?? formatNumber(req.params['logId']);
 
-    // the logId exists and it is linked to the dogId, valid
-    req.houndDeclarationExtendedProperties.validatedVariables.validatedLogId = logId;
-  }
-  catch (error) {
-    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
-  }
+      if (logId === undefined || logId === null) {
+        throw new HoundError('logId missing', validateLogId, ERROR_CODES.VALUE.INVALID);
+      }
 
-  return next();
-}
-
-/**
-              * Checks to see that reminderId is defined, a number, and exists in the database under the dogId provided. Reminder can be deleted
-              * If it does then the dog owns that reminder and invokes next().
-              */
-async function validateParamsReminderId(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
-  try {
-    // Confirm that databaseConnection and validatedIds are defined and non-null first.
-    // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
-    const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedDogId } = req.houndDeclarationExtendedProperties.validatedVariables;
-    if (databaseConnection === undefined || databaseConnection === null) {
-      throw new HoundError('databaseConnection missing', validateParamsReminderId, ERROR_CODES.VALUE.INVALID);
-    }
-    if (validatedDogId === undefined || validatedDogId === null) {
-      throw new HoundError('validatedDogId missing', validateParamsReminderId, ERROR_CODES.VALUE.INVALID);
-    }
-
-    const reminderId = formatNumber(req.params['reminderId']);
-
-    if (reminderId === undefined || reminderId === null) {
-      throw new HoundError('reminderId missing', validateParamsReminderId, ERROR_CODES.VALUE.INVALID);
-    }
-
-    // finds what reminderId (s) the user has linked to their dogId
-    // JOIN dogs d as reminder must have dog attached to it
-    const reminders = await databaseQuery<DogRemindersRow[]>(
-      databaseConnection,
-      `SELECT ${dogRemindersColumns}
-                    FROM dogReminders dr
-                    JOIN dogs d ON dr.dogId = d.dogId
-                    WHERE dr.dogId = ? AND dr.reminderId = ?
+      // Attempt to locate a reminder. It must match the reminderId provided while being attached to a dog that the user has permission to use
+      promises.push(databaseQuery<DogLogsRow[]>(
+        databaseConnection,
+        `SELECT ${dogLogsColumns}
+                    FROM dogLogs dl
+                    WHERE dl.logId = ?
                     LIMIT 1`,
-      [validatedDogId, reminderId],
-    );
+        [logId],
+      ));
+    });
 
-    const reminder = reminders.safeIndex(0);
+    const queriedLogs = await Promise.all(promises);
 
-    // search query result to find if the reminderIds linked to the dogIds match the reminderId provided, match means the user owns that reminderId
+    queriedLogs.forEach((queriedLogResult) => {
+      const queriedLog = queriedLogResult.safeIndex(0);
 
-    if (reminder === undefined || reminder === null) {
-      // the reminderId does not exist and/or the dog does not have access to that reminderId
-      throw new HoundError('No reminders found or invalid permissions', validateParamsReminderId, ERROR_CODES.PERMISSION.NO.REMINDER);
-    }
+      if (queriedLog === undefined || queriedLog === null) {
+        // the reminderId does not exist and/or the dog does not have access to that reminderId
+        // eslint-disable-next-line no-await-in-loop
+        throw new HoundError('No log found or invalid permissions', validateLogId, ERROR_CODES.PERMISSION.NO.LOG);
+      }
 
-    if (reminder.reminderIsDeleted === 1) {
-      // the reminder has been found but its been deleted
-      throw new HoundError('Reminder has been deleted', validateParamsReminderId, ERROR_CODES.FAMILY.DELETED.REMINDER);
-    }
+      if (req.houndDeclarationExtendedProperties.validatedVariables.validatedDogIds.findIndex((dogId) => dogId === queriedLog.dogId) === -1) {
+        throw new HoundError('No log found or invalid permissions', validateLogId, ERROR_CODES.PERMISSION.NO.LOG);
+      }
 
-    req.houndDeclarationExtendedProperties.validatedVariables.validatedReminderIds = (req.houndDeclarationExtendedProperties.validatedVariables.validatedReminderIds ?? []).concat(reminderId);
+      if (queriedLog.logIsDeleted === 1) {
+        // the reminder has been found but its been deleted
+        throw new HoundError('Log has been deleted', validateLogId, ERROR_CODES.FAMILY.DELETED.LOG);
+      }
+
+      // reminderId has been validated. Save it to validatedVariables
+      req.houndDeclarationExtendedProperties.validatedVariables.validatedLogIds.push(queriedLog.logId);
+    });
   }
   catch (error) {
     return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
@@ -389,25 +376,25 @@ async function validateParamsReminderId(req: express.Request, res: express.Respo
   return next();
 }
 
-async function validateBodyReminderId(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
+async function validateReminderId(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedDogId } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { validatedDogIds } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined || databaseConnection === null) {
-      throw new HoundError('databaseConnection missing', validateBodyReminderId, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', validateReminderId, ERROR_CODES.VALUE.INVALID);
     }
-    if (validatedDogId === undefined || validatedDogId === null) {
-      throw new HoundError('validatedDogId missing', validateBodyReminderId, ERROR_CODES.VALUE.INVALID);
+    if (validatedDogIds === undefined || validatedDogIds === null) {
+      throw new HoundError('validatedDogIds missing', validateReminderId, ERROR_CODES.VALUE.INVALID);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const remindersDictionary = formatArray(req.body['reminders'] ?? [req.body]) as (Dictionary[] | undefined);
 
     if (remindersDictionary === undefined || remindersDictionary === null) {
-      throw new HoundError('remindersDictionary missing', validateBodyReminderId, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('remindersDictionary missing', validateReminderId, ERROR_CODES.VALUE.INVALID);
     }
 
     const promises: Promise<DogRemindersRow[]>[] = [];
@@ -416,7 +403,7 @@ async function validateBodyReminderId(req: express.Request, res: express.Respons
       const reminderId = formatNumber(reminderDictionary['reminderId']);
 
       if (reminderId === undefined || reminderId === null) {
-        throw new HoundError('reminderId missing', validateBodyReminderId, ERROR_CODES.VALUE.INVALID);
+        throw new HoundError('reminderId missing', validateReminderId, ERROR_CODES.VALUE.INVALID);
       }
 
       // Attempt to locate a reminder. It must match the reminderId provided while being attached to a dog that the user has permission to use
@@ -424,10 +411,9 @@ async function validateBodyReminderId(req: express.Request, res: express.Respons
         databaseConnection,
         `SELECT ${dogRemindersColumns}
                         FROM dogReminders dr
-                        JOIN dogs d ON dr.dogId = d.dogId
-                        WHERE dr.dogId = ? AND dr.reminderId = ?
+                        WHERE dr.reminderId = ?
                         LIMIT 1`,
-        [validatedDogId, reminderId],
+        [reminderId],
       ));
     });
 
@@ -439,12 +425,12 @@ async function validateBodyReminderId(req: express.Request, res: express.Respons
       if (queriedReminder === undefined || queriedReminder === null) {
         // the reminderId does not exist and/or the dog does not have access to that reminderId
         // eslint-disable-next-line no-await-in-loop
-        throw new HoundError('No reminders found or invalid permissions', validateBodyReminderId, ERROR_CODES.PERMISSION.NO.REMINDER);
+        throw new HoundError('No reminders found or invalid permissions', validateReminderId, ERROR_CODES.PERMISSION.NO.REMINDER);
       }
 
       if (queriedReminder.reminderIsDeleted === 1) {
         // the reminder has been found but its been deleted
-        throw new HoundError('Reminder has been deleted', validateBodyReminderId, ERROR_CODES.FAMILY.DELETED.REMINDER);
+        throw new HoundError('Reminder has been deleted', validateReminderId, ERROR_CODES.FAMILY.DELETED.REMINDER);
       }
 
       // reminderId has been validated. Save it to validatedVariables
@@ -459,5 +445,5 @@ async function validateBodyReminderId(req: express.Request, res: express.Respons
 }
 
 export {
-  validateAppVersion, validateUserIdentifier, validateUserId, validateFamilyId, validateDogId, validateLogId, validateParamsReminderId, validateBodyReminderId,
+  validateAppVersion, validateUserIdentifier, validateUserId, validateFamilyId, validateDogId, validateLogId, validateReminderId,
 };

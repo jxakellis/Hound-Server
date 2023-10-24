@@ -9,8 +9,7 @@ const logsRouter = express.Router({ mergeParams: true });
 
 logsRouter.param('logId', validateLogId);
 
-logsRouter.get('/', getLogs);
-logsRouter.get('/:logId', getLogs);
+logsRouter.get(['/:logId', '/'], getLogs);
 
 logsRouter.post('/', createLog);
 
