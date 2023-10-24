@@ -200,8 +200,7 @@ async function validateFamilyId(req: express.Request, res: express.Response, nex
       databaseConnection,
       `SELECT ${familyMembersColumns}
               FROM familyMembers fm
-              WHERE familyId = ?
-              LIMIT 1`,
+              WHERE familyId = ?`,
       [familyId],
     ));
 
