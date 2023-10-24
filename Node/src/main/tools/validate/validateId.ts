@@ -24,6 +24,10 @@ async function validateAppVersion(req: express.Request, res: express.Response, n
     // TODO NOW bug, not backwards compatible
     // TODO FUTURE depreciate appVersion in params, last used <= 3.0.0
     const appVersion = formatUnknownString(req.params['appVersion']) ?? formatUnknownString(req.headers['houndheader-appversion']);
+    console.log('appVersion', appVersion);
+    console.log('req.body', req.body);
+    console.log('req.params', req.params);
+    console.log('req.url', req.url);
 
     if (appVersion === undefined || appVersion === null) {
       throw new HoundError('appVersion missing', validateAppVersion, ERROR_CODES.VALUE.MISSING);
