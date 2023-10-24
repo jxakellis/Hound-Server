@@ -24,7 +24,7 @@ async function validateAppVersion(req: express.Request, res: express.Response, n
     // TODO NOW bug, not backwards compatible
     // TODO FUTURE depreciate appVersion in params, last used <= 3.0.0
     const appVersion = formatUnknownString(req.params['appVersion']) ?? formatUnknownString(req.headers['houndheader-appversion']);
-    console.log('appVersion', appVersion);
+    console.log('\n\nappVersion', appVersion);
     console.log('req.body', req.body);
     console.log('req.params', req.params);
     console.log('req.url', req.url);
@@ -65,6 +65,10 @@ async function validateUserIdentifier(req: express.Request, res: express.Respons
     // TODO FUTURE depeciate req.query userIdentifier, last used <= 3.0.0
     // unhashedUserIdentifier: unhashed, 44-length apple identifier or 64-length sha-256 hash of apple identifier
     const userIdentifier = formatUnknownString(req.query['userIdentifier']) ?? formatUnknownString(req.headers['houndheader-useridentifier']);
+    console.log('\n\nuserIdentifier', userIdentifier);
+    console.log('req.body', req.body);
+    console.log('req.params', req.params);
+    console.log('req.url', req.url);
 
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', validateUserIdentifier, ERROR_CODES.VALUE.INVALID);
@@ -203,7 +207,6 @@ async function validateFamilyId(req: express.Request, res: express.Response, nex
     if (familyId === undefined || familyId === null) {
       // familyId does not exist in the table
       return next();
-      // throw new HoundError('No family found or invalid permissions', validateFamilyId, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
 
     req.houndDeclarationExtendedProperties.validatedVariables.validatedFamilyId = familyId;
@@ -245,9 +248,10 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const dogsDictionary = formatArray(req.body['dogs'] ?? req.body['reminders'] ?? req.body['logs'] ?? [req.body] ?? [{ dogId: req.params['dogId'] }]) as (Dictionary[] | undefined);
-    console.log('dogsDictionary', dogsDictionary);
+    console.log('\n\ndogsDictionary', dogsDictionary);
     console.log('req.body', req.body);
     console.log('req.params', req.params);
+    console.log('req.url', req.url);
 
     if (dogsDictionary === undefined || dogsDictionary === null) {
       throw new HoundError('dogsDictionary missing', validateDogId, ERROR_CODES.VALUE.INVALID);
@@ -321,9 +325,10 @@ async function validateLogId(req: express.Request, res: express.Response, next: 
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const logsDictionary = formatArray(req.body['logs'] ?? [req.body]) as (Dictionary[] | undefined);
-    console.log('logsDictionary', logsDictionary);
+    console.log('\n\nlogsDictionary', logsDictionary);
     console.log('req.body', req.body);
     console.log('req.params', req.params);
+    console.log('req.url', req.url);
 
     if (logsDictionary === undefined || logsDictionary === null) {
       throw new HoundError('logsDictionary missing', validateLogId, ERROR_CODES.VALUE.INVALID);
@@ -396,6 +401,10 @@ async function validateReminderId(req: express.Request, res: express.Response, n
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const remindersDictionary = formatArray(req.body['reminders'] ?? [req.body]) as (Dictionary[] | undefined);
+    console.log('\n\nremindersDictionary', remindersDictionary);
+    console.log('req.body', req.body);
+    console.log('req.params', req.params);
+    console.log('req.url', req.url);
 
     if (remindersDictionary === undefined || remindersDictionary === null) {
       throw new HoundError('remindersDictionary missing', validateReminderId, ERROR_CODES.VALUE.INVALID);
