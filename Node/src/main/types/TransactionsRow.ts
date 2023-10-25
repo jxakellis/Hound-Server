@@ -1,4 +1,4 @@
-// TODO FUTURE depreciate isAutoRenewing, expirationDate, and numberOfDogs (last used 3.0.0)
+// TODO FUTURE depreciate isAutoRenewing, expirationDate, and numberOfDogs, last used <= 3.0.0
 const transactionsColumns = `
 t.userId,
 t.transactionId,

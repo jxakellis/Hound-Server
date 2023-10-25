@@ -499,7 +499,7 @@ async function createFamilyForUserId(databaseConnection: Queryable, userId: stri
       databaseConnection,
       `INSERT INTO families
         (
-          userId,
+          familyHeadUserId,
           familyId,
           familyCode,
           familyIsLocked,

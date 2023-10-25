@@ -54,9 +54,9 @@ async function deleteFamily(databaseConnection: Queryable, familyId: string, fam
       databaseConnection,
       `INSERT INTO previousFamilies
           (
-            familyId, userId, familyCode, familyIsLocked, familyAccountCreationDate, familyAccountDeletionDate
+            familyId, familyHeadUserId, familyCode, familyIsLocked, familyAccountCreationDate, familyAccountDeletionDate
             )
-            SELECT familyId, userId, familyCode, familyIsLocked, familyAccountCreationDate, CURRENT_TIMESTAMP()
+            SELECT familyId, familyHeadUserId, familyCode, familyIsLocked, familyAccountCreationDate, CURRENT_TIMESTAMP()
             FROM families f
             WHERE familyId = ?`,
       [familyId],

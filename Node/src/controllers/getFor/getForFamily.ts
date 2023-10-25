@@ -89,7 +89,7 @@ async function getFamilyHeadUserId(databaseConnection: Queryable, userId: string
     [userId],
   );
 
-  return result.safeIndex(0)?.userId;
+  return result.safeIndex(0)?.familyHeadUserId;
 }
 
 /**

@@ -1,4 +1,4 @@
-// TODO FUTURE depreciate userApplicationUsername (last used in 3.0.0)
+// TODO FUTURE depreciate userApplicationUsername, last used <= 3.0.0
 const privateUsersColumns = `
 u.userId,
 u.userAppAccountToken,

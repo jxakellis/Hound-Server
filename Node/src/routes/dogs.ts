@@ -15,7 +15,7 @@ import { remindersRouter } from './reminders.js';
 
 const dogsRouter = express.Router({ mergeParams: true });
 
-// TODO FUTURE depreciate :dogId, last used 3.0.0
+// TODO FUTURE depreciate :dogId, last used <= 3.0.0
 dogsRouter.use(['/:dogId/logs', '/:dogId/reminders', '/:dogId', '/'], validateSubscription, validateDogId);
 
 dogsRouter.use(['/:dogId/logs', '/logs'], logsRouter);

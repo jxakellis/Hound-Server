@@ -7,6 +7,7 @@ import { validateReminderId } from '../main/tools/validate/validateDogRelatedId.
 
 const remindersRouter = express.Router({ mergeParams: true });
 
+// TODO FUTURE depreciate :reminderId, last used <= 3.0.0
 remindersRouter.use(['/:reminderId', '/'], validateReminderId);
 
 remindersRouter.get(['/:reminderId', '/'], getReminders);

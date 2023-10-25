@@ -42,7 +42,7 @@ async function addFamilyMember(databaseConnection: Queryable, userId: string, fo
   }
 
   // Don't use .familyActiveSubscription property: the property wasn't assigned to the request due to the user not being in a family (only assigned with familyId is path param)
-  const familyActiveSubscription = await getActiveTransaction(databaseConnection, family.userId);
+  const familyActiveSubscription = await getActiveTransaction(databaseConnection, family.familyHeadUserId);
   const familyMembers = await getAllFamilyMembersForFamilyId(databaseConnection, family.familyId);
 
   if (familyActiveSubscription === undefined || familyActiveSubscription === null) {
