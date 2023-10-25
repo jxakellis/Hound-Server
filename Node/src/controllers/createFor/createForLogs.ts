@@ -35,6 +35,7 @@ async function createLogForUserIdDogId(databaseConnection: Queryable, log: NotYe
         VALUES (
           ?, ?, 
           ?, ?, ?, ?,
+          ?, ?,
           CURRENT_TIMESTAMP(), 0,
           )`,
     [
