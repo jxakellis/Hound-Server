@@ -26,6 +26,7 @@ familyRouter.use(['/:familyId/subscriptions', '/subscriptions'], transactionsRou
 familyRouter.use(['/:familyId/transactions', '/transactions'], transactionsRouter);
 
 familyRouter.get(['/:familyId', '/'], getFamily);
+familyRouter.patch(['/:familyId', '/'], getFamily);
 
 familyRouter.post(['/'], createFamily);
 

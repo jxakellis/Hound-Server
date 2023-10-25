@@ -23,6 +23,7 @@ userRouter.use(['/:userId/alert', '/alert'], alertRouter);
 userRouter.use(['/:userId/family', '/family'], familyRouter);
 
 userRouter.get(['/:userId', '/'], getUser);
+userRouter.patch(['/:userId', '/'], getUser);
 
 userRouter.post(['/'], createUser);
 

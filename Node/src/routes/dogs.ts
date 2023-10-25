@@ -22,6 +22,7 @@ dogsRouter.use(['/:dogId/logs', '/logs'], logsRouter);
 dogsRouter.use(['/:dogId/reminders', '/reminders'], remindersRouter);
 
 dogsRouter.get(['/:dogId', '/'], getDogs);
+dogsRouter.patch(['/:dogId', '/'], getDogs);
 
 dogsRouter.post(['/'], createDog);
 

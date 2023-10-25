@@ -11,6 +11,7 @@ const logsRouter = express.Router({ mergeParams: true });
 logsRouter.use(['/:logId', '/'], validateLogId);
 
 logsRouter.get(['/:logId', '/'], getLogs);
+logsRouter.patch(['/:logId', '/'], getLogs);
 
 logsRouter.post(['/'], createLog);
 

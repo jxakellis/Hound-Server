@@ -7,6 +7,7 @@ import {
 const transactionsRouter = express.Router({ mergeParams: true });
 
 transactionsRouter.get('/', getTransactions);
+transactionsRouter.patch('/', getTransactions);
 
 transactionsRouter.post('/', createTransactions);
 

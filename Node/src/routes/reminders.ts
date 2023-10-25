@@ -10,6 +10,7 @@ const remindersRouter = express.Router({ mergeParams: true });
 remindersRouter.use(['/:reminderId', '/'], validateReminderId);
 
 remindersRouter.get(['/:reminderId', '/'], getReminders);
+remindersRouter.patch(['/:reminderId', '/'], getReminders);
 
 remindersRouter.post(['/'], createReminder);
 
