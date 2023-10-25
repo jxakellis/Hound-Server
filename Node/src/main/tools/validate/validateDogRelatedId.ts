@@ -26,19 +26,24 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     let dogsDictionary = formatArray(req.body['dogs'] ?? req.body['reminders'] ?? req.body['logs']) as (StringKeyDictionary[] | undefined);
+    console.log(1, dogsDictionary);
     // TODO FUTURE remove backwards compatibility for .params <= 3.0.0
     const paramsDogId = formatNumber(req.params['dogId']);
+    console.log(req.params, paramsDogId);
     if (paramsDogId !== undefined && paramsDogId !== null) {
       if (dogsDictionary !== undefined && dogsDictionary !== null) {
         dogsDictionary = dogsDictionary.map((dogDictionary) => ({ ...dogDictionary, dogId: paramsDogId }));
+        console.log(2, dogsDictionary);
       }
       else {
         dogsDictionary = [{ dogId: paramsDogId }];
+        console.log(3, dogsDictionary);
       }
     }
     // Check to make sure req.body isn't {}
     else if (Object.keys(req.body).length > 0) {
       dogsDictionary = dogsDictionary ?? formatArray([req.body]) as (StringKeyDictionary[] | undefined);
+      console.log(4, dogsDictionary);
     }
 
     console.log('\ndogsDictionary at start', dogsDictionary);
