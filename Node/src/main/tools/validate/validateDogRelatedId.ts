@@ -29,14 +29,19 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
     // TODO FUTURE remove backwards compatibility for .params <= 3.0.0
     const paramsDogId = formatNumber(req.params['dogId']);
     if (paramsDogId !== undefined && paramsDogId !== null) {
-      dogsDictionary = dogsDictionary ?? formatArray([{ paramsDogId }]) as (StringKeyDictionary[] | undefined);
+      if (dogsDictionary !== undefined && dogsDictionary !== null) {
+        dogsDictionary = dogsDictionary.map((dogDictionary) => ({ ...dogDictionary, dogId: paramsDogId }));
+      }
+      else {
+        dogsDictionary = [{ dogId: paramsDogId }];
+      }
     }
     // Check to make sure req.body isn't {}
-    if (Object.keys(req.body).length > 0) {
+    else if (Object.keys(req.body).length > 0) {
       dogsDictionary = dogsDictionary ?? formatArray([req.body]) as (StringKeyDictionary[] | undefined);
     }
 
-    console.log('dogsDictionary at start', dogsDictionary);
+    console.log('\ndogsDictionary at start', dogsDictionary);
 
     if (dogsDictionary === undefined || dogsDictionary === null) {
       // We have no dogIds to validate
@@ -50,7 +55,7 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
 
       if (dogId === undefined || dogId === null || dogId === -1) {
         // If dogId is missing or -1, it either a dog body wasn't provided or it was provided but dogId is invalid because the dog is yet to be created
-        console.log('dogDictionary being added to unvalidatedDogsDictionary', dogDictionary);
+        console.log('\ndogDictionary being added to unvalidatedDogsDictionary', dogDictionary);
         req.houndDeclarationExtendedProperties.unvalidatedVariables.unvalidatedDogsDictionary.push(dogDictionary);
         return;
       }
@@ -84,7 +89,7 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
         throw new HoundError('Dog has been deleted', validateDogId, ERROR_CODES.FAMILY.DELETED.DOG);
       }
 
-      console.log('validatedDogs before', req.houndDeclarationExtendedProperties.validatedVariables.validatedDogs);
+      console.log('\nvalidatedDogs before', req.houndDeclarationExtendedProperties.validatedVariables.validatedDogs);
       // dogId has been validated. Save it to validatedVariables
       req.houndDeclarationExtendedProperties.validatedVariables.validatedDogs.push(
         {
@@ -92,14 +97,14 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
           unvalidatedDogDictionary: dogsDictionary?.find((unvalidatedDogDictionary) => formatNumber(unvalidatedDogDictionary['dogId']) === queriedDog.dogId),
         },
       );
-      console.log('validatedDogs before', req.houndDeclarationExtendedProperties.validatedVariables.validatedDogs);
+      console.log('\n validatedDogs before', req.houndDeclarationExtendedProperties.validatedVariables.validatedDogs);
     });
   }
   catch (error) {
     return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 
-  console.log('\validatedDogs final', req.houndDeclarationExtendedProperties.validatedVariables.validatedDogs);
+  console.log('\n validatedDogs final', req.houndDeclarationExtendedProperties.validatedVariables.validatedDogs);
   return next();
 }
 
@@ -119,16 +124,22 @@ async function validateLogId(req: express.Request, res: express.Response, next: 
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     let logsDictionary = formatArray(req.body['logs']) as (StringKeyDictionary[] | undefined);
+    const paramsDogId = formatNumber(req.params['dogId']);
     const paramsLogId = formatNumber(req.params['logId']);
-    if (paramsLogId !== undefined && paramsLogId !== null) {
-      logsDictionary = logsDictionary ?? formatArray([{ paramsLogId }]) as (StringKeyDictionary[] | undefined);
+    if (paramsDogId !== undefined && paramsDogId !== null && paramsLogId !== undefined && paramsLogId !== null) {
+      if (logsDictionary !== undefined && logsDictionary !== null) {
+        logsDictionary = logsDictionary.map((logDictionary) => ({ ...logDictionary, dogId: paramsDogId, logId: paramsLogId }));
+      }
+      else {
+        logsDictionary = [{ dogId: paramsDogId, logId: paramsLogId }];
+      }
     }
     // Check to make sure req.body isn't {}
-    if (Object.keys(req.body).length > 0) {
+    else if (Object.keys(req.body).length > 0) {
       logsDictionary = logsDictionary ?? formatArray([req.body]) as (StringKeyDictionary[] | undefined);
     }
 
-    console.log('logsDictionary at start', logsDictionary);
+    console.log('\nlogsDictionary at start', logsDictionary);
 
     if (logsDictionary === undefined || logsDictionary === null) {
       // We have no logIds to validate
@@ -142,7 +153,7 @@ async function validateLogId(req: express.Request, res: express.Response, next: 
 
       if (logId === undefined || logId === null || logId === -1) {
         // If logId is missing or -1, it either a log body wasn't provided or it was provided but logId is invalid because the log is yet to be created
-        console.log('logDictionary being added to unvalidatedLogsDictionary', logDictionary);
+        console.log('\nlogDictionary being added to unvalidatedLogsDictionary', logDictionary);
         req.houndDeclarationExtendedProperties.unvalidatedVariables.unvalidatedLogsDictionary.push(logDictionary);
         return;
       }
@@ -176,7 +187,7 @@ async function validateLogId(req: express.Request, res: express.Response, next: 
         throw new HoundError('Log has been deleted', validateLogId, ERROR_CODES.FAMILY.DELETED.LOG);
       }
 
-      console.log('validatedLogs before', req.houndDeclarationExtendedProperties.validatedVariables.validatedLogs);
+      console.log('\nvalidatedLogs before', req.houndDeclarationExtendedProperties.validatedVariables.validatedLogs);
       // logId has been validated. Save it to validatedVariables
       req.houndDeclarationExtendedProperties.validatedVariables.validatedLogs.push(
         {
@@ -185,7 +196,7 @@ async function validateLogId(req: express.Request, res: express.Response, next: 
           unvalidatedLogDictionary: logsDictionary?.find((unvalidatedLogDictionary) => formatNumber(unvalidatedLogDictionary['logId']) === queriedLog.logId),
         },
       );
-      console.log('validatedLogs after', req.houndDeclarationExtendedProperties.validatedVariables.validatedLogs);
+      console.log('\nvalidatedLogs after', req.houndDeclarationExtendedProperties.validatedVariables.validatedLogs);
     });
   }
   catch (error) {
@@ -212,7 +223,22 @@ async function validateReminderId(req: express.Request, res: express.Response, n
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     let remindersDictionary = formatArray(req.body['reminders']) as (StringKeyDictionary[] | undefined);
+    const paramsDogId = formatNumber(req.params['dogId']);
     const paramsReminderId = formatNumber(req.params['reminderId']);
+
+    if (paramsDogId !== undefined && paramsDogId !== null && paramsReminderId !== undefined && paramsReminderId !== null) {
+      if (remindersDictionary !== undefined && remindersDictionary !== null) {
+        remindersDictionary = remindersDictionary.map((reminderDictionary) => ({ ...reminderDictionary, dogId: paramsDogId, reminderId: paramsReminderId }));
+      }
+      else {
+        remindersDictionary = [{ dogId: paramsDogId, reminderId: paramsReminderId }];
+      }
+    }
+    // Check to make sure req.body isn't {}
+    else if (Object.keys(req.body).length > 0) {
+      remindersDictionary = remindersDictionary ?? formatArray([req.body]) as (StringKeyDictionary[] | undefined);
+    }
+
     if (paramsReminderId !== undefined && paramsReminderId !== null) {
       remindersDictionary = remindersDictionary ?? formatArray([{ paramsReminderId }]) as (StringKeyDictionary[] | undefined);
     }
@@ -221,7 +247,7 @@ async function validateReminderId(req: express.Request, res: express.Response, n
       remindersDictionary = remindersDictionary ?? formatArray([req.body]) as (StringKeyDictionary[] | undefined);
     }
 
-    console.log('remindersDictionary at start', remindersDictionary);
+    console.log('\nremindersDictionary at start', remindersDictionary);
 
     if (remindersDictionary === undefined || remindersDictionary === null) {
       // We have no reminderIds to validate
@@ -235,7 +261,7 @@ async function validateReminderId(req: express.Request, res: express.Response, n
 
       if (reminderId === undefined || reminderId === null || reminderId === -1) {
         // If reminderId is missing or -1, it either a reminder body wasn't provided or it was provided but reminderId is invalid because the reminder is yet to be created
-        console.log('reminderDictionary being added to unvalidatedRemindersDictionary', reminderDictionary);
+        console.log('\nreminderDictionary being added to unvalidatedRemindersDictionary', reminderDictionary);
         req.houndDeclarationExtendedProperties.unvalidatedVariables.unvalidatedRemindersDictionary.push(reminderDictionary);
         return;
       }
@@ -271,7 +297,7 @@ async function validateReminderId(req: express.Request, res: express.Response, n
         throw new HoundError('Reminder has been deleted', validateReminderId, ERROR_CODES.FAMILY.DELETED.REMINDER);
       }
 
-      console.log('validatedReminders before', req.houndDeclarationExtendedProperties.validatedVariables.validatedReminders);
+      console.log('\nvalidatedReminders before', req.houndDeclarationExtendedProperties.validatedVariables.validatedReminders);
       // reminderId has been validated. Save it to validatedVariables
       req.houndDeclarationExtendedProperties.validatedVariables.validatedReminders.push(
         {
@@ -280,14 +306,14 @@ async function validateReminderId(req: express.Request, res: express.Response, n
           unvalidatedReminderDictionary: remindersDictionary?.find((unvalidatedReminderDictionary) => formatNumber(unvalidatedReminderDictionary['reminderId']) === queriedReminder.reminderId),
         },
       );
-      console.log('validatedReminders after', req.houndDeclarationExtendedProperties.validatedVariables.validatedReminders);
+      console.log('\nvalidatedReminders after', req.houndDeclarationExtendedProperties.validatedVariables.validatedReminders);
     });
   }
   catch (error) {
     return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
   }
 
-  console.log('\validatedReminders final', req.houndDeclarationExtendedProperties.validatedVariables.validatedReminders);
+  console.log('\n\validatedReminders final', req.houndDeclarationExtendedProperties.validatedVariables.validatedReminders);
   return next();
 }
 
