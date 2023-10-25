@@ -6,6 +6,6 @@ import {
 
 const appStoreServerNotificationsRouter = express.Router({ mergeParams: true });
 
-appStoreServerNotificationsRouter.post('/', createAppStoreServerNotification);
+appStoreServerNotificationsRouter.post(['/'], createAppStoreServerNotification);
 
 export { appStoreServerNotificationsRouter };

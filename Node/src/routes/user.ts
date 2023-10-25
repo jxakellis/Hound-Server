@@ -16,24 +16,19 @@ const userRouter = express.Router({ mergeParams: true });
 
 // TODO FUTURE depreciate userId paths, last used <= 3.0.0
 
-userRouter.use(validateUserIdentifier);
-userRouter.use(validateUserId);
+userRouter.use(['/:userId', '/'], validateUserIdentifier);
+userRouter.use(['/:userId', '/'], validateUserId);
 
-userRouter.use('/:userId/alert', alertRouter);
-userRouter.use('/alert', alertRouter);
+userRouter.use(['/:userId/alert', '/alert'], alertRouter);
 
-userRouter.use('/:userId/family', familyRouter);
-userRouter.use('/family', familyRouter);
+userRouter.use(['/:userId/family', '/family'], familyRouter);
 
-userRouter.get('/:userId', getUser);
-userRouter.get('/', getUser);
+userRouter.get(['/:userId', '/'], getUser);
 
-userRouter.post('/', createUser);
+userRouter.post(['/'], createUser);
 
-userRouter.put('/:userId', updateUser);
-userRouter.put('/', updateUser);
+userRouter.put(['/:userId', '/'], updateUser);
 
-userRouter.delete('/:userId', deleteUser);
-userRouter.delete('/', deleteUser);
+userRouter.delete(['/:userId', '/'], deleteUser);
 
 export { userRouter };

@@ -11,7 +11,6 @@ appRouter.use(['/:appVersion', '/'], validateAppVersion);
 
 // Route the request to the userRouter
 // TODO FUTURE depreciate appVersion paths, last used <= 3.0.0
-appRouter.use('/:appVersion/user', userRouter);
-appRouter.use('/user', userRouter);
+appRouter.use(['/:appVersion/user', '/user'], userRouter);
 
 export { appRouter };

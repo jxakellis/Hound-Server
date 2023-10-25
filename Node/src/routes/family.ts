@@ -17,8 +17,8 @@ import { transactionsRouter } from './transactions.js';
 const familyRouter = express.Router({ mergeParams: true });
 
 // TODO FUTURE depreciate :familyId, last used 3.0.0
-familyRouter.use(validateFamilyId);
-familyRouter.use(attachActiveSubscription);
+familyRouter.use(['/:familyId', '/'], validateFamilyId);
+familyRouter.use(['/:familyId', '/'], attachActiveSubscription);
 
 familyRouter.use(['/:familyId/dogs', '/dogs'], dogsRouter);
 
@@ -28,7 +28,7 @@ familyRouter.use(['/:familyId/transactions', '/transactions'], transactionsRoute
 
 familyRouter.get(['/:familyId', '/'], getFamily);
 
-familyRouter.post('/', createFamily);
+familyRouter.post(['/'], createFamily);
 
 familyRouter.put(['/:familyId', '/'], updateFamily);
 
