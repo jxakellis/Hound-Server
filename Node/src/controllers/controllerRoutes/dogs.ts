@@ -88,7 +88,6 @@ async function createDog(req: express.Request, res: express.Response): Promise<v
       throw new HoundError('unvalidatedDogDictionary missing', createDog, ERROR_CODES.VALUE.INVALID);
     }
 
-    // TODO NOW remove all req.body references not in validateId
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const dogName = formatUnknownString(unvalidatedDogDictionary?.['dogName']);
     if (dogName === undefined || dogName === null) {
