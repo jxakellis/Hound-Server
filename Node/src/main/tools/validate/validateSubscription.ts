@@ -35,7 +35,7 @@ async function attachActiveSubscription(req: express.Request, res: express.Respo
 
 /**
  * Checks the family's subscription to see if it's expired
- * If the request's method isn't GET or DELETE and the subscription is expired, returns 400 status
+ * If the request's method isn't GET, PATCH or DELETE and the subscription is expired, returns 400 status
  */
 async function validateSubscription(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
@@ -64,9 +64,9 @@ async function validateSubscription(req: express.Request, res: express.Response,
       throw new HoundError('numberOfDogs missing', validateSubscription, ERROR_CODES.VALUE.MISSING);
     }
 
-    // a subscription doesn't matter for GET or DELETE requests. We can allow retrieving/deleting of information even if expired
+    // a subscription doesn't matter for GET, PATCH, or DELETE requests. We can allow retrieving/deleting of information even if expired
     // We only deny POST or PUT requests if a expired subscription, stopping new information from being added
-    if (req.method === 'GET' || req.method === 'DELETE') {
+    if (req.method === 'GET' || req.method === 'PATCH' || req.method === 'DELETE') {
       return next();
     }
 

@@ -23,7 +23,7 @@ async function logRequest(req: express.Request, res: express.Response, next: exp
       throw new HoundError('method missing', logRequest, ERROR_CODES.VALUE.MISSING);
     }
 
-    if (method !== 'GET' && method !== 'POST' && method !== 'PUT' && method !== 'DELETE') {
+    if (method !== 'GET' && method !== 'PATCH' && method !== 'POST' && method !== 'PUT' && method !== 'DELETE') {
       throw new HoundError('method invalid', logRequest, ERROR_CODES.VALUE.INVALID);
     }
 
