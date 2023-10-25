@@ -7,6 +7,7 @@ import { validateLogId } from '../main/tools/validate/validateDogRelatedId.js';
 
 const logsRouter = express.Router({ mergeParams: true });
 
+// TODO FUTURE depreciate :dogId, last used 3.0.0
 logsRouter.use(['/:logId', '/'], validateLogId);
 
 logsRouter.get(['/:logId', '/'], getLogs);

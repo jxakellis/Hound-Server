@@ -16,8 +16,7 @@ const userRouter = express.Router({ mergeParams: true });
 
 // TODO FUTURE depreciate userId paths, last used <= 3.0.0
 
-userRouter.use(['/:userId', '/'], validateUserIdentifier);
-userRouter.use(['/:userId', '/'], validateUserId);
+userRouter.use(['/:userId/alert', '/:userId/family', '/:userId', '/'], validateUserIdentifier, validateUserId);
 
 userRouter.use(['/:userId/alert', '/alert'], alertRouter);
 

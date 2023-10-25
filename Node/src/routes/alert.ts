@@ -7,7 +7,7 @@ import { createTerminateNotification } from '../main/tools/notifications/alert/c
 const alertRouter = express.Router({ mergeParams: true });
 
 // User has done some action that warrents us sending them a special notification
-alertRouter.post(['/:alertType'], async (req: express.Request, res: express.Response) => {
+alertRouter.post(['/:alertType', '/'], async (req: express.Request, res: express.Response) => {
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
