@@ -52,7 +52,7 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
 
       console.log('dogId', dogId);
 
-      if (dogId === undefined || dogId === null || dogId === -1) {
+      if (dogId === undefined || dogId === null || dogId <= -1) {
         // If dogId is missing or -1, it either a dog body wasn't provided or it was provided but dogId is invalid because the dog is yet to be created
         req.houndDeclarationExtendedProperties.unvalidatedVariables.unvalidatedDogsDictionary.push(dogDictionary);
         return;
@@ -145,7 +145,7 @@ async function validateLogId(req: express.Request, res: express.Response, next: 
 
       console.log('logId', logId);
 
-      if (logId === undefined || logId === null || logId === -1) {
+      if (logId === undefined || logId === null || logId <= -1) {
         // If logId is missing or -1, it either a log body wasn't provided or it was provided but logId is invalid because the log is yet to be created
         req.houndDeclarationExtendedProperties.unvalidatedVariables.unvalidatedLogsDictionary.push(logDictionary);
         return;
@@ -246,7 +246,7 @@ async function validateReminderId(req: express.Request, res: express.Response, n
       const reminderId = formatNumber(reminderDictionary['reminderId']);
       console.log('reminderId', reminderId);
 
-      if (reminderId === undefined || reminderId === null || reminderId === -1) {
+      if (reminderId === undefined || reminderId === null || reminderId <= -1) {
         // If reminderId is missing or -1, it either a reminder body wasn't provided or it was provided but reminderId is invalid because the reminder is yet to be created
         req.houndDeclarationExtendedProperties.unvalidatedVariables.unvalidatedRemindersDictionary.push(reminderDictionary);
         return;
@@ -274,7 +274,7 @@ async function validateReminderId(req: express.Request, res: express.Response, n
         throw new HoundError('Reminder could not be located', validateReminderId, ERROR_CODES.PERMISSION.NO.REMINDER);
       }
 
-      if (validatedDogs.findIndex((dog) => dog.validatedDogId === queriedReminder.dogId) === -1) {
+      if (validatedDogs.findIndex((dog) => dog.validatedDogId === queriedReminder.dogId) <= -1) {
         throw new HoundError('Reminder has invalid permissions', validateReminderId, ERROR_CODES.PERMISSION.NO.REMINDER);
       }
 
