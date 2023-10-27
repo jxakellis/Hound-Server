@@ -17,6 +17,7 @@ async function getDogForDogId(
   isRetrievingLogs: boolean,
   previousDogManagerSynchronization?: Date,
 ): Promise<DogsRow | undefined> {
+  console.log(dogId, isRetrievingReminders, isRetrievingLogs, previousDogManagerSynchronization);
   // if the user provides a last sync, then we look for dogs that were modified after this last sync.
   // Therefore, only providing dogs that were modified and the local client is outdated on
   const dogs = previousDogManagerSynchronization !== undefined
@@ -48,6 +49,8 @@ async function getDogForDogId(
       LIMIT 1`,
       [dogId],
     );
+
+  console.log(dogs);
 
   const dog = dogs.safeIndex(0);
 
