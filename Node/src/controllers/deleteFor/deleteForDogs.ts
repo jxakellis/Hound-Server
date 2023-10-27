@@ -1,5 +1,5 @@
 import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
-import { type DogsRow, dogsColumns } from '../../main/types/DogsRow.js';
+import { getAllDogsForFamilyId } from '../getFor/getForDogs.js';
 
 import { deleteAllLogsForDogId } from './deleteForLogs.js';
 import { deleteAllRemindersForFamilyIdDogId } from './deleteForReminders.js';
@@ -25,18 +25,11 @@ async function deleteDogForFamilyIdDogId(databaseConnection: Queryable, familyId
  *  If an error is encountered, creates and throws custom error
  */
 async function deleteAllDogsForFamilyId(databaseConnection: Queryable, familyId: string): Promise<void> {
-  const dogs = await databaseQuery<DogsRow[]>(
-    databaseConnection,
-    `SELECT ${dogsColumns}
-    FROM dogs d
-    WHERE dogIsDeleted = 0 AND familyId = ?
-    LIMIT 18446744073709551615`,
-    [familyId],
-  );
+  const notDeletedDogs = await getAllDogsForFamilyId(databaseConnection, familyId, false);
 
   // delete all the dogs
   const promises: Promise<void>[] = [];
-  dogs.forEach((dog) => promises.push(deleteDogForFamilyIdDogId(databaseConnection, familyId, dog.dogId)));
+  notDeletedDogs.forEach((notDeletedDog) => promises.push(deleteDogForFamilyIdDogId(databaseConnection, familyId, notDeletedDog.dogId)));
 
   await Promise.all(promises);
 }

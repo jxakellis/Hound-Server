@@ -34,24 +34,21 @@ async function getLogs(req: express.Request, res: express.Response): Promise<voi
       throw new HoundError('validatedDog missing', getLogs, ERROR_CODES.VALUE.INVALID);
     }
 
+    if (validatedLog !== undefined && validatedLog !== null) {
+      const possiblyDeletedLog = await getLogForLogId(databaseConnection, validatedLog.validatedLogId, true);
+
+      if (possiblyDeletedLog === undefined || possiblyDeletedLog === null) {
+        throw new HoundError('getLogForLogId possiblyDeletedLog missing', getLogs, ERROR_CODES.VALUE.INVALID);
+      }
+
+      return res.houndDeclarationExtendedProperties.sendSuccessResponse(possiblyDeletedLog);
+    }
+
     const previousDogManagerSynchronization = formatDate(req.query['previousDogManagerSynchronization'] ?? req.query['userConfigurationPreviousDogManagerSynchronization']);
 
-    if (validatedLog !== undefined && validatedLog !== null) {
-      const result = await getLogForLogId(databaseConnection, validatedLog.validatedLogId, previousDogManagerSynchronization);
+    const possibleDeletedLogs = await getAllLogsForDogId(databaseConnection, validatedDog.validatedDogId, true, previousDogManagerSynchronization);
 
-      if (result === undefined || result === null) {
-        throw new HoundError('getLogForLogId result missing', getLogs, ERROR_CODES.VALUE.INVALID);
-      }
-      return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
-    }
-
-    const result = await getAllLogsForDogId(databaseConnection, validatedDog.validatedDogId, previousDogManagerSynchronization);
-
-    if (result === undefined || result === null) {
-      throw new HoundError('getAllLogsForDogId result missing', getLogs, ERROR_CODES.VALUE.INVALID);
-    }
-
-    return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
+    return res.houndDeclarationExtendedProperties.sendSuccessResponse(possibleDeletedLogs);
   }
   catch (error) {
     return res.houndDeclarationExtendedProperties.sendFailureResponse(error);

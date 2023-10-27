@@ -9,7 +9,7 @@ async function deleteLogForLogId(databaseConnection: Queryable, logId: number): 
     databaseConnection,
     `UPDATE dogLogs
     SET logIsDeleted = 1, logLastModified = CURRENT_TIMESTAMP()
-    WHERE logId = ?`,
+    WHERE logIsDeleted = 0 AND logId = ?`,
     [logId],
   );
 }

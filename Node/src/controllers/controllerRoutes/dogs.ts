@@ -39,25 +39,23 @@ async function getDogs(req: express.Request, res: express.Response): Promise<voi
     const { validatedDogs } = req.houndDeclarationExtendedProperties.validatedVariables;
     const validatedDog = validatedDogs.safeIndex(0);
     if (validatedDog !== undefined && validatedDog !== null) {
-      const result = await getDogForDogId(databaseConnection, validatedDog.validatedDogId, previousDogManagerSynchronization);
+      const possiblyDeletedDog = await getDogForDogId(databaseConnection, validatedDog.validatedDogId, true, previousDogManagerSynchronization);
 
-      if (result === undefined || result === null) {
-        throw new HoundError('getDogForDogId result undefined', getDogs, ERROR_CODES.VALUE.INVALID);
+      if (possiblyDeletedDog === undefined || possiblyDeletedDog === null) {
+        throw new HoundError('getDogForDogId possiblyDeletedDog undefined', getDogs, ERROR_CODES.VALUE.INVALID);
       }
-      return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
+
+      return res.houndDeclarationExtendedProperties.sendSuccessResponse(possiblyDeletedDog);
     }
 
-    const result = await getAllDogsForFamilyId(
+    const possiblyDeletedDogs = await getAllDogsForFamilyId(
       databaseConnection,
       validatedFamilyId,
+      true,
       previousDogManagerSynchronization,
     );
 
-    if (result === undefined || result === null) {
-      throw new HoundError('getAllDogsForFamilyId result undefined', getDogs, ERROR_CODES.VALUE.INVALID);
-    }
-
-    return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
+    return res.houndDeclarationExtendedProperties.sendSuccessResponse(possiblyDeletedDogs);
   }
   catch (error) {
     return res.houndDeclarationExtendedProperties.sendFailureResponse(error);

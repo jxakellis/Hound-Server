@@ -1,4 +1,4 @@
-import { type DogRemindersRow, dogRemindersColumns, type NotYetCreatedDogRemindersRow } from '../../main/types/DogRemindersRow.js';
+import { type DogRemindersRow, type NotYetCreatedDogRemindersRow } from '../../main/types/DogRemindersRow.js';
 
 import { type Queryable, type ResultSetHeader, databaseQuery } from '../../main/database/databaseQuery.js';
 import { LIMIT } from '../../main/server/globalConstants.js';
@@ -13,18 +13,10 @@ async function createReminderForDogIdReminder(
   databaseConnection: Queryable,
   reminder: NotYetCreatedDogRemindersRow,
 ): Promise<number> {
-  // only retrieve enough not deleted reminders that would exceed the limit
-  const reminders = await databaseQuery<DogRemindersRow[]>(
-    databaseConnection,
-    `SELECT ${dogRemindersColumns}
-      FROM dogReminders dr
-      WHERE reminderIsDeleted = 0 AND dogId = ?
-      LIMIT ?`,
-    [reminder.dogId, LIMIT.NUMBER_OF_REMINDERS_PER_DOG],
-  );
+  const notDeletedReminders = await getAllRemindersForDogId(databaseConnection, reminder.dogId, false, undefined);
 
   // make sure that the user isn't creating too many reminders
-  if (reminders.length >= LIMIT.NUMBER_OF_REMINDERS_PER_DOG) {
+  if (notDeletedReminders.length >= LIMIT.NUMBER_OF_REMINDERS_PER_DOG) {
     throw new HoundError(`Dog reminder limit of ${LIMIT.NUMBER_OF_REMINDERS_PER_DOG} exceeded`, createReminderForDogIdReminder, ERROR_CODES.FAMILY.LIMIT.REMINDER_TOO_LOW);
   }
 
@@ -103,11 +95,11 @@ async function createRemindersForDogIdReminders(
     return [];
   }
 
+  const notDeletedReminders = await getAllRemindersForDogId(databaseConnection, someReminder.dogId, false);
   // Once we have created all of the reminders, we need to return them to the user. Its hard to link the omit and non-omit types, so just use the dogId to query the reminders, and only include the ones we just created
-  const returnReminders = (await getAllRemindersForDogId(databaseConnection, someReminder.dogId))
-    .filter((reminderFromDatabase) => reminderIds.includes(reminderFromDatabase.reminderId));
+  const notDeletedReturnReminders = notDeletedReminders.filter((reminderFromDatabase) => reminderIds.includes(reminderFromDatabase.reminderId));
 
-  return returnReminders;
+  return notDeletedReturnReminders;
 }
 
 export { createRemindersForDogIdReminders };

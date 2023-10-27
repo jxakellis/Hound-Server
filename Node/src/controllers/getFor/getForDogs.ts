@@ -6,21 +6,31 @@ import { type DogsRow, dogsColumns } from '../../main/types/DogsRow.js';
 import { getAllLogsForDogId } from './getForLogs.js';
 import { getAllRemindersForDogId } from './getForReminders.js';
 
+/**
+ * If you are quering a single elements from the database, previousDogManagerSynchronization is not taken.
+ * We always want to fetch the specified element.
+ * However, previousDogManagerSynchronization is taken here as we are querying multiple sub elements for the dog (logs and reminders)
+ */
 async function getDogForDogId(
   databaseConnection: Queryable,
   dogId: number,
+  includeDeletedDogs: boolean,
   previousDogManagerSynchronization?: Date,
 ): Promise<DogsRow | undefined> {
   // If retreiving a singleDog, then always retrieve
-  const dogs = await databaseQuery<DogsRow[]>(
+  let dogs = await databaseQuery<DogsRow[]>(
     databaseConnection,
     `SELECT ${dogsColumns}
       FROM dogs d
-      WHERE dogIsDeleted = 0 AND dogId = ?
+      WHERE dogId = ?
       GROUP BY dogId
       LIMIT 1`,
     [dogId],
   );
+
+  if (includeDeletedDogs === false) {
+    dogs = dogs.filter((possiblyDeletedDog) => possiblyDeletedDog.dogIsDeleted === 0);
+  }
 
   const dog = dogs.safeIndex(0);
 
@@ -29,23 +39,24 @@ async function getDogForDogId(
     return undefined;
   }
 
-  dog.reminders = await getAllRemindersForDogId(databaseConnection, dog.dogId, previousDogManagerSynchronization);
-  dog.logs = await getAllLogsForDogId(databaseConnection, dog.dogId, previousDogManagerSynchronization);
+  dog.reminders = await getAllRemindersForDogId(databaseConnection, dog.dogId, includeDeletedDogs, previousDogManagerSynchronization);
+  dog.logs = await getAllLogsForDogId(databaseConnection, dog.dogId, includeDeletedDogs, previousDogManagerSynchronization);
 
   return dog;
 }
 
 /**
- *  If the query is successful, returns an array of all the dogs for the familyId.
- *  If a problem is encountered, creates and throws custom error
+ * If you are quering a multiple elements from the database, previousDogManagerSynchronization is optionally taken.
+ * We don't always want to fetch all the elements as it could be a lot of unnecessary data.
  */
 async function getAllDogsForFamilyId(
   databaseConnection: Queryable,
   familyId: string,
+  includeDeletedDogs: boolean,
   previousDogManagerSynchronization?: Date,
-): Promise<DogsRow[] | undefined> {
+): Promise<DogsRow[]> {
   // if the user provides a last sync, then we look for dogs that were modified after this last sync. Therefore, only providing dogs that were modified and the local client is outdated on
-  const dogs = previousDogManagerSynchronization !== undefined
+  let dogs = previousDogManagerSynchronization !== undefined
     ? await databaseQuery<DogsRow[]>(
       databaseConnection,
       `SELECT ${dogsColumns}
@@ -68,30 +79,33 @@ async function getAllDogsForFamilyId(
       databaseConnection,
       `SELECT ${dogsColumns}
       FROM dogs d
-      WHERE dogIsDeleted = 0 AND familyId = ?
+      WHERE familyId = ?
       GROUP BY dogId
       LIMIT 18446744073709551615`,
       [familyId],
     );
 
+  if (includeDeletedDogs === false) {
+    dogs = dogs.filter((possiblyDeletedDog) => possiblyDeletedDog.dogIsDeleted === 0);
+  }
+
   const reminderPromises: Promise<DogRemindersRow[]>[] = [];
   // add all the reminders we want to retrieving into an array, 1:1 corresponding to dogs
-  dogs.forEach((dog) => reminderPromises.push(getAllRemindersForDogId(databaseConnection, dog.dogId, previousDogManagerSynchronization)));
+  dogs.forEach((dog) => reminderPromises.push(getAllRemindersForDogId(databaseConnection, dog.dogId, includeDeletedDogs, previousDogManagerSynchronization)));
 
   // resolve this array (or throw error for whole request if there is a problem)
   const remindersForDogs = await Promise.all(reminderPromises);
-
+  // since reminderPromises is 1:1 and index the same as dogs, we can take the resolved reminderPromises and assign to the dogs in the dogs array
   remindersForDogs.forEach((remindersForDog, index) => {
     dogs[index].reminders = remindersForDog;
   });
 
   const logPromises: Promise<DogLogsRow[]>[] = [];
   // add all the logs we want to retrieving into an array, 1:1 corresponding to dogs
-  dogs.forEach((dog) => logPromises.push(getAllLogsForDogId(databaseConnection, dog.dogId, previousDogManagerSynchronization)));
+  dogs.forEach((dog) => logPromises.push(getAllLogsForDogId(databaseConnection, dog.dogId, includeDeletedDogs, previousDogManagerSynchronization)));
 
   // resolve this array (or throw error for whole request if there is a problem)
   const logsForDogs = await Promise.all(logPromises);
-
   // since logPromises is 1:1 and index the same as dogs, we can take the resolved logPromises and assign to the dogs in the dogs array
   logsForDogs.forEach((logsForDog, index) => {
     dogs[index].logs = logsForDog;

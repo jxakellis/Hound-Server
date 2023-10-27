@@ -2,37 +2,32 @@ import { type Queryable, databaseQuery } from '../../main/database/databaseQuery
 import { type DogRemindersRow, dogRemindersColumns } from '../../main/types/DogRemindersRow.js';
 
 /**
- *  If the query is successful, returns the reminder for the reminderId.
- *  If a problem is encountered, creates and throws custom error
+ * If you are quering a single elements from the database, previousDogManagerSynchronization is not taken.
+ * We always want to fetch the specified element.
  */
-async function getReminderForReminderId(databaseConnection: Queryable, reminderId: number, previousDogManagerSynchronization?: Date): Promise<DogRemindersRow | undefined> {
-  const result = previousDogManagerSynchronization !== undefined
-    ? await databaseQuery<DogRemindersRow[]>(
-      databaseConnection,
-      `SELECT ${dogRemindersColumns}
-      FROM dogReminders dr
-      WHERE TIMESTAMPDIFF(MICROSECOND, reminderLastModified, ?) <= 0 AND reminderId = ?
-      LIMIT 1`,
-      [previousDogManagerSynchronization, reminderId],
-    )
-    : await databaseQuery<DogRemindersRow[]>(
-      databaseConnection,
-      `SELECT ${dogRemindersColumns}
+async function getReminderForReminderId(databaseConnection: Queryable, reminderId: number, includeDeletedReminders: boolean): Promise<DogRemindersRow | undefined> {
+  let reminders = await databaseQuery<DogRemindersRow[]>(
+    databaseConnection,
+    `SELECT ${dogRemindersColumns}
       FROM dogReminders dr
       WHERE reminderId = ?
       LIMIT 1`,
-      [reminderId],
-    );
+    [reminderId],
+  );
 
-  return result.safeIndex(0);
+  if (includeDeletedReminders === false) {
+    reminders = reminders.filter((possiblyDeletedReminders) => possiblyDeletedReminders.reminderIsDeleted === 0);
+  }
+
+  return reminders.safeIndex(0);
 }
 
 /**
- *  If the query is successful, returns an array of all the reminders for the dogId.
- *  If a problem is encountered, creates and throws custom error
+ * If you are quering a multiple elements from the database, previousDogManagerSynchronization is optionally taken.
+ * We don't always want to fetch all the elements as it could be a lot of unnecessary data.
  */
-async function getAllRemindersForDogId(databaseConnection: Queryable, dogId: number, previousDogManagerSynchronization?: Date): Promise<DogRemindersRow[]> {
-  const result = previousDogManagerSynchronization !== undefined
+async function getAllRemindersForDogId(databaseConnection: Queryable, dogId: number, includeDeletedReminders: boolean, previousDogManagerSynchronization?: Date): Promise<DogRemindersRow[]> {
+  let reminders = previousDogManagerSynchronization !== undefined
     ? await databaseQuery<DogRemindersRow[]>(
       databaseConnection,
       `SELECT ${dogRemindersColumns}
@@ -50,7 +45,11 @@ async function getAllRemindersForDogId(databaseConnection: Queryable, dogId: num
       [dogId],
     );
 
-  return result;
+  if (includeDeletedReminders === false) {
+    reminders = reminders.filter((possiblyDeletedReminders) => possiblyDeletedReminders.reminderIsDeleted === 0);
+  }
+
+  return reminders;
 }
 
 export { getReminderForReminderId, getAllRemindersForDogId };

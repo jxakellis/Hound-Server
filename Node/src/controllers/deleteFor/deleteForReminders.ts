@@ -1,6 +1,6 @@
 import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
 import { deleteAlarmNotificationsForReminder } from '../../main/tools/notifications/alarm/deleteAlarmNotification.js';
-import { type DogRemindersRow, dogRemindersColumns } from '../../main/types/DogRemindersRow.js';
+import { getAllRemindersForDogId } from '../getFor/getForReminders.js';
 
 /**
  *  Queries the database to delete a single reminder. If the query is successful, then returns
@@ -11,7 +11,7 @@ async function deleteReminderForFamilyIdDogIdReminderId(databaseConnection: Quer
     databaseConnection,
     `UPDATE dogReminders
     SET reminderIsDeleted = 1, reminderLastModified = CURRENT_TIMESTAMP()
-    WHERE reminderId = ?`,
+    WHERE reminderIsDeleted = 0 AND reminderId = ?`,
     [reminderId],
   );
 
@@ -45,19 +45,12 @@ async function deleteAllRemindersForFamilyIdDogId(databaseConnection: Queryable,
     [dogId],
   );
 
-  const reminders = await databaseQuery<DogRemindersRow[]>(
-    databaseConnection,
-    `SELECT ${dogRemindersColumns}
-    FROM dogReminders dr
-    WHERE reminderIsDeleted = 0 AND dogId = ?
-    LIMIT 18446744073709551615`,
-    [dogId],
-  );
+  const notDeletedReminders = await getAllRemindersForDogId(databaseConnection, dogId, false);
 
   // iterate through all reminders provided to update them all
   // if there is a problem, then we return that problem (function that invokes this will roll back requests)
   // if there are no problems with any of the reminders, we return.
-  reminders.forEach((reminder) => deleteAlarmNotificationsForReminder(familyId, reminder.reminderId));
+  notDeletedReminders.forEach((notDeletedReminder) => deleteAlarmNotificationsForReminder(familyId, notDeletedReminder.reminderId));
 }
 
 export { deleteRemindersForFamilyIdDogIdReminderIds, deleteAllRemindersForFamilyIdDogId };

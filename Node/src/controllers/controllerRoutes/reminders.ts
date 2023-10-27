@@ -38,24 +38,24 @@ async function getReminders(req: express.Request, res: express.Response): Promis
       throw new HoundError('validatedDog missing', getReminders, ERROR_CODES.VALUE.INVALID);
     }
 
-    const previousDogManagerSynchronization = formatDate(req.query['previousDogManagerSynchronization'] ?? req.query['userConfigurationPreviousDogManagerSynchronization']);
-
     const { validatedReminders } = req.houndDeclarationExtendedProperties.validatedVariables;
     const validatedReminder = validatedReminders.safeIndex(0);
 
     if (validatedReminder !== undefined && validatedReminder !== null) {
-      const result = await getReminderForReminderId(databaseConnection, validatedReminder.validatedReminderId, previousDogManagerSynchronization);
+      const possibleDeletedReminder = await getReminderForReminderId(databaseConnection, validatedReminder.validatedReminderId, true);
 
-      if (result === undefined || result === null) {
-        throw new HoundError('result missing', getReminders, ERROR_CODES.VALUE.INVALID);
+      if (possibleDeletedReminder === undefined || possibleDeletedReminder === null) {
+        throw new HoundError('getReminderForReminderId possibleDeletedReminder missing', getReminders, ERROR_CODES.VALUE.INVALID);
       }
 
-      return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
+      return res.houndDeclarationExtendedProperties.sendSuccessResponse(possibleDeletedReminder);
     }
 
-    const result = await getAllRemindersForDogId(databaseConnection, validatedDog.validatedDogId, previousDogManagerSynchronization);
+    const previousDogManagerSynchronization = formatDate(req.query['previousDogManagerSynchronization'] ?? req.query['userConfigurationPreviousDogManagerSynchronization']);
 
-    return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
+    const possibleDeletedReminders = await getAllRemindersForDogId(databaseConnection, validatedDog.validatedDogId, true, previousDogManagerSynchronization);
+
+    return res.houndDeclarationExtendedProperties.sendSuccessResponse(possibleDeletedReminders);
   }
   catch (error) {
     return res.houndDeclarationExtendedProperties.sendFailureResponse(error);

@@ -1,4 +1,4 @@
-import type { NotYetUpdatedDogsRow } from 'src/main/types/DogsRow.js';
+import type { NotYetUpdatedDogsRow } from '../../main/types/DogsRow.js';
 import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
 
 /**

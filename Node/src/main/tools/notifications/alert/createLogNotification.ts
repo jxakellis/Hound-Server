@@ -18,14 +18,14 @@ async function createLogNotification(userId: string, familyId: string, dogId: nu
     const { databaseConnectionForGeneral } = await getDatabaseConnections();
 
     const user = await getPublicUser(databaseConnectionForGeneral, userId);
-    const dog = await getDogForDogId(databaseConnectionForGeneral, dogId, undefined);
+    const notDeletedDog = await getDogForDogId(databaseConnectionForGeneral, dogId, false, undefined);
 
     const abreviatedFullName = formatIntoName(true, user?.userFirstName, user?.userLastName);
     const formattedLogAction = formatLogAction(logAction, logCustomActionName);
 
     // now we can construct the messages
     // Maximum possible length of message: 3 (raw) + 32 (variable) = 35 ( > ALERT_TITLE_LIMIT )
-    const alertTitle = `📝 ${dog?.dogName}`;
+    const alertTitle = `📝 ${notDeletedDog?.dogName}`;
 
     // Maximum possible length of message: 8 (raw) + 34 (variable) + 32 (variable) = 74 ( <= ALERT_BODY_LIMIT )
     const alertBody = `${abreviatedFullName} logged ${formattedLogAction}`;
