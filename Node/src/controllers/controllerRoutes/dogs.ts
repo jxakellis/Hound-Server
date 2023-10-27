@@ -39,7 +39,13 @@ async function getDogs(req: express.Request, res: express.Response): Promise<voi
     const { validatedDogs } = req.houndDeclarationExtendedProperties.validatedVariables;
     const validatedDog = validatedDogs.safeIndex(0);
     if (validatedDog !== undefined && validatedDog !== null) {
-      const possiblyDeletedDog = await getDogForDogId(databaseConnection, validatedDog.validatedDogId, true, previousDogManagerSynchronization);
+      const possiblyDeletedDog = await getDogForDogId(
+        databaseConnection,
+        validatedDog.validatedDogId,
+        true,
+        true,
+        previousDogManagerSynchronization,
+      );
 
       if (possiblyDeletedDog === undefined || possiblyDeletedDog === null) {
         throw new HoundError('getDogForDogId possiblyDeletedDog undefined', getDogs, ERROR_CODES.VALUE.INVALID);
@@ -51,6 +57,7 @@ async function getDogs(req: express.Request, res: express.Response): Promise<voi
     const possiblyDeletedDogs = await getAllDogsForFamilyId(
       databaseConnection,
       validatedFamilyId,
+      true,
       true,
       previousDogManagerSynchronization,
     );

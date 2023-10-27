@@ -1,14 +1,16 @@
 import express from 'express';
-import { databaseQuery } from '../../database/databaseQuery.js';
 import {
   formatNumber, formatArray,
 } from '../../format/formatObject.js';
 import { HoundError, ERROR_CODES } from '../../server/globalErrors.js';
 
-import { type DogsRow, dogsColumns } from '../../types/DogsRow.js';
-import { type DogLogsRow, dogLogsColumns } from '../../types/DogLogsRow.js';
-import { type DogRemindersRow, dogRemindersColumns } from '../../types/DogRemindersRow.js';
+import { type DogsRow } from '../../types/DogsRow.js';
+import { type DogLogsRow } from '../../types/DogLogsRow.js';
+import { type DogRemindersRow } from '../../types/DogRemindersRow.js';
 import { type StringKeyDictionary } from '../../types/StringKeyDictionary.js';
+import { getDogForDogId } from '../../../controllers/getFor/getForDogs.js';
+import { getLogForLogId } from '../../../controllers/getFor/getForLogs.js';
+import { getReminderForReminderId } from '../../../controllers/getFor/getForReminders.js';
 
 async function validateDogId(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
@@ -45,7 +47,7 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
       return next();
     }
 
-    const promises: Promise<DogsRow[]>[] = [];
+    const promises: Promise<DogsRow | undefined>[] = [];
     // query for all reminders provided
     dogsDictionary.forEach((dogDictionary) => {
       const dogId = formatNumber(dogDictionary['dogId']);
@@ -58,24 +60,13 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
         return;
       }
 
-      // Attempt to locate a reminder. It must match the reminderId provided while being attached to a dog that the user has permission to use
-      promises.push(databaseQuery<DogsRow[]>(
-        databaseConnection,
-        `SELECT ${dogsColumns}
-                  FROM dogs d
-                  WHERE d.dogId = ?
-                  LIMIT 1`,
-        [dogId],
-      ));
+      promises.push(getDogForDogId(databaseConnection, dogId, true, false));
     });
 
     const queriedDogs = await Promise.all(promises);
 
-    queriedDogs.forEach((queriedDogResult) => {
-      const queriedDog = queriedDogResult.safeIndex(0);
-
+    queriedDogs.forEach((queriedDog) => {
       if (queriedDog === undefined || queriedDog === null) {
-        // eslint-disable-next-line no-await-in-loop
         throw new HoundError('Dog could not be located', validateDogId, ERROR_CODES.PERMISSION.NO.DOG);
       }
 
@@ -138,7 +129,7 @@ async function validateLogId(req: express.Request, res: express.Response, next: 
       return next();
     }
 
-    const promises: Promise<DogLogsRow[]>[] = [];
+    const promises: Promise<DogLogsRow | undefined>[] = [];
     // query for all logs provided
     logsDictionary.forEach((logDictionary) => {
       const logId = formatNumber(logDictionary['logId']);
@@ -151,24 +142,13 @@ async function validateLogId(req: express.Request, res: express.Response, next: 
         return;
       }
 
-      // Attempt to locate a log. It must match the logId provided while being attached to a dog that the user has permission to use
-      promises.push(databaseQuery<DogLogsRow[]>(
-        databaseConnection,
-        `SELECT ${dogLogsColumns}
-                    FROM dogLogs dl
-                    WHERE dl.logId = ?
-                    LIMIT 1`,
-        [logId],
-      ));
+      promises.push(getLogForLogId(databaseConnection, logId, true));
     });
 
     const queriedLogs = await Promise.all(promises);
 
-    queriedLogs.forEach((queriedLogResult) => {
-      const queriedLog = queriedLogResult.safeIndex(0);
-
+    queriedLogs.forEach((queriedLog) => {
       if (queriedLog === undefined || queriedLog === null) {
-        // eslint-disable-next-line no-await-in-loop
         throw new HoundError('Log could not be located', validateLogId, ERROR_CODES.PERMISSION.NO.LOG);
       }
 
@@ -240,7 +220,7 @@ async function validateReminderId(req: express.Request, res: express.Response, n
       return next();
     }
 
-    const promises: Promise<DogRemindersRow[]>[] = [];
+    const promises: Promise<DogRemindersRow | undefined>[] = [];
     // query for all reminders provided
     remindersDictionary.forEach((reminderDictionary) => {
       const reminderId = formatNumber(reminderDictionary['reminderId']);
@@ -252,25 +232,14 @@ async function validateReminderId(req: express.Request, res: express.Response, n
         return;
       }
 
-      // Attempt to locate a reminder. It must match the reminderId provided while being attached to a dog that the user has permission to use
-      promises.push(databaseQuery<DogRemindersRow[]>(
-        databaseConnection,
-        `SELECT ${dogRemindersColumns}
-                        FROM dogReminders dr
-                        WHERE dr.reminderId = ?
-                        LIMIT 1`,
-        [reminderId],
-      ));
+      promises.push(getReminderForReminderId(databaseConnection, reminderId, true));
     });
 
     const queriedReminders = await Promise.all(promises);
 
-    queriedReminders.forEach((queriedReminderResult) => {
-      const queriedReminder = queriedReminderResult.safeIndex(0);
-
+    queriedReminders.forEach((queriedReminder) => {
       if (queriedReminder === undefined || queriedReminder === null) {
         // the reminderId does not exist and/or the dog does not have access to that reminderId
-        // eslint-disable-next-line no-await-in-loop
         throw new HoundError('Reminder could not be located', validateReminderId, ERROR_CODES.PERMISSION.NO.REMINDER);
       }
 

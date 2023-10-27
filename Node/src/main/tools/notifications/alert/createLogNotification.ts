@@ -18,7 +18,7 @@ async function createLogNotification(userId: string, familyId: string, dogId: nu
     const { databaseConnectionForGeneral } = await getDatabaseConnections();
 
     const user = await getPublicUser(databaseConnectionForGeneral, userId);
-    const notDeletedDog = await getDogForDogId(databaseConnectionForGeneral, dogId, false, undefined);
+    const notDeletedDog = await getDogForDogId(databaseConnectionForGeneral, dogId, false, false, undefined);
 
     const abreviatedFullName = formatIntoName(true, user?.userFirstName, user?.userLastName);
     const formattedLogAction = formatLogAction(logAction, logCustomActionName);

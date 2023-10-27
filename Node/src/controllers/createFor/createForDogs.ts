@@ -9,7 +9,7 @@ import { getAllDogsForFamilyId } from '../getFor/getForDogs.js';
 *  If a problem is encountered, creates and throws custom error
 */
 async function createDogForFamilyId(databaseConnection: Queryable, dog: NotYetCreatedDogsRow): Promise<number> {
-  const notDeletedDogs = await getAllDogsForFamilyId(databaseConnection, dog.familyId, false, undefined);
+  const notDeletedDogs = await getAllDogsForFamilyId(databaseConnection, dog.familyId, false, false, undefined);
 
   // Creating a new dog would exceed the limit
   if (notDeletedDogs.length >= LIMIT.NUMBER_OF_DOGS_PER_FAMILY) {

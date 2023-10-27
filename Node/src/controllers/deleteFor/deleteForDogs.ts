@@ -25,7 +25,7 @@ async function deleteDogForFamilyIdDogId(databaseConnection: Queryable, familyId
  *  If an error is encountered, creates and throws custom error
  */
 async function deleteAllDogsForFamilyId(databaseConnection: Queryable, familyId: string): Promise<void> {
-  const notDeletedDogs = await getAllDogsForFamilyId(databaseConnection, familyId, false);
+  const notDeletedDogs = await getAllDogsForFamilyId(databaseConnection, familyId, false, false, undefined);
 
   // delete all the dogs
   const promises: Promise<void>[] = [];

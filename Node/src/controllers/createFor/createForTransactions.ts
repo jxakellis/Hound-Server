@@ -8,7 +8,6 @@ import { SERVER, SUBSCRIPTION } from '../../main/server/globalConstants.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 import { logServerError } from '../../main/logging/logServerError.js';
 import { formatDate } from '../../main/format/formatObject.js';
-import { getActiveTransaction } from '../getFor/getForTransactions.js';
 
 /**
  * Processes and updates a transaction in the database.

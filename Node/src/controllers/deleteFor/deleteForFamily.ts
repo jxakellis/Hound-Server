@@ -1,13 +1,12 @@
 import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
 
-import { getFamilyHeadUserId } from '../getFor/getForFamily.js';
+import { getAllFamilyMembersForFamilyId, getFamilyHeadUserId } from '../getFor/getForFamily.js';
 
 import { createFamilyMemberLeaveNotification } from '../../main/tools/notifications/alert/createFamilyNotification.js';
 import { createUserKickedNotification } from '../../main/tools/notifications/alert/createUserKickedNotification.js';
 import { type TransactionsRow } from '../../main/types/TransactionsRow.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 import { SUBSCRIPTION } from '../../main/server/globalConstants.js';
-import { type FamilyMembersRow, familyMembersColumns } from '../../main/types/FamilyMembersRow.js';
 
 /**
 * Helper function for deleteFamilyLeaveFamilyForUserIdFamilyId
@@ -15,15 +14,7 @@ import { type FamilyMembersRow, familyMembersColumns } from '../../main/types/Fa
 * They cannot leave, but they can delete their family (if there are no other family members and their subscription is non-renewing)
 */
 async function deleteFamily(databaseConnection: Queryable, familyId: string, familyActiveSubscription: TransactionsRow): Promise<void> {
-  // find the amount of family members in the family
-  const familyMembers = await databaseQuery<FamilyMembersRow[]>(
-    databaseConnection,
-    `SELECT ${familyMembersColumns}
-    FROM familyMembers fm
-    WHERE familyId = ?
-    LIMIT 18446744073709551615`,
-    [familyId],
-  );
+  const familyMembers = await getAllFamilyMembersForFamilyId(databaseConnection, familyId);
 
   if (familyMembers.length > 1) {
     // Cannot destroy family until other members are gone
