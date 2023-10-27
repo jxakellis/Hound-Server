@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { getDogForDogId, getAllDogsForUserIdFamilyId } from '../getFor/getForDogs.js';
+import { getDogForDogId, getAllDogsForFamilyId } from '../getFor/getForDogs.js';
 
 import { createDogForFamilyId } from '../createFor/createForDogs.js';
 
@@ -9,7 +9,7 @@ import { updateDogForDogId } from '../updateFor/updateForDogs.js';
 import { deleteDogForFamilyIdDogId } from '../deleteFor/deleteForDogs.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 
-import { formatBoolean, formatDate, formatUnknownString } from '../../main/format/formatObject.js';
+import { formatDate, formatUnknownString } from '../../main/format/formatObject.js';
 
 /*
 Known:
@@ -34,14 +34,12 @@ async function getDogs(req: express.Request, res: express.Response): Promise<voi
     }
 
     const previousDogManagerSynchronization = formatDate(req.query['previousDogManagerSynchronization'] ?? req.query['userConfigurationPreviousDogManagerSynchronization']);
-    const isRetrievingReminders = formatBoolean(req.query['isRetrievingReminders']) ?? false;
-    const isRetrievingLogs = formatBoolean(req.query['isRetrievingLogs']) ?? false;
 
     // See if the user wants a specific dog. If there is no specific dog, then they want them all
     const { validatedDogs } = req.houndDeclarationExtendedProperties.validatedVariables;
     const validatedDog = validatedDogs.safeIndex(0);
     if (validatedDog !== undefined && validatedDog !== null) {
-      const result = await getDogForDogId(databaseConnection, validatedDog.validatedDogId, isRetrievingReminders, isRetrievingLogs, previousDogManagerSynchronization);
+      const result = await getDogForDogId(databaseConnection, validatedDog.validatedDogId, previousDogManagerSynchronization);
 
       if (result === undefined || result === null) {
         throw new HoundError('getDogForDogId result undefined', getDogs, ERROR_CODES.VALUE.INVALID);
@@ -49,17 +47,14 @@ async function getDogs(req: express.Request, res: express.Response): Promise<voi
       return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
     }
 
-    const result = await getAllDogsForUserIdFamilyId(
+    const result = await getAllDogsForFamilyId(
       databaseConnection,
-      validatedUserId,
       validatedFamilyId,
-      isRetrievingReminders,
-      isRetrievingLogs,
       previousDogManagerSynchronization,
     );
 
     if (result === undefined || result === null) {
-      throw new HoundError('getAllDogsForUserIdFamilyId result undefined', getDogs, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('getAllDogsForFamilyId result undefined', getDogs, ERROR_CODES.VALUE.INVALID);
     }
 
     return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
