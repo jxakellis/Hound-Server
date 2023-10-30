@@ -12,12 +12,6 @@ import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 
 import { formatDate, formatNumber, formatUnknownString } from '../../main/format/formatObject.js';
 
-/*
-Known:
-- userId formatted correctly and request has sufficient permissions to use
-- dogId formatted correctly and request has sufficient permissions to use
-- (if appliciable to controller) logId formatted correctly and request has sufficient permissions to use
-*/
 async function getLogs(req: express.Request, res: express.Response): Promise<void> {
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.

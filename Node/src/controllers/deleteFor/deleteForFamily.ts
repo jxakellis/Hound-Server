@@ -36,8 +36,8 @@ async function deleteFamily(databaseConnection: Queryable, familyId: string, fam
   }
 
   //  The user has no active subscription or manually stopped their subscription from renewing
-  //  They will forfit the rest of their active subscription (if it exists) by deleting their family.
-  //  However, they are safe from an accidential renewal
+  //  They will forfeit the rest of their active subscription (if it exists) by deleting their family.
+  //  However, they are safe from an accidental renewal
 
   // Copy the current, up-to-date records into the "previous" tables. This keeps a record in case we need to reference it later, but in a table that isn't used much
   let promises = [

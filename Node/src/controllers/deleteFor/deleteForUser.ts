@@ -25,7 +25,7 @@ async function deleteUserForUserId(databaseConnection: Queryable, userId: string
       throw new HoundError('familyActiveSubscription missing', deleteUserForUserId, ERROR_CODES.VALUE.MISSING);
     }
 
-    // This step is reversible but sends a non-reversible notification at the end, so we save it for the very end so the notif is only sent if everything else is successful
+    // This step is reversible but sends a non-reversible notification at the end, so we save it for the very end so the notification is only sent if everything else is successful
     await deleteFamilyLeaveFamilyForUserIdFamilyId(databaseConnection, userId, familyId, familyActiveSubscription);
   }
 

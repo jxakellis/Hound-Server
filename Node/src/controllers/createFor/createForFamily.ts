@@ -6,6 +6,7 @@ import { isUserIdInFamily } from '../getFor/getForFamily.js';
 
 const familyCodeLength = 8;
 
+/* cSpell:disable */
 const swearWords = [
   '2G1C',
   '2 GIRLS 1 CUP',

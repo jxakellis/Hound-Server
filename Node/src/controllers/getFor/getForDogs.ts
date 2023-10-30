@@ -7,7 +7,7 @@ import { getAllLogsForDogId } from './getForLogs.js';
 import { getAllRemindersForDogId } from './getForReminders.js';
 
 /**
- * If you are quering a single elements from the database, previousDogManagerSynchronization is not taken.
+ * If you are querying a single elements from the database, previousDogManagerSynchronization is not taken.
  * We always want to fetch the specified element.
  * However, previousDogManagerSynchronization is taken here as we are querying multiple sub elements for the dog (logs and reminders)
  */
@@ -18,7 +18,7 @@ async function getDogForDogId(
   includeRemindersAndLogs: boolean,
   previousDogManagerSynchronization?: Date,
 ): Promise<DogsRow | undefined> {
-  // If retreiving a singleDog, then always retrieve
+  // If retrieving a singleDog, then always retrieve
   let dogs = await databaseQuery<DogsRow[]>(
     databaseConnection,
     `SELECT ${dogsColumns}
@@ -49,7 +49,7 @@ async function getDogForDogId(
 }
 
 /**
- * If you are quering a multiple elements from the database, previousDogManagerSynchronization is optionally taken.
+ * If you are querying a multiple elements from the database, previousDogManagerSynchronization is optionally taken.
  * We don't always want to fetch all the elements as it could be a lot of unnecessary data.
  */
 async function getAllDogsForFamilyId(

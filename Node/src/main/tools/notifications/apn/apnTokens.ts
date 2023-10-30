@@ -11,7 +11,7 @@ import { userConfigurationColumns } from '../../../types/UserConfigurationRow.js
 async function getUserToken(userId: string): Promise<UserConfigurationWithPartialPrivateUsers | undefined> {
   const { databaseConnectionForGeneral } = await getDatabaseConnections();
 
-  // retrieve userNotificationToken, userConfigurationNotificationSound, and isLoudNotificaiton of a user with the userId, non-null userNotificationToken, and userConfigurationIsNotificationEnabled
+  // retrieve userNotificationToken, userConfigurationNotificationSound, and isLoudNotification of a user with the userId, non-null userNotificationToken, and userConfigurationIsNotificationEnabled
   const result = await databaseQuery<UserConfigurationWithPartialPrivateUsers[]>(
     databaseConnectionForGeneral,
     `SELECT u.userNotificationToken, ${userConfigurationColumns}

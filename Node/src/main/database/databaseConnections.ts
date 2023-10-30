@@ -18,7 +18,7 @@ import { testDatabaseConnections } from './testDatabaseConnection.js';
 import { type Queryable, databaseQuery } from './databaseQuery.js';
 import { type StatusResultRow } from '../types/StatusResultRow.js';
 
-// CREATE CONFIGURATION FOR DATABSE CONNECTIONS
+// CREATE CONFIGURATION FOR DATABASE CONNECTIONS
 
 const user = SERVER.IS_PRODUCTION_DATABASE ? productionHoundUser : developmentHoundUser;
 const host = SERVER.IS_PRODUCTION_DATABASE ? productionHoundHost : developmentHoundHost;
@@ -36,7 +36,7 @@ const databaseConnectionConfiguration: mysql2.ConnectionOptions = {
   dateStrings: false,
 };
 
-// CREATE DATABSE CONNECTIONS
+// CREATE DATABASE CONNECTIONS
 
 const databaseConnectionForGeneral = mysql2.createConnection(databaseConnectionConfiguration);
 const databaseConnectionForLogging = mysql2.createConnection(databaseConnectionConfiguration);
@@ -97,7 +97,7 @@ let hasConfiguredDatabaseConnection = false;
 
 /**
  * If the database connections have not been configured yet, configures them then returns the databaseConnections.
- * If the databse connections have been configured, returns the databaseConnections immediately
+ * If the database connections have been configured, returns the databaseConnections immediately
  */
 async function getDatabaseConnections(): Promise<{
   databaseConnectionForGeneral: mysql2.Connection
@@ -116,7 +116,7 @@ async function getDatabaseConnections(): Promise<{
     };
   }
 
-  // First make sure all connetions are connected to the database
+  // First make sure all connections are connected to the database
   const connectPromises = [
     databaseConnectionForGeneral.promise().connect(),
     databaseConnectionForLogging.promise().connect(),
@@ -138,7 +138,7 @@ async function getDatabaseConnections(): Promise<{
   const waitTimeoutPromises: Promise<void>[] = [];
 
   databaseConnections.forEach((databaseConnection) => {
-    // Aallow the databaseConnection to idle for DATABASE_CONNECTION_WAIT_TIMEOUT seconds before being killed
+    // Allow the databaseConnection to idle for DATABASE_CONNECTION_WAIT_TIMEOUT seconds before being killed
     waitTimeoutPromises.push(
       databaseQuery(
         databaseConnection,

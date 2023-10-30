@@ -85,7 +85,7 @@ async function queryTransactionHistoryFromAppStoreServerAPI(transactionId: strin
  * NOTE: It appears this endpoint only returns ONE subscription (the most recent one).
  * https://developer.apple.com/documentation/appstoreserverapi/get_all_subscription_statuses
  * @param {*} transactionId The transactionId used to query Apple's servers to find linked subscriptions.
- * @returns [ { ...transactionInfo, ...renewalInfo } ] of all subscriptioned linked to the transactionId or []
+ * @returns [ { ...transactionInfo, ...renewalInfo } ] of all subscriptions linked to the transactionId or []
  */
 async function querySubscriptionStatusesFromAppStoreAPI(transactionId: string): Promise<{ transactionInfo: JWSTransactionDecodedPayload; renewalInfo: JWSRenewalInfoDecodedPayload }[]> {
   // Query Apple's servers to attempt to get the subscription history linked to a transactionId from an AppStoreReceiptURL
@@ -214,7 +214,7 @@ async function queryAllSubscriptionsForTransactionId(transactionId: string): Pro
     // Find the index of the corresponding transaction in the original transactions array.
     const subscriptionTransactionIndex = transactions.findIndex((transaction) => transaction.transactionInfo.transactionId === subscriptionTransactionId);
 
-    // If we got an index, that means that there is a record in transations for the subscription's transactionId.
+    // If we got an index, that means that there is a record in transitions for the subscription's transactionId.
     if (subscriptionTransactionIndex !== -1) {
       transactions[subscriptionTransactionIndex].renewalInfo = subscription.renewalInfo;
     }

@@ -8,11 +8,6 @@ import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 
 import { formatNumber, formatUnknownString } from '../../main/format/formatObject.js';
 
-/*
-Known:
-- (if appliciable to controller) userId formatted correctly and request has sufficient permissions to use
-*/
-
 async function getUser(req: express.Request, res: express.Response): Promise<void> {
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.

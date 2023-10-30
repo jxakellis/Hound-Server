@@ -1,4 +1,4 @@
-// for all scheduled items. Cannot create multiple seperate schedulers.
+// for all scheduled items. Cannot create multiple separate schedulers.
 import schedule from 'node-schedule';
 import events from 'events';
 import { LIMIT } from '../../../server/globalConstants.js';

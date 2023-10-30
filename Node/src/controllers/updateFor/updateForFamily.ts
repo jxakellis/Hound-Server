@@ -79,7 +79,7 @@ async function addFamilyMember(databaseConnection: Queryable, userId: string, fo
   const { offerIdentifier, transactionId } = familyActiveSubscription;
 
   if (offerIdentifier !== undefined && offerIdentifier !== null) {
-    // A new family member joined a family with a subscription that has an offer code, keep track that offer identifer was utilized
+    // A new family member joined a family with a subscription that has an offer code, keep track that offer identifier was utilized
     await databaseQuery(
       databaseConnection,
       `UPDATE transactions
@@ -108,7 +108,7 @@ async function updateIsLocked(databaseConnection: Queryable, userId: string, fam
 }
 
 // TODO FUTURE add logic for a family to allow it to switch family heads. this will mean checking the active subscription to make sure it is not renewing, similar to deleting a family.
-// ^^ also check other logic, since in the past a family always had the same userId for its family head, but now that could switch, so verify that functions are compatible with that (e.g. retrieving transactions, reassigning transctions, transaction metrics)
+// ^^ also check other logic, since in the past a family always had the same userId for its family head, but now that could switch, so verify that functions are compatible with that (e.g. retrieving transactions, reassigning transitions, transaction metrics)
 
 /**
             *  Queries the database to update a family to add a new user. If the query is successful, then returns

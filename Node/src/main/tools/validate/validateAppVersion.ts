@@ -10,6 +10,7 @@ import { SERVER } from '../../server/globalConstants.js';
 async function validateAppVersion(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
     // TODO FUTURE depreciate and remove req.params, last used <= 3.0.0
+    /* cspell: disable-next-line */
     const appVersion = formatUnknownString(req.headers['houndheader-appversion']) ?? formatUnknownString(req.params['appVersion']);
 
     if (appVersion === undefined || appVersion === null) {

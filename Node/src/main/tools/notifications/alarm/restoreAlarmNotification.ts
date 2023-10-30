@@ -22,7 +22,7 @@ async function restoreAlarmNotificationsForAllFamilies(): Promise<void> {
     const { databaseConnectionForAlarms } = await getDatabaseConnections();
 
     // for ALL reminders get: familyId, reminderId, dogName, reminderExecutionDate, reminderAction, and reminderCustomActionName
-    const alarmNotificationInformations = await databaseQuery<(
+    const alarmNotificationInformationResult = await databaseQuery<(
 DogsRow & DogRemindersRow)[]>(
       databaseConnectionForAlarms,
       `SELECT ${dogsColumns}, ${dogRemindersColumns}
@@ -36,7 +36,7 @@ DogsRow & DogRemindersRow)[]>(
       );
 
     // for every reminder that exists (with a valid reminderExecutionDate that is in the future), we invoke createAlarmNotificationForAll for it
-    alarmNotificationInformations.forEach((alarmNotificationInformation) => {
+    alarmNotificationInformationResult.forEach((alarmNotificationInformation) => {
       // restore generic alarm for family for given reminder
       // don't use await here as that will significantly slow down process
       createAlarmNotificationForFamily(

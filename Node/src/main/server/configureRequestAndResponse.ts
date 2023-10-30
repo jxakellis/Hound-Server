@@ -168,12 +168,12 @@ function configureRequestAndResponseExtendedProperties(req: express.Request, res
 
       // If we user provided an error, then we convert that error to JSON and use it as the body
 
-      const unsafeForUsersReponseDoNotSendWithoutRemovingStack = (error !== undefined && error !== null && error instanceof Error) ? convertErrorToJSON(error) : convertErrorToJSON(undefined);
+      const unsafeForUsersResponseDoNotSendWithoutRemovingStack = (error !== undefined && error !== null && error instanceof Error) ? convertErrorToJSON(error) : convertErrorToJSON(undefined);
 
-      await logResponse(req, res, status, JSON.stringify(unsafeForUsersReponseDoNotSendWithoutRemovingStack));
+      await logResponse(req, res, status, JSON.stringify(unsafeForUsersResponseDoNotSendWithoutRemovingStack));
 
       const safeResponse: ResponseBodyType = {
-        ...unsafeForUsersReponseDoNotSendWithoutRemovingStack,
+        ...unsafeForUsersResponseDoNotSendWithoutRemovingStack,
         stack: undefined,
       };
 

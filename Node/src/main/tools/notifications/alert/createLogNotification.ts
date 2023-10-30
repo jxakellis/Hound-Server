@@ -20,7 +20,7 @@ async function createLogNotification(userId: string, familyId: string, dogId: nu
     const user = await getPublicUser(databaseConnectionForGeneral, userId);
     const notDeletedDog = await getDogForDogId(databaseConnectionForGeneral, dogId, false, false, undefined);
 
-    const abreviatedFullName = formatIntoName(true, user?.userFirstName, user?.userLastName);
+    const abbreviatedFullName = formatIntoName(true, user?.userFirstName, user?.userLastName);
     const formattedLogAction = formatLogAction(logAction, logCustomActionName);
 
     // now we can construct the messages
@@ -28,7 +28,7 @@ async function createLogNotification(userId: string, familyId: string, dogId: nu
     const alertTitle = `📝 ${notDeletedDog?.dogName}`;
 
     // Maximum possible length of message: 8 (raw) + 34 (variable) + 32 (variable) = 74 ( <= ALERT_BODY_LIMIT )
-    const alertBody = `${abreviatedFullName} logged ${formattedLogAction}`;
+    const alertBody = `${abbreviatedFullName} logged ${formattedLogAction}`;
 
     // we now have the messages and can send our APN
     sendNotificationForFamilyExcludingUser(userId, familyId, NOTIFICATION.CATEGORY.LOG.CREATED, alertTitle, alertBody, {});

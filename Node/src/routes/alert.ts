@@ -6,7 +6,7 @@ import { createTerminateNotification } from '../main/tools/notifications/alert/c
 
 const alertRouter = express.Router({ mergeParams: true });
 
-// User has done some action that warrents us sending them a special notification
+// User has done some action that warrants us sending them a special notification
 alertRouter.post(['/:alertType', '/'], async (req: express.Request, res: express.Response) => {
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.

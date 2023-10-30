@@ -13,7 +13,7 @@ function sendDevelopmentAPN(notification: apn.Notification, notificationToken: s
   apnLogger.debug('sendDevelopmentAPN');
   developmentAPNProvider.send(notification, notificationToken)
     .then((response) => {
-      // response.sent: Array of device tokens to which the notification was sent succesfully
+      // response.sent: Array of device tokens to which the notification was sent successfully
       if (response.sent.length !== 0) {
         apnLogger.debug(`sendDevelopmentAPN Response Successful: ${JSON.stringify(response.sent)}`);
       }
@@ -36,13 +36,13 @@ function sendDevelopmentAPN(notification: apn.Notification, notificationToken: s
 
 /**
     * Takes a constructed notification object and a token string, then attempts to send the contents to Apple's production APN server
-    * If a .failed response is recieved
+    * If a .failed response is received
     */
 function sendProductionAPN(notification: apn.Notification, notificationToken: string): void {
   apnLogger.debug(`sendDevelopmentAPN ${notification.rawPayload}`);
   productionAPNProvider.send(notification, notificationToken)
     .then((response) => {
-      // response.sent: Array of device tokens to which the notification was sent succesfully
+      // response.sent: Array of device tokens to which the notification was sent successfully
       if (response.sent.length !== 0) {
         apnLogger.debug(`sendProductionAPN Response Successful: ${JSON.stringify(response.sent)}`);
         return;

@@ -2,7 +2,7 @@ import { type Queryable, databaseQuery } from '../../main/database/databaseQuery
 import { type DogLogsRow, dogLogsColumns } from '../../main/types/DogLogsRow.js';
 
 /**
- * If you are quering a single elements from the database, previousDogManagerSynchronization is not taken.
+ * If you are querying a single elements from the database, previousDogManagerSynchronization is not taken.
  * We always want to fetch the specified element.
  */
 async function getLogForLogId(databaseConnection: Queryable, logId: number, includeDeletedLogs: boolean): Promise<DogLogsRow | undefined> {
@@ -23,7 +23,7 @@ async function getLogForLogId(databaseConnection: Queryable, logId: number, incl
 }
 
 /**
- * If you are quering a multiple elements from the database, previousDogManagerSynchronization is optionally taken.
+ * If you are querying a multiple elements from the database, previousDogManagerSynchronization is optionally taken.
  * We don't always want to fetch all the elements as it could be a lot of unnecessary data.
  */
 async function getAllLogsForDogId(databaseConnection: Queryable, dogId: number, includeDeletedLogs: boolean, previousDogManagerSynchronization?: Date): Promise<DogLogsRow[]> {

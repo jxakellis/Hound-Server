@@ -11,11 +11,6 @@ import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 
 import { formatBoolean, formatUnknownString } from '../../main/format/formatObject.js';
 
-/*
-Known:
-- userId formatted correctly and request has sufficient permissions to use
-- (if appliciable to controller) familyId formatted correctly and request has sufficient permissions to use
-*/
 async function getFamily(req: express.Request, res: express.Response): Promise<void> {
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.

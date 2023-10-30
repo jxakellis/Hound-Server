@@ -2,6 +2,7 @@
 // Copyright (c) 2023 Apple Inc. Licensed under MIT License.
 // https://github.com/apple/app-store-server-library-node/blob/main/receipt_utility.ts
 
+/* cspell: disable-next-line */
 import { ASN1HEX } from 'jsrsasign';
 import { formatNumber } from '../../format/formatObject.js';
 
@@ -25,7 +26,7 @@ function extractTransactionIdFromAppStoreReceiptURL(appStoreReceiptURL: string):
 
   let index = 0;
   // Looping through receipt sections using their structure.
-  while (ASN1HEX.getVbyList(receiptInfo, 0, [index, 0])) {
+  while (ASN1HEX.getVbyList(receiptInfo, 0, [index, 0]) !== null) {
     const receiptInfoVal = ASN1HEX.getVbyList(receiptInfo, 0, [index, 0]);
 
     if (receiptInfoVal === null) {
@@ -40,7 +41,7 @@ function extractTransactionIdFromAppStoreReceiptURL(appStoreReceiptURL: string):
         return undefined;
       }
       // Loop through the in-app purchase details.
-      while (ASN1HEX.getVbyList(inAppInfo, 0, [inAppIndex, 0])) {
+      while (ASN1HEX.getVbyList(inAppInfo, 0, [inAppIndex, 0]) !== null) {
         const inAppIndexVal = ASN1HEX.getVbyList(inAppInfo, 0, [inAppIndex, 0]);
 
         if (inAppIndexVal === null) {

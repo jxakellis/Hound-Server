@@ -7,7 +7,7 @@ import { logServerError } from '../../logging/logServerError.js';
 import { formatUnknownString } from '../../format/formatObject.js';
 import { SERVER } from '../../server/globalConstants.js';
 
-/// Takes a signedPayload from an App Store Server Notificatio. Returns payload if successfully decoded, otherwise returns undefined.
+/// Takes a signedPayload from an App Store Server Notification. Returns payload if successfully decoded, otherwise returns undefined.
 async function validateNotificationSignedPayload(signedPayload: string): Promise<DecodedNotificationPayload | undefined> {
   let payload: DecodedNotificationPayload;
   try {

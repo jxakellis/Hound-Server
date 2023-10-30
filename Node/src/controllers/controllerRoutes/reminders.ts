@@ -15,14 +15,6 @@ import {
 } from '../../main/format/formatObject.js';
 import { type NotYetCreatedDogRemindersRow, type NotYetUpdatedDogRemindersRow } from '../../main/types/DogRemindersRow.js';
 
-/*
-Known:
-- familyId formatted correctly and request has sufficient permissions to use
-- dogId formatted correctly and request has sufficient permissions to use
-- (if appliciable to controller) reminderId formatted correctly and request has sufficient permissions to use
-- (if appliciable to controller) reminders is an array with reminderId that are formatted correctly and request has sufficient permissions to use
-*/
-
 async function getReminders(req: express.Request, res: express.Response): Promise<void> {
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.

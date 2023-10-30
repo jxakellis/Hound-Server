@@ -2,7 +2,7 @@ import { type Queryable, databaseQuery } from '../../main/database/databaseQuery
 import { type DogRemindersRow, dogRemindersColumns } from '../../main/types/DogRemindersRow.js';
 
 /**
- * If you are quering a single elements from the database, previousDogManagerSynchronization is not taken.
+ * If you are querying a single elements from the database, previousDogManagerSynchronization is not taken.
  * We always want to fetch the specified element.
  */
 async function getReminderForReminderId(databaseConnection: Queryable, reminderId: number, includeDeletedReminders: boolean): Promise<DogRemindersRow | undefined> {
@@ -23,7 +23,7 @@ async function getReminderForReminderId(databaseConnection: Queryable, reminderI
 }
 
 /**
- * If you are quering a multiple elements from the database, previousDogManagerSynchronization is optionally taken.
+ * If you are querying a multiple elements from the database, previousDogManagerSynchronization is optionally taken.
  * We don't always want to fetch all the elements as it could be a lot of unnecessary data.
  */
 async function getAllRemindersForDogId(databaseConnection: Queryable, dogId: number, includeDeletedReminders: boolean, previousDogManagerSynchronization?: Date): Promise<DogRemindersRow[]> {

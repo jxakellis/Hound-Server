@@ -17,7 +17,7 @@ import { key, cert } from '../secrets/houndOrganizerHTTPS.js';
 
 //
 //
-// Configure the server to recieve requests
+// Configure the server to receive requests
 //
 //
 

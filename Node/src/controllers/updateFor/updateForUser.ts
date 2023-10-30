@@ -171,7 +171,7 @@ async function updateUserForUserId(
 
 /**
  * When users first made accounts, we hashed their userIdentifier then stored it.
- * However, this is unnecessary and prevents us from knowning their true Apple userIdentifier
+ * However, this is unnecessary and prevents us from knowing their true Apple userIdentifier
  * If we receive a userIdentifier that is unhashed, we update our records.
  */
 async function updateUserForUserIdentifierHashedUserIdentifier(

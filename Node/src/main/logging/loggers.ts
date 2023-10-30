@@ -23,7 +23,7 @@ const responseLogger = parentLogger.child({ name: 'Response', level });
 // Passing 'level' as an option doesn't configure the logger as it should. Have to set manually
 responseLogger.level = level;
 
-// Pool connecion aquision and release for requests
+// Pool connection acquisition and release for requests
 const poolLogger = parentLogger.child({ name: 'Pool', level });
 // Passing 'level' as an option doesn't configure the logger as it should. Have to set manually
 poolLogger.level = level;
@@ -33,7 +33,7 @@ const alarmLogger = parentLogger.child({ name: 'Alarm', level });
 // Passing 'level' as an option doesn't configure the logger as it should. Have to set manually
 alarmLogger.level = level;
 
-// General APN alerts (e.g. someone logged Poty for Fido)
+// General APN alerts (e.g. someone logged Potty for Fido)
 const alertLogger = parentLogger.child({ name: 'Alert', level });
 // Passing 'level' as an option doesn't configure the logger as it should. Have to set manually
 alertLogger.level = level;
