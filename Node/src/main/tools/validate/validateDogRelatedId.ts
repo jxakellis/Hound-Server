@@ -68,7 +68,7 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
 
       if (validatedFamilyId !== queriedDog.familyId) {
         throw new HoundError(
-          `Dog has invalid permissions ${typeof validatedFamilyId} ${validatedFamilyId} ${typeof queriedDog.familyId} ${queriedDog.familyId}`,
+          'Dog has invalid permissions',
           validateDogId,
           ERROR_CODES.PERMISSION.NO.DOG,
         );

@@ -20,7 +20,7 @@ async function createUserForUserIdentifier(
   userLastName?: string,
   userNotificationToken?: string,
 ): Promise<string> {
-  const existingUser = await getPublicUser(databaseConnection, userIdentifier);
+  const existingUser = await getPublicUser(databaseConnection, userIdentifier) ?? await getPublicUser(databaseConnection, hash(userIdentifier));
 
   if (existingUser !== undefined && existingUser !== null) {
     return existingUser.userId;
