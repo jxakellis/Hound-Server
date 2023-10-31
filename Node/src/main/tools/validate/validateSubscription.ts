@@ -1,7 +1,7 @@
 import express from 'express';
 import { ERROR_CODES, HoundError } from '../../server/globalErrors.js';
 import { getActiveTransaction } from '../../../controllers/getFor/getForTransactions.js';
-import { getAllFamilyMembersForFamilyId } from '../../../controllers/getFor/getForFamily.js';
+import { getFamilyMembersForFamilyId } from '../../../controllers/getFor/getForFamily.js';
 
 /**
  * Checks the family's subscription
@@ -70,7 +70,7 @@ async function validateSubscription(req: express.Request, res: express.Response,
       return next();
     }
 
-    const familyMembers = await getAllFamilyMembersForFamilyId(databaseConnection, validatedFamilyId);
+    const familyMembers = await getFamilyMembersForFamilyId(databaseConnection, validatedFamilyId);
 
     if (familyMembers.length > numberOfFamilyMembers) {
       throw new HoundError(`Family member limit of ${numberOfFamilyMembers} exceeded`, validateSubscription, ERROR_CODES.FAMILY.LIMIT.FAMILY_MEMBER_EXCEEDED);

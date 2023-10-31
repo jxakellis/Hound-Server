@@ -3,16 +3,16 @@ import { SUBSCRIPTION } from '../../main/server/globalConstants.js';
 import { type TransactionsRow, transactionsColumns } from '../../main/types/TransactionsRow.js';
 import { type PublicUsersRow, publicUsersColumns } from '../../main/types/UsersRow.js';
 
-import { getFamilyHeadUserId } from './getForFamily.js';
+import { getFamilyForUserId } from './getForFamily.js';
 
 /**
  *  If the query is successful, returns the most recent subscription for the userId's family (if no most recent subscription, fills in default subscription details).
  *  If a problem is encountered, creates and throws custom error
  */
 async function getActiveTransaction(databaseConnection: Queryable, familyMemberUserId: string): Promise<TransactionsRow | undefined> {
-  const familyHeadUserId = await getFamilyHeadUserId(databaseConnection, familyMemberUserId);
+  const family = await getFamilyForUserId(databaseConnection, familyMemberUserId);
 
-  if (familyHeadUserId === undefined || familyHeadUserId === null) {
+  if (family === undefined || family === null) {
     return undefined;
   }
 
@@ -44,7 +44,7 @@ async function getActiveTransaction(databaseConnection: Queryable, familyMemberU
     WHERE t.rowNumberByProductId = 1
     ORDER BY t.productIdCorrespondingRank DESC
     LIMIT 1`,
-    [familyHeadUserId],
+    [family.familyHeadUserId],
   );
 
   const familySubscription = familySubscriptionResult.safeIndex(0) ?? SUBSCRIPTION.SUBSCRIPTIONS.find((subscription) => subscription.productId === SUBSCRIPTION.DEFAULT_SUBSCRIPTION_PRODUCT_ID);
@@ -64,9 +64,9 @@ async function getActiveTransaction(databaseConnection: Queryable, familyMemberU
  *  If a problem is encountered, creates and throws custom error
  */
 async function getAllTransactions(databaseConnection: Queryable, familyMemberUserId: string): Promise<TransactionsRow[] | undefined> {
-  const familyHeadUserId = await getFamilyHeadUserId(databaseConnection, familyMemberUserId);
+  const family = await getFamilyForUserId(databaseConnection, familyMemberUserId);
 
-  if (familyHeadUserId === undefined || familyHeadUserId === null) {
+  if (family === undefined || family === null) {
     return undefined;
   }
 
@@ -78,7 +78,7 @@ async function getAllTransactions(databaseConnection: Queryable, familyMemberUse
     WHERE revocationReason IS NULL AND userId = ?
     ORDER BY purchaseDate DESC, expiresDate DESC
     LIMIT 18446744073709551615`,
-    [familyHeadUserId],
+    [family.familyHeadUserId],
   );
 
   // Don't use .familyActiveSubscription property: Want to make sure this function always returns the most updated/accurate information

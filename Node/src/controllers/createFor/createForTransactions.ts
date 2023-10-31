@@ -3,7 +3,7 @@ import { type Queryable, databaseQuery } from '../../main/database/databaseQuery
 
 import { extractTransactionIdFromAppStoreReceiptURL } from '../../main/tools/appStoreConnectAPI/extractTransactionId.js';
 import { queryAllSubscriptionsForTransactionId } from '../../main/tools/appStoreConnectAPI/queryTransactions.js';
-import { getFamilyHeadUserId } from '../getFor/getForFamily.js';
+import { getFamilyForUserId } from '../getFor/getForFamily.js';
 import { SERVER, SUBSCRIPTION } from '../../main/server/globalConstants.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 import { logServerError } from '../../main/logging/logServerError.js';
@@ -77,9 +77,13 @@ async function createUpdateTransaction(
 
   const { numberOfFamilyMembers, numberOfDogs } = correspondingProduct;
 
-  const familyHeadUserId = await getFamilyHeadUserId(databaseConnection, userId);
+  const family = await getFamilyForUserId(databaseConnection, userId);
 
-  if (familyHeadUserId !== userId) {
+  if (family === undefined || family === null) {
+    throw new HoundError('family missing', createUpdateTransaction, ERROR_CODES.VALUE.MISSING);
+  }
+
+  if (family.familyHeadUserId !== userId) {
     throw new HoundError('You are not the family head. Only the family head can modify the family subscription', createUpdateTransaction, ERROR_CODES.PERMISSION.INVALID.FAMILY);
   }
 

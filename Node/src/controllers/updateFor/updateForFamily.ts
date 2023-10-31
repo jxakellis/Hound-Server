@@ -3,7 +3,7 @@ import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 import { createFamilyMemberJoinNotification, createFamilyLockedNotification } from '../../main/tools/notifications/alert/createFamilyNotification.js';
 import { type FamiliesRow, familiesColumns } from '../../main/types/FamiliesRow.js';
 
-import { getAllFamilyMembersForFamilyId, isUserIdInFamily } from '../getFor/getForFamily.js';
+import { getFamilyMembersForFamilyId, getFamilyForUserId } from '../getFor/getForFamily.js';
 import { getActiveTransaction } from '../getFor/getForTransactions.js';
 
 /**
@@ -13,7 +13,7 @@ async function addFamilyMember(databaseConnection: Queryable, userId: string, fo
   const familyCode = forFamilyCode.toUpperCase();
 
   // retrieve information about the family linked to the familyCode
-  const families = await databaseQuery<FamiliesRow[]>(
+  const familiesResult = await databaseQuery<FamiliesRow[]>(
     databaseConnection,
     `SELECT ${familiesColumns}
     FROM families f
@@ -22,28 +22,28 @@ async function addFamilyMember(databaseConnection: Queryable, userId: string, fo
     [familyCode],
   );
 
-  const family = families.safeIndex(0);
+  const familyForFamilyCode = familiesResult.safeIndex(0);
 
   // make sure the familyCode was valid by checking if it matched a family
-  if (family === undefined || family === null) {
+  if (familyForFamilyCode === undefined || familyForFamilyCode === null) {
     // result length is zero so there are no families with that familyCode
-    throw new HoundError('family missing; familyCode is not linked to any family', addFamilyMember, ERROR_CODES.FAMILY.JOIN.FAMILY_CODE_INVALID);
+    throw new HoundError('familyForFamilyCode missing; familyCode is not linked to any family', addFamilyMember, ERROR_CODES.FAMILY.JOIN.FAMILY_CODE_INVALID);
   }
   // familyCode exists and is linked to a family, now check if family is locked against new members
-  if (family.familyIsLocked === 1) {
+  if (familyForFamilyCode.familyIsLocked === 1) {
     throw new HoundError('Family is locked', addFamilyMember, ERROR_CODES.FAMILY.JOIN.FAMILY_LOCKED);
   }
 
   // the familyCode is valid and linked to an UNLOCKED family
-  const isUserInFamily = await isUserIdInFamily(databaseConnection, userId);
+  const userCurrentFamily = await getFamilyForUserId(databaseConnection, userId);
 
-  if (isUserInFamily === true) {
+  if (userCurrentFamily !== undefined && userCurrentFamily !== null) {
     throw new HoundError('You are already in a family', addFamilyMember, ERROR_CODES.FAMILY.JOIN.IN_FAMILY_ALREADY);
   }
 
   // Don't use .familyActiveSubscription property: the property wasn't assigned to the request due to the user not being in a family (only assigned with familyId is path param)
-  const familyActiveSubscription = await getActiveTransaction(databaseConnection, family.familyHeadUserId);
-  const familyMembers = await getAllFamilyMembersForFamilyId(databaseConnection, family.familyId);
+  const familyActiveSubscription = await getActiveTransaction(databaseConnection, familyForFamilyCode.familyHeadUserId);
+  const familyMembers = await getFamilyMembersForFamilyId(databaseConnection, familyForFamilyCode.familyId);
 
   if (familyActiveSubscription === undefined || familyActiveSubscription === null) {
     throw new HoundError('familyActiveSubscription missing', addFamilyMember, ERROR_CODES.VALUE.MISSING);
@@ -71,7 +71,7 @@ async function addFamilyMember(databaseConnection: Queryable, userId: string, fo
           )`,
     [
       userId,
-      family.familyId,
+      familyForFamilyCode.familyId,
       // none, default value
     ],
   );
@@ -89,7 +89,7 @@ async function addFamilyMember(databaseConnection: Queryable, userId: string, fo
     );
   }
 
-  createFamilyMemberJoinNotification(userId, family.familyId);
+  createFamilyMemberJoinNotification(userId, familyForFamilyCode.familyId);
 }
 
 /**
@@ -114,7 +114,13 @@ async function updateIsLocked(databaseConnection: Queryable, userId: string, fam
             *  Queries the database to update a family to add a new user. If the query is successful, then returns
             *  If a problem is encountered, creates and throws custom error
             */
-async function updateFamilyForUserIdFamilyId(databaseConnection: Queryable, userId: string, familyId?: string, familyCode?: string, familyIsLocked?: boolean): Promise<void> {
+async function updateFamilyForUserIdFamilyId(
+  databaseConnection: Queryable,
+  userId: string,
+  familyId?: string,
+  familyCode?: string,
+  familyIsLocked?: boolean,
+): Promise<void> {
   if (familyId === undefined || familyId === null) {
     if (familyCode !== undefined && familyCode !== null) {
       await addFamilyMember(databaseConnection, userId, familyCode);

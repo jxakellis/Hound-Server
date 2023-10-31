@@ -2,7 +2,7 @@ import { type Queryable, type RowDataPacket, databaseQuery } from '../../main/da
 import { hash } from '../../main/format/hash.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 
-import { isUserIdInFamily } from '../getFor/getForFamily.js';
+import { getFamilyForUserId } from '../getFor/getForFamily.js';
 
 const familyCodeLength = 8;
 
@@ -485,10 +485,10 @@ async function createFamilyForUserId(databaseConnection: Queryable, userId: stri
   const familyId = hash(userId);
 
   // check if the user is already in a family
-  const isUserInFamily = await isUserIdInFamily(databaseConnection, userId);
+  const family = await getFamilyForUserId(databaseConnection, userId);
 
   // validate that the user is not in a family
-  if (isUserInFamily === true) {
+  if (family !== undefined && family !== null) {
     throw new HoundError('User is already in a family', createFamilyForUserId, ERROR_CODES.FAMILY.JOIN.IN_FAMILY_ALREADY);
   }
 

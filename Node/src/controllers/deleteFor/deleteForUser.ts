@@ -2,7 +2,7 @@ import { type Queryable, databaseQuery } from '../../main/database/databaseQuery
 
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 
-import { getFamilyId } from '../getFor/getForFamily.js';
+import { getFamilyForUserId } from '../getFor/getForFamily.js';
 
 import { getActiveTransaction } from '../getFor/getForTransactions.js';
 import { deleteFamilyLeaveFamilyForUserIdFamilyId } from './deleteForFamily.js';
@@ -14,10 +14,10 @@ import { deleteFamilyLeaveFamilyForUserIdFamilyId } from './deleteForFamily.js';
 async function deleteUserForUserId(databaseConnection: Queryable, userId: string): Promise<void> {
   // Deleting the user from our database is a multi-step process. We need to delete the user from the family first, then delete the user from the database
   // Otherwise, the family function will malfunction because the user is missing from users
-  const familyId = await getFamilyId(databaseConnection, userId);
+  const family = await getFamilyForUserId(databaseConnection, userId);
 
   // The user is in a family, either attempt to delete the family or have the user leave the family
-  if (familyId !== undefined && familyId !== null) {
+  if (family !== undefined && family !== null) {
     // Since the path for delete user doesn't have familyId attached (as it predicates the family path), no active subscription is attached
     const familyActiveSubscription = await getActiveTransaction(databaseConnection, userId);
 
@@ -26,7 +26,7 @@ async function deleteUserForUserId(databaseConnection: Queryable, userId: string
     }
 
     // This step is reversible but sends a non-reversible notification at the end, so we save it for the very end so the notification is only sent if everything else is successful
-    await deleteFamilyLeaveFamilyForUserIdFamilyId(databaseConnection, userId, familyId, familyActiveSubscription);
+    await deleteFamilyLeaveFamilyForUserIdFamilyId(databaseConnection, userId, family.familyId, familyActiveSubscription);
   }
 
   await databaseQuery(

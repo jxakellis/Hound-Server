@@ -1,6 +1,6 @@
 import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
 
-import { getAllFamilyMembersForFamilyId, getFamilyHeadUserId } from '../getFor/getForFamily.js';
+import { getFamilyMembersForFamilyId, getFamilyForUserId } from '../getFor/getForFamily.js';
 
 import { createFamilyMemberLeaveNotification } from '../../main/tools/notifications/alert/createFamilyNotification.js';
 import { createUserKickedNotification } from '../../main/tools/notifications/alert/createUserKickedNotification.js';
@@ -14,7 +14,7 @@ import { SUBSCRIPTION } from '../../main/server/globalConstants.js';
 * They cannot leave, but they can delete their family (if there are no other family members and their subscription is non-renewing)
 */
 async function deleteFamily(databaseConnection: Queryable, familyId: string, familyActiveSubscription: TransactionsRow): Promise<void> {
-  const familyMembers = await getAllFamilyMembersForFamilyId(databaseConnection, familyId);
+  const familyMembers = await getFamilyMembersForFamilyId(databaseConnection, familyId);
 
   if (familyMembers.length > 1) {
     // Cannot destroy family until other members are gone
@@ -131,10 +131,14 @@ async function kickFamilyMemberForUserIdFamilyId(databaseConnection: Queryable, 
   if (userId === kickedUserId) {
     throw new HoundError("You can't kick yourself from your own family", kickFamilyMemberForUserIdFamilyId, ERROR_CODES.VALUE.INVALID);
   }
-  const familyHeadUserId = await getFamilyHeadUserId(databaseConnection, userId);
 
-  // check to see if the user is the family head, as only the family head has permissions to kick
-  if (familyHeadUserId !== userId) {
+  const family = await getFamilyForUserId(databaseConnection, userId);
+
+  if (family === undefined || family === null) {
+    throw new HoundError('family missing', kickFamilyMemberForUserIdFamilyId, ERROR_CODES.VALUE.MISSING);
+  }
+
+  if (family.familyHeadUserId !== userId) {
     throw new HoundError('You are not the family head. Only the family head can kick family members', kickFamilyMemberForUserIdFamilyId, ERROR_CODES.PERMISSION.INVALID.FAMILY);
   }
 
@@ -170,13 +174,13 @@ async function kickFamilyMemberForUserIdFamilyId(databaseConnection: Queryable, 
                               *  queries the database to remove the user from their current family or delete the family.
                               */
 async function deleteFamilyLeaveFamilyForUserIdFamilyId(databaseConnection: Queryable, userId: string, familyId: string, familyActiveSubscription: TransactionsRow): Promise<void> {
-  const familyHeadUserId = await getFamilyHeadUserId(databaseConnection, userId);
+  const family = await getFamilyForUserId(databaseConnection, userId);
 
-  if (familyHeadUserId === undefined || familyHeadUserId === null) {
-    throw new HoundError('No corresponding familyHeadUserId for userId', deleteFamilyLeaveFamilyForUserIdFamilyId, ERROR_CODES.VALUE.MISSING);
+  if (family === undefined || family === null) {
+    throw new HoundError('family missing', deleteFamilyLeaveFamilyForUserIdFamilyId, ERROR_CODES.VALUE.MISSING);
   }
 
-  if (familyHeadUserId === userId) {
+  if (family.familyHeadUserId === userId) {
     await deleteFamily(databaseConnection, familyId, familyActiveSubscription);
   }
   else {

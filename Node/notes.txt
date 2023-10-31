@@ -1,3 +1,5 @@
+/* cspell: disable */
+
 MIGRATION OF LINUX SERVER FROM JS TO TS
 ssh -i /Users/jonathanxakellis/Documents/Hound.nosync/Certificates/developmentHoundInstance.cer ubuntu@3.23.242.120
 sudo bash /home/ubuntu/parent_dir/Hound-Server/Bash/updateLinux.sh
