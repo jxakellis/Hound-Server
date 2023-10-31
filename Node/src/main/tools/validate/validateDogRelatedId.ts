@@ -40,8 +40,6 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
       }
     }
 
-    console.log('dogsDictionary', dogsDictionary);
-
     if (dogsDictionary === undefined || dogsDictionary === null) {
       // We have no dogIds to validate
       return next();
@@ -51,8 +49,6 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
     // query for all reminders provided
     dogsDictionary.forEach((dogDictionary) => {
       const dogId = formatNumber(dogDictionary['dogId']);
-
-      console.log('dogId', dogId);
 
       if (dogId === undefined || dogId === null || dogId <= -1) {
         // If dogId is missing or -1, it either a dog body wasn't provided or it was provided but dogId is invalid because the dog is yet to be created
@@ -122,8 +118,6 @@ async function validateLogId(req: express.Request, res: express.Response, next: 
       }
     }
 
-    console.log('logsDictionary', logsDictionary);
-
     if (logsDictionary === undefined || logsDictionary === null) {
       // We have no logIds to validate
       return next();
@@ -133,8 +127,6 @@ async function validateLogId(req: express.Request, res: express.Response, next: 
     // query for all logs provided
     logsDictionary.forEach((logDictionary) => {
       const logId = formatNumber(logDictionary['logId']);
-
-      console.log('logId', logId);
 
       if (logId === undefined || logId === null || logId <= -1) {
         // If logId is missing or -1, it either a log body wasn't provided or it was provided but logId is invalid because the log is yet to be created
@@ -213,8 +205,6 @@ async function validateReminderId(req: express.Request, res: express.Response, n
       remindersDictionary = remindersDictionary ?? formatArray([req.body]) as (StringKeyDictionary[] | undefined);
     }
 
-    console.log('remindersDictionary', remindersDictionary);
-
     if (remindersDictionary === undefined || remindersDictionary === null) {
       // We have no reminderIds to validate
       return next();
@@ -224,7 +214,6 @@ async function validateReminderId(req: express.Request, res: express.Response, n
     // query for all reminders provided
     remindersDictionary.forEach((reminderDictionary) => {
       const reminderId = formatNumber(reminderDictionary['reminderId']);
-      console.log('reminderId', reminderId);
 
       if (reminderId === undefined || reminderId === null || reminderId <= -1) {
         // If reminderId is missing or -1, it either a reminder body wasn't provided or it was provided but reminderId is invalid because the reminder is yet to be created

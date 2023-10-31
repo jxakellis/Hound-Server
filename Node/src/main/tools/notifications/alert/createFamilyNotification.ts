@@ -98,8 +98,8 @@ async function createFamilyLockedNotification(userId: string, familyId: string, 
 
     // Maximum possible length of message: 65/58 (raw) + 34 (variable) = 99/92 ( <= ALERT_BODY_LIMIT )
     const alertBody = familyIsLocked
-      ? `${abbreviatedFullName}'s updated your family settings to prevent new users from joining`
-      : `${abbreviatedFullName}'s updated your family settings to allow new users to join`;
+      ? `${abbreviatedFullName} has updated your family settings to prevent new users from joining`
+      : `${abbreviatedFullName} has updated your family settings to allow new users to join`;
 
     // we now have the messages and can send our APN
     sendNotificationForFamilyExcludingUser(userId, familyId, NOTIFICATION.CATEGORY.FAMILY.LOCK, alertTitle, alertBody, {});
