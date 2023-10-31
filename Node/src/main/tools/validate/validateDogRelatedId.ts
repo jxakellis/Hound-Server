@@ -217,7 +217,8 @@ async function validateReminderId(req: express.Request, res: express.Response, n
     const promises: Promise<DogRemindersRow | undefined>[] = [];
     // query for all reminders provided
     remindersDictionary.forEach((reminderDictionary) => {
-      const reminderId = formatNumber(reminderDictionary['reminderId']);
+      // TODO FUTURE remove this, it fixes a slight bug from 3.0.1
+      const reminderId = formatNumber(reminderDictionary['reminderId'] ?? reminderDictionary['logId']);
 
       if (reminderId === undefined || reminderId === null || reminderId <= -1) {
         // If reminderId is missing or -1, it either a reminder body wasn't provided or it was provided but reminderId is invalid because the reminder is yet to be created
