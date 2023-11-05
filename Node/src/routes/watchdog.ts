@@ -6,7 +6,7 @@ import {
 
 const watchdogRouter = express.Router({ mergeParams: true });
 
-watchdogRouter.get('/', getWatchdog);
-watchdogRouter.patch('/', getWatchdog);
+watchdogRouter.get(['/'], getWatchdog);
+watchdogRouter.patch(['/'], getWatchdog);
 
 export { watchdogRouter };

@@ -6,6 +6,7 @@ import { logServerError } from '../logging/logServerError.js';
 import { configureRequestAndResponse } from './configureRequestAndResponse.js';
 import { watchdogRouter } from '../../routes/watchdog.js';
 import { appStoreServerNotificationsRouter } from '../../routes/appStoreServerNotifications.js';
+import { affiliateTransactionsRouter } from '../../routes/affiliateTransactions.js';
 import { HoundError, ERROR_CODES } from './globalErrors.js';
 import { appRouter } from '../../routes/app.js';
 
@@ -53,6 +54,7 @@ function configureApp(app: express.Application): void {
   // Match path
   app.use('/watchdog', watchdogRouter);
   app.use('/appStoreServerNotifications', appStoreServerNotificationsRouter);
+  app.use('/affiliateTransactions', affiliateTransactionsRouter);
   app.use('/app', appRouter);
 
   // Throw back the request if an unknown path is used

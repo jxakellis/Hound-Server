@@ -2,6 +2,7 @@ const userConfigurationColumns = `
 uc.userConfigurationIsNotificationEnabled,
 uc.userConfigurationIsLoudNotificationEnabled, 
 uc.userConfigurationIsLogNotificationEnabled,
+uc.userConfigurationMeasurementSystem,
 uc.userConfigurationInterfaceStyle,
 uc.userConfigurationSnoozeLength, 
 uc.userConfigurationNotificationSound,
@@ -21,6 +22,7 @@ type UserConfigurationRow = {
     userConfigurationIsLoudNotificationEnabled: number
     userConfigurationIsLogNotificationEnabled: number
     userConfigurationIsReminderNotificationEnabled: number
+    userConfigurationMeasurementSystem: number
     userConfigurationInterfaceStyle: number
     userConfigurationSnoozeLength: number
     userConfigurationNotificationSound: string

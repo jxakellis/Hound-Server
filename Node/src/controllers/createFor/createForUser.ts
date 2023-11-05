@@ -72,6 +72,7 @@ async function createUserForUserIdentifier(
                 userConfigurationIsLoudNotificationEnabled,
                 userConfigurationIsLogNotificationEnabled,
                 userConfigurationIsReminderNotificationEnabled,
+                userConfigurationMeasurementSystem,
                 userConfigurationInterfaceStyle,
                 userConfigurationSnoozeLength,
                 userConfigurationNotificationSound,
@@ -98,6 +99,7 @@ async function createUserForUserIdentifier(
                   ?,
                   ?,
                   ?,
+                  ?,
                   ?
                   ) `,
       [
@@ -106,6 +108,7 @@ async function createUserForUserIdentifier(
         userConfiguration.userConfigurationIsLoudNotificationEnabled, // ?? 0,
         userConfiguration.userConfigurationIsLogNotificationEnabled, // ?? 0,
         userConfiguration.userConfigurationIsReminderNotificationEnabled, // ?? 0,
+        userConfiguration.userConfigurationMeasurementSystem,
         userConfiguration.userConfigurationInterfaceStyle, // ?? 0,
         userConfiguration.userConfigurationSnoozeLength, // ?? 300,
         userConfiguration.userConfigurationNotificationSound, // ?? 'Radar',

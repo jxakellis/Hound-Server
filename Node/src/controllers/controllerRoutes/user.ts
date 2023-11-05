@@ -66,6 +66,8 @@ async function createUser(req: express.Request, res: express.Response): Promise<
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const userConfigurationIsReminderNotificationEnabled = formatNumber(req.body['userConfigurationIsReminderNotificationEnabled']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const userConfigurationMeasurementSystem = formatNumber(req.body['userConfigurationMeasurementSystem']) ?? 2;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const userConfigurationInterfaceStyle = formatNumber(req.body['userConfigurationInterfaceStyle']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const userConfigurationSnoozeLength = formatNumber(req.body['userConfigurationSnoozeLength']);
@@ -97,6 +99,9 @@ async function createUser(req: express.Request, res: express.Response): Promise<
     }
     if (userConfigurationIsReminderNotificationEnabled === undefined || userConfigurationIsReminderNotificationEnabled === null) {
       throw new HoundError('userConfigurationIsReminderNotificationEnabled missing', createUser, ERROR_CODES.VALUE.INVALID);
+    }
+    if (userConfigurationMeasurementSystem === undefined || userConfigurationMeasurementSystem === null) {
+      throw new HoundError('userConfigurationMeasurementSystem missing', createUser, ERROR_CODES.VALUE.INVALID);
     }
     if (userConfigurationInterfaceStyle === undefined || userConfigurationInterfaceStyle === null) {
       throw new HoundError('userConfigurationInterfaceStyle missing', createUser, ERROR_CODES.VALUE.INVALID);
@@ -137,6 +142,7 @@ async function createUser(req: express.Request, res: express.Response): Promise<
         userConfigurationIsLoudNotificationEnabled,
         userConfigurationIsLogNotificationEnabled,
         userConfigurationIsReminderNotificationEnabled,
+        userConfigurationMeasurementSystem,
         userConfigurationInterfaceStyle,
         userConfigurationSnoozeLength,
         userConfigurationNotificationSound,
@@ -186,6 +192,8 @@ async function updateUser(req: express.Request, res: express.Response): Promise<
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const userConfigurationIsReminderNotificationEnabled = formatNumber(req.body['userConfigurationIsReminderNotificationEnabled']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const userConfigurationMeasurementSystem = formatNumber(req.body['userConfigurationMeasurementSystem']);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const userConfigurationInterfaceStyle = formatNumber(req.body['userConfigurationInterfaceStyle']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const userConfigurationSnoozeLength = formatNumber(req.body['userConfigurationSnoozeLength']);
@@ -214,6 +222,7 @@ async function updateUser(req: express.Request, res: express.Response): Promise<
         userConfigurationIsLoudNotificationEnabled,
         userConfigurationIsLogNotificationEnabled,
         userConfigurationIsReminderNotificationEnabled,
+        userConfigurationMeasurementSystem,
         userConfigurationInterfaceStyle,
         userConfigurationSnoozeLength,
         userConfigurationNotificationSound,

@@ -17,6 +17,7 @@ async function updateUserForUserId(
     userConfigurationIsLoudNotificationEnabled,
     userConfigurationIsLogNotificationEnabled,
     userConfigurationIsReminderNotificationEnabled,
+    userConfigurationMeasurementSystem,
     userConfigurationInterfaceStyle,
     userConfigurationSnoozeLength,
     userConfigurationNotificationSound,
@@ -73,6 +74,15 @@ async function updateUserForUserId(
       SET userConfigurationIsReminderNotificationEnabled = ?
       WHERE userId = ?`,
       [userConfigurationIsReminderNotificationEnabled, userId],
+    ));
+  }
+  if (userConfigurationMeasurementSystem !== undefined && userConfigurationMeasurementSystem !== null) {
+    promises.push(databaseQuery(
+      databaseConnection,
+      `UPDATE userConfiguration
+      SET userConfigurationMeasurementSystem = ?
+      WHERE userId = ?`,
+      [userConfigurationMeasurementSystem, userId],
     ));
   }
   if (userConfigurationInterfaceStyle !== undefined && userConfigurationInterfaceStyle !== null) {
