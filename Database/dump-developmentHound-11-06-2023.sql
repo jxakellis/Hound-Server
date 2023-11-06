@@ -16,39 +16,6 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `affiliateTransactions`
---
-
-DROP TABLE IF EXISTS `affiliateTransactions`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `affiliateTransactions` (
-  `transactionId` bigint(20) unsigned NOT NULL COMMENT 'The unique identifier of the transaction.',
-  `originalTransactionId` bigint(20) unsigned NOT NULL COMMENT 'The transaction identifier of the original purchase.',
-  `userId` char(64) NOT NULL COMMENT 'The user that made this transaction',
-  `familyId` char(64) NOT NULL COMMENT 'The family that the user was in when they made this transaction',
-  `environment` enum('Sandbox','Production') NOT NULL,
-  `productId` enum('com.jonathanxakellis.hound.twofamilymemberstwodogs.monthly','com.jonathanxakellis.hound.fourfamilymembersfourdogs.monthly','com.jonathanxakellis.hound.sixfamilymemberssixdogs.monthly','com.jonathanxakellis.hound.tenfamilymemberstendogs.monthly','com.jonathanxakellis.hound.sixfamilymembers.onemonth','com.jonathanxakellis.hound.sixfamilymembers.sixmonth','com.jonathanxakellis.hound.sixfamilymembers.oneyear') NOT NULL COMMENT 'The product identifier of the in-app purchase.',
-  `subscriptionGroupIdentifier` int(10) unsigned NOT NULL COMMENT 'The identifier of the subscription group the subscription belongs to.',
-  `purchaseDate` datetime(3) NOT NULL COMMENT 'The UNIX time, in milliseconds, that the App Store charged the user’s account for a purchase, restored product, subscription, or subscription renewal after a lapse.',
-  `expirationDate` datetime(3) NOT NULL COMMENT 'The UNIX time, in milliseconds, the subscription expires or renews.',
-  `numberOfFamilyMembers` tinyint(3) unsigned NOT NULL COMMENT 'The number of family members this transaction, if its a subscription, gives the family access to',
-  `numberOfDogs` tinyint(3) unsigned NOT NULL COMMENT 'The number of dogs this transaction, if its a subscription, gives the family access to',
-  `quantity` tinyint(3) unsigned NOT NULL COMMENT 'The number of consumable products the user purchased.',
-  `webOrderLineItemId` bigint(20) unsigned NOT NULL COMMENT 'The unique identifier of subscription purchase events across devices, including subscription renewals.',
-  `inAppOwnershipType` enum('FAMILY_SHARED','PURCHASED') NOT NULL COMMENT 'A string that describes whether the transaction was purchased by the user, or is available to them through Family Sharing.',
-  `isAutoRenewing` tinyint(1) NOT NULL COMMENT 'The renewal status for an auto-renewable subscription.',
-  `autoRenewProductId` enum('com.jonathanxakellis.hound.twofamilymemberstwodogs.monthly','com.jonathanxakellis.hound.fourfamilymembersfourdogs.monthly','com.jonathanxakellis.hound.sixfamilymemberssixdogs.monthly','com.jonathanxakellis.hound.tenfamilymemberstendogs.monthly','com.jonathanxakellis.hound.sixfamilymembers.onemonth','com.jonathanxakellis.hound.sixfamilymembers.sixmonth','com.jonathanxakellis.hound.sixfamilymembers.oneyear') NOT NULL COMMENT 'The product identifier of the product that renews at the next billing period.',
-  `isRevoked` tinyint(1) NOT NULL COMMENT 'The revocation status for a transaction that has been refunded by the App Store or revoked from family sharing',
-  `offerCode` varchar(64) NOT NULL COMMENT 'The reference name of a subscription offer that you configured in App Store Connect. This field is present when a customer redeems a subscription offer code. For more information about offer codes, see Set Up Offer Codes, and Implementing Offer Codes in Your App.',
-  PRIMARY KEY (`transactionId`),
-  CONSTRAINT `CHECK_quantity` CHECK (`quantity` is null or `quantity` >= 1),
-  CONSTRAINT `CHECK_numberOfFamilyMembers` CHECK (`numberOfFamilyMembers` is null or `numberOfFamilyMembers` >= 1),
-  CONSTRAINT `CHECK_numberOfDogs` CHECK (`numberOfDogs` is null or `numberOfDogs` >= 1)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `appStoreServerNotifications`
 --
 
@@ -56,8 +23,8 @@ DROP TABLE IF EXISTS `appStoreServerNotifications`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `appStoreServerNotifications` (
-  `notificationType` enum('CONSUMPTION_REQUEST','DID_CHANGE_RENEWAL_PREF','DID_CHANGE_RENEWAL_STATUS','DID_FAIL_TO_RENEW','DID_RENEW','EXPIRED','GRACE_PERIOD_EXPIRED','OFFER_REDEEMED','PRICE_INCREASE','REFUND','REFUND_DECLINED','RENEWAL_EXTENDED','REVOKE','SUBSCRIBED','TEST') DEFAULT NULL COMMENT 'The in-app purchase event for which the App Store sent this version 2 notification.',
-  `subtype` enum('INITIAL_BUY','RESUBSCRIBE','DOWNGRADE','UPGRADE','AUTO_RENEW_ENABLED','AUTO_RENEW_DISABLED','VOLUNTARY','BILLING_RETRY','PRICE_INCREASE','GRACE_PERIOD','BILLING_RECOVERY','PENDING','ACCEPTED') DEFAULT NULL COMMENT 'Additional information that identifies the notification event, or an empty string. The subtype applies only to select version 2 notifications.',
+  `notificationType` varchar(100) DEFAULT NULL COMMENT 'The in-app purchase event for which the App Store sent this version 2 notification.',
+  `subtype` varchar(100) DEFAULT NULL COMMENT 'Additional information that identifies the notification event, or an empty string. The subtype applies only to select version 2 notifications.',
   `notificationUUID` char(36) NOT NULL COMMENT 'A unique identifier for the notification. Use this value to identify a duplicate notification.',
   `version` varchar(3) DEFAULT NULL COMMENT 'A string that indicates the App Store Server Notification version number.',
   `signedDate` datetime(3) DEFAULT NULL COMMENT 'The UNIX time, in milliseconds, that the App Store signed the JSON Web Signature data.',
@@ -65,6 +32,7 @@ CREATE TABLE `appStoreServerNotifications` (
   `dataBundleId` enum('com.example.Pupotty') DEFAULT NULL COMMENT 'The bundle identifier of the app.',
   `dataBundleVersion` smallint(5) unsigned DEFAULT NULL COMMENT 'The version of the build that identifies an iteration of the bundle.',
   `dataEnvironment` enum('Sandbox','Production') DEFAULT NULL COMMENT 'The server environment that the notification applies to, either sandbox or production.',
+  `dataStatus` tinyint(3) unsigned DEFAULT NULL COMMENT 'The status of an auto-renewable subscription as of the signedDate in the responseBodyV2DecodedPayload. This field appears only for notifications sent for auto-renewable subscriptions.',
   `renewalInfoAutoRenewProductId` enum('com.jonathanxakellis.hound.twofamilymemberstwodogs.monthly','com.jonathanxakellis.hound.fourfamilymembersfourdogs.monthly','com.jonathanxakellis.hound.sixfamilymemberssixdogs.monthly','com.jonathanxakellis.hound.tenfamilymemberstendogs.monthly','com.jonathanxakellis.hound.sixfamilymembers.onemonth','com.jonathanxakellis.hound.sixfamilymembers.sixmonth','com.jonathanxakellis.hound.sixfamilymembers.oneyear') DEFAULT NULL COMMENT 'The product identifier of the product that renews at the next billing period.',
   `renewalInfoAutoRenewStatus` tinyint(3) unsigned DEFAULT NULL COMMENT 'The renewal status for an auto-renewable subscription.',
   `renewalInfoEnvironment` enum('Sandbox','Production') DEFAULT NULL COMMENT 'The server environment, either sandbox or production.',
@@ -77,6 +45,7 @@ CREATE TABLE `appStoreServerNotifications` (
   `renewalInfoPriceIncreaseStatus` tinyint(3) unsigned DEFAULT NULL COMMENT 'The status that indicates whether the auto-renewable subscription is subject to a price increase.',
   `renewalInfoProductId` enum('com.jonathanxakellis.hound.twofamilymemberstwodogs.monthly','com.jonathanxakellis.hound.fourfamilymembersfourdogs.monthly','com.jonathanxakellis.hound.sixfamilymemberssixdogs.monthly','com.jonathanxakellis.hound.tenfamilymemberstendogs.monthly','com.jonathanxakellis.hound.sixfamilymembers.onemonth','com.jonathanxakellis.hound.sixfamilymembers.sixmonth','com.jonathanxakellis.hound.sixfamilymembers.oneyear') DEFAULT NULL COMMENT 'The product identifier of the in-app purchase.',
   `renewalInfoRecentSubscriptionStartDate` datetime(3) DEFAULT NULL COMMENT 'The earliest start date of an auto-renewable subscription in a series of subscription purchases that ignores all lapses of paid service that are 60 days or less.',
+  `renewalInfoRenewalDate` datetime(3) DEFAULT NULL COMMENT '// The UNIX time, in milliseconds, that the most recent auto-renewable subscription purchase expires.',
   `renewalInfoSignedDate` datetime(3) DEFAULT NULL COMMENT 'The UNIX time, in milliseconds, that the App Store signed the JSON Web Signature data.',
   `transactionInfoAppAccountToken` char(36) DEFAULT NULL COMMENT 'A UUID that associates the transaction with a user on your own service. If your app doesn’t provide an appAccountToken, this string is empty. For more information, see appAccountToken(_:).',
   `transactionInfoBundleId` enum('com.example.Pupotty') DEFAULT NULL COMMENT 'The bundle identifier of the app.',
@@ -122,12 +91,14 @@ CREATE TABLE `dogLogs` (
   `userId` char(64) NOT NULL COMMENT 'Tracks the user who created the log',
   `logDate` datetime(3) NOT NULL,
   `logNote` varchar(500) NOT NULL,
-  `logAction` enum('Custom','Feed','Fresh Water','Treat','Potty: Pee','Potty: Poo','Potty: Both','Potty: Didn''t Go','Accident','Walk','Brush','Bathe','Medicine','Wake Up','Sleep','Crate','Training Session','Doctor Visit') NOT NULL,
+  `logAction` enum('Custom','Feed','Fresh Water','Treat','Potty: Pee','Potty: Poo','Potty: Both','Potty: Didn''t Go','Accident','Walk','Brush','Bathe','Medicine','Weight','Wake Up','Sleep','Crate','Training Session','Doctor Visit') NOT NULL,
   `logCustomActionName` varchar(32) NOT NULL,
+  `logUnit` enum('milligram','gram','ounce','pound','kilogram','milliliter','teaspoon','tablespoon','fluid ounce','cup','liter','kilometer','mile','minute','hour','pill','treat') DEFAULT NULL,
+  `logNumberOfLogUnits` double DEFAULT NULL,
   `logLastModified` datetime(3) NOT NULL COMMENT 'Tracks when the log was last modified',
-  `logIsDeleted` tinyint(1) NOT NULL DEFAULT 0,
+  `logIsDeleted` tinyint(1) NOT NULL,
   PRIMARY KEY (`logId`)
-) ENGINE=InnoDB AUTO_INCREMENT=139 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=81 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -213,7 +184,7 @@ CREATE TABLE `dogReminders` (
   PRIMARY KEY (`reminderId`),
   CONSTRAINT `CHECK_monthly` CHECK (`monthlyUTCHour` >= 0 and `monthlyUTCHour` <= 23 and `monthlyUTCMinute` >= 0 and `monthlyUTCMinute` <= 59 and `monthlyUTCDay` >= 0 and `monthlyUTCDay` <= 31),
   CONSTRAINT `CHECK_weekly` CHECK (`weeklyUTCHour` >= 0 and `weeklyUTCHour` <= 23 and `weeklyUTCMinute` >= 0 and `weeklyUTCMinute` <= 59 and (`weeklySunday` = 1 or `weeklyMonday` = 1 or `weeklyTuesday` = 1 or `weeklyWednesday` = 1 or `weeklyThursday` = 1 or `weeklyFriday` = 1 or `weeklySaturday` = 1))
-) ENGINE=InnoDB AUTO_INCREMENT=248 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -275,7 +246,7 @@ CREATE TABLE `dogs` (
   `dogLastModified` datetime(3) NOT NULL,
   `dogIsDeleted` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`dogId`)
-) ENGINE=InnoDB AUTO_INCREMENT=79 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -309,12 +280,12 @@ DROP TABLE IF EXISTS `families`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `families` (
   `familyId` char(64) NOT NULL,
-  `userId` char(64) NOT NULL COMMENT 'familyHead userId',
+  `familyHeadUserId` char(64) NOT NULL COMMENT 'familyHead userId',
   `familyCode` char(8) NOT NULL,
   `familyIsLocked` tinyint(1) NOT NULL,
   `familyAccountCreationDate` datetime(3) NOT NULL,
   PRIMARY KEY (`familyId`),
-  UNIQUE KEY `UN_familyCode` (`familyCode`,`userId`),
+  UNIQUE KEY `UN_familyCode` (`familyCode`,`familyHeadUserId`),
   CONSTRAINT `CHECK_familyCode` CHECK (`familyCode` regexp '^[[:upper:][:digit:]]{8}' = 1)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -343,7 +314,7 @@ DROP TABLE IF EXISTS `previousFamilies`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `previousFamilies` (
   `familyId` char(64) NOT NULL,
-  `userId` char(64) NOT NULL,
+  `familyHeadUserId` char(64) NOT NULL,
   `familyCode` char(8) NOT NULL,
   `familyIsLocked` tinyint(1) NOT NULL,
   `familyAccountCreationDate` datetime(3) NOT NULL,
@@ -362,8 +333,8 @@ CREATE TABLE `previousFamilyMembers` (
   `familyId` char(64) NOT NULL,
   `userId` char(64) NOT NULL,
   `familyMemberJoinDate` datetime(3) NOT NULL,
-  `userFirstName` varchar(32) NOT NULL,
-  `userLastName` varchar(32) NOT NULL,
+  `userFirstName` varchar(32) DEFAULT NULL,
+  `userLastName` varchar(32) DEFAULT NULL,
   `familyMemberLeaveDate` datetime(3) NOT NULL,
   `familyMemberLeaveReason` enum('userLeft','userKicked','familyDeleted') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -380,14 +351,14 @@ CREATE TABLE `previousRequests` (
   `requestId` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `requestIP` varchar(32) DEFAULT NULL,
   `requestDate` datetime(3) NOT NULL,
-  `requestMethod` enum('GET','POST','PUT','DELETE') NOT NULL,
+  `requestMethod` enum('GET','PATCH','POST','PUT','DELETE') NOT NULL,
   `requestOriginalURL` varchar(500) NOT NULL,
   `requestBody` varchar(2000) DEFAULT NULL,
   `requestUserId` varchar(64) DEFAULT NULL,
   `requestFamilyId` varchar(64) DEFAULT NULL,
   `requestAppVersion` varchar(10) DEFAULT NULL,
   PRIMARY KEY (`requestId`)
-) ENGINE=InnoDB AUTO_INCREMENT=45007 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=132574 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -405,7 +376,7 @@ CREATE TABLE `previousResponses` (
   `responseBody` varchar(500) DEFAULT NULL,
   PRIMARY KEY (`responseId`),
   UNIQUE KEY `UN_previousResponses` (`requestId`)
-) ENGINE=InnoDB AUTO_INCREMENT=44990 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=132557 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -418,13 +389,13 @@ DROP TABLE IF EXISTS `previousServerErrors`;
 CREATE TABLE `previousServerErrors` (
   `errorId` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `errorDate` datetime(3) DEFAULT NULL,
-  `errorFunction` varchar(100) DEFAULT NULL,
+  `errorSourceFunctions` varchar(500) DEFAULT NULL,
   `errorName` varchar(500) DEFAULT NULL,
   `errorMessage` varchar(500) DEFAULT NULL,
   `errorCode` varchar(500) DEFAULT NULL,
   `errorStack` varchar(2500) DEFAULT NULL,
   PRIMARY KEY (`errorId`)
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -455,24 +426,26 @@ DROP TABLE IF EXISTS `transactions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `transactions` (
-  `transactionId` bigint(20) unsigned NOT NULL COMMENT 'The unique identifier of the transaction.',
-  `originalTransactionId` bigint(20) unsigned NOT NULL COMMENT 'The transaction identifier of the original purchase.',
   `userId` char(64) NOT NULL COMMENT 'The user that made this transaction',
-  `familyId` char(64) NOT NULL COMMENT 'The family that the user was in when they made this transaction',
-  `environment` enum('Sandbox','Production') NOT NULL,
-  `productId` enum('com.jonathanxakellis.hound.twofamilymemberstwodogs.monthly','com.jonathanxakellis.hound.fourfamilymembersfourdogs.monthly','com.jonathanxakellis.hound.sixfamilymemberssixdogs.monthly','com.jonathanxakellis.hound.tenfamilymemberstendogs.monthly','com.jonathanxakellis.hound.sixfamilymembers.onemonth','com.jonathanxakellis.hound.sixfamilymembers.sixmonth','com.jonathanxakellis.hound.sixfamilymembers.oneyear') NOT NULL COMMENT 'The product identifier of the in-app purchase.',
-  `subscriptionGroupIdentifier` int(10) unsigned NOT NULL COMMENT 'The identifier of the subscription group the subscription belongs to.',
-  `purchaseDate` datetime(3) NOT NULL COMMENT 'The UNIX time, in milliseconds, that the App Store charged the user’s account for a purchase, restored product, subscription, or subscription renewal after a lapse.',
-  `expirationDate` datetime(3) NOT NULL COMMENT 'The UNIX time, in milliseconds, the subscription expires or renews.',
   `numberOfFamilyMembers` tinyint(3) unsigned NOT NULL COMMENT 'The number of family members this transaction, if its a subscription, gives the family access to',
   `numberOfDogs` tinyint(3) unsigned NOT NULL COMMENT 'The number of dogs this transaction, if its a subscription, gives the family access to',
-  `quantity` tinyint(3) unsigned NOT NULL COMMENT 'The number of consumable products the user purchased.',
-  `webOrderLineItemId` bigint(20) unsigned NOT NULL COMMENT 'The unique identifier of subscription purchase events across devices, including subscription renewals.',
-  `inAppOwnershipType` enum('FAMILY_SHARED','PURCHASED') NOT NULL COMMENT 'A string that describes whether the transaction was purchased by the user, or is available to them through Family Sharing.',
-  `isAutoRenewing` tinyint(1) NOT NULL DEFAULT 1 COMMENT 'The renewal status for an auto-renewable subscription.',
   `autoRenewProductId` enum('com.jonathanxakellis.hound.twofamilymemberstwodogs.monthly','com.jonathanxakellis.hound.fourfamilymembersfourdogs.monthly','com.jonathanxakellis.hound.sixfamilymemberssixdogs.monthly','com.jonathanxakellis.hound.tenfamilymemberstendogs.monthly','com.jonathanxakellis.hound.sixfamilymembers.onemonth','com.jonathanxakellis.hound.sixfamilymembers.sixmonth','com.jonathanxakellis.hound.sixfamilymembers.oneyear') NOT NULL COMMENT 'The product identifier of the product that renews at the next billing period.',
-  `isRevoked` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'The revocation status for a transaction that has been refunded by the App Store or revoked from family sharing',
-  `offerCode` varchar(64) DEFAULT NULL COMMENT 'The reference name of a subscription offer that you configured in App Store Connect. This field is present when a customer redeems a subscription offer code. For more information about offer codes, see Set Up Offer Codes, and Implementing Offer Codes in Your App.',
+  `autoRenewStatus` tinyint(1) NOT NULL COMMENT 'The renewal status for an auto-renewable subscription.',
+  `didUtilizeOfferIdentifier` tinyint(1) DEFAULT 0 COMMENT 'True if transaction had an offerIdentifier and a family member joined the family. False otherwise',
+  `environment` enum('Sandbox','Production') NOT NULL COMMENT 'The server environment, either Sandbox or Production.',
+  `expiresDate` datetime(3) NOT NULL COMMENT 'The UNIX time, in milliseconds, the subscription expires or renews.',
+  `inAppOwnershipType` enum('FAMILY_SHARED','PURCHASED') NOT NULL COMMENT 'A string that describes whether the transaction was purchased by the user, or is available to them through Family Sharing.',
+  `offerIdentifier` varchar(64) DEFAULT NULL COMMENT 'The reference name of a subscription offer that you configured in App Store Connect. This field is present when a customer redeems a subscription offer code. For more information about offer codes, see Set Up Offer Codes, and Implementing Offer Codes in Your App.',
+  `offerType` tinyint(1) DEFAULT NULL COMMENT 'A value that represents the promotional offer type. The offer types 2 and 3 have an offerIdentifier.',
+  `originalTransactionId` bigint(20) unsigned NOT NULL COMMENT 'The transaction identifier of the original purchase.',
+  `productId` enum('com.jonathanxakellis.hound.twofamilymemberstwodogs.monthly','com.jonathanxakellis.hound.fourfamilymembersfourdogs.monthly','com.jonathanxakellis.hound.sixfamilymemberssixdogs.monthly','com.jonathanxakellis.hound.tenfamilymemberstendogs.monthly','com.jonathanxakellis.hound.sixfamilymembers.onemonth','com.jonathanxakellis.hound.sixfamilymembers.sixmonth','com.jonathanxakellis.hound.sixfamilymembers.oneyear') NOT NULL COMMENT 'The product identifier of the in-app purchase.',
+  `purchaseDate` datetime(3) NOT NULL COMMENT 'The UNIX time, in milliseconds, that the App Store charged the user’s account for a purchase, restored product, subscription, or subscription renewal after a lapse.',
+  `quantity` tinyint(3) unsigned NOT NULL COMMENT 'The number of consumable products the user purchased.',
+  `revocationReason` tinyint(3) unsigned DEFAULT NULL COMMENT 'The revocation status for a transaction that has been refunded by the App Store or revoked from family sharing',
+  `subscriptionGroupIdentifier` int(10) unsigned NOT NULL COMMENT 'The identifier of the subscription group the subscription belongs to.',
+  `transactionId` bigint(20) unsigned NOT NULL COMMENT 'The unique identifier of the transaction.',
+  `transactionReason` enum('PURCHASE','RENEWAL') DEFAULT NULL COMMENT 'The cause of a purchase transaction, which indicates whether it’s a customer’s purchase or a renewal for an auto-renewable subscription that the system initiates.',
+  `webOrderLineItemId` bigint(20) unsigned NOT NULL COMMENT 'The unique identifier of subscription purchase events across devices, including subscription renewals.',
   PRIMARY KEY (`transactionId`),
   CONSTRAINT `CHECK_quantity` CHECK (`quantity` is null or `quantity` >= 1),
   CONSTRAINT `CHECK_numberOfFamilyMembers` CHECK (`numberOfFamilyMembers` is null or `numberOfFamilyMembers` >= 1),
@@ -493,12 +466,12 @@ CREATE TABLE `userConfiguration` (
   `userConfigurationIsLoudNotificationEnabled` tinyint(1) NOT NULL,
   `userConfigurationIsLogNotificationEnabled` tinyint(1) NOT NULL,
   `userConfigurationIsReminderNotificationEnabled` tinyint(1) NOT NULL,
+  `userConfigurationMeasurementSystem` tinyint(3) unsigned NOT NULL,
   `userConfigurationInterfaceStyle` tinyint(3) unsigned NOT NULL,
   `userConfigurationSnoozeLength` mediumint(8) unsigned NOT NULL,
-  `userConfigurationNotificationSound` enum('Radar','Apex','Beacon','Bulletin','By The Seaside','Chimes','Circuit','Constellation','Crystals','Illuminate','Night Owl','Opening','Presto','Reflection','Ripples','Sencha','Signal','Silk','Stargaze','Twinkle','Waves') NOT NULL,
+  `userConfigurationNotificationSound` enum('Radar','Circuit','Illuminate','Presto','Sencha','Signal','Silk','Stargaze','Twinkle','Waves') NOT NULL,
   `userConfigurationLogsInterfaceScale` enum('Small','Medium','Large') NOT NULL,
   `userConfigurationRemindersInterfaceScale` enum('Small','Medium','Large') NOT NULL,
-  `userConfigurationPreviousDogManagerSynchronization` datetime(3) NOT NULL DEFAULT '1970-01-01 00:00:00.000',
   `userConfigurationIsSilentModeEnabled` tinyint(1) NOT NULL,
   `userConfigurationSilentModeStartUTCHour` tinyint(3) unsigned NOT NULL,
   `userConfigurationSilentModeEndUTCHour` tinyint(3) unsigned NOT NULL,
@@ -521,7 +494,7 @@ DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `userId` char(64) NOT NULL,
   `userIdentifier` varchar(64) NOT NULL,
-  `userApplicationUsername` varchar(36) NOT NULL,
+  `userAppAccountToken` varchar(36) NOT NULL,
   `userEmail` varchar(254) DEFAULT NULL,
   `userFirstName` varchar(32) DEFAULT NULL,
   `userLastName` varchar(32) DEFAULT NULL,
@@ -529,7 +502,7 @@ CREATE TABLE `users` (
   `userAccountCreationDate` datetime(3) NOT NULL,
   PRIMARY KEY (`userId`),
   UNIQUE KEY `UN_userIdentifier` (`userIdentifier`),
-  UNIQUE KEY `UN_userApplicationUsername` (`userApplicationUsername`),
+  UNIQUE KEY `UN_userApplicationUsername` (`userAppAccountToken`),
   CONSTRAINT `CHECK_userEmail` CHECK (`userEmail` <> '')
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -594,4 +567,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-08-09 23:44:50
+-- Dump completed on 2023-11-06 10:30:18
