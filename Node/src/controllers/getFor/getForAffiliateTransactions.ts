@@ -35,6 +35,8 @@ To accomplish this, we use a multi-step SQL query
         # If numberOfPreviousFamilies > 1, then the user isn't qualified (they were in multiple previous, different families)
 */
 
+// TODO NOW test this query. we haven't tested family matching, but query gets oldest off ident trans for user. make sure fam logic works
+
   const eligibleTransactions = await databaseQuery<TransactionsRow[]>(
     databaseConnection,
     `WITH oldestTransactions AS (
