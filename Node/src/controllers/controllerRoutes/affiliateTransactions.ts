@@ -1,7 +1,7 @@
 import express from 'express';
 
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
-// import { getAffiliateTransactionsForOfferIdentifier } from '../getFor/getForAffiliateTransactions.js';
+import { getAffiliateTransactionsForOfferIdentifier } from '../getFor/getForAffiliateTransactions.js';
 import { formatUnknownString } from '../../main/format/formatObject.js';
 
 async function getAffiliateTransactions(req: express.Request, res: express.Response): Promise<void> {
@@ -16,7 +16,7 @@ async function getAffiliateTransactions(req: express.Request, res: express.Respo
       throw new HoundError('offerIdentifier missing', getAffiliateTransactions, ERROR_CODES.VALUE.INVALID);
     }
 
-    const result = ''; // await getAffiliateTransactionsForOfferIdentifier(databaseConnection, offerIdentifier);
+    const result = await getAffiliateTransactionsForOfferIdentifier(databaseConnection, offerIdentifier);
 
     if (result === undefined || result === null) {
       throw new HoundError('result missing', getAffiliateTransactions, ERROR_CODES.VALUE.INVALID);
