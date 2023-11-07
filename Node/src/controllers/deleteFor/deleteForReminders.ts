@@ -11,7 +11,7 @@ async function deleteReminderForFamilyIdDogIdReminderId(databaseConnection: Quer
     databaseConnection,
     `UPDATE dogReminders
     SET reminderIsDeleted = 1, reminderLastModified = CURRENT_TIMESTAMP()
-    WHERE reminderIsDeleted = 0 AND reminderId = ?`,
+    WHERE reminderId = ? AND reminderIsDeleted = 0`,
     [reminderId],
   );
 
@@ -41,7 +41,7 @@ async function deleteAllRemindersForFamilyIdDogId(databaseConnection: Queryable,
     databaseConnection,
     `UPDATE dogReminders
     SET reminderIsDeleted = 1, reminderLastModified = CURRENT_TIMESTAMP()
-    WHERE reminderIsDeleted = 0 AND dogId = ?`,
+    WHERE dogId = ? AND reminderIsDeleted = 0`,
     [dogId],
   );
 

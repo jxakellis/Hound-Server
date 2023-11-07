@@ -29,7 +29,7 @@ DogsRow & DogRemindersRow)[]>(
       `SELECT ${dogsColumns}, ${dogRemindersColumns}
       FROM dogReminders dr
       JOIN dogs d ON dr.dogId = d.dogId
-      WHERE d.dogIsDeleted = 0 AND dr.reminderIsDeleted = 0 AND dr.reminderId = ? AND dr.reminderExecutionDate IS NOT NULL AND d.dogId IS NOT NULL
+      WHERE d.dogId IS NOT NULL AND dr.reminderId = ? AND d.dogIsDeleted = 0 AND dr.reminderIsDeleted = 0 AND dr.reminderExecutionDate IS NOT NULL 
       LIMIT 1`,
       [reminderId],
       );

@@ -1,4 +1,4 @@
-import { type TransactionsRow } from '../../main/types/TransactionsRow.js';
+import { transactionsColumns, type TransactionsRow } from '../../main/types/TransactionsRow.js';
 import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
 
 // TODO NOW create indexes on different important table columns
@@ -35,21 +35,21 @@ To accomplish this, we use a multi-step SQL query
         # If numberOfPreviousFamilies > 1, then the user isn't qualified (they were in multiple previous, different families)
 */
 
-// TODO NOW test this query. we haven't tested family matching, but query gets oldest off ident trans for user. make sure fam logic works
+  // TODO NOW test this query. we haven't tested family matching, but query gets oldest off ident trans for user. make sure fam logic works
 
   const eligibleTransactions = await databaseQuery<TransactionsRow[]>(
     databaseConnection,
     `WITH oldestTransactions AS (
         SELECT
-          t.*,
+          ${transactionsColumns},
           RANK() OVER (PARTITION BY userId ORDER BY purchaseDate ASC) AS transactionRank
         FROM transactions t
       ),
       qualifiedTransactions AS (
         SELECT
-          ot.*
-        FROM oldestTransactions ot
-        WHERE ot.transactionRank = 1 AND ot.offerIdentifier = ?
+            ${transactionsColumns}
+        FROM oldestTransactions t
+        WHERE t.transactionRank = 1 AND t.offerIdentifier = ?
       ),
       usersCurrentlyInFamilies AS (
         SELECT
@@ -68,24 +68,24 @@ To accomplish this, we use a multi-step SQL query
       ),
       qualifiedTransactionsWithUserInformation AS (
         SELECT
-            qt.*,
-            ucif.currentFamilyId,
-            ucif.previousFamilyId,
-            IFNULL(upif.numberOfPreviousFamilies, 0) AS numberOfPreviousFamilies
-        FROM qualifiedTransactions qt
-        LEFT JOIN usersCurrentlyInFamilies ucif ON qt.userId = ucif.userId
-        LEFT JOIN usersPreviouslyInFamilies upif ON qt.userId = upif.userId
+            ${transactionsColumns},
+            ucf.currentFamilyId,
+            ucf.previousFamilyId,
+            IFNULL(upf.numberOfPreviousFamilies, 0) AS numberOfPreviousFamilies
+        FROM qualifiedTransactions t
+        LEFT JOIN usersCurrentlyInFamilies ucf ON t.userId = ucf.userId
+        LEFT JOIN usersPreviouslyInFamilies upf ON t.userId = upf.userId
       )
       SELECT
-        qtwui.*
+        ${transactionsColumns}
       FROM
-        qualifiedTransactionsWithUserInformation qtwui
+        qualifiedTransactionsWithUserInformation t
       WHERE
-          IFNULL(qtwui.numberOfPreviousFamilies, 0) = 0
-          OR (IFNULL(qtwui.numberOfPreviousFamilies, 0) = 1 
+          IFNULL(t.numberOfPreviousFamilies, 0) = 0
+          OR (IFNULL(t.numberOfPreviousFamilies, 0) = 1 
               AND (
-                      qtwui.currentFamilyId IS NULL
-                      OR qtwui.currentFamilyId = qtwui.previousFamilyId
+                      t.currentFamilyId IS NULL
+                      OR t.currentFamilyId = t.previousFamilyId
                   )
               )`,
     [offerIdentifier],

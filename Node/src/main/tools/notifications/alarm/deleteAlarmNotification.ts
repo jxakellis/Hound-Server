@@ -19,7 +19,7 @@ async function deleteAlarmNotificationsForFamily(familyId: string): Promise<void
       `SELECT ${dogRemindersColumns}
       FROM dogReminders dr
       JOIN dogs d ON dr.dogId = d.dogId
-      WHERE d.dogIsDeleted = 0 AND dr.reminderIsDeleted = 0 AND d.familyId = ? 
+      WHERE d.familyId = ? AND d.dogIsDeleted = 0 AND dr.reminderIsDeleted = 0 
       LIMIT 18446744073709551615`,
       [familyId],
     );

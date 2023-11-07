@@ -146,7 +146,7 @@ async function createUpdateTransaction(
             JOIN (
               SELECT transactionId, autoRenewProductId, autoRenewStatus
               FROM transactions
-              WHERE revocationReason IS NULL AND userId = ?
+              WHERE userId = ? AND revocationReason IS NULL
               ORDER BY purchaseDate DESC
               LIMIT 1
               ) mrt

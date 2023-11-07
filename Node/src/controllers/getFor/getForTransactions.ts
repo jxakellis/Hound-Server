@@ -37,7 +37,7 @@ async function getActiveTransaction(databaseConnection: Queryable, familyMemberU
                 ELSE 0
             END AS productIdCorrespondingRank
         FROM transactions t
-        WHERE revocationReason IS NULL AND (TIMESTAMPDIFF(MICROSECOND, CURRENT_TIMESTAMP(), expiresDate) >= 0) AND userId = ?
+        WHERE userId = ? AND revocationReason IS NULL AND (TIMESTAMPDIFF(MICROSECOND, CURRENT_TIMESTAMP(), expiresDate) >= 0) 
     )
     SELECT ${transactionsColumns}
     FROM mostRecentlyPurchasedForEachProductId AS t
@@ -75,7 +75,7 @@ async function getAllTransactions(databaseConnection: Queryable, familyMemberUse
     databaseConnection,
     `SELECT ${transactionsColumns}
     FROM transactions t
-    WHERE revocationReason IS NULL AND userId = ?
+    WHERE userId = ? AND revocationReason IS NULL 
     ORDER BY purchaseDate DESC, expiresDate DESC
     LIMIT 18446744073709551615`,
     [family.familyHeadUserId],

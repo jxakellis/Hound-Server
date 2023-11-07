@@ -32,7 +32,7 @@ async function getAllLogsForDogId(databaseConnection: Queryable, dogId: number, 
       databaseConnection,
       `SELECT ${dogLogsColumns}
       FROM dogLogs dl
-      WHERE TIMESTAMPDIFF(MICROSECOND, logLastModified, ?) <= 0 AND dogId = ?
+      WHERE dogId = ? AND TIMESTAMPDIFF(MICROSECOND, logLastModified, ?) <= 0
       LIMIT 18446744073709551615`,
       [previousDogManagerSynchronization, dogId],
     )

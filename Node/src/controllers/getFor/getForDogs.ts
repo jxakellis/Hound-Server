@@ -67,12 +67,11 @@ async function getAllDogsForFamilyId(
       FROM dogs d
       LEFT JOIN dogReminders dr ON d.dogId = dr.dogId
       LEFT JOIN dogLogs dl ON d.dogId = dl.dogId
-      WHERE (
+      WHERE d.familyId = ? AND (
         TIMESTAMPDIFF(MICROSECOND, d.dogLastModified, ?) <= 0
         OR TIMESTAMPDIFF(MICROSECOND, dr.reminderLastModified, ?) <= 0
         OR TIMESTAMPDIFF(MICROSECOND, dl.logLastModified, ?) <= 0
       )
-      AND d.familyId = ?
       GROUP BY d.dogId
       LIMIT 18446744073709551615`,
       [previousDogManagerSynchronization, previousDogManagerSynchronization, previousDogManagerSynchronization, familyId],
