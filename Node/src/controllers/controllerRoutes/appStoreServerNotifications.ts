@@ -40,9 +40,8 @@ async function createAppStoreServerNotification(req: express.Request, res: expre
 export { createAppStoreServerNotification };
 
 /*
-*****************************************
-***** START EXAMPLE NOTIFICATION 1 ******
-*****************************************
+
+ START EXAMPLE NOTIFICATION 1
 
 User bought a subscription
 
@@ -96,13 +95,9 @@ transactionId 2000000128395051
 type Auto-Renewable Subscription
 webOrderLineItemId 2000000009053141
 
-*****************************************
-****** END EXAMPLE NOTIFICATION 1 *******
-*****************************************
+ END EXAMPLE NOTIFICATION 1
 
-*****************************************
-***** START EXAMPLE NOTIFICATION 2 ******
-*****************************************
+ START EXAMPLE NOTIFICATION 2
 
 User's subscription automatically renewed
 
@@ -156,13 +151,9 @@ transactionId 2000000128395249
 type Auto-Renewable Subscription
 webOrderLineItemId 2000000009063693
 
-*****************************************
-****** END EXAMPLE NOTIFICATION 2 *******
-*****************************************
+ END EXAMPLE NOTIFICATION 2
 
-*****************************************
-***** START EXAMPLE NOTIFICATION 3 ******
-*****************************************
+ START EXAMPLE NOTIFICATION 3
 
 notification:
 notificationType DID_CHANGE_RENEWAL_STATUS
@@ -214,13 +205,9 @@ transactionId 2000000130393421
 type Auto-Renewable Subscription
 webOrderLineItemId 2000000009064713
 
-*****************************************
-****** END EXAMPLE NOTIFICATION 3 *******
-*****************************************
+ END EXAMPLE NOTIFICATION 3
 
-*****************************************
-***** START EXAMPLE NOTIFICATION 4 ******
-*****************************************
+ START EXAMPLE NOTIFICATION 4
 
 notification:
 notificationType DID_CHANGE_RENEWAL_STATUS
@@ -272,8 +259,6 @@ transactionId 2000000130393421
 type Auto-Renewable Subscription
 webOrderLineItemId 2000000009064713
 
-*****************************************
-****** END EXAMPLE NOTIFICATION 3 *******
-*****************************************
+ END EXAMPLE NOTIFICATION 3
 
 */

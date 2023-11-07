@@ -7,16 +7,15 @@ import { validateLogId } from '../main/tools/validate/validateDogRelatedId.js';
 
 const logsRouter = express.Router({ mergeParams: true });
 
-// TODO FUTURE depreciate :logId, last used <= 3.0.0
-logsRouter.use(['/:logId', '/'], validateLogId);
+logsRouter.use(['/'], validateLogId);
 
-logsRouter.get(['/:logId', '/'], getLogs);
-logsRouter.patch(['/:logId', '/'], getLogs);
+logsRouter.get(['/'], getLogs);
+logsRouter.patch(['/'], getLogs);
 
 logsRouter.post(['/'], createLog);
 
-logsRouter.put(['/:logId', '/'], updateLog);
+logsRouter.put(['/'], updateLog);
 
-logsRouter.delete(['/:logId', '/'], deleteLog);
+logsRouter.delete(['/'], deleteLog);
 
 export { logsRouter };

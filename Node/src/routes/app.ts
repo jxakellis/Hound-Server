@@ -7,10 +7,9 @@ import { userRouter } from './user.js';
 const appRouter = express.Router({ mergeParams: true });
 
 // Make sure the user is on an updated version
-appRouter.use(['/:appVersion/user', '/user'], validateAppVersion);
+appRouter.use(['/'], validateAppVersion);
 
 // Route the request to the userRouter
-// TODO FUTURE depreciate appVersion paths, last used <= 3.0.0
-appRouter.use(['/:appVersion/user', '/user'], userRouter);
+appRouter.use(['/user'], userRouter);
 
 export { appRouter };

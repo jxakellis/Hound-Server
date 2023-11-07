@@ -1,8 +1,5 @@
-// TODO FUTURE depreciate userId, last used <= 3.0.0
-
 const familiesColumns = `
 f.familyHeadUserId,
-f.familyHeadUserId AS userId,
 f.familyId,
 f.familyCode,
 f.familyIsLocked,

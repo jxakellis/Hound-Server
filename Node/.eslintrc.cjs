@@ -17,7 +17,6 @@ module.exports = {
     // Custom 
     'max-len': ['error', { code: 200, ignoreComments: true }], 
     'brace-style': ['error', 'stroustrup', { allowSingleLine: false }],
-    '@typescript-eslint/no-use-before-define': ['error', { functions: false, classes: true, variables: true }],
     // Error
     '@typescript-eslint/no-unsafe-member-access': ['error'],
     "@typescript-eslint/strict-boolean-expressions": [

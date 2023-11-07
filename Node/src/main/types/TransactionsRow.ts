@@ -1,15 +1,11 @@
-// TODO FUTURE depreciate isAutoRenewing, expirationDate, and numberOfDogs, last used <= 3.0.0
 const transactionsColumns = `
 t.userId,
 t.transactionId,
 t.productId,
 t.purchaseDate,
 t.expiresDate,
-t.expiresDate AS expirationDate,
 t.numberOfFamilyMembers,
-t.numberOfDogs,
 t.autoRenewStatus,
-t.autoRenewStatus AS isAutoRenewing,
 t.autoRenewProductId,
 t.revocationReason,
 t.offerIdentifier
@@ -22,11 +18,8 @@ type TransactionsRow = {
     productId: string
     purchaseDate: Date
     expiresDate: Date
-    expirationDate: Date
     numberOfFamilyMembers: number
-    numberOfDogs: number
     autoRenewStatus: number
-    isAutoRenewing: number
     autoRenewProductId: string
     revocationReason?: number
     offerIdentifier?: number

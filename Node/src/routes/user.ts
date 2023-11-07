@@ -14,21 +14,19 @@ import { familyRouter } from './family.js';
 
 const userRouter = express.Router({ mergeParams: true });
 
-// TODO FUTURE depreciate userId paths, last used <= 3.0.0
+userRouter.use(['/'], validateUserIdentifier, validateUserId);
 
-userRouter.use(['/:userId/alert', '/:userId/family', '/:userId', '/'], validateUserIdentifier, validateUserId);
+userRouter.use(['/alert'], alertRouter);
 
-userRouter.use(['/:userId/alert', '/alert'], alertRouter);
+userRouter.use(['/family'], familyRouter);
 
-userRouter.use(['/:userId/family', '/family'], familyRouter);
-
-userRouter.get(['/:userId', '/'], getUser);
-userRouter.patch(['/:userId', '/'], getUser);
+userRouter.get(['/'], getUser);
+userRouter.patch(['/'], getUser);
 
 userRouter.post(['/'], createUser);
 
-userRouter.put(['/:userId', '/'], updateUser);
+userRouter.put(['/'], updateUser);
 
-userRouter.delete(['/:userId', '/'], deleteUser);
+userRouter.delete(['/'], deleteUser);
 
 export { userRouter };

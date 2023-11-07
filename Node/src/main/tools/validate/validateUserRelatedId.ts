@@ -14,10 +14,9 @@ import { type FamilyMembersRow, familyMembersColumns } from '../../types/FamilyM
 async function validateUserIdentifier(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    // TODO FUTURE depreciate req.query userIdentifier, last used <= 3.0.0
     // unhashedUserIdentifier: unhashed, 44-length apple identifier or 64-length sha-256 hash of apple identifier
     /* cspell: disable-next-line */
-    const userIdentifier = formatUnknownString(req.headers['houndheader-useridentifier']) ?? formatUnknownString(req.query['userIdentifier']);
+    const userIdentifier = formatUnknownString(req.headers['houndheader-useridentifier']);
 
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', validateUserIdentifier, ERROR_CODES.VALUE.INVALID);

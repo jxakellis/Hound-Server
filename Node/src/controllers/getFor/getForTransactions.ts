@@ -24,7 +24,7 @@ async function getActiveTransaction(databaseConnection: Queryable, familyMemberU
     // For mrp, for each transaction, we then rank their productId's by level of importance. If importanceA > importanceB, then A is a upgrade and take priority.
     `WITH mostRecentlyPurchasedForEachProductId AS (
         SELECT 
-            *,
+            ${transactionsColumns},
             ROW_NUMBER() OVER (PARTITION BY productId ORDER BY purchaseDate DESC) AS rowNumberByProductId,
             CASE 
                 WHEN productId = 'com.jonathanxakellis.hound.twofamilymemberstwodogs.monthly' THEN 1

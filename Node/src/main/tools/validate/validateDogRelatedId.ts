@@ -27,18 +27,7 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    let dogsDictionary = formatArray(req.body['dogs'] ?? req.body['reminders'] ?? req.body['logs'] ?? [req.body]) as (StringKeyDictionary[] | undefined);
-
-    // TODO FUTURE depreciate and remove backwards compatibility for .params, last used <= 3.0.0
-    const paramsDogId = formatNumber(req.params['dogId']);
-    if (paramsDogId !== undefined && paramsDogId !== null) {
-      if (dogsDictionary !== undefined && dogsDictionary !== null) {
-        dogsDictionary = dogsDictionary.map((dogDictionary) => ({ ...dogDictionary, dogId: paramsDogId }));
-      }
-      else {
-        dogsDictionary = [{ dogId: paramsDogId }];
-      }
-    }
+    const dogsDictionary = formatArray(req.body['dogs'] ?? req.body['reminders'] ?? req.body['logs'] ?? [req.body]) as (StringKeyDictionary[] | undefined);
 
     if (dogsDictionary === undefined || dogsDictionary === null) {
       // We have no dogIds to validate
@@ -109,18 +98,7 @@ async function validateLogId(req: express.Request, res: express.Response, next: 
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    let logsDictionary = formatArray(req.body['logs'] ?? [req.body]) as (StringKeyDictionary[] | undefined);
-
-    const paramsDogId = formatNumber(req.params['dogId']);
-    const paramsLogId = formatNumber(req.params['logId']);
-    if (paramsDogId !== undefined && paramsDogId !== null && paramsLogId !== undefined && paramsLogId !== null) {
-      if (logsDictionary !== undefined && logsDictionary !== null) {
-        logsDictionary = logsDictionary.map((logDictionary) => ({ ...logDictionary, dogId: paramsDogId, logId: paramsLogId }));
-      }
-      else {
-        logsDictionary = [{ dogId: paramsDogId, logId: paramsLogId }];
-      }
-    }
+    const logsDictionary = formatArray(req.body['logs'] ?? [req.body]) as (StringKeyDictionary[] | undefined);
 
     if (logsDictionary === undefined || logsDictionary === null) {
       // We have no logIds to validate
@@ -188,26 +166,7 @@ async function validateReminderId(req: express.Request, res: express.Response, n
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    let remindersDictionary = formatArray(req.body['reminders'] ?? [req.body]) as (StringKeyDictionary[] | undefined);
-
-    const paramsDogId = formatNumber(req.params['dogId']);
-    const paramsReminderId = formatNumber(req.params['reminderId']);
-    if (paramsDogId !== undefined && paramsDogId !== null && paramsReminderId !== undefined && paramsReminderId !== null) {
-      if (remindersDictionary !== undefined && remindersDictionary !== null) {
-        remindersDictionary = remindersDictionary.map((reminderDictionary) => ({ ...reminderDictionary, dogId: paramsDogId, reminderId: paramsReminderId }));
-      }
-      else {
-        remindersDictionary = [{ dogId: paramsDogId, reminderId: paramsReminderId }];
-      }
-    }
-
-    if (paramsReminderId !== undefined && paramsReminderId !== null) {
-      remindersDictionary = remindersDictionary ?? formatArray([{ paramsReminderId }]) as (StringKeyDictionary[] | undefined);
-    }
-    // Check to make sure req.body isn't {}
-    if (Object.keys(req.body).length > 0) {
-      remindersDictionary = remindersDictionary ?? formatArray([req.body]) as (StringKeyDictionary[] | undefined);
-    }
+    const remindersDictionary = formatArray(req.body['reminders'] ?? [req.body]) as (StringKeyDictionary[] | undefined);
 
     if (remindersDictionary === undefined || remindersDictionary === null) {
       // We have no reminderIds to validate
@@ -217,8 +176,7 @@ async function validateReminderId(req: express.Request, res: express.Response, n
     const promises: Promise<DogRemindersRow | undefined>[] = [];
     // query for all reminders provided
     remindersDictionary.forEach((reminderDictionary) => {
-      // TODO FUTURE remove this, it fixes a slight bug from 3.0.1
-      const reminderId = formatNumber(reminderDictionary['reminderId'] ?? reminderDictionary['logId']);
+      const reminderId = formatNumber(reminderDictionary['reminderId']);
 
       if (reminderId === undefined || reminderId === null || reminderId <= -1) {
         // If reminderId is missing or -1, it either a reminder body wasn't provided or it was provided but reminderId is invalid because the reminder is yet to be created

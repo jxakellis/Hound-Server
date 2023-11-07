@@ -55,13 +55,9 @@ async function validateSubscription(req: express.Request, res: express.Response,
     }
 
     const numberOfFamilyMembers = req.houndDeclarationExtendedProperties.familyActiveSubscription?.numberOfFamilyMembers;
-    const numberOfDogs = req.houndDeclarationExtendedProperties.familyActiveSubscription?.numberOfDogs;
 
     if (numberOfFamilyMembers === undefined || numberOfFamilyMembers === null) {
       throw new HoundError('numberOfFamilyMembers missing', validateSubscription, ERROR_CODES.VALUE.MISSING);
-    }
-    if (numberOfDogs === undefined || numberOfDogs === null) {
-      throw new HoundError('numberOfDogs missing', validateSubscription, ERROR_CODES.VALUE.MISSING);
     }
 
     // a subscription doesn't matter for GET, PATCH, or DELETE requests. We can allow retrieving/deleting of information even if expired

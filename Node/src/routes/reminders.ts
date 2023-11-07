@@ -7,16 +7,15 @@ import { validateReminderId } from '../main/tools/validate/validateDogRelatedId.
 
 const remindersRouter = express.Router({ mergeParams: true });
 
-// TODO FUTURE depreciate :reminderId, last used <= 3.0.0
-remindersRouter.use(['/:reminderId', '/'], validateReminderId);
+remindersRouter.use(['/'], validateReminderId);
 
-remindersRouter.get(['/:reminderId', '/'], getReminders);
-remindersRouter.patch(['/:reminderId', '/'], getReminders);
+remindersRouter.get(['/'], getReminders);
+remindersRouter.patch(['/'], getReminders);
 
 remindersRouter.post(['/'], createReminder);
 
-remindersRouter.put(['/:reminderId', '/'], updateReminder);
+remindersRouter.put(['/'], updateReminder);
 
-remindersRouter.delete(['/:reminderId', '/'], deleteReminder);
+remindersRouter.delete(['/'], deleteReminder);
 
 export { remindersRouter };

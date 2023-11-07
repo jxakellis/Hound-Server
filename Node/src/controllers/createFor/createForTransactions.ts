@@ -75,7 +75,7 @@ async function createUpdateTransaction(
     throw new HoundError('correspondingProduct missing', createUpdateTransaction, ERROR_CODES.VALUE.MISSING);
   }
 
-  const { numberOfFamilyMembers, numberOfDogs } = correspondingProduct;
+  const { numberOfFamilyMembers } = correspondingProduct;
 
   const family = await getFamilyForUserId(databaseConnection, userId);
 
@@ -95,7 +95,7 @@ async function createUpdateTransaction(
     `INSERT INTO transactions
       (
         userId,
-        numberOfFamilyMembers, numberOfDogs,
+        numberOfFamilyMembers,
         autoRenewProductId, autoRenewStatus,
         environment, expiresDate, inAppOwnershipType,
         offerIdentifier, offerType, originalTransactionId, productId,
@@ -105,7 +105,7 @@ async function createUpdateTransaction(
         VALUES
         (
           ?,
-          ?, ?,
+          ?,
           ?, ?,
           ?, ?, ?,
           ?, ?, ?, ?,
@@ -118,7 +118,7 @@ async function createUpdateTransaction(
           revocationReason = ?`,
     [
       userId,
-      numberOfFamilyMembers, numberOfDogs,
+      numberOfFamilyMembers,
       // We undefined-coalesce the values here in the case they don't exist
       renewalInfo?.autoRenewProductId ?? transactionInfo.productId, renewalInfo?.autoRenewStatus ?? 1,
       transactionInfo.environment, formatDate(transactionInfo.expiresDate), transactionInfo.inAppOwnershipType,
