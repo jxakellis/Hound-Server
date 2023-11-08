@@ -3,6 +3,8 @@ import express from 'express';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 import { createTerminateNotification } from '../../main/tools/notifications/alert/createTerminateNotification.js';
 
+// TODO NOW test createTerminateAlert
+
 async function createTerminateAlert(req: express.Request, res: express.Response): Promise<void> {
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
