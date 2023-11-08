@@ -107,9 +107,6 @@ async function updateIsLocked(databaseConnection: Queryable, userId: string, fam
   createFamilyLockedNotification(userId, familyId, familyIsLocked);
 }
 
-// TODO FUTURE add logic for a family to allow it to switch family heads. this will mean checking the active subscription to make sure it is not renewing, similar to deleting a family.
-// ^^ also check other logic, since in the past a family always had the same userId for its family head, but now that could switch, so verify that functions are compatible with that (e.g. retrieving transactions, reassigning transitions, transaction metrics)
-
 /**
             *  Queries the database to update a family to add a new user. If the query is successful, then returns
             *  If a problem is encountered, creates and throws custom error
@@ -121,6 +118,8 @@ async function updateFamilyForUserIdFamilyId(
   familyCode?: string,
   familyIsLocked?: boolean,
 ): Promise<void> {
+  // DO NOT let a family update its family head. This would allow one family to utilize multiple free trials.
+  // memberA could redeem a free trial, family uses it, switch fh to memberB, memberB redeems a free trial, family uses it, etc.
   if (familyId === undefined || familyId === null) {
     if (familyCode !== undefined && familyCode !== null) {
       await addFamilyMember(databaseConnection, userId, familyCode);

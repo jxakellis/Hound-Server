@@ -33,8 +33,6 @@ async function getAffiliateTransactionsForOfferIdentifier(databaseConnection: Qu
     # If numberOfPreviousFamilies > 1, then the user isn't qualified (they were in multiple previous, different families)
     */
 
-  // TODO NOW don't expose all of the transaction columns to the affiliate, only expose some that make sense for them to know
-
   const eligibleTransactions = await databaseQuery<TransactionsRow[]>(
     databaseConnection,
     `WITH oldestTransactions AS (
