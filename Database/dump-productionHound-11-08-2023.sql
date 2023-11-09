@@ -1,6 +1,6 @@
 -- MariaDB dump 10.19-11.0.2-MariaDB, for osx10.18 (arm64)
 --
--- Host: developmenthound.czbmbrfbsczi.us-east-2.rds.amazonaws.com    Database: developmentHound
+-- Host: productionhound.czbmbrfbsczi.us-east-2.rds.amazonaws.com    Database: productionHound
 -- ------------------------------------------------------
 -- Server version	10.6.10-MariaDB-log
 
@@ -97,8 +97,9 @@ CREATE TABLE `dogLogs` (
   `logNumberOfLogUnits` double DEFAULT NULL,
   `logLastModified` datetime(3) NOT NULL COMMENT 'Tracks when the log was last modified',
   `logIsDeleted` tinyint(1) NOT NULL,
-  PRIMARY KEY (`logId`)
-) ENGINE=InnoDB AUTO_INCREMENT=81 DEFAULT CHARSET=utf8mb4;
+  PRIMARY KEY (`logId`),
+  KEY `INDEX_dogId` (`dogId`)
+) ENGINE=InnoDB AUTO_INCREMENT=82995 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -182,9 +183,10 @@ CREATE TABLE `dogReminders` (
   `monthlySkippedDate` datetime(3) DEFAULT NULL,
   `oneTimeDate` datetime(3) NOT NULL,
   PRIMARY KEY (`reminderId`),
+  KEY `INDEX_dogId` (`dogId`),
   CONSTRAINT `CHECK_monthly` CHECK (`monthlyUTCHour` >= 0 and `monthlyUTCHour` <= 23 and `monthlyUTCMinute` >= 0 and `monthlyUTCMinute` <= 59 and `monthlyUTCDay` >= 0 and `monthlyUTCDay` <= 31),
   CONSTRAINT `CHECK_weekly` CHECK (`weeklyUTCHour` >= 0 and `weeklyUTCHour` <= 23 and `weeklyUTCMinute` >= 0 and `weeklyUTCMinute` <= 59 and (`weeklySunday` = 1 or `weeklyMonday` = 1 or `weeklyTuesday` = 1 or `weeklyWednesday` = 1 or `weeklyThursday` = 1 or `weeklyFriday` = 1 or `weeklySaturday` = 1))
-) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=7905 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -245,8 +247,9 @@ CREATE TABLE `dogs` (
   `dogName` varchar(32) NOT NULL,
   `dogLastModified` datetime(3) NOT NULL,
   `dogIsDeleted` tinyint(1) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`dogId`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4;
+  PRIMARY KEY (`dogId`),
+  KEY `INDEX_familyId` (`familyId`)
+) ENGINE=InnoDB AUTO_INCREMENT=1902 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -301,7 +304,8 @@ CREATE TABLE `familyMembers` (
   `familyId` char(64) NOT NULL,
   `userId` char(64) NOT NULL,
   `familyMemberJoinDate` datetime(3) NOT NULL,
-  PRIMARY KEY (`userId`)
+  PRIMARY KEY (`userId`),
+  KEY `INDEX_familyId` (`familyId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -318,7 +322,8 @@ CREATE TABLE `previousFamilies` (
   `familyCode` char(8) NOT NULL,
   `familyIsLocked` tinyint(1) NOT NULL,
   `familyAccountCreationDate` datetime(3) NOT NULL,
-  `familyAccountDeletionDate` datetime(3) NOT NULL
+  `familyAccountDeletionDate` datetime(3) NOT NULL,
+  KEY `INDEX_familyId` (`familyId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -336,7 +341,9 @@ CREATE TABLE `previousFamilyMembers` (
   `userFirstName` varchar(32) DEFAULT NULL,
   `userLastName` varchar(32) DEFAULT NULL,
   `familyMemberLeaveDate` datetime(3) NOT NULL,
-  `familyMemberLeaveReason` enum('userLeft','userKicked','familyDeleted') NOT NULL
+  `familyMemberLeaveReason` enum('userLeft','userKicked','familyDeleted') NOT NULL,
+  KEY `INDEX_userId` (`userId`),
+  KEY `INDEX_familyId` (`familyId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -358,7 +365,7 @@ CREATE TABLE `previousRequests` (
   `requestFamilyId` varchar(64) DEFAULT NULL,
   `requestAppVersion` varchar(10) DEFAULT NULL,
   PRIMARY KEY (`requestId`)
-) ENGINE=InnoDB AUTO_INCREMENT=132574 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=1159481 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -376,7 +383,7 @@ CREATE TABLE `previousResponses` (
   `responseBody` varchar(500) DEFAULT NULL,
   PRIMARY KEY (`responseId`),
   UNIQUE KEY `UN_previousResponses` (`requestId`)
-) ENGINE=InnoDB AUTO_INCREMENT=132557 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=1155374 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -395,7 +402,7 @@ CREATE TABLE `previousServerErrors` (
   `errorCode` varchar(500) DEFAULT NULL,
   `errorStack` varchar(2500) DEFAULT NULL,
   PRIMARY KEY (`errorId`)
-) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=1122 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -414,7 +421,8 @@ CREATE TABLE `previousUsers` (
   `userLastName` varchar(32) DEFAULT NULL,
   `userNotificationToken` varchar(256) DEFAULT NULL,
   `userAccountCreationDate` datetime(3) NOT NULL,
-  `userAccountDeletionDate` datetime(3) NOT NULL
+  `userAccountDeletionDate` datetime(3) NOT NULL,
+  KEY `INDEX_userId` (`userId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -428,7 +436,6 @@ DROP TABLE IF EXISTS `transactions`;
 CREATE TABLE `transactions` (
   `userId` char(64) NOT NULL COMMENT 'The user that made this transaction',
   `numberOfFamilyMembers` tinyint(3) unsigned NOT NULL COMMENT 'The number of family members this transaction, if its a subscription, gives the family access to',
-  `numberOfDogs` tinyint(3) unsigned NOT NULL COMMENT 'The number of dogs this transaction, if its a subscription, gives the family access to',
   `autoRenewProductId` enum('com.jonathanxakellis.hound.twofamilymemberstwodogs.monthly','com.jonathanxakellis.hound.fourfamilymembersfourdogs.monthly','com.jonathanxakellis.hound.sixfamilymemberssixdogs.monthly','com.jonathanxakellis.hound.tenfamilymemberstendogs.monthly','com.jonathanxakellis.hound.sixfamilymembers.onemonth','com.jonathanxakellis.hound.sixfamilymembers.sixmonth','com.jonathanxakellis.hound.sixfamilymembers.oneyear') NOT NULL COMMENT 'The product identifier of the product that renews at the next billing period.',
   `autoRenewStatus` tinyint(1) NOT NULL COMMENT 'The renewal status for an auto-renewable subscription.',
   `didUtilizeOfferIdentifier` tinyint(1) DEFAULT 0 COMMENT 'True if transaction had an offerIdentifier and a family member joined the family. False otherwise',
@@ -447,9 +454,10 @@ CREATE TABLE `transactions` (
   `transactionReason` enum('PURCHASE','RENEWAL') DEFAULT NULL COMMENT 'The cause of a purchase transaction, which indicates whether it’s a customer’s purchase or a renewal for an auto-renewable subscription that the system initiates.',
   `webOrderLineItemId` bigint(20) unsigned NOT NULL COMMENT 'The unique identifier of subscription purchase events across devices, including subscription renewals.',
   PRIMARY KEY (`transactionId`),
+  KEY `INDEX_userId` (`userId`),
+  KEY `INDEX_expiresDate` (`expiresDate`),
   CONSTRAINT `CHECK_quantity` CHECK (`quantity` is null or `quantity` >= 1),
-  CONSTRAINT `CHECK_numberOfFamilyMembers` CHECK (`numberOfFamilyMembers` is null or `numberOfFamilyMembers` >= 1),
-  CONSTRAINT `CHECK_numberOfDogs` CHECK (`numberOfDogs` is null or `numberOfDogs` >= 1)
+  CONSTRAINT `CHECK_numberOfFamilyMembers` CHECK (`numberOfFamilyMembers` is null or `numberOfFamilyMembers` >= 1)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -555,7 +563,7 @@ DELIMITER ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
--- Dumping routines for database 'developmentHound'
+-- Dumping routines for database 'productionHound'
 --
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -567,4 +575,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-11-06 10:30:18
+-- Dump completed on 2023-11-08 21:54:52

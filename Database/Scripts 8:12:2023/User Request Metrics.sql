@@ -3,11 +3,10 @@ SELECT COUNT(requestId) AS 'Total Requests'
 FROM previousRequests;
 
 
-
-
+SELECT * FROM appStoreServerNotifications assn ORDER BY signedDate DESC LIMIT 100;
 
 -- Most Recent 100 Requests
-SELECT 
+SELECT
     pReq.requestId,
 	pReq.requestIP,
 	pReq.requestDate,
@@ -20,10 +19,17 @@ SELECT
 FROM previousRequests pReq
 JOIN previousResponses pRes ON pReq.requestId = pRes.requestId 
 WHERE 
-    pReq.requestAppVersion = '3.0.0'
-    # pReq.requestOriginalURL LIKE '%001473.77422360ac5b4f8aabf48f816149efe8.1644%'
+	1=1
+    # AND pReq.requestAppVersion != '3.0.1'
+	# AND pRes.responseStatus != 200
+	# AND (pReq.requestUserId IS NULL OR pReq.requestUserId != 'd7a178f103d6f5d05dc61e37b52e9a2e99a2e14392d22b1d22b506c3b7d21273')
+    # pReq.requestOriginalURL LIKE '%ba10953a9e559a58ce979afa3f71f23b2e1974c19aa96dd8efe52a6453bb6371%'
+	#AND pReq.requestId > (1128328 - 15)
+	#AND pReq.requestId < (1128328 + 15)
 ORDER BY pReq.requestId DESC
-LIMIT 100;
+LIMIT 1000;
+
+SELECT * FROM previousServerErrors p
 
 
 
@@ -45,9 +51,9 @@ JOIN previousResponses pRes ON pReq.requestId = pRes.requestId
 WHERE 
     # If responseStatus is not null, check if it's not in the 200-299 range
     (pRes.responseStatus IS NOT NULL AND (pRes.responseStatus < 200 OR pRes.responseStatus > 299))
-    OR 
+    # OR 
     # If responseStatus is null, look for the word "message" in responseBody to identify a failure
-    (pRes.responseStatus IS NULL AND JSON_EXTRACT(pRes.responseBody, '$.message') IS NOT NULL)
+    # (pRes.responseStatus IS NULL AND JSON_VALID(pRes.responseBody) AND JSON_EXTRACT(pRes.responseBody, '$.message') IS NOT NULL)
 ORDER BY pReq.requestDate DESC
 LIMIT 100;
 

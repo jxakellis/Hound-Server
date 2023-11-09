@@ -23,14 +23,14 @@ JOIN
 JOIN 
     families f ON d.familyId = f.familyId
 JOIN 
-    users u ON f.userId = u.userId
+    users u ON f.familyHeadUserId = u.userId
 GROUP BY 
     f.familyId
 ORDER BY
     COUNT(dl.logId) DESC;
 
 # custom action names for active logs
-SELECT logCustomActionName, COUNT(logCustomActionName) FROM dogLogs WHERE logCustomActionName != '' AND logIsDeleted = 0 GROUP BY logCustomActionName;
+SELECT logCustomActionName, COUNT(logCustomActionName) FROM dogLogs WHERE logCustomActionName != '' AND logIsDeleted = 0 GROUP BY logCustomActionName ORDER BY logDate DESC; 
 
 # number of active reminders
 SELECT COUNT(reminderId) FROM dogReminders WHERE reminderIsDeleted = 0 AND reminderIsEnabled = 1 AND UNIX_TIMESTAMP(reminderExecutionDate) >= UNIX_TIMESTAMP(CURRENT_TIMESTAMP()) LIMIT 1;

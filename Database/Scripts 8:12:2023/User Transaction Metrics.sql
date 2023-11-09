@@ -1,15 +1,32 @@
--- Recent transactions
-SELECT 
-	REPLACE(t.productId, 'com.jonathanxakellis.hound.', '') AS 'Product',
+-- Recent transactions (all)
+SELECT  
+	REPLACE(t.productId, 'com.jonathanxakellis.hound.sixfamilymembers.', '') AS 'Product',
 	t.purchaseDate,
-	t.expirationDate,
+	t.expiresDate,
 	# t.numberOfFamilyMembers,
 	# t.numberOfDogs,
-	t.isAutoRenewing,
-	REPLACE(t.autoRenewProductId, 'com.jonathanxakellis.hound.', '') AS 'Renewal Product',
-	t.isRevoked,
-	(DATEDIFF(expirationDate, purchaseDate) BETWEEN 5 AND 10) AS 'Is 1 Week Free Trial'
+	t.autoRenewStatus,
+	REPLACE(t.autoRenewProductId, 'com.jonathanxakellis.hound.sixfamilymembers.', '') AS 'Renewal Product',
+	t.offerType,
+	t.offerIdentifier,
+	t.revocationReason
 FROM transactions t
+ORDER BY purchaseDate DESC;
+
+
+
+-- Recent transactions (non-free trials)
+SELECT 
+	REPLACE(t.productId, 'com.jonathanxakellis.hound.sixfamilymembers.', '') AS 'Product',
+	t.purchaseDate,
+	# t.numberOfFamilyMembers,
+	# t.numberOfDogs,
+	t.autoRenewStatus,
+	REPLACE(t.autoRenewProductId, 'com.jonathanxakellis.hound.sixfamilymembers.', '') AS 'Renewal Product',
+	t.offerIdentifier,
+	t.revocationReason
+FROM transactions t
+WHERE offerType IS NULL
 ORDER BY purchaseDate DESC;
 
 
@@ -19,7 +36,7 @@ WITH activeTransactionsWithRanks AS (
     SELECT
         userId,
         autoRenewProductId,
-        isAutoRenewing,
+        autoRenewStatus,
         ROW_NUMBER() OVER (PARTITION BY userId ORDER BY 
             CASE 
                 WHEN productId = 'com.jonathanxakellis.hound.twofamilymemberstwodogs.monthly' THEN 1
@@ -32,21 +49,21 @@ WITH activeTransactionsWithRanks AS (
                 ELSE 0
             END DESC) AS correspondingRank
     FROM transactions t
-    WHERE isRevoked = 0 AND TIMESTAMPDIFF(SECOND, CURRENT_TIMESTAMP(), expirationDate) >= 0
+    WHERE revocationReason = 0 AND TIMESTAMPDIFF(SECOND, CURRENT_TIMESTAMP(), expiresDate) >= 0
 ),
 activeHighestRankTransactions AS (
     SELECT 
         REPLACE(atwr.autoRenewProductId, 'com.jonathanxakellis.hound.', '') AS product,
-        COUNT(DISTINCT CASE WHEN atwr.isAutoRenewing = 1 THEN atwr.userId END) AS renewingCount,
-        COUNT(DISTINCT CASE WHEN atwr.isAutoRenewing = 0 THEN atwr.userId END) AS nonRenewingCount,
+        COUNT(DISTINCT CASE WHEN atwr.autoRenewStatus = 1 THEN atwr.userId END) AS renewingCount,
+        COUNT(DISTINCT CASE WHEN atwr.autoRenewStatus = 0 THEN atwr.userId END) AS nonRenewingCount,
         CASE 
     		WHEN atwr.autoRenewProductId = 'com.jonathanxakellis.hound.twofamilymemberstwodogs.monthly' THEN 2.99
         	WHEN atwr.autoRenewProductId = 'com.jonathanxakellis.hound.fourfamilymembersfourdogs.monthly' THEN 4.9
         	WHEN atwr.autoRenewProductId = 'com.jonathanxakellis.hound.sixfamilymemberssixdogs.monthly' THEN 6.99
         	WHEN atwr.autoRenewProductId = 'com.jonathanxakellis.hound.tenfamilymemberstendogs.monthly' THEN 9.99
         	WHEN atwr.autoRenewProductId = 'com.jonathanxakellis.hound.sixfamilymembers.onemonth' THEN 6.99
-        	WHEN atwr.autoRenewProductId = 'com.jonathanxakellis.hound.sixfamilymembers.sixmonth' THEN (29.99 / 6)
-        	WHEN atwr.autoRenewProductId = 'com.jonathanxakellis.hound.sixfamilymembers.oneyear' THEN (42.99 / 6)
+        	WHEN atwr.autoRenewProductId = 'com.jonathanxakellis.hound.sixfamilymembers.sixmonth' THEN (27.99 / 6)
+        	WHEN atwr.autoRenewProductId = 'com.jonathanxakellis.hound.sixfamilymembers.oneyear' THEN (34.99 / 12)
         	ELSE 0
     	END AS monthlyPrice
     FROM activeTransactionsWithRanks atwr
@@ -58,7 +75,7 @@ SELECT
     ahrt.renewingCount AS 'Active Will Renew',
     ahrt.nonRenewingCount AS "Active Won't Renew",
     ROUND(((ahrt.renewingCount / (ahrt.renewingCount + ahrt.nonRenewingCount)) * 100), 1) AS 'Active Will Renew (%)',
-    ROUND((ahrt.monthlyPrice * ahrt.renewingCount), 2) AS 'Expected Monthly Renewal Sales'
+    ROUND((ahrt.monthlyPrice * ahrt.renewingCount), 1) AS 'Expected Monthly Renewal Sales'
 FROM activeHighestRankTransactions ahrt;
 
 
@@ -76,8 +93,8 @@ expiredFreeTrials AS (
         originalTransactionId
     FROM transactions t
     WHERE t.transactionId = t.originalTransactionId
-    AND TIMESTAMPDIFF(MICROSECOND, CURRENT_TIMESTAMP(), expirationDate) < 0
-    AND t.isRevoked = 0
+    AND TIMESTAMPDIFF(MICROSECOND, CURRENT_TIMESTAMP(), expiresDate) < 0
+    AND t.revocationReason = 0
 ),
 expiredFreeTrialsWithPaidFlag AS (
     # Adding whether or not the free trial transactions led to at least one non-free trial purchase
@@ -86,10 +103,10 @@ expiredFreeTrialsWithPaidFlag AS (
         eft.originalTransactionId,
         (t.originalTransactionId IS NOT NULL) AS ledToPaidTransaction,
         # This means the user still has some form of subscription active. Not necessarily the same as the free trial product
-        (TIMESTAMPDIFF(MICROSECOND, CURRENT_TIMESTAMP(), MAX(t.expirationDate)) >= 0) AS isPaidTransactionActive
+        (TIMESTAMPDIFF(MICROSECOND, CURRENT_TIMESTAMP(), MAX(t.expiresDate)) >= 0) AS isPaidTransactionActive
     FROM expiredFreeTrials eft
     # Attempt to link a non free trial transaction. It should be linked to the free trial (eft.origTranId = t.tranId) but is not a free trial itself (t.tranId != t.origTranId)
-    LEFT JOIN transactions t ON (t.originalTransactionId = eft.transactionId AND t.transactionId != t.originalTransactionId AND t.isRevoked = 0)
+    LEFT JOIN transactions t ON (t.originalTransactionId = eft.transactionId AND t.transactionId != t.originalTransactionId AND t.revocationReason = 0)
     GROUP BY eft.originalTransactionId
 ),
 cumulativeMetrics AS (
