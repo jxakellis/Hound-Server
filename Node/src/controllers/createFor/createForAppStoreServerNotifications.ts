@@ -142,7 +142,7 @@ async function insertAppStoreServerNotification(
   const existingAppStoreServerNotification = result.safeIndex(0);
 
   // If the ASSN already exists, we don't want to try and reinsert it, so we ignore it.
-  if (existingAppStoreServerNotification === undefined || existingAppStoreServerNotification === null) {
+  if (existingAppStoreServerNotification !== undefined && existingAppStoreServerNotification !== null) {
     return false;
   }
 
@@ -223,7 +223,7 @@ async function createASSNForSignedPayload(databaseConnection: Queryable, signedP
   const didInsertAppStoreServerNotification = await insertAppStoreServerNotification(databaseConnection, notification, data, renewalInfo, transactionInfo);
 
   // If the ASSN already existed in our database, then the function returns false. This means the ASSN has already been processed and we shouldn't attempt to process it again.
-  if (didInsertAppStoreServerNotification === true) {
+  if (didInsertAppStoreServerNotification === false) {
     return;
   }
 
