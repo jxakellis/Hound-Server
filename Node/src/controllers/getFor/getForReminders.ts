@@ -34,7 +34,7 @@ async function getAllRemindersForDogId(databaseConnection: Queryable, dogId: num
       FROM dogReminders dr
       WHERE dogId = ? AND TIMESTAMPDIFF(MICROSECOND, reminderLastModified, ?) <= 0
       LIMIT 18446744073709551615`,
-      [previousDogManagerSynchronization, dogId],
+      [dogId, previousDogManagerSynchronization],
     )
     : await databaseQuery<DogRemindersRow[]>(
       databaseConnection,

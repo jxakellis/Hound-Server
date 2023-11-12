@@ -34,7 +34,7 @@ async function getAllLogsForDogId(databaseConnection: Queryable, dogId: number, 
       FROM dogLogs dl
       WHERE dogId = ? AND TIMESTAMPDIFF(MICROSECOND, logLastModified, ?) <= 0
       LIMIT 18446744073709551615`,
-      [previousDogManagerSynchronization, dogId],
+      [dogId, previousDogManagerSynchronization],
     )
     : await databaseQuery<DogLogsRow[]>(
       databaseConnection,

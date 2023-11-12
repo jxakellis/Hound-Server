@@ -74,7 +74,7 @@ async function getAllDogsForFamilyId(
       )
       GROUP BY d.dogId
       LIMIT 18446744073709551615`,
-      [previousDogManagerSynchronization, previousDogManagerSynchronization, previousDogManagerSynchronization, familyId],
+      [familyId, previousDogManagerSynchronization, previousDogManagerSynchronization, previousDogManagerSynchronization],
     )
     // User is requesting a complete copy of dogs, therefore we can assume they have a blank copy
     // If they have a blank copy, no need to include deleted dogs that indicate whether to delete their local dog store
