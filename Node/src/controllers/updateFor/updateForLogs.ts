@@ -10,12 +10,14 @@ async function updateLogForDogIdLogId(databaseConnection: Queryable, log: NotYet
     databaseConnection,
     `UPDATE dogLogs
     SET 
-    logDate = ?, logAction = ?, logCustomActionName = ?,
+    logStartDate = ?, logEndDate = ?,
+    logAction = ?, logCustomActionName = ?,
     logNote = ?, logUnit = ?, logNumberOfLogUnits = ?,
     logLastModified = CURRENT_TIMESTAMP()
     WHERE logId = ?`,
     [
-      log.logDate, log.logAction, log.logCustomActionName,
+      log.logStartDate, log.logEndDate,
+      log.logAction, log.logCustomActionName,
       log.logNote, log.logUnit, log.logNumberOfLogUnits,
       // none, default values
       log.logId,

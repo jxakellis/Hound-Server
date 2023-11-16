@@ -75,8 +75,11 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
       throw new HoundError('unvalidatedLogDictionary missing', createLog, ERROR_CODES.VALUE.INVALID);
     }
 
+    // TODO FUTURE depreciate logDate, last used <= 3.1.0
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const logDate = formatDate(unvalidatedLogDictionary?.['logDate']);
+    const logStartDate = formatDate(unvalidatedLogDictionary?.['logStartDate'] ?? unvalidatedLogDictionary?.['logDate']);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const logEndDate = formatDate(unvalidatedLogDictionary?.['logEndDate']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const logAction = formatUnknownString(unvalidatedLogDictionary?.['logAction']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -88,8 +91,8 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const logNumberOfLogUnits = formatNumber(unvalidatedLogDictionary?.['logNumberOfLogUnits']);
 
-    if (logDate === undefined || logDate === null) {
-      throw new HoundError('logDate missing', createLog, ERROR_CODES.VALUE.INVALID);
+    if (logStartDate === undefined || logStartDate === null) {
+      throw new HoundError('logStartDate missing', createLog, ERROR_CODES.VALUE.INVALID);
     }
     if (logAction === undefined || logAction === null) {
       throw new HoundError('logAction missing', createLog, ERROR_CODES.VALUE.INVALID);
@@ -106,7 +109,8 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
       {
         userId: validatedUserId,
         dogId: validatedDog.validatedDogId,
-        logDate,
+        logStartDate,
+        logEndDate,
         logAction,
         logCustomActionName,
         logNote,
@@ -144,8 +148,11 @@ async function updateLog(req: express.Request, res: express.Response): Promise<v
       throw new HoundError('validatedLog missing', updateLog, ERROR_CODES.VALUE.INVALID);
     }
 
+    // TODO FUTURE depreciate logDate, last used <= 3.1.0
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const logDate = formatDate(validatedLog.unvalidatedLogDictionary?.['logDate']);
+    const logStartDate = formatDate(validatedLog.unvalidatedLogDictionary?.['logStartDate'] ?? validatedLog.unvalidatedLogDictionary?.['logDate']);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const logEndDate = formatDate(validatedLog.unvalidatedLogDictionary?.['logEndDate']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const logAction = formatUnknownString(validatedLog.unvalidatedLogDictionary?.['logAction']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -157,8 +164,8 @@ async function updateLog(req: express.Request, res: express.Response): Promise<v
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const logNumberOfLogUnits = formatNumber(validatedLog.unvalidatedLogDictionary?.['logNumberOfLogUnits']);
 
-    if (logDate === undefined || logDate === null) {
-      throw new HoundError('logDate missing', updateLog, ERROR_CODES.VALUE.INVALID);
+    if (logStartDate === undefined || logStartDate === null) {
+      throw new HoundError('logStartDate missing', updateLog, ERROR_CODES.VALUE.INVALID);
     }
     if (logAction === undefined || logAction === null) {
       throw new HoundError('logAction missing', updateLog, ERROR_CODES.VALUE.INVALID);
@@ -176,7 +183,8 @@ async function updateLog(req: express.Request, res: express.Response): Promise<v
         userId: validatedUserId,
         dogId: validatedLog.validatedDogId,
         logId: validatedLog.validatedLogId,
-        logDate,
+        logStartDate,
+        logEndDate,
         logAction,
         logCustomActionName,
         logNote,

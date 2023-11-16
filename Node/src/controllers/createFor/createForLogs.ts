@@ -21,19 +21,19 @@ async function createLogForUserIdDogId(databaseConnection: Queryable, log: NotYe
     `INSERT INTO dogLogs
       (
         dogId, userId,
-        logDate, logNote, logAction, logCustomActionName,
+        logStartDate, logEndDate, logNote, logAction, logCustomActionName,
         logUnit, logNumberOfLogUnits,
         logLastModified, logIsDeleted,
         )
         VALUES (
           ?, ?, 
-          ?, ?, ?, ?,
+          ?, ?, ?, ?, ?,
           ?, ?,
           CURRENT_TIMESTAMP(), 0,
           )`,
     [
       log.dogId, log.userId,
-      log.logDate, log.logNote, log.logAction, log.logCustomActionName,
+      log.logStartDate, log.logEndDate, log.logNote, log.logAction, log.logCustomActionName,
       log.logUnit, log.logNumberOfLogUnits,
       // none, default values
     ],

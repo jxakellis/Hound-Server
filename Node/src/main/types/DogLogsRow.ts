@@ -1,8 +1,11 @@
+// TODO FUTURE depreciate logDate, last used <= 3.1.0
 const dogLogsColumns = `
 dl.logId,
 dl.dogId,
 dl.userId,
-dl.logDate,
+dl.logStartDate,
+dl.logStartDate AS logDate,
+dl.logEndDate,
 dl.logNote,
 dl.logAction,
 dl.logCustomActionName,
@@ -17,7 +20,8 @@ type DogLogsRow = {
     logId: number
     dogId: number
     userId: string
-    logDate: Date
+    logStartDate: Date
+    logEndDate?: Date
     logNote: string
     logAction: string
     logCustomActionName: string
