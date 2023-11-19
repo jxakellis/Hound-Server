@@ -209,23 +209,6 @@ async function endDatabasePools(): Promise<void> {
   });
 }
 
-setInterval(async () => {
-  console.log('\n\ntest maint');
-  console.log(databasePoolForGeneral);
-  console.log('\n');
-  console.log(databasePoolForRequests);
-
-  await verifyDatabasePools();
-}, 10000);
-
-setInterval(async () => {
-  console.log('\n\n ending pools');
-  databasePoolForGeneral?.end();
-  databasePoolForRequests?.end();
-
-  await verifyDatabasePools();
-}, 15000);
-
 export {
   DatabasePools,
   getPoolConnection,
