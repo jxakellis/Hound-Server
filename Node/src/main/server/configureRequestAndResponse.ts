@@ -3,7 +3,7 @@ import { HoundError, ERROR_CODES, convertErrorToJSON } from './globalErrors.js';
 import { logResponse } from '../logging/logResponse.js';
 import { logServerError } from '../logging/logServerError.js';
 import { databaseQuery } from '../database/databaseQuery.js';
-import { getDatabaseConnections } from '../database/databaseConnections.js';
+import { DatabasePools, getPoolConnection } from '../database/databaseConnections.js';
 import { type ResponseBodyType } from '../types/ResponseBodyType.js';
 
 function releaseDatabaseConnection(req: express.Request): void {
@@ -200,8 +200,7 @@ async function configureRequestAndResponse(req: express.Request, res: express.Re
   }
 
   try {
-    const { getPoolConnection } = await getDatabaseConnections();
-    const requestPoolConnection = await getPoolConnection();
+    const requestPoolConnection = await getPoolConnection(DatabasePools.request);
     try {
       await requestPoolConnection.promise().beginTransaction();
       req.houndDeclarationExtendedProperties.databaseConnection = requestPoolConnection;
@@ -215,7 +214,7 @@ async function configureRequestAndResponse(req: express.Request, res: express.Re
   }
   catch (databaseConnectionError) {
     return res.houndDeclarationExtendedProperties.sendFailureResponse(
-      new HoundError("Couldn't get a connection from databaseConnectionPoolForRequests", configureRequestAndResponse, ERROR_CODES.GENERAL.POOL_CONNECTION_FAILED, databaseConnectionError),
+      new HoundError("Couldn't get a connection from databasePoolForRequests", configureRequestAndResponse, ERROR_CODES.GENERAL.POOL_CONNECTION_FAILED, databaseConnectionError),
     );
   }
 

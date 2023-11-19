@@ -1,5 +1,5 @@
 import { serverLogger } from './loggers.js';
-import { getDatabaseConnections } from '../database/databaseConnections.js';
+import { DatabasePools, getPoolConnection } from '../database/databaseConnections.js';
 import { databaseQuery } from '../database/databaseQuery.js';
 import { HoundError, convertErrorToJSON } from '../server/globalErrors.js';
 import { formatKnownString } from '../format/formatObject.js';
@@ -22,10 +22,10 @@ async function logServerError(houndError: HoundError): Promise<void> {
   printServerError(houndError);
 
   try {
-    const { databaseConnectionForLogging } = await getDatabaseConnections();
+    const generalPoolConnection = await getPoolConnection(DatabasePools.general);
 
     await databaseQuery(
-      databaseConnectionForLogging,
+      generalPoolConnection,
       `INSERT INTO previousServerErrors
       (
         errorDate,
@@ -51,7 +51,9 @@ async function logServerError(houndError: HoundError): Promise<void> {
         formatKnownString(readableError.code, 500),
         formatKnownString(readableError.stack, 2500),
       ],
-    );
+    ).finally(() => {
+      generalPoolConnection.release();
+    });
   }
   catch (error) {
     printServerError(

@@ -1,7 +1,7 @@
 import express from 'express';
 import { requestLogger } from './loggers.js';
 import { logServerError } from './logServerError.js';
-import { getDatabaseConnections } from '../database/databaseConnections.js';
+import { DatabasePools, getPoolConnection } from '../database/databaseConnections.js';
 import { type ResultSetHeader, databaseQuery } from '../database/databaseQuery.js';
 import { formatUnknownString } from '../format/formatObject.js';
 import { HoundError, ERROR_CODES } from '../server/globalErrors.js';
@@ -36,9 +36,9 @@ async function logRequest(req: express.Request, res: express.Response, next: exp
       return next();
     }
 
-    const { databaseConnectionForLogging } = await getDatabaseConnections();
+    const generalPoolConnection = await getPoolConnection(DatabasePools.general);
     const result = await databaseQuery<ResultSetHeader>(
-      databaseConnectionForLogging,
+      generalPoolConnection,
       `INSERT INTO previousRequests
         (
           requestIP,
@@ -62,7 +62,9 @@ async function logRequest(req: express.Request, res: express.Response, next: exp
         originalUrl,
         body,
       ],
-    );
+    ).finally(() => {
+      generalPoolConnection.release();
+    });
     req.houndDeclarationExtendedProperties.requestId = result.insertId;
   }
   catch (error) {
@@ -82,15 +84,17 @@ async function logRequest(req: express.Request, res: express.Response, next: exp
 
 async function addAppVersionToLogRequest(requestId: number, appVersion: string): Promise<void> {
   try {
-    const { databaseConnectionForLogging } = await getDatabaseConnections();
+    const generalPoolConnection = await getPoolConnection(DatabasePools.general);
 
     await databaseQuery(
-      databaseConnectionForLogging,
+      generalPoolConnection,
       `UPDATE previousRequests
                 SET requestAppVersion = ?
                 WHERE requestId = ?`,
       [appVersion, requestId],
-    );
+    ).finally(() => {
+      generalPoolConnection.release();
+    });
   }
   catch (error) {
     logServerError(
@@ -106,15 +110,17 @@ async function addAppVersionToLogRequest(requestId: number, appVersion: string):
 
 async function addUserIdToLogRequest(requestId: number, validatedUserId: string): Promise<void> {
   try {
-    const { databaseConnectionForLogging } = await getDatabaseConnections();
+    const generalPoolConnection = await getPoolConnection(DatabasePools.general);
 
     await databaseQuery(
-      databaseConnectionForLogging,
+      generalPoolConnection,
       `UPDATE previousRequests
                       SET requestUserId = ?
                       WHERE requestId = ?`,
       [validatedUserId, requestId],
-    );
+    ).finally(() => {
+      generalPoolConnection.release();
+    });
   }
   catch (error) {
     logServerError(
@@ -130,15 +136,17 @@ async function addUserIdToLogRequest(requestId: number, validatedUserId: string)
 
 async function addFamilyIdToLogRequest(requestId: number, validatedFamilyId: string): Promise<void> {
   try {
-    const { databaseConnectionForLogging } = await getDatabaseConnections();
+    const generalPoolConnection = await getPoolConnection(DatabasePools.general);
 
     await databaseQuery(
-      databaseConnectionForLogging,
+      generalPoolConnection,
       `UPDATE previousRequests
                             SET requestFamilyId = ?
                             WHERE requestId = ?`,
       [validatedFamilyId, requestId],
-    );
+    ).finally(() => {
+      generalPoolConnection.release();
+    });
   }
   catch (error) {
     logServerError(

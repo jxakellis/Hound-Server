@@ -33,7 +33,7 @@ import { configureApp } from './configureApp.js';
 import { logServerError } from '../logging/logServerError.js';
 import { schedule } from '../tools/notifications/alarm/schedule.js';
 import {
-  getDatabaseConnections,
+  endDatabasePools,
 } from '../database/databaseConnections.js';
 import { HoundError } from './globalErrors.js';
 
@@ -64,14 +64,10 @@ configureApp(app);
  * This includes the databaseConnection pool for the database for general requests, the databaseConnection for server notifications, the server itself, and the notification schedule
  */
 async function shutdown(): Promise<void> {
-  const {
-    databaseConnectionForGeneral, databaseConnectionForLogging, databaseConnectionForAlarms, databaseConnectionPoolForRequests,
-  } = await getDatabaseConnections();
-
   return new Promise((resolve) => {
     serverLogger.info('Shutdown Initiated');
 
-    const numberOfShutdownsNeeded = 6;
+    const numberOfShutdownsNeeded = 3;
     let numberOfShutdownsCompleted = 0;
 
     if (testDatabaseConnectionInterval !== undefined && testDatabaseConnectionInterval !== null) {
@@ -108,46 +104,7 @@ async function shutdown(): Promise<void> {
       checkForShutdownCompletion();
     });
 
-    databaseConnectionForGeneral.end((error) => {
-      if (error !== undefined && error !== null) {
-        serverLogger.info('General Database Connection Couldn\'t Shutdown', error);
-      }
-      else {
-        serverLogger.info('General Database Connection Gracefully Shutdown');
-      }
-      numberOfShutdownsCompleted += 1;
-      checkForShutdownCompletion();
-    });
-
-    databaseConnectionForLogging.end((error) => {
-      if (error !== undefined && error !== null) {
-        serverLogger.info('Logging Database Connection Couldn\'t Shutdown', error);
-      }
-      else {
-        serverLogger.info('Logging Database Connection Gracefully Shutdown');
-      }
-      numberOfShutdownsCompleted += 1;
-      checkForShutdownCompletion();
-    });
-
-    databaseConnectionForAlarms.end((error) => {
-      if (error !== undefined && error !== null) {
-        serverLogger.info('Alarms Database Connection Couldn\'t Shutdown', error);
-      }
-      else {
-        serverLogger.info('Alarms Database Connection Gracefully Shutdown');
-      }
-      numberOfShutdownsCompleted += 1;
-      checkForShutdownCompletion();
-    });
-
-    databaseConnectionPoolForRequests.end((error) => {
-      if (error !== undefined && error !== null) {
-        serverLogger.info('Pool For Requests Couldn\'t Shutdown', error);
-      }
-      else {
-        serverLogger.info('Pool For Requests Gracefully Shutdown');
-      }
+    endDatabasePools().finally(() => {
       numberOfShutdownsCompleted += 1;
       checkForShutdownCompletion();
     });

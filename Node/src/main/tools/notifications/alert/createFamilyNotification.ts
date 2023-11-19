@@ -1,5 +1,5 @@
 import { alertLogger } from '../../../logging/loggers.js';
-import { getDatabaseConnections } from '../../../database/databaseConnections.js';
+import { DatabasePools, getPoolConnection } from '../../../database/databaseConnections.js';
 
 import { logServerError } from '../../../logging/logServerError.js';
 import { getPublicUser } from '../../../../controllers/getFor/getForUser.js';
@@ -12,9 +12,11 @@ import { HoundError } from '../../../server/globalErrors.js';
  * Helper function for createFamilyMemberJoinNotification, createFamilyMemberLeaveNotification, createFamilyLockedNotification, and createFamilyPausedNotification
  */
 async function abbreviatedFullNameForUserId(userId: string): Promise<string> {
-  const { databaseConnectionForGeneral } = await getDatabaseConnections();
+  const generalPoolConnection = await getPoolConnection(DatabasePools.general);
 
-  const result = await getPublicUser(databaseConnectionForGeneral, userId);
+  const result = await getPublicUser(generalPoolConnection, userId).finally(() => {
+    generalPoolConnection.release();
+  });
 
   return formatIntoName(true, result?.userFirstName, result?.userLastName);
 }

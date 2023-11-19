@@ -3,12 +3,11 @@ import { IncomingMessage, ServerResponse } from 'http';
 
 import { serverLogger } from '../logging/loggers.js';
 import { databaseQuery } from '../database/databaseQuery.js';
-import { testDatabaseConnections } from '../database/testDatabaseConnection.js';
 import { logServerError } from '../logging/logServerError.js';
 import { restoreAlarmNotificationsForAllFamilies } from '../tools/notifications/alarm/restoreAlarmNotification.js';
 import { SERVER } from './globalConstants.js';
 import { HoundError } from './globalErrors.js';
-import { getDatabaseConnections } from '../database/databaseConnections.js';
+import { DatabasePools, getPoolConnection, testDatabasePool } from '../database/databaseConnections.js';
 
 async function configureServer(server: https.Server<typeof IncomingMessage, typeof ServerResponse>): Promise<NodeJS.Timeout> {
   return new Promise((resolve) => {
@@ -16,21 +15,21 @@ async function configureServer(server: https.Server<typeof IncomingMessage, type
     server.listen(SERVER.SERVER_PORT, async () => {
       serverLogger.info(`Running HTTPS server on port ${SERVER.SERVER_PORT}; ${SERVER.ENVIRONMENT} database`);
 
-      await getDatabaseConnections();
-
       await restoreAlarmNotificationsForAllFamilies();
 
       // Invoke this interval every DATABASE_MAINTENANCE_INTERVAL, tests database connections and delete certain things
       const databaseMaintenanceIntervalObject = setInterval(async () => {
         serverLogger.info(`Performing ${SERVER.DATABASE_MAINTENANCE_INTERVAL / 1000} second maintenance`);
 
-        const {
-          databaseConnectionForGeneral, databaseConnectionForLogging, databaseConnectionForAlarms, databaseConnectionPoolForRequests,
-        } = await getDatabaseConnections();
+        await testDatabasePool(DatabasePools.general);
+        await testDatabasePool(DatabasePools.request);
+        // We use two separate connections so that upon completion each connection can be released independently
+        const deleteReqPoolConnection = await getPoolConnection(DatabasePools.general);
+        const deleteResPoolConnection = await getPoolConnection(DatabasePools.general);
 
         // Keep the latest DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES previousRequests, then delete any entries that are older
         databaseQuery(
-          databaseConnectionForGeneral,
+          deleteReqPoolConnection,
           `DELETE pr
           FROM previousRequests pr
           JOIN (SELECT requestId FROM previousRequests pr ORDER BY requestDate DESC LIMIT 1 OFFSET ?) prl ON pr.requestId < prl.requestId`,
@@ -43,11 +42,13 @@ async function configureServer(server: https.Server<typeof IncomingMessage, type
               undefined,
               error,
             ),
-          ));
+          )).finally(() => {
+            deleteReqPoolConnection.release();
+          });
 
         // Keep the latest DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES previousResponses, then delete any entries that are older
         databaseQuery(
-          databaseConnectionForGeneral,
+          deleteResPoolConnection,
           `DELETE pr
             FROM previousResponses pr
             JOIN (SELECT requestId FROM previousRequests pr ORDER BY requestDate DESC LIMIT 1 OFFSET ?) prl ON pr.requestId < prl.requestId`,
@@ -60,18 +61,9 @@ async function configureServer(server: https.Server<typeof IncomingMessage, type
               undefined,
               error,
             ),
-          ));
-
-        // Ensure that the database connections are valid and can query the database
-        testDatabaseConnections(databaseConnectionForGeneral, databaseConnectionForLogging, databaseConnectionForAlarms, databaseConnectionPoolForRequests)
-          .catch((error) => logServerError(
-            new HoundError(
-              'testDatabaseConnections',
-              setInterval,
-              undefined,
-              error,
-            ),
-          ));
+          )).finally(() => {
+            deleteResPoolConnection.release();
+          });
       }, SERVER.DATABASE_MAINTENANCE_INTERVAL);
 
       resolve(databaseMaintenanceIntervalObject);
