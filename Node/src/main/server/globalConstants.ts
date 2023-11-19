@@ -29,7 +29,7 @@ const SERVER = {
   // How often the database connections are tested as being connected and excess previousRequests/previousResponses are deleted (in milliseconds)
   DATABASE_MAINTENANCE_INTERVAL: (1000 * 60 * 3),
   // How long the database connection can stay idle before being killed (in seconds)
-  DATABASE_CONNECTION_WAIT_TIMEOUT: (60 * 2),
+  DATABASE_CONNECTION_WAIT_TIMEOUT: (60),
   // How many entries to keep in the previousRequests and previousResponses tables
   DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES: 10000000,
   APP_BUNDLE_ID: 'com.example.Pupotty',
