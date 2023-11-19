@@ -1,5 +1,5 @@
 import { alertLogger } from '../../../logging/loggers.js';
-import { getDatabaseConnections } from '../../../database/databaseConnections.js';
+import { DatabasePools, getPoolConnection } from '../../../database/databaseConnections.js';
 
 import { logServerError } from '../../../logging/logServerError.js';
 import { getDogForDogId } from '../../../../controllers/getFor/getForDogs.js';
@@ -15,10 +15,19 @@ import { HoundError } from '../../../server/globalErrors.js';
 async function createLogNotification(userId: string, familyId: string, dogId: number, logAction: string, logCustomActionName?: string): Promise<void> {
   try {
     alertLogger.debug(`createLogNotification ${userId}, ${familyId}, ${dogId}, ${logAction}, ${logCustomActionName}`);
-    const { databaseConnectionForGeneral } = await getDatabaseConnections();
+    // This pool connection is obtained manually here. Therefore we must also release it manually.
+    // Therefore, we need to be careful in our usage of this pool connection, as if errors get thrown, then it could escape the block and be unused
+    const generalPoolConnectionA = await getPoolConnection(DatabasePools.general);
+    const user = await getPublicUser(generalPoolConnectionA, userId).finally(() => {
+      generalPoolConnectionA.release();
+    });
 
-    const user = await getPublicUser(databaseConnectionForGeneral, userId);
-    const notDeletedDog = await getDogForDogId(databaseConnectionForGeneral, dogId, false, false, undefined);
+    // This pool connection is obtained manually here. Therefore we must also release it manually.
+    // Therefore, we need to be careful in our usage of this pool connection, as if errors get thrown, then it could escape the block and be unused
+    const generalPoolConnectionB = await getPoolConnection(DatabasePools.general);
+    const notDeletedDog = await getDogForDogId(generalPoolConnectionB, dogId, false, false, undefined).finally(() => {
+      generalPoolConnectionB.release();
+    });
 
     const abbreviatedFullName = formatIntoName(true, user?.userFirstName, user?.userLastName);
     const formattedLogAction = formatLogAction(logAction, logCustomActionName);

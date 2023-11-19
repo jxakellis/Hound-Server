@@ -2,7 +2,7 @@ import { schedule } from './schedule.js';
 import { createAlarmNotificationForFamily } from './createAlarmNotification.js';
 
 import { logServerError } from '../../../logging/logServerError.js';
-import { getDatabaseConnections } from '../../../database/databaseConnections.js';
+import { DatabasePools, getPoolConnection } from '../../../database/databaseConnections.js';
 import { databaseQuery } from '../../../database/databaseQuery.js';
 import { type DogsRow, dogsColumns } from '../../../types/DogsRow.js';
 import { type DogRemindersRow, dogRemindersColumns } from '../../../types/DogRemindersRow.js';
@@ -19,12 +19,14 @@ async function restoreAlarmNotificationsForAllFamilies(): Promise<void> {
     const jobs = Object.values(schedule.scheduledJobs);
     jobs.forEach((job) => job.cancel());
 
-    const { databaseConnectionForAlarms } = await getDatabaseConnections();
+    // This pool connection is obtained manually here. Therefore we must also release it manually.
+    // Therefore, we need to be careful in our usage of this pool connection, as if errors get thrown, then it could escape the block and be unused
+    const generalPoolConnection = await getPoolConnection(DatabasePools.general);
 
     // for ALL reminders get: familyId, reminderId, dogName, reminderExecutionDate, reminderAction, and reminderCustomActionName
     const alarmNotificationInformationResult = await databaseQuery<(
 DogsRow & DogRemindersRow)[]>(
-      databaseConnectionForAlarms,
+      generalPoolConnection,
       `SELECT ${dogsColumns}, ${dogRemindersColumns}
       FROM dogReminders dr
       JOIN dogs d ON d.dogId = dr.dogId
@@ -33,7 +35,9 @@ DogsRow & DogRemindersRow)[]>(
       AND dr.reminderExecutionDate IS NOT NULL
       AND TIMESTAMPDIFF(MICROSECOND, CURRENT_TIMESTAMP(), dr.reminderExecutionDate) >= 0
       LIMIT 18446744073709551615`,
-      );
+      ).finally(() => {
+        generalPoolConnection.release();
+      });
 
     // for every reminder that exists (with a valid reminderExecutionDate that is in the future), we invoke createAlarmNotificationForAll for it
     alarmNotificationInformationResult.forEach((alarmNotificationInformation) => {

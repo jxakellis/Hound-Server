@@ -22,6 +22,8 @@ async function logServerError(houndError: HoundError): Promise<void> {
   printServerError(houndError);
 
   try {
+    // This pool connection is obtained manually here. Therefore we must also release it manually.
+    // Therefore, we need to be careful in our usage of this pool connection, as if errors get thrown, then it could escape the block and be unused
     const generalPoolConnection = await getPoolConnection(DatabasePools.general);
 
     await databaseQuery(

@@ -1,5 +1,5 @@
 import { alarmLogger } from '../../../logging/loggers.js';
-import { getDatabaseConnections } from '../../../database/databaseConnections.js';
+import { DatabasePools, getPoolConnection } from '../../../database/databaseConnections.js';
 import { databaseQuery } from '../../../database/databaseQuery.js';
 
 import { schedule } from './schedule.js';
@@ -20,19 +20,24 @@ import { HoundError } from '../../../server/globalErrors.js';
  */
 async function sendAPNNotificationForFamily(familyId: string, reminderId: number): Promise<void> {
   try {
-    const { databaseConnectionForAlarms } = await getDatabaseConnections();
+    // This pool connection is obtained manually here. Therefore we must also release it manually.
+    // Therefore, we need to be careful in our usage of this pool connection, as if errors get thrown, then it could escape the block and be unused
+    const generalPoolConnection = await getPoolConnection(DatabasePools.general);
+
     // get the dogName, reminderAction, and reminderCustomActionName for the given reminderId
     // the reminderId has to exist to search and we check to make sure the dogId isn't null (to make sure the dog still exists too)
     const result = await databaseQuery<(
 DogsRow & DogRemindersRow)[]>(
-      databaseConnectionForAlarms,
+      generalPoolConnection,
       `SELECT ${dogsColumns}, ${dogRemindersColumns}
       FROM dogReminders dr
       JOIN dogs d ON dr.dogId = d.dogId
       WHERE d.dogId IS NOT NULL AND dr.reminderId = ? AND d.dogIsDeleted = 0 AND dr.reminderIsDeleted = 0 AND dr.reminderExecutionDate IS NOT NULL 
       LIMIT 1`,
       [reminderId],
-      );
+      ).finally(() => {
+        generalPoolConnection.release();
+      });
 
     const reminder = result.safeIndex(0);
 

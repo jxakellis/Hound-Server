@@ -36,6 +36,8 @@ async function logRequest(req: express.Request, res: express.Response, next: exp
       return next();
     }
 
+    // This pool connection is obtained manually here. Therefore we must also release it manually.
+    // Therefore, we need to be careful in our usage of this pool connection, as if errors get thrown, then it could escape the block and be unused
     const generalPoolConnection = await getPoolConnection(DatabasePools.general);
     const result = await databaseQuery<ResultSetHeader>(
       generalPoolConnection,
@@ -84,6 +86,8 @@ async function logRequest(req: express.Request, res: express.Response, next: exp
 
 async function addAppVersionToLogRequest(requestId: number, appVersion: string): Promise<void> {
   try {
+    // This pool connection is obtained manually here. Therefore we must also release it manually.
+    // Therefore, we need to be careful in our usage of this pool connection, as if errors get thrown, then it could escape the block and be unused
     const generalPoolConnection = await getPoolConnection(DatabasePools.general);
 
     await databaseQuery(
@@ -110,6 +114,8 @@ async function addAppVersionToLogRequest(requestId: number, appVersion: string):
 
 async function addUserIdToLogRequest(requestId: number, validatedUserId: string): Promise<void> {
   try {
+    // This pool connection is obtained manually here. Therefore we must also release it manually.
+    // Therefore, we need to be careful in our usage of this pool connection, as if errors get thrown, then it could escape the block and be unused
     const generalPoolConnection = await getPoolConnection(DatabasePools.general);
 
     await databaseQuery(
@@ -136,6 +142,8 @@ async function addUserIdToLogRequest(requestId: number, validatedUserId: string)
 
 async function addFamilyIdToLogRequest(requestId: number, validatedFamilyId: string): Promise<void> {
   try {
+    // This pool connection is obtained manually here. Therefore we must also release it manually.
+    // Therefore, we need to be careful in our usage of this pool connection, as if errors get thrown, then it could escape the block and be unused
     const generalPoolConnection = await getPoolConnection(DatabasePools.general);
 
     await databaseQuery(

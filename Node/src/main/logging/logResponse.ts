@@ -1,7 +1,7 @@
 import express from 'express';
 import { responseLogger } from './loggers.js';
 import { logServerError } from './logServerError.js';
-import { getDatabaseConnections } from '../database/databaseConnections.js';
+import { DatabasePools, getPoolConnection } from '../database/databaseConnections.js';
 import { type ResultSetHeader, databaseQuery } from '../database/databaseQuery.js';
 import { formatUnknownString } from '../format/formatObject.js';
 import { HoundError } from '../server/globalErrors.js';
@@ -27,10 +27,12 @@ async function logResponse(req: express.Request, res: express.Response, response
   }
 
   try {
-    const { databaseConnectionForLogging } = await getDatabaseConnections();
+    // This pool connection is obtained manually here. Therefore we must also release it manually.
+    // Therefore, we need to be careful in our usage of this pool connection, as if errors get thrown, then it could escape the block and be unused
+    const generalPoolConnection = await getPoolConnection(DatabasePools.general);
 
     const result = await databaseQuery<ResultSetHeader>(
-      databaseConnectionForLogging,
+      generalPoolConnection,
       `INSERT INTO previousResponses
       (
         requestId, 
@@ -49,7 +51,9 @@ async function logResponse(req: express.Request, res: express.Response, response
         // none, default value
         responseBody,
       ],
-    );
+    ).finally(() => {
+      generalPoolConnection.release();
+    });
     res.houndDeclarationExtendedProperties.responseId = result.insertId;
   }
   catch (error) {

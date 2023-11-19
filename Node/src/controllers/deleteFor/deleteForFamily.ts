@@ -17,7 +17,7 @@ async function deleteFamily(databaseConnection: Queryable, familyId: string, fam
   const familyMembers = await getFamilyMembersForFamilyId(databaseConnection, familyId);
 
   if (familyMembers.length > 1) {
-    // Cannot destroy family until other members are gone
+    // Cannot delete family until other members are gone
     throw new HoundError('Family still contains multiple members', deleteFamily, ERROR_CODES.FAMILY.LEAVE.STILL_FAMILY_MEMBERS);
   }
 
