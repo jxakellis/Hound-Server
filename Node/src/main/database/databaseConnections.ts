@@ -11,7 +11,7 @@ import {
 } from '../secrets/databaseConnection.js';
 
 import { SERVER } from '../server/globalConstants.js';
-import { HoundError, convertErrorToJSON } from '../server/globalErrors.js';
+import { HoundError } from '../server/globalErrors.js';
 
 import { serverLogger } from '../logging/loggers.js';
 import { databaseQuery } from './databaseQuery.js';
@@ -106,13 +106,14 @@ async function getPoolConnection(forDatabasePool: DatabasePools): Promise<PoolCo
  * For a given DatabasePools, attempts to acquire a pool connection from the pool and attempts to run an arbitrary query on the pool.
  * If this fails, the pool is ended and a new one is made.
  */
-async function testDatabasePool(forDatabasePool: DatabasePools): Promise<void> {
+async function verifyDatabasePool(forDatabasePool: DatabasePools): Promise<void> {
   try {
-    serverLogger.info(`testDatabasePool for ${forDatabasePool}`);
+    serverLogger.info(`verifyDatabasePool for ${forDatabasePool}`);
 
     const databaseConnection = await getPoolConnection(forDatabasePool);
 
-    serverLogger.info(`Testing databaseConnection with threadId ${databaseConnection.threadId}`);
+    const { threadId } = databaseConnection;
+    serverLogger.info(`Testing databaseConnection with threadId ${threadId}`);
 
     await databaseQuery(
       databaseConnection,
@@ -123,14 +124,12 @@ async function testDatabasePool(forDatabasePool: DatabasePools): Promise<void> {
       databaseConnection?.release();
     });
 
-    serverLogger.info('Successfully tested databaseConnection');
+    serverLogger.info(`Successfully tested databaseConnection with threadId ${threadId}`);
   }
   catch (databaseConnectionError) {
     // Something failed, assume the pool is bad if it can't perform this simple task
     serverLogger.error(
-      convertErrorToJSON(
-        new HoundError(`Unable to create a database connection from ${forDatabasePool} and run an arbitrary query`, testDatabasePool, undefined, databaseConnectionError),
-      ),
+      new HoundError(`Unable to create a database connection from ${forDatabasePool} and run an arbitrary query`, verifyDatabasePool, undefined, databaseConnectionError).toJSON(),
     );
 
     // Recreate this bad pool
@@ -153,7 +152,7 @@ async function testDatabasePool(forDatabasePool: DatabasePools): Promise<void> {
       }
     }
     catch (recreatePoolError) {
-      serverLogger.error(convertErrorToJSON(new HoundError(`Unable to recreate the pool for ${forDatabasePool}`, testDatabasePool, undefined, recreatePoolError)));
+      serverLogger.error(new HoundError(`Unable to recreate the pool for ${forDatabasePool}`, verifyDatabasePool, undefined, recreatePoolError).toJSON());
     }
 
     return;
@@ -162,10 +161,13 @@ async function testDatabasePool(forDatabasePool: DatabasePools): Promise<void> {
   serverLogger.info(`Verified database pool ${forDatabasePool}`);
 }
 
-async function testDatabasePools(): Promise<void> {
-  // TODO NOW, if testDatabasePool fully fails for either, make program throw a further exception to caught an uncaught error and cause it to crash, which pm2 will then restart
-  await testDatabasePool(DatabasePools.general);
-  await testDatabasePool(DatabasePools.request);
+/**
+For all of the DatabasePools, runs verifyDatabasePool. This attempt to acquire a connection from the pool and do an arbitrary query.
+If this fails, that pool is ended and a new one is constructed
+ */
+async function verifyDatabasePools(): Promise<void> {
+  await verifyDatabasePool(DatabasePools.general);
+  await verifyDatabasePool(DatabasePools.request);
 }
 
 // Attempts to gracefully end all of the database pools
@@ -176,17 +178,17 @@ async function endDatabasePools(): Promise<void> {
 
     function checkForCompletion(): void {
       if (numberOfEndsCompleted === numberOfEndsNeeded) {
-        serverLogger.info('Ended all of the database pools');
+        serverLogger.info('Successfully ended all of the pools');
         resolve();
       }
     }
 
     databasePoolForGeneral.end((error) => {
       if (error !== undefined && error !== null) {
-        serverLogger.info('databasePoolForGeneral failed to end', error);
+        serverLogger.error(new HoundError('Unable to end databasePoolForGeneral', endDatabasePools, undefined, error).toJSON());
       }
       else {
-        serverLogger.info('databasePoolForGeneral successfully ended');
+        serverLogger.info('Successfully ended databasePoolForGeneral');
       }
 
       numberOfEndsCompleted += 1;
@@ -195,10 +197,10 @@ async function endDatabasePools(): Promise<void> {
 
     databasePoolForRequests.end((error) => {
       if (error !== undefined && error !== null) {
-        serverLogger.info('databasePoolForRequests failed to end', error);
+        serverLogger.error(new HoundError('Unable to end databasePoolForRequests', endDatabasePools, undefined, error).toJSON());
       }
       else {
-        serverLogger.info('databasePoolForRequests successfully ended');
+        serverLogger.info('Successfully ended databasePoolForRequests');
       }
 
       numberOfEndsCompleted += 1;
@@ -213,18 +215,20 @@ setInterval(async () => {
   console.log('\n');
   console.log(databasePoolForRequests);
 
-  await testDatabasePools();
+  await verifyDatabasePools();
 }, 10000);
 
 setInterval(async () => {
   console.log('\n\n ending pools');
   databasePoolForGeneral?.end();
   databasePoolForRequests?.end();
-}, 45000);
+
+  await verifyDatabasePools();
+}, 15000);
 
 export {
   DatabasePools,
   getPoolConnection,
-  testDatabasePools,
+  verifyDatabasePools,
   endDatabasePools,
 };

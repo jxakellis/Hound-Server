@@ -1,11 +1,11 @@
 import { serverLogger } from './loggers.js';
 import { DatabasePools, getPoolConnection } from '../database/databaseConnections.js';
 import { databaseQuery } from '../database/databaseQuery.js';
-import { HoundError, convertErrorToJSON } from '../server/globalErrors.js';
+import { HoundError } from '../server/globalErrors.js';
 import { formatKnownString } from '../format/formatObject.js';
 
 function printServerError(houndError: HoundError): void {
-  const readableError = convertErrorToJSON(houndError);
+  const readableError = houndError.toJSON();
 
   serverLogger.error(
     `\nUNCAUGHT FROM SOURCE FUNCTIONS: ${readableError.sourceFunctions}
@@ -17,7 +17,7 @@ function printServerError(houndError: HoundError): void {
 
 // Outputs response to the console and logs to database
 async function logServerError(houndError: HoundError): Promise<void> {
-  const readableError = convertErrorToJSON(houndError);
+  const readableError = houndError.toJSON();
 
   printServerError(houndError);
 

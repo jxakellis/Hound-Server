@@ -7,7 +7,7 @@ import { logServerError } from '../logging/logServerError.js';
 import { restoreAlarmNotificationsForAllFamilies } from '../tools/notifications/alarm/restoreAlarmNotification.js';
 import { SERVER } from './globalConstants.js';
 import { HoundError } from './globalErrors.js';
-import { DatabasePools, getPoolConnection, testDatabasePools } from '../database/databaseConnections.js';
+import { DatabasePools, getPoolConnection, verifyDatabasePools } from '../database/databaseConnections.js';
 
 async function configureServer(server: https.Server<typeof IncomingMessage, typeof ServerResponse>): Promise<NodeJS.Timeout> {
   return new Promise((resolve) => {
@@ -21,7 +21,7 @@ async function configureServer(server: https.Server<typeof IncomingMessage, type
       const databaseMaintenanceIntervalObject = setInterval(async () => {
         serverLogger.info(`Performing ${SERVER.DATABASE_MAINTENANCE_INTERVAL / 1000} second maintenance`);
 
-        await testDatabasePools();
+        await verifyDatabasePools();
         // We use two separate connections so that upon completion each connection can be released independently
         const deleteReqPoolConnection = await getPoolConnection(DatabasePools.general);
         const deleteResPoolConnection = await getPoolConnection(DatabasePools.general);

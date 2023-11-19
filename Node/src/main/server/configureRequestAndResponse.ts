@@ -1,5 +1,5 @@
 import express from 'express';
-import { HoundError, ERROR_CODES, convertErrorToJSON } from './globalErrors.js';
+import { HoundError, ERROR_CODES } from './globalErrors.js';
 import { logResponse } from '../logging/logResponse.js';
 import { logServerError } from '../logging/logServerError.js';
 import { databaseQuery } from '../database/databaseQuery.js';
@@ -170,7 +170,10 @@ function configureRequestAndResponseExtendedProperties(req: express.Request, res
 
       // If we user provided an error, then we convert that error to JSON and use it as the body
 
-      const unsafeForUsersResponseDoNotSendWithoutRemovingStack = (error !== undefined && error !== null && error instanceof Error) ? convertErrorToJSON(error) : convertErrorToJSON(undefined);
+      const unsafeForUsersResponseDoNotSendWithoutRemovingStack = (
+        error !== undefined
+        && error !== null
+      ) ? error.toJSON() : new HoundError('error missing', sendFailureResponse, undefined, error).toJSON();
 
       await logResponse(req, res, status, JSON.stringify(unsafeForUsersResponseDoNotSendWithoutRemovingStack));
 

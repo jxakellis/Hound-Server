@@ -90,19 +90,19 @@ class HoundError extends Error {
       this.stack = fromError.stack;
     }
   }
-}
 
-function convertErrorToJSON(houndError?: HoundError): {code: string, message: string, sourceFunctions: string, name: string, stack: string} {
-  return {
-    sourceFunctions: formatKnownString(houndError?.sourceFunctions?.toString() ?? 'Unknown Source Functions'), // , 100),
-    code: formatKnownString(houndError?.houndDeclarationCode ?? 'Unknown Code'), // , 500),
-    // Remove all newlines, remove all carriage returns, and make all >1 length spaces into 1 length spaces
-    message: formatKnownString(houndError?.message.replace('/\r?\n|\r/g', '').replace(/\s+/g, ' ') ?? 'Unknown Message'), // , 500),
-    name: formatKnownString(houndError?.name ?? 'Unknown Name'), // , 500),
-    stack: formatKnownString(houndError?.stack ?? 'Unknown Stack'), // , 2500),
-  };
+  toJSON(): {code: string, message: string, sourceFunctions: string, name: string, stack: string} {
+    return {
+      sourceFunctions: formatKnownString(this.sourceFunctions?.toString() ?? 'Unknown Source Functions'), // , 100),
+      code: formatKnownString(this.houndDeclarationCode ?? 'Unknown Code'), // , 500),
+      // Remove all newlines, remove all carriage returns, and make all >1 length spaces into 1 length spaces
+      message: formatKnownString(this.message.replace('/\r?\n|\r/g', '').replace(/\s+/g, ' ') ?? 'Unknown Message'), // , 500),
+      name: formatKnownString(this.name ?? 'Unknown Name'), // , 500),
+      stack: formatKnownString(this.stack ?? 'Unknown Stack'), // , 2500),
+    };
+  }
 }
 
 export {
-  ERROR_CODES, HoundError, convertErrorToJSON,
+  ERROR_CODES, HoundError,
 };
