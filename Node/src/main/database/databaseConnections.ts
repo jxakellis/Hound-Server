@@ -209,6 +209,15 @@ async function endDatabasePools(): Promise<void> {
   });
 }
 
+setInterval(async () => {
+  console.log('\n\ntest maint');
+  console.log(databasePoolForGeneral);
+  console.log('\n');
+  console.log(databasePoolForRequests);
+
+  await testDatabasePools();
+}, 5000);
+
 export {
   DatabasePools,
   getPoolConnection,
