@@ -38,6 +38,7 @@ async function commitTransaction(req: express.Request): Promise<void> {
         // Backup Rollback succeeded
       }
       catch (rollbackError) {
+        // TODO NOW investigate if this fails, destroying or ending the connection, as it might be invalid now
         // Backup ROLLBACK failed, skip COMMIT and ROLLBACK since both failed
         logServerError(
           new HoundError(
@@ -61,6 +62,7 @@ async function rollbackTransaction(req: express.Request): Promise<void> {
       req.houndDeclarationExtendedProperties.hasActiveDatabaseTransaction = false;
     }
     catch (rollbackError) {
+      // TODO NOW investigate if this fails, destroying or ending the connection, as it might be invalid now
       // ROLLBACK failed, continue as there is nothing we can do
       logServerError(
         new HoundError(

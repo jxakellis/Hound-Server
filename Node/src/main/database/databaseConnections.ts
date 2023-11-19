@@ -44,8 +44,6 @@ async function createDatabasePool(): Promise<mysql2.Pool> {
       connectionLimit: 5,
       // Time in milliseconds before a connection attempt is abandoned.
       connectTimeout: 5000,
-      // Time in milliseconds to wait for a connection before throwing an error
-      acquireTimeout: 5000,
       // Enables handling of big numbers (larger than Number.MAX_SAFE_INTEGER).
       supportBigNumbers: true,
       // When dealing with big numbers, they are returned as strings.
@@ -114,7 +112,7 @@ async function testDatabasePool(forDatabasePool: DatabasePools): Promise<void> {
 
     const databaseConnection = await getPoolConnection(forDatabasePool);
 
-    serverLogger.info(`Testing databaseConnection with threadId ${databaseConnection.threadId}, ${databaseConnection}`);
+    serverLogger.info(`Testing databaseConnection with threadId ${databaseConnection.threadId}`);
 
     await databaseQuery(
       databaseConnection,
@@ -216,7 +214,13 @@ setInterval(async () => {
   console.log(databasePoolForRequests);
 
   await testDatabasePools();
-}, 5000);
+}, 10000);
+
+setInterval(async () => {
+  console.log('\n\n ending pools');
+  databasePoolForGeneral?.end();
+  databasePoolForRequests?.end();
+}, 45000);
 
 export {
   DatabasePools,
