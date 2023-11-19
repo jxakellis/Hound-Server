@@ -165,6 +165,7 @@ async function testDatabasePool(forDatabasePool: DatabasePools): Promise<void> {
 }
 
 async function testDatabasePools(): Promise<void> {
+  // TODO NOW, if testDatabasePool fully fails for either, make program throw a further exception to caught an uncaught error and cause it to crash, which pm2 will then restart
   await testDatabasePool(DatabasePools.general);
   await testDatabasePool(DatabasePools.request);
 }
