@@ -23,6 +23,8 @@ const host = SERVER.IS_PRODUCTION_DATABASE ? productionHoundHost : developmentHo
 const password = SERVER.IS_PRODUCTION_DATABASE ? productionHoundPassword : developmentHoundPassword;
 const database = SERVER.IS_PRODUCTION_DATABASE ? productionHoundDatabase : developmentHoundDatabase;
 
+// TODO FUTURE switch to namedPlaceholders. set the config option to true then modify databaseQuery to support it.
+
 // CREATE DATABASE CONNECTIONS
 async function createDatabasePool(): Promise<mysql2.Pool> {
   let databasePool: (mysql2.Pool | undefined);
@@ -129,7 +131,7 @@ async function verifyDatabasePool(forDatabasePool: DatabasePools): Promise<void>
   catch (databaseConnectionError) {
     // Something failed, assume the pool is bad if it can't perform this simple task
     serverLogger.error(
-      new HoundError(`Unable to create a database connection from ${forDatabasePool} and run an arbitrary query`, verifyDatabasePool, undefined, databaseConnectionError).toJSON(),
+      new HoundError(`Unable to getPoolConnection from ${forDatabasePool} and run an arbitrary databaseQuery`, verifyDatabasePool, undefined, databaseConnectionError).toJSON(),
     );
 
     // Recreate this bad pool
@@ -139,12 +141,12 @@ async function verifyDatabasePool(forDatabasePool: DatabasePools): Promise<void>
         case DatabasePools.general:
           databasePoolForGeneral.end();
           databasePoolForGeneral = await createDatabasePool();
-          serverLogger.info(`Successfully created databasePoolForGeneral: ${databasePoolForGeneral}`);
+          serverLogger.info(`Successfully re-created databasePoolForGeneral: ${databasePoolForGeneral}`);
           break;
         case DatabasePools.request:
           databasePoolForRequests.end();
           databasePoolForRequests = await createDatabasePool();
-          serverLogger.info(`Successfully created databasePoolForRequests: ${databasePoolForRequests}`);
+          serverLogger.info(`Successfully re-created databasePoolForRequests: ${databasePoolForRequests}`);
           break;
         default:
           // Nowhere to assign the new database pool, so end it
@@ -152,7 +154,7 @@ async function verifyDatabasePool(forDatabasePool: DatabasePools): Promise<void>
       }
     }
     catch (recreatePoolError) {
-      serverLogger.error(new HoundError(`Unable to recreate the pool for ${forDatabasePool}`, verifyDatabasePool, undefined, recreatePoolError).toJSON());
+      serverLogger.error(new HoundError(`Unable to re-create the pool for ${forDatabasePool}`, verifyDatabasePool, undefined, recreatePoolError).toJSON());
     }
 
     return;
