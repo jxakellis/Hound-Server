@@ -21,8 +21,6 @@ async function updateUserForUserId(
     userConfigurationInterfaceStyle,
     userConfigurationSnoozeLength,
     userConfigurationNotificationSound,
-    userConfigurationLogsInterfaceScale,
-    userConfigurationRemindersInterfaceScale,
     userConfigurationIsSilentModeEnabled,
     userConfigurationSilentModeStartUTCHour,
     userConfigurationSilentModeEndUTCHour,
@@ -110,24 +108,6 @@ async function updateUserForUserId(
       SET userConfigurationNotificationSound = ?
       WHERE userId = ?`,
       [userConfigurationNotificationSound, userId],
-    ));
-  }
-  if (userConfigurationLogsInterfaceScale !== undefined && userConfigurationLogsInterfaceScale !== null) {
-    promises.push(databaseQuery(
-      databaseConnection,
-      `UPDATE userConfiguration
-      SET userConfigurationLogsInterfaceScale = ?
-      WHERE userId = ?`,
-      [userConfigurationLogsInterfaceScale, userId],
-    ));
-  }
-  if (userConfigurationRemindersInterfaceScale !== undefined && userConfigurationRemindersInterfaceScale !== null) {
-    promises.push(databaseQuery(
-      databaseConnection,
-      `UPDATE userConfiguration
-      SET userConfigurationRemindersInterfaceScale = ?
-      WHERE userId = ?`,
-      [userConfigurationRemindersInterfaceScale, userId],
     ));
   }
   if (userConfigurationIsSilentModeEnabled !== undefined && userConfigurationIsSilentModeEnabled !== null) {

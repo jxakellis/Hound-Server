@@ -74,10 +74,6 @@ async function createUser(req: express.Request, res: express.Response): Promise<
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const userConfigurationNotificationSound = formatUnknownString(req.body['userConfigurationNotificationSound']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const userConfigurationLogsInterfaceScale = formatUnknownString(req.body['userConfigurationLogsInterfaceScale']);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const userConfigurationRemindersInterfaceScale = formatUnknownString(req.body['userConfigurationRemindersInterfaceScale']);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const userConfigurationIsSilentModeEnabled = formatNumber(req.body['userConfigurationIsSilentModeEnabled']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const userConfigurationSilentModeStartUTCHour = formatNumber(req.body['userConfigurationSilentModeStartUTCHour']);
@@ -112,12 +108,6 @@ async function createUser(req: express.Request, res: express.Response): Promise<
     if (userConfigurationNotificationSound === undefined || userConfigurationNotificationSound === null) {
       throw new HoundError('userConfigurationNotificationSound missing', createUser, ERROR_CODES.VALUE.INVALID);
     }
-    if (userConfigurationLogsInterfaceScale === undefined || userConfigurationLogsInterfaceScale === null) {
-      throw new HoundError('userConfigurationLogsInterfaceScale missing', createUser, ERROR_CODES.VALUE.INVALID);
-    }
-    if (userConfigurationRemindersInterfaceScale === undefined || userConfigurationRemindersInterfaceScale === null) {
-      throw new HoundError('userConfigurationRemindersInterfaceScale missing', createUser, ERROR_CODES.VALUE.INVALID);
-    }
     if (userConfigurationIsSilentModeEnabled === undefined || userConfigurationIsSilentModeEnabled === null) {
       throw new HoundError('userConfigurationIsSilentModeEnabled missing', createUser, ERROR_CODES.VALUE.INVALID);
     }
@@ -146,8 +136,6 @@ async function createUser(req: express.Request, res: express.Response): Promise<
         userConfigurationInterfaceStyle,
         userConfigurationSnoozeLength,
         userConfigurationNotificationSound,
-        userConfigurationLogsInterfaceScale,
-        userConfigurationRemindersInterfaceScale,
         userConfigurationIsSilentModeEnabled,
         userConfigurationSilentModeStartUTCHour,
         userConfigurationSilentModeEndUTCHour,
@@ -200,10 +188,6 @@ async function updateUser(req: express.Request, res: express.Response): Promise<
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const userConfigurationNotificationSound = formatUnknownString(req.body['userConfigurationNotificationSound']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const userConfigurationLogsInterfaceScale = formatUnknownString(req.body['userConfigurationLogsInterfaceScale']);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const userConfigurationRemindersInterfaceScale = formatUnknownString(req.body['userConfigurationRemindersInterfaceScale']);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const userConfigurationIsSilentModeEnabled = formatNumber(req.body['userConfigurationIsSilentModeEnabled']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const userConfigurationSilentModeStartUTCHour = formatNumber(req.body['userConfigurationSilentModeStartUTCHour']);
@@ -226,8 +210,6 @@ async function updateUser(req: express.Request, res: express.Response): Promise<
         userConfigurationInterfaceStyle,
         userConfigurationSnoozeLength,
         userConfigurationNotificationSound,
-        userConfigurationLogsInterfaceScale,
-        userConfigurationRemindersInterfaceScale,
         userConfigurationIsSilentModeEnabled,
         userConfigurationSilentModeStartUTCHour,
         userConfigurationSilentModeEndUTCHour,

@@ -6,8 +6,6 @@ uc.userConfigurationInterfaceStyle,
 uc.userConfigurationMeasurementSystem,
 uc.userConfigurationSnoozeLength, 
 uc.userConfigurationNotificationSound,
-uc.userConfigurationLogsInterfaceScale,
-uc.userConfigurationRemindersInterfaceScale, 
 uc.userConfigurationIsReminderNotificationEnabled,
 uc.userConfigurationIsSilentModeEnabled,
 uc.userConfigurationSilentModeStartUTCHour, 
@@ -26,8 +24,6 @@ type UserConfigurationRow = {
     userConfigurationMeasurementSystem: number
     userConfigurationSnoozeLength: number
     userConfigurationNotificationSound: string
-    userConfigurationLogsInterfaceScale: string
-    userConfigurationRemindersInterfaceScale: string
     userConfigurationIsSilentModeEnabled: number
     userConfigurationSilentModeStartUTCHour: number
     userConfigurationSilentModeEndUTCHour: number

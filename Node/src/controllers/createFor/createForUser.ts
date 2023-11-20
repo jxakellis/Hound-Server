@@ -76,8 +76,6 @@ async function createUserForUserIdentifier(
                 userConfigurationInterfaceStyle,
                 userConfigurationSnoozeLength,
                 userConfigurationNotificationSound,
-                userConfigurationLogsInterfaceScale,
-                userConfigurationRemindersInterfaceScale,
                 userConfigurationIsSilentModeEnabled,
                 userConfigurationSilentModeStartUTCHour,
                 userConfigurationSilentModeEndUTCHour,
@@ -85,8 +83,6 @@ async function createUserForUserIdentifier(
                 userConfigurationSilentModeEndUTCMinute,
                 ) 
                 VALUES (
-                  ?,
-                  ?,
                   ?,
                   ?,
                   ?,
@@ -112,8 +108,6 @@ async function createUserForUserIdentifier(
         userConfiguration.userConfigurationInterfaceStyle, // ?? 0,
         userConfiguration.userConfigurationSnoozeLength, // ?? 300,
         userConfiguration.userConfigurationNotificationSound, // ?? 'Radar',
-        userConfiguration.userConfigurationLogsInterfaceScale, // ?? 'Medium',
-        userConfiguration.userConfigurationRemindersInterfaceScale, // ?? 'Medium',
         userConfiguration.userConfigurationIsSilentModeEnabled, // ?? false,
         userConfiguration.userConfigurationSilentModeStartUTCHour, // ?? 7,
         userConfiguration.userConfigurationSilentModeEndUTCHour, // ?? 19,
