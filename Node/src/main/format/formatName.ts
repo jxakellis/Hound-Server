@@ -25,7 +25,7 @@ function formatLogAction(logAction: string, logCustomActionName?: string): strin
     case 'Feed':
       return `${logAction} 🍗`;
     case 'Fresh Water':
-      return `${logAction} 💧`;
+      return `${logAction} 🚰`;
     case 'Treat':
       return `${logAction} 🦴`;
     case 'Potty: Pee':
@@ -33,15 +33,15 @@ function formatLogAction(logAction: string, logCustomActionName?: string): strin
     case 'Potty: Poo':
       return `${logAction} 💩`;
     case 'Potty: Both':
-      return `${logAction} 💦💩`;
+      return `${logAction} 🧻`;
     case "Potty: Didn't Go":
-      return `${logAction} 💦`;
+      return `${logAction} 🚫`;
     case 'Accident':
-      return `${logAction} ⚠️`;
+      return `${logAction} 🚨`;
     case 'Walk':
       return `${logAction} 🦮`;
     case 'Brush':
-      return `${logAction} 💈`;
+      return `${logAction} 🪮`;
     case 'Bathe':
       return `${logAction} 🛁`;
     case 'Medicine':
@@ -55,7 +55,7 @@ function formatLogAction(logAction: string, logCustomActionName?: string): strin
     case 'Crate':
       return `${logAction} 🏡`;
     case 'Training Session':
-      return `${logAction} 🐾`;
+      return `${logAction} 🎓`;
     case 'Doctor Visit':
       return `${logAction} 🩺`;
     case 'Custom':
@@ -73,13 +73,13 @@ function formatReminderAction(reminderAction: string, reminderCustomActionName?:
     case 'Feed':
       return `${reminderAction} 🍗`;
     case 'Fresh Water':
-      return `${reminderAction} 💧`;
+      return `${reminderAction} 🚰`;
     case 'Potty':
-      return `${reminderAction} 💦💩`;
+      return `${reminderAction} 🚽`;
     case 'Walk':
       return `${reminderAction} 🦮`;
     case 'Brush':
-      return `${reminderAction} 💈`;
+      return `${reminderAction} 🪮`;
     case 'Bathe':
       return `${reminderAction} 🛁`;
     case 'Medicine':
@@ -87,12 +87,12 @@ function formatReminderAction(reminderAction: string, reminderCustomActionName?:
     case 'Sleep':
       return `${reminderAction} 💤`;
     case 'Training Session':
-      return `${reminderAction} 🐾`;
+      return `${reminderAction} 🎓`;
     case 'Doctor Visit':
       return `${reminderAction} 🩺`;
     case 'Custom':
       if (reminderCustomActionName !== undefined && reminderCustomActionName.trim() !== '') {
-        return reminderCustomActionName.trim();
+        return `${reminderCustomActionName.trim()} 📝`;
       }
       return `${reminderAction} 📝`;
     default:
