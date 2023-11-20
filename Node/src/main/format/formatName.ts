@@ -41,7 +41,7 @@ function formatLogAction(logAction: string, logCustomActionName?: string): strin
     case 'Walk':
       return `${logAction} 🦮`;
     case 'Brush':
-      return `${logAction} 🪮`;
+      return `${logAction} 💈`;
     case 'Bathe':
       return `${logAction} 🛁`;
     case 'Medicine':
@@ -79,7 +79,7 @@ function formatReminderAction(reminderAction: string, reminderCustomActionName?:
     case 'Walk':
       return `${reminderAction} 🦮`;
     case 'Brush':
-      return `${reminderAction} 🪮`;
+      return `${reminderAction} 💈`;
     case 'Bathe':
       return `${reminderAction} 🛁`;
     case 'Medicine':
