@@ -43,7 +43,7 @@ async function createDatabasePool(): Promise<mysql2.Pool> {
       // Maximum number of connection requests to queue (0 for no limit).
       queueLimit: 10,
       // The maximum number of databaseConnections to create at once.
-      connectionLimit: 5,
+      connectionLimit: 10,
       // Time in milliseconds before a connection attempt is abandoned.
       connectTimeout: 5000,
       // Enables handling of big numbers (larger than Number.MAX_SAFE_INTEGER).
