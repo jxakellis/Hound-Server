@@ -54,40 +54,40 @@ function formatReminderActionToReadableValue(includeMatchingEmoji: boolean, remi
   switch (reminderAction) {
     case 'Feed':
     case 'feed':
-      return `Feed ${includeMatchingEmoji ? '🍗' : ''}`;
+      return `Feed${includeMatchingEmoji ? ' 🍗' : ''}`;
     case 'Fresh Water':
     case 'water':
-      return `Fresh Water ${includeMatchingEmoji ? '🚰' : ''}`;
+      return `Fresh Water${includeMatchingEmoji ? ' 🚰' : ''}`;
     case 'Potty':
     case 'potty':
-      return `Potty ${includeMatchingEmoji ? '🚽' : ''}`;
+      return `Potty${includeMatchingEmoji ? ' 🚽' : ''}`;
     case 'Walk':
     case 'walk':
-      return `Walk ${includeMatchingEmoji ? '🦮' : ''}`;
+      return `Walk${includeMatchingEmoji ? ' 🦮' : ''}`;
     case 'Brush':
     case 'brush':
-      return `Brush ${includeMatchingEmoji ? '💈' : ''}`;
+      return `Brush${includeMatchingEmoji ? ' 💈' : ''}`;
     case 'Bathe':
     case 'bathe':
-      return `Bathe ${includeMatchingEmoji ? '🛁' : ''}`;
+      return `Bathe${includeMatchingEmoji ? ' 🛁' : ''}`;
     case 'Medicine':
     case 'medicine':
-      return `Medicine ${includeMatchingEmoji ? '💊' : ''}`;
+      return `Medicine${includeMatchingEmoji ? ' 💊' : ''}`;
     case 'Sleep':
     case 'sleep':
-      return `Sleep ${includeMatchingEmoji ? '💤' : ''}`;
+      return `Sleep${includeMatchingEmoji ? ' 💤' : ''}`;
     case 'Training Session':
     case 'trainingSession':
-      return `Training Session ${includeMatchingEmoji ? '🎓' : ''}`;
+      return `Training Session${includeMatchingEmoji ? ' 🎓' : ''}`;
     case 'Doctor Visit':
     case 'doctor':
-      return `Doctor Visit ${includeMatchingEmoji ? '🩺' : ''}`;
+      return `Doctor Visit${includeMatchingEmoji ? ' 🩺' : ''}`;
     case 'Custom':
     case 'custom':
       if (reminderCustomActionName !== undefined && reminderCustomActionName.trim() !== '') {
-        return `${reminderCustomActionName.trim()} ${includeMatchingEmoji ? '📝' : ''}`;
+        return `${reminderCustomActionName.trim()}${includeMatchingEmoji ? ' 📝' : ''}`;
       }
-      return `Custom ${includeMatchingEmoji ? '📝' : ''}`;
+      return `Custom${includeMatchingEmoji ? ' 📝' : ''}`;
     default:
       return undefined;
   }

@@ -82,69 +82,69 @@ function formatLogActionToReadableValue(includeMatchingEmoji: boolean, logAction
   switch (logAction) {
     case 'Feed':
     case 'feed':
-      return `Feed ${includeMatchingEmoji ? '🍗' : ''}`;
+      return `Feed${includeMatchingEmoji ? ' 🍗' : ''}`;
     case 'Fresh Water':
     case 'water':
-      return `Fresh Water ${includeMatchingEmoji ? '🚰' : ''}`;
+      return `Fresh Water${includeMatchingEmoji ? ' 🚰' : ''}`;
     case 'Treat':
     case 'treat':
-      return `Treat ${includeMatchingEmoji ? '🦴' : ''}`;
+      return `Treat${includeMatchingEmoji ? ' 🦴' : ''}`;
       // TODO FUTURE once upgraded to >= 3.2.0, migrate from Potty: Pee/Poo/Both/Didn't Go to new names more compact names
     case 'Potty: Pee':
     case 'Pee':
     case 'pee':
-      return `Potty: Pee ${includeMatchingEmoji ? '💦' : ''}`;
+      return `Potty: Pee${includeMatchingEmoji ? ' 💦' : ''}`;
     case 'Potty: Poo':
     case 'Poo':
     case 'poo':
-      return `Potty: Poo ${includeMatchingEmoji ? '💩' : ''}`;
+      return `Potty: Poo${includeMatchingEmoji ? ' 💩' : ''}`;
     case 'Potty: Both':
     case 'Pee & Poo':
     case 'both':
-      return `Potty: Both ${includeMatchingEmoji ? '🧻' : ''}`;
+      return `Potty: Both${includeMatchingEmoji ? ' 🧻' : ''}`;
     case "Potty: Didn't Go":
     case "Didn't Go Potty":
     case 'neither':
-      return `Potty: Didn't Go ${includeMatchingEmoji ? '🚫' : ''}`;
+      return `Potty: Didn't Go${includeMatchingEmoji ? ' 🚫' : ''}`;
     case 'Accident':
     case 'accident':
-      return `Accident ${includeMatchingEmoji ? '🚨' : ''}`;
+      return `Accident${includeMatchingEmoji ? ' 🚨' : ''}`;
     case 'Walk':
     case 'walk':
-      return `Walk ${includeMatchingEmoji ? '🦮' : ''}`;
+      return `Walk${includeMatchingEmoji ? ' 🦮' : ''}`;
     case '':
     case 'brush':
-      return `Brush ${includeMatchingEmoji ? '💈' : ''}`;
+      return `Brush${includeMatchingEmoji ? ' 💈' : ''}`;
     case 'Bathe':
     case 'bathe':
-      return `Bathe ${includeMatchingEmoji ? '🛁' : ''}`;
+      return `Bathe${includeMatchingEmoji ? ' 🛁' : ''}`;
     case 'Medicine':
     case 'medicine':
-      return `Medicine ${includeMatchingEmoji ? '💊' : ''}`;
+      return `Medicine${includeMatchingEmoji ? ' 💊' : ''}`;
     case 'Weight':
     case 'weight':
-      return `Weight ${includeMatchingEmoji ? '⚖️' : ''}`;
+      return `Weight${includeMatchingEmoji ? ' ⚖️' : ''}`;
     case 'Wake Up':
     case 'wakeUp':
-      return `Wake Up ${includeMatchingEmoji ? '☀️' : ''}`;
+      return `Wake Up${includeMatchingEmoji ? ' ☀️' : ''}`;
     case 'Sleep':
     case 'sleep':
-      return `Sleep ${includeMatchingEmoji ? '💤' : ''}`;
+      return `Sleep${includeMatchingEmoji ? ' 💤' : ''}`;
     case 'Crate':
     case 'crate':
-      return `Create ${includeMatchingEmoji ? '🏡' : ''}`;
+      return `Create${includeMatchingEmoji ? ' 🏡' : ''}`;
     case 'Training Session':
     case 'trainingSession':
-      return `Training Session ${includeMatchingEmoji ? '🎓' : ''}`;
+      return `Training Session${includeMatchingEmoji ? ' 🎓' : ''}`;
     case 'Doctor Visit':
     case 'doctor':
-      return `Doctor Visit ${includeMatchingEmoji ? '🩺' : ''}`;
+      return `Doctor Visit${includeMatchingEmoji ? ' 🩺' : ''}`;
     case 'Custom':
     case 'custom':
       if (logCustomActionName !== undefined && logCustomActionName.trim() !== '') {
-        return `${logCustomActionName.trim()} ${includeMatchingEmoji ? '📝' : ''}`;
+        return `${logCustomActionName.trim()}${includeMatchingEmoji ? ' 📝' : ''}`;
       }
-      return `Custom ${includeMatchingEmoji ? '📝' : ''}`;
+      return `Custom${includeMatchingEmoji ? ' 📝' : ''}`;
     default:
       return undefined;
   }
