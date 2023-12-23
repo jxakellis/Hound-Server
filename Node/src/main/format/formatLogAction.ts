@@ -89,23 +89,22 @@ function formatLogActionToReadableValue(includeMatchingEmoji: boolean, logAction
     case 'Treat':
     case 'treat':
       return `Treat${includeMatchingEmoji ? ' 🦴' : ''}`;
-      // TODO FUTURE once upgraded to >= 3.2.0, migrate from Potty: Pee/Poo/Both/Didn't Go to new names more compact names
     case 'Potty: Pee':
     case 'Pee':
     case 'pee':
-      return `Potty: Pee${includeMatchingEmoji ? ' 💦' : ''}`;
+      return `Pee${includeMatchingEmoji ? ' 💦' : ''}`;
     case 'Potty: Poo':
     case 'Poo':
     case 'poo':
-      return `Potty: Poo${includeMatchingEmoji ? ' 💩' : ''}`;
+      return `Poo${includeMatchingEmoji ? ' 💩' : ''}`;
     case 'Potty: Both':
     case 'Pee & Poo':
     case 'both':
-      return `Potty: Both${includeMatchingEmoji ? ' 🧻' : ''}`;
+      return `Pee & Poo${includeMatchingEmoji ? ' 🧻' : ''}`;
     case "Potty: Didn't Go":
     case "Didn't Go Potty":
     case 'neither':
-      return `Potty: Didn't Go${includeMatchingEmoji ? ' 🚫' : ''}`;
+      return `Didn't Go Potty${includeMatchingEmoji ? ' 🚫' : ''}`;
     case 'Accident':
     case 'accident':
       return `Accident${includeMatchingEmoji ? ' 🚨' : ''}`;

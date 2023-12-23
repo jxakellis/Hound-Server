@@ -43,7 +43,6 @@ DELIMITER ;
 */
 
 async function getLogs(req: express.Request, res: express.Response): Promise<void> {
-  // TODO NOW TEST logs after internal value update
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
@@ -106,9 +105,8 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
       throw new HoundError('unvalidatedLogDictionary missing', createLog, ERROR_CODES.VALUE.INVALID);
     }
 
-    // TODO FUTURE depreciate logDate, last used <= 3.1.0
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const logStartDate = formatDate(unvalidatedLogDictionary?.['logStartDate'] ?? unvalidatedLogDictionary?.['logDate']);
+    const logStartDate = formatDate(unvalidatedLogDictionary?.['logStartDate']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const logEndDate = formatDate(unvalidatedLogDictionary?.['logEndDate']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -179,9 +177,8 @@ async function updateLog(req: express.Request, res: express.Response): Promise<v
       throw new HoundError('validatedLog missing', updateLog, ERROR_CODES.VALUE.INVALID);
     }
 
-    // TODO FUTURE depreciate logDate, last used <= 3.1.0
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const logStartDate = formatDate(validatedLog.unvalidatedLogDictionary?.['logStartDate'] ?? validatedLog.unvalidatedLogDictionary?.['logDate']);
+    const logStartDate = formatDate(validatedLog.unvalidatedLogDictionary?.['logStartDate']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const logEndDate = formatDate(validatedLog.unvalidatedLogDictionary?.['logEndDate']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access

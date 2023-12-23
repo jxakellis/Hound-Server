@@ -17,7 +17,6 @@ import { formatReminderActionToInternalValue } from '../../main/format/formatRem
 import { type NotYetCreatedDogRemindersRow, type NotYetUpdatedDogRemindersRow } from '../../main/types/DogRemindersRow.js';
 
 async function getReminders(req: express.Request, res: express.Response): Promise<void> {
-  // TODO NOW TEST logs after internal value update
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
