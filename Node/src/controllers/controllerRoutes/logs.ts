@@ -11,6 +11,7 @@ import { deleteLogForLogId } from '../deleteFor/deleteForLogs.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 
 import { formatDate, formatNumber, formatUnknownString } from '../../main/format/formatObject.js';
+import { formatLogActionToInternalValue } from '../../main/format/formatLogAction.js';
 
 /*
 // TODO NOW before inserting/updating any var chars, add trigger manually truncate it to var char length.
@@ -42,6 +43,7 @@ DELIMITER ;
 */
 
 async function getLogs(req: express.Request, res: express.Response): Promise<void> {
+  // TODO NOW TEST logs after internal value update
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
@@ -110,7 +112,7 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const logEndDate = formatDate(unvalidatedLogDictionary?.['logEndDate']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const logAction = formatUnknownString(unvalidatedLogDictionary?.['logAction']);
+    const logAction = formatLogActionToInternalValue(formatUnknownString(unvalidatedLogDictionary?.['logAction']));
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const logCustomActionName = formatUnknownString(unvalidatedLogDictionary?.['logCustomActionName']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -183,7 +185,7 @@ async function updateLog(req: express.Request, res: express.Response): Promise<v
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const logEndDate = formatDate(validatedLog.unvalidatedLogDictionary?.['logEndDate']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const logAction = formatUnknownString(validatedLog.unvalidatedLogDictionary?.['logAction']);
+    const logAction = formatLogActionToInternalValue(formatUnknownString(validatedLog.unvalidatedLogDictionary?.['logAction']));
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const logCustomActionName = formatUnknownString(validatedLog.unvalidatedLogDictionary?.['logCustomActionName']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access

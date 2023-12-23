@@ -1,7 +1,7 @@
 import {
   SortParameter, decodeTransactions, decodeRenewalInfo, decodeTransaction, type HistoryResponse, type JWSTransactionDecodedPayload, type StatusResponse, type JWSRenewalInfoDecodedPayload,
 } from 'app-store-server-api';
-import { api } from './api.js';
+import { productionApi, developmentApi } from './api.js';
 import { logServerError } from '../../logging/logServerError.js';
 import { formatUnknownString, formatBoolean } from '../../format/formatObject.js';
 import { SERVER } from '../../server/globalConstants.js';
@@ -20,7 +20,7 @@ async function queryTransactionHistoryFromAppStoreServerAPI(transactionId: strin
   let response: HistoryResponse;
   try {
     // If we have no revision, it must be completely excluded from the body
-    response = await api.getTransactionHistory(transactionId, revision !== undefined && revision !== null
+    response = await productionApi.getTransactionHistory(transactionId, revision !== undefined && revision !== null
       ? {
         sort: SortParameter.Descending,
         revision,
@@ -29,25 +29,55 @@ async function queryTransactionHistoryFromAppStoreServerAPI(transactionId: strin
         sort: SortParameter.Descending,
       });
   }
-  catch (error) {
+  catch (productionError) {
+    // If we encounter an error with productionApi, try again with the developmentApi to see if the transaction exists there
+    // Log the productionError out of an abundance of caution, we can safely ignore it on our development environment, but it could be critical on our production environment
     logServerError(
       new HoundError(
-        'getTransactionHistory',
+        'productionApi.getTransactionHistory',
         queryTransactionHistoryFromAppStoreServerAPI,
         undefined,
-        error,
+        productionError,
       ),
     );
-    return [];
+
+    try {
+      // If we have no revision, it must be completely excluded from the body
+      response = await developmentApi.getTransactionHistory(transactionId, revision !== undefined && revision !== null
+        ? {
+          sort: SortParameter.Descending,
+          revision,
+        }
+        : {
+          sort: SortParameter.Descending,
+        });
+    }
+    catch (developmentError) {
+      // We encountered an error with both productionApi and developmentApi
+      logServerError(
+        new HoundError(
+          'developmentApi.getTransactionHistory',
+          queryTransactionHistoryFromAppStoreServerAPI,
+          undefined,
+          developmentError,
+        ),
+      );
+      // Only return nothing if both productionApi and developmentApi fail
+      return [];
+    }
   }
 
   if (response.bundleId !== SERVER.APP_BUNDLE_ID) {
     return [];
   }
 
+  /*
+  Allow transactions from other environments. We just mark their origin in the database. This allows App Store connect to test the production version of the app with sandbox transactions
+
   if (response.environment !== SERVER.ENVIRONMENT) {
     return [];
   }
+  */
 
   // Decoding not only reveals the contents of the transactions but also verifies that they were signed by Apple.
   let transactions: { transactionInfo: JWSTransactionDecodedPayload}[];
@@ -93,27 +123,48 @@ async function querySubscriptionStatusesFromAppStoreAPI(transactionId: string): 
   let statusResponse: StatusResponse;
   // We can add a status filter(s) to filter subscriptions by their status (e.g. active, expired...), however, for now we get everything.
   try {
-    statusResponse = await api.getSubscriptionStatuses(transactionId);
+    statusResponse = await productionApi.getSubscriptionStatuses(transactionId);
   }
-  catch (error) {
+  catch (productionError) {
+    // If we encounter an error with productionApi, try again with the developmentApi to see if the transaction exists there
+    // Log the productionError out of an abundance of caution, we can safely ignore it on our development environment, but it could be critical on our production environment
     logServerError(
       new HoundError(
-        'getSubscriptionStatuses',
+        'productionApi.getSubscriptionStatuses',
         querySubscriptionStatusesFromAppStoreAPI,
         undefined,
-        error,
+        productionError,
       ),
     );
-    return [];
+    try {
+      statusResponse = await developmentApi.getSubscriptionStatuses(transactionId);
+    }
+    catch (developmentError) {
+      // We encountered an error with both productionApi and developmentApi
+      logServerError(
+        new HoundError(
+          'developmentApi.getSubscriptionStatuses',
+          querySubscriptionStatusesFromAppStoreAPI,
+          undefined,
+          developmentError,
+        ),
+      );
+      // Only return nothing if both productionApi and developmentApi fail
+      return [];
+    }
   }
 
   if (formatUnknownString(statusResponse.bundleId) !== SERVER.APP_BUNDLE_ID) {
     return [];
   }
 
+  /*
+  Allow transactions from other environments. We just mark their origin in the database. This allows App Store connect to test the production version of the app with sandbox transactions
+
   if (formatUnknownString(statusResponse.environment) !== SERVER.ENVIRONMENT) {
     return [];
   }
+  */
 
   // We will have a potentially large amount of signedRenewal/TransactionInfos to decode. Therefore, we want to gather them all then do Promise.all.
   const transactionInfoPromises: Promise<JWSTransactionDecodedPayload>[] = [];

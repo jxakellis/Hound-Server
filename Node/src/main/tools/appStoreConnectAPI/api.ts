@@ -3,12 +3,20 @@ import { AppStoreServerAPI, Environment } from 'app-store-server-api';
 import { key, keyId, issuerId } from '../../secrets/appStoreConnectAPI.js';
 import { SERVER } from '../../server/globalConstants.js';
 
-const api = new AppStoreServerAPI(
+const productionApi = new AppStoreServerAPI(
   key,
   keyId,
   issuerId,
   SERVER.APP_BUNDLE_ID,
-  SERVER.IS_PRODUCTION_DATABASE ? Environment.Production : Environment.Sandbox,
+  Environment.Production,
 );
 
-export { api };
+const developmentApi = new AppStoreServerAPI(
+  key,
+  keyId,
+  issuerId,
+  SERVER.APP_BUNDLE_ID,
+  Environment.Sandbox,
+);
+
+export { productionApi, developmentApi };

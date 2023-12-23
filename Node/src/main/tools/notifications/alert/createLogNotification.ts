@@ -5,7 +5,8 @@ import { logServerError } from '../../../logging/logServerError.js';
 import { getDogForDogId } from '../../../../controllers/getFor/getForDogs.js';
 import { getPublicUser } from '../../../../controllers/getFor/getForUser.js';
 import { sendNotificationForFamilyExcludingUser } from '../apn/sendNotification.js';
-import { formatIntoName, formatLogAction } from '../../../format/formatName.js';
+import { formatFirstLastName } from '../../../format/formatFirstLastName.js';
+import { formatLogActionToReadableValue } from '../../../format/formatLogAction.js';
 import { NOTIFICATION } from '../../../server/globalConstants.js';
 import { HoundError } from '../../../server/globalErrors.js';
 
@@ -29,8 +30,8 @@ async function createLogNotification(userId: string, familyId: string, dogId: nu
       generalPoolConnectionB.release();
     });
 
-    const abbreviatedFullName = formatIntoName(true, user?.userFirstName, user?.userLastName);
-    const formattedLogAction = formatLogAction(logAction, logCustomActionName);
+    const abbreviatedFullName = formatFirstLastName(true, user?.userFirstName, user?.userLastName);
+    const formattedLogAction = formatLogActionToReadableValue(true, logAction, logCustomActionName);
 
     // now we can construct the messages
     // Maximum possible length of message: 3 (raw) + 32 (variable) = 35 ( > ALERT_TITLE_LIMIT )

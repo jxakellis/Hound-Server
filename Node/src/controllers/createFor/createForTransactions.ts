@@ -4,7 +4,7 @@ import { type Queryable, databaseQuery } from '../../main/database/databaseQuery
 import { extractTransactionIdFromAppStoreReceiptURL } from '../../main/tools/appStoreConnectAPI/extractTransactionId.js';
 import { queryAllSubscriptionsForTransactionId } from '../../main/tools/appStoreConnectAPI/queryTransactions.js';
 import { getFamilyForUserId } from '../getFor/getForFamily.js';
-import { SERVER, SUBSCRIPTION } from '../../main/server/globalConstants.js';
+import { SUBSCRIPTION } from '../../main/server/globalConstants.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 import { logServerError } from '../../main/logging/logServerError.js';
 import { formatDate } from '../../main/format/formatObject.js';
@@ -61,9 +61,13 @@ async function createUpdateTransaction(
   // type; The type of the in-app purchase.
   // The unique identifier of subscription purchase events across devices, including subscription renewals.
 
+  /*
+  Allow transactions from other environments. We just mark their origin in the database. This allows App Store connect to test the production version of the app with sandbox transactions
+
   if (transactionInfo.environment !== SERVER.ENVIRONMENT) {
     throw new HoundError(`environment must be '${SERVER.ENVIRONMENT}', not '${transactionInfo.environment}'`, createUpdateTransaction, ERROR_CODES.VALUE.INVALID);
   }
+  */
 
   if (transactionInfo.inAppOwnershipType !== 'PURCHASED') {
     throw new HoundError(`inAppOwnershipType must be 'PURCHASED', not '${transactionInfo.inAppOwnershipType}'`, createUpdateTransaction, ERROR_CODES.VALUE.INVALID);

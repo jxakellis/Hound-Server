@@ -4,7 +4,7 @@ import { DatabasePools, getPoolConnection } from '../../../database/databaseConn
 import { logServerError } from '../../../logging/logServerError.js';
 import { getPublicUser } from '../../../../controllers/getFor/getForUser.js';
 import { sendNotificationForFamilyExcludingUser } from '../apn/sendNotification.js';
-import { formatIntoName } from '../../../format/formatName.js';
+import { formatFirstLastName } from '../../../format/formatFirstLastName.js';
 import { NOTIFICATION } from '../../../server/globalConstants.js';
 import { HoundError } from '../../../server/globalErrors.js';
 
@@ -20,7 +20,7 @@ async function abbreviatedFullNameForUserId(userId: string): Promise<string> {
     generalPoolConnection.release();
   });
 
-  return formatIntoName(true, result?.userFirstName, result?.userLastName);
+  return formatFirstLastName(true, result?.userFirstName, result?.userLastName);
 }
 
 /**

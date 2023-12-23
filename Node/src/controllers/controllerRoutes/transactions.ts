@@ -7,6 +7,7 @@ import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 import { formatUnknownString } from '../../main/format/formatObject.js';
 
 async function getTransactions(req: express.Request, res: express.Response): Promise<void> {
+  // TODO NOW TEST transactions and ASSN after logic change
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality

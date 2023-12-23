@@ -110,6 +110,9 @@ async function validateSignedPayload(signedPayload: string): Promise<{
     throw new HoundError('renewalInfo missing', validateSignedPayload, ERROR_CODES.VALUE.MISSING);
   }
 
+  /*
+  Allow transactions from other environments. We just mark their origin in the database. This allows App Store connect to test the production version of the app with sandbox transactions
+
   if (data.environment !== SERVER.ENVIRONMENT) {
     throw new HoundError(
       `data.environment must be '${SERVER.ENVIRONMENT}', not '${data.environment}'`,
@@ -133,6 +136,7 @@ async function validateSignedPayload(signedPayload: string): Promise<{
       ERROR_CODES.VALUE.INVALID,
     );
   }
+  */
 
   return {
     notification, data, renewalInfo, transactionInfo,

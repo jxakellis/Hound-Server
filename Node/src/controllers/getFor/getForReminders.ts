@@ -1,3 +1,4 @@
+import { formatReminderActionToReadableValue } from '../../main/format/formatReminderAction.js';
 import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
 import { type DogRemindersRow, dogRemindersColumns } from '../../main/types/DogRemindersRow.js';
 
@@ -18,6 +19,12 @@ async function getReminderForReminderId(databaseConnection: Queryable, reminderI
   if (includeDeletedReminders === false) {
     reminders = reminders.filter((possiblyDeletedReminders) => possiblyDeletedReminders.reminderIsDeleted === 0);
   }
+
+  reminders = reminders.map((reminder) => ({
+    ...reminder,
+    // <= 3.1.0 other system of only rawValue used. Doing this makes it backwards compatible
+    reminderAction: formatReminderActionToReadableValue(false, reminder.reminderAction, undefined) ?? reminder.reminderAction,
+  }));
 
   return reminders.safeIndex(0);
 }
@@ -48,6 +55,12 @@ async function getAllRemindersForDogId(databaseConnection: Queryable, dogId: num
   if (includeDeletedReminders === false) {
     reminders = reminders.filter((possiblyDeletedReminders) => possiblyDeletedReminders.reminderIsDeleted === 0);
   }
+
+  reminders = reminders.map((reminder) => ({
+    ...reminder,
+    // <= 3.1.0 other system of only rawValue used. Doing this makes it backwards compatible
+    reminderAction: formatReminderActionToReadableValue(false, reminder.reminderAction, undefined) ?? reminder.reminderAction,
+  }));
 
   return reminders;
 }

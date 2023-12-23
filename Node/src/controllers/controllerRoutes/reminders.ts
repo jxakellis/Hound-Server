@@ -13,9 +13,11 @@ import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 import {
   formatDate, formatNumber, formatUnknownString,
 } from '../../main/format/formatObject.js';
+import { formatReminderActionToInternalValue } from '../../main/format/formatReminderAction.js';
 import { type NotYetCreatedDogRemindersRow, type NotYetUpdatedDogRemindersRow } from '../../main/types/DogRemindersRow.js';
 
 async function getReminders(req: express.Request, res: express.Response): Promise<void> {
+  // TODO NOW TEST logs after internal value update
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
@@ -78,7 +80,7 @@ async function createReminder(req: express.Request, res: express.Response): Prom
 
     const reminders: NotYetCreatedDogRemindersRow[] = [];
     unvalidatedRemindersDictionary.forEach((unvalidatedReminderDictionary) => {
-      const reminderAction = formatUnknownString(unvalidatedReminderDictionary['reminderAction']);
+      const reminderAction = formatReminderActionToInternalValue(formatUnknownString(unvalidatedReminderDictionary['reminderAction']));
       const reminderCustomActionName = formatUnknownString(unvalidatedReminderDictionary['reminderCustomActionName']);
       const reminderType = formatUnknownString(unvalidatedReminderDictionary['reminderType']);
       const reminderIsEnabled = formatNumber(unvalidatedReminderDictionary['reminderIsEnabled']);
@@ -234,7 +236,7 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
       // validate reminder id against validatedReminders
       const reminderId = validatedReminder.validatedReminderId;
       const dogId = validatedReminder.validatedDogId;
-      const reminderAction = formatUnknownString(validatedReminder.unvalidatedReminderDictionary?.['reminderAction']);
+      const reminderAction = formatReminderActionToInternalValue(formatUnknownString(validatedReminder.unvalidatedReminderDictionary?.['reminderAction']));
       const reminderCustomActionName = formatUnknownString(validatedReminder.unvalidatedReminderDictionary?.['reminderCustomActionName']);
       const reminderType = formatUnknownString(validatedReminder.unvalidatedReminderDictionary?.['reminderType']);
       const reminderIsEnabled = formatNumber(validatedReminder.unvalidatedReminderDictionary?.['reminderIsEnabled']);

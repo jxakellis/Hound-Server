@@ -8,7 +8,7 @@ import { sendNotificationForFamily } from '../apn/sendNotification.js';
 
 import { logServerError } from '../../../logging/logServerError.js';
 import { deleteAlarmNotificationsForReminder } from './deleteAlarmNotification.js';
-import { formatReminderAction } from '../../../format/formatName.js';
+import { formatReminderActionToReadableValue } from '../../../format/formatReminderAction.js';
 import { type DogsRow, dogsColumns } from '../../../types/DogsRow.js';
 import { type DogRemindersRow, dogRemindersColumns } from '../../../types/DogRemindersRow.js';
 import { NOTIFICATION } from '../../../server/globalConstants.js';
@@ -51,11 +51,11 @@ DogsRow & DogRemindersRow)[]>(
     // `Reminder for ${reminder.dogName}`;
 
     // Maximum possible length of message: 17 (raw) + 32 (variable) = 49 (<= ALERT_BODY_LIMIT)
-    let alertBody = `Lend a hand with ${formatReminderAction(reminder.reminderAction, reminder.reminderCustomActionName)}`;
+    let alertBody = `Lend a hand with ${formatReminderActionToReadableValue(true, reminder.reminderAction, reminder.reminderCustomActionName)}`;
 
     if (reminder.snoozeExecutionInterval !== undefined && reminder.snoozeExecutionInterval !== null) {
       // Maximum possible length of message: 45 (raw) + 32 (variable) = 77 (<= ALERT_BODY_LIMIT)
-      alertBody = `It's been a bit, remember to lend a hand with ${formatReminderAction(reminder.reminderAction, reminder.reminderCustomActionName)}`;
+      alertBody = `It's been a bit, remember to lend a hand with ${formatReminderActionToReadableValue(true, reminder.reminderAction, reminder.reminderCustomActionName)}`;
     }
 
     // send immediate APN notification for family
