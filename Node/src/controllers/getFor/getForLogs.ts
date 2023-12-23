@@ -1,5 +1,6 @@
 import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
 import { type DogLogsRow, dogLogsColumns } from '../../main/types/DogLogsRow.js';
+import { formatLogActionToReadableValue } from '../../main/format/formatLogAction.js';
 
 /**
  * If you are querying a single elements from the database, previousDogManagerSynchronization is not taken.
@@ -18,6 +19,12 @@ async function getLogForLogId(databaseConnection: Queryable, logId: number, incl
   if (includeDeletedLogs === false) {
     logs = logs.filter((possiblyDeletedLog) => possiblyDeletedLog.logIsDeleted === 0);
   }
+
+  logs = logs.map((log) => ({
+    ...log,
+    // <= 3.1.0 other system of only rawValue used. Doing this makes it backwards compatible
+    logAction: formatLogActionToReadableValue(false, log.logAction, undefined) ?? log.logAction,
+  }));
 
   return logs.safeIndex(0);
 }
@@ -48,6 +55,12 @@ async function getAllLogsForDogId(databaseConnection: Queryable, dogId: number, 
   if (includeDeletedLogs === false) {
     logs = logs.filter((possiblyDeletedLog) => possiblyDeletedLog.logIsDeleted === 0);
   }
+
+  logs = logs.map((log) => ({
+    ...log,
+    // <= 3.1.0 other system of only rawValue used. Doing this makes it backwards compatible
+    logAction: formatLogActionToReadableValue(false, log.logAction, undefined) ?? log.logAction,
+  }));
 
   return logs;
 }

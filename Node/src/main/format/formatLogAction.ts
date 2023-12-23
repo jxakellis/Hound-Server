@@ -89,7 +89,7 @@ function formatLogActionToReadableValue(includeMatchingEmoji: boolean, logAction
     case 'Treat':
     case 'treat':
       return `Treat ${includeMatchingEmoji ? '🦴' : ''}`;
-      // TODO FUTURE once upgraded to >= 3.2.0, migrate from Potty: xxx to new names
+      // TODO FUTURE once upgraded to >= 3.2.0, migrate from Potty: Pee/Poo/Both/Didn't Go to new names more compact names
     case 'Potty: Pee':
     case 'Pee':
     case 'pee':
