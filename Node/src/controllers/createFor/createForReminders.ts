@@ -4,6 +4,7 @@ import { type Queryable, type ResultSetHeader, databaseQuery } from '../../main/
 import { LIMIT } from '../../main/server/globalConstants.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 import { getAllRemindersForDogId } from '../getFor/getForReminders.js';
+import { formatKnownString } from '../../main/format/formatObject.js';
 
 /**
 *  Queries the database to create a single reminder. If the query is successful, then returns the reminder with created reminderId added to it.
@@ -52,7 +53,7 @@ async function createReminderForDogIdReminder(
             )`,
     [
       reminder.dogId,
-      reminder.reminderAction, reminder.reminderCustomActionName, reminder.reminderType, reminder.reminderIsEnabled,
+      reminder.reminderAction, formatKnownString(reminder.reminderCustomActionName, 32), reminder.reminderType, reminder.reminderIsEnabled,
       reminder.reminderExecutionBasis, reminder.reminderExecutionDate,
       // none, default values
       reminder.snoozeExecutionInterval,

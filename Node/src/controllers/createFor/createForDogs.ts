@@ -3,6 +3,7 @@ import { LIMIT } from '../../main/server/globalConstants.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 import { type NotYetCreatedDogsRow } from '../../main/types/DogsRow.js';
 import { getAllDogsForFamilyId } from '../getFor/getForDogs.js';
+import { formatKnownString } from '../../main/format/formatObject.js';
 
 /**
 *  Queries the database to create a dog. If the query is successful, then returns the dogId.
@@ -31,7 +32,7 @@ async function createDogForFamilyId(databaseConnection: Queryable, dog: NotYetCr
           )`,
     [
       dog.familyId,
-      dog.dogName,
+      formatKnownString(dog.dogName, 32),
       // none, default value
     ],
   );

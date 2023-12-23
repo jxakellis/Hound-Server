@@ -1,5 +1,6 @@
 import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
 import { type NotYetUpdatedDogLogsRow } from '../../main/types/DogLogsRow.js';
+import { formatKnownString } from '../../main/format/formatObject.js';
 
 /**
  *  Queries the database to update a log. If the query is successful, then returns
@@ -17,8 +18,8 @@ async function updateLogForDogIdLogId(databaseConnection: Queryable, log: NotYet
     WHERE logId = ?`,
     [
       log.logStartDate, log.logEndDate,
-      log.logAction, log.logCustomActionName,
-      log.logNote, log.logUnit, log.logNumberOfLogUnits,
+      log.logAction, formatKnownString(log.logCustomActionName, 32),
+      formatKnownString(log.logNote, 500), log.logUnit, log.logNumberOfLogUnits,
       // none, default values
       log.logId,
     ],

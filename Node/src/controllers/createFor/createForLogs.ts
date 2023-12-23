@@ -3,6 +3,7 @@ import { LIMIT } from '../../main/server/globalConstants.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 import { type NotYetCreatedDogLogsRow } from '../../main/types/DogLogsRow.js';
 import { getAllLogsForDogId } from '../getFor/getForLogs.js';
+import { formatKnownString } from '../../main/format/formatObject.js';
 
 /**
 *  Queries the database to create a log. If the query is successful, then returns the logId.
@@ -33,7 +34,7 @@ async function createLogForUserIdDogId(databaseConnection: Queryable, log: NotYe
           )`,
     [
       log.dogId, log.userId,
-      log.logStartDate, log.logEndDate, log.logNote, log.logAction, log.logCustomActionName,
+      log.logStartDate, log.logEndDate, formatKnownString(log.logNote, 500), log.logAction, formatKnownString(log.logCustomActionName, 32),
       log.logUnit, log.logNumberOfLogUnits,
       // none, default values
     ],

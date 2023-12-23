@@ -5,7 +5,7 @@ import { hash } from '../../main/format/hash.js';
 
 import { getPublicUser } from '../getFor/getForUser.js';
 import { type UserConfigurationRow } from '../../main/types/UserConfigurationRow.js';
-import { formatEmail, formatUnknownString } from '../../main/format/formatObject.js';
+import { formatEmail, formatUnknownString, formatKnownString } from '../../main/format/formatObject.js';
 
 /**
 *  Queries the database to create a user. If the query is successful, then returns the userId.
@@ -54,12 +54,12 @@ async function createUserForUserIdentifier(
             )`,
       [
         userId,
-        userIdentifier,
+        formatKnownString(userIdentifier, 64),
         crypto.randomUUID(),
         formatEmail(userEmail),
         formatUnknownString(userFirstName, 32),
         formatUnknownString(userLastName, 32),
-        formatUnknownString(userNotificationToken, 100),
+        formatUnknownString(userNotificationToken, 256),
         // none, default value
       ],
     ),

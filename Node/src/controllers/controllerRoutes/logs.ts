@@ -13,35 +13,6 @@ import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 import { formatDate, formatNumber, formatUnknownString } from '../../main/format/formatObject.js';
 import { formatLogActionToInternalValue } from '../../main/format/formatLogAction.js';
 
-/*
-// TODO NOW before inserting/updating any var chars, add trigger manually truncate it to var char length.
-
-DELIMITER //
-
-CREATE TRIGGER before_insert_your_table
-BEFORE INSERT ON your_table
-FOR EACH ROW
-BEGIN
-    IF CHAR_LENGTH(NEW.your_column) > 100 THEN
-        SET NEW.your_column = LEFT(NEW.your_column, 100);
-    END IF;
-END;
-//
-
-CREATE TRIGGER before_update_your_table
-BEFORE UPDATE ON your_table
-FOR EACH ROW
-BEGIN
-    IF CHAR_LENGTH(NEW.your_column) > 100 THEN
-        SET NEW.your_column = LEFT(NEW.your_column, 100);
-    END IF;
-END;
-//
-
-DELIMITER ;
-
-*/
-
 async function getLogs(req: express.Request, res: express.Response): Promise<void> {
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.

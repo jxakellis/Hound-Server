@@ -3,7 +3,7 @@ import { requestLogger } from './loggers.js';
 import { logServerError } from './logServerError.js';
 import { DatabasePools, getPoolConnection } from '../database/databaseConnections.js';
 import { type ResultSetHeader, databaseQuery } from '../database/databaseQuery.js';
-import { formatUnknownString } from '../format/formatObject.js';
+import { formatUnknownString, formatKnownString } from '../format/formatObject.js';
 import { HoundError, ERROR_CODES } from '../server/globalErrors.js';
 
 // Outputs request to the console and logs to database
@@ -95,7 +95,10 @@ async function addAppVersionToLogRequest(requestId: number, appVersion: string):
       `UPDATE previousRequests
                 SET requestAppVersion = ?
                 WHERE requestId = ?`,
-      [appVersion, requestId],
+      [
+        formatKnownString(appVersion, 10),
+        requestId,
+      ],
     ).finally(() => {
       generalPoolConnection.release();
     });
@@ -123,7 +126,10 @@ async function addUserIdToLogRequest(requestId: number, validatedUserId: string)
       `UPDATE previousRequests
                       SET requestUserId = ?
                       WHERE requestId = ?`,
-      [validatedUserId, requestId],
+      [
+        formatKnownString(validatedUserId, 64),
+        requestId,
+      ],
     ).finally(() => {
       generalPoolConnection.release();
     });
@@ -151,7 +157,10 @@ async function addFamilyIdToLogRequest(requestId: number, validatedFamilyId: str
       `UPDATE previousRequests
                             SET requestFamilyId = ?
                             WHERE requestId = ?`,
-      [validatedFamilyId, requestId],
+      [
+        formatKnownString(validatedFamilyId, 64),
+        requestId,
+      ],
     ).finally(() => {
       generalPoolConnection.release();
     });

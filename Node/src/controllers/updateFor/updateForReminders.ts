@@ -1,6 +1,7 @@
 import { type NotYetUpdatedDogRemindersRow } from '../../main/types/DogRemindersRow.js';
 
 import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
+import { formatKnownString } from '../../main/format/formatObject.js';
 
 /**
  *  Queries the database to create a update reminder. If the query is successful, then returns the provided reminder
@@ -13,7 +14,8 @@ async function updateReminderForDogIdReminder(
   await databaseQuery(
     databaseConnection,
     `UPDATE dogReminders
-    SET reminderAction = ?, reminderCustomActionName = ?, reminderType = ?, reminderIsEnabled = ?, reminderExecutionBasis = ?, reminderExecutionDate = ?,
+    SET reminderAction = ?, reminderCustomActionName = ?, reminderType = ?, reminderIsEnabled = ?,
+    reminderExecutionBasis = ?, reminderExecutionDate = ?,
     reminderLastModified = CURRENT_TIMESTAMP(),
     snoozeExecutionInterval = ?, countdownExecutionInterval = ?,
     weeklyUTCHour = ?, weeklyUTCMinute = ?,
@@ -22,7 +24,8 @@ async function updateReminderForDogIdReminder(
     oneTimeDate = ?
     WHERE reminderId = ?`,
     [
-      reminder.reminderAction, reminder.reminderCustomActionName, reminder.reminderType, reminder.reminderIsEnabled, reminder.reminderExecutionBasis, reminder.reminderExecutionDate,
+      reminder.reminderAction, formatKnownString(reminder.reminderCustomActionName, 32), reminder.reminderType, reminder.reminderIsEnabled,
+      reminder.reminderExecutionBasis, reminder.reminderExecutionDate,
       reminder.snoozeExecutionInterval, reminder.countdownExecutionInterval,
       reminder.weeklyUTCHour, reminder.weeklyUTCMinute,
       reminder.weeklySunday, reminder.weeklyMonday, reminder.weeklyTuesday, reminder.weeklyWednesday, reminder.weeklyThursday, reminder.weeklyFriday, reminder.weeklySaturday,

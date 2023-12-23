@@ -7,7 +7,7 @@ import { getFamilyForUserId } from '../getFor/getForFamily.js';
 import { SUBSCRIPTION } from '../../main/server/globalConstants.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 import { logServerError } from '../../main/logging/logServerError.js';
-import { formatDate } from '../../main/format/formatObject.js';
+import { formatDate, formatUnknownString } from '../../main/format/formatObject.js';
 
 /**
  * Processes and updates a transaction in the database.
@@ -126,7 +126,7 @@ async function createUpdateTransaction(
       // We undefined-coalesce the values here in the case they don't exist
       renewalInfo?.autoRenewProductId ?? transactionInfo.productId, renewalInfo?.autoRenewStatus ?? 1,
       transactionInfo.environment, formatDate(transactionInfo.expiresDate), transactionInfo.inAppOwnershipType,
-      transactionInfo.offerIdentifier, transactionInfo.offerType, transactionInfo.originalTransactionId, transactionInfo.productId,
+      formatUnknownString(transactionInfo.offerIdentifier, 64), transactionInfo.offerType, transactionInfo.originalTransactionId, transactionInfo.productId,
       formatDate(transactionInfo.purchaseDate), transactionInfo.quantity, transactionInfo.revocationReason, transactionInfo.subscriptionGroupIdentifier,
       transactionInfo.transactionId, transactionInfo.transactionReason, transactionInfo.webOrderLineItemId,
       // We pass through the true, non undefined-coalesced, values here for the UPDATE statement

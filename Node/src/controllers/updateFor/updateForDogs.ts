@@ -1,5 +1,6 @@
 import type { NotYetUpdatedDogsRow } from '../../main/types/DogsRow.js';
 import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
+import { formatKnownString } from '../../main/format/formatObject.js';
 
 /**
  *  Queries the database to update a dog. If the query is successful, then returns
@@ -11,7 +12,10 @@ async function updateDogForDogId(databaseConnection: Queryable, dog: NotYetUpdat
     `UPDATE dogs
     SET dogName = ?, dogLastModified = CURRENT_TIMESTAMP()
     WHERE dogId = ?`,
-    [dog.dogName, dog.dogId],
+    [
+      formatKnownString(dog.dogName, 32),
+      dog.dogId,
+    ],
   );
 }
 

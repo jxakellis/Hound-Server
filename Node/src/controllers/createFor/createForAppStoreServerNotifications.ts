@@ -3,7 +3,7 @@ import {
   type JWSTransactionDecodedPayload, type JWSRenewalInfoDecodedPayload, type DecodedNotificationPayload, type NotificationData,
 } from 'app-store-server-api';
 import {
-  formatDate, formatNumber, formatBoolean,
+  formatDate, formatNumber, formatBoolean, formatKnownString, formatUnknownString,
 } from '../../main/format/formatObject.js';
 import { HoundError, ERROR_CODES } from '../../main/server/globalErrors.js';
 import { requestLogger } from '../../main/logging/loggers.js';
@@ -36,19 +36,19 @@ async function insertAppStoreServerNotification(
 ): Promise<boolean> {
   // https://developer.apple.com/documentation/appstoreservernotifications/responsebodyv2decodedpayload
   // The in-app purchase event for which the App Store sent this version 2 notification.
-  const { notificationType } = notification;
+  const notificationType = formatKnownString(notification.notificationType, 100);
   // Additional information that identifies the notification event, or an empty string. The subtype applies only to select version 2 notifications.
-  const { subtype } = notification;
+  const subtype = formatUnknownString(notification.subtype, 100);
   // A unique identifier for the notification. Use this value to identify a duplicate notification.
   const { notificationUUID } = notification;
   // A string that indicates the App Store Server Notification version number.
-  const { version } = notification;
+  const version = formatKnownString(notification.version, 3);
   // The UNIX time, in milliseconds, that the App Store signed the JSON Web Signature data.
   const signedDate = formatDate(formatNumber(notification.signedDate));
 
   // https://developer.apple.com/documentation/appstoreservernotifications/data
   // The unique identifier of the app that the notification applies to. This property is available for apps that are downloaded from the App Store; it isn’t present in the sandbox environment.
-  const dataAppAppleId = data.appAppleId;
+  const dataAppAppleId = formatKnownString(data.appAppleId, 100);
   // The bundle identifier of the app.
   const dataBundleId = data.bundleId;
   // The version of the build that identifies an iteration of the bundle.
@@ -72,7 +72,7 @@ async function insertAppStoreServerNotification(
   // The Boolean value that indicates whether the App Store is attempting to automatically renew an expired subscription.
   const renewalInfoIsInBillingRetryPeriod = formatBoolean(renewalInfo.isInBillingRetryPeriod);
   // The offer code or the promotional offer identifier.
-  const renewalInfoOfferIdentifier = renewalInfo.offerIdentifier;
+  const renewalInfoOfferIdentifier = formatUnknownString(renewalInfo.offerIdentifier, 100);
   // The type of subscription offer.
   const renewalInfoOfferType = renewalInfo.offerType;
   // The original transaction identifier of a purchase.
@@ -102,7 +102,7 @@ async function insertAppStoreServerNotification(
   // A Boolean value that indicates whether the user upgraded to another subscription.
   const transactionInfoIsUpgraded = formatBoolean(transactionInfo.isUpgraded);
   // The identifier that contains the promo code or the promotional offer identifier.
-  const transactionInfoOfferIdentifier = transactionInfo.offerIdentifier;
+  const transactionInfoOfferIdentifier = formatUnknownString(transactionInfo.offerIdentifier, 100);
   // A value that represents the promotional offer type.
   const transactionInfoOfferType = transactionInfo.offerType;
   // The UNIX time, in milliseconds, that represents the purchase date of the original transaction identifier.
