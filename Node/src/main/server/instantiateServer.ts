@@ -59,34 +59,53 @@ const testDatabaseConnectionInterval = await configureServer(httpsServer);
 // Setup the app to process requests
 configureApp(app);
 
+// This prevents multiple shutdowns from occurring at once
+let shutdownInProgress = false;
 /**
  * Gracefully closes/ends everything
  * This includes the databaseConnection pool for the database for general requests, the databaseConnection for server notifications, the server itself, and the notification schedule
  */
 async function shutdown(): Promise<void> {
-  return new Promise((resolve) => {
+  if (shutdownInProgress === true) {
+    return new Promise((resolve) => {
+      resolve();
+    });
+  }
+  shutdownInProgress = true;
+
+  return new Promise(() => {
     serverLogger.info('Shutdown Initiated');
 
     const numberOfShutdownsNeeded = 3;
     let numberOfShutdownsCompleted = 0;
 
     if (testDatabaseConnectionInterval !== undefined && testDatabaseConnectionInterval !== null) {
+      serverLogger.info('Cleared Interval for testDatabaseConnectionInterval');
       clearInterval(testDatabaseConnectionInterval);
     }
 
     function checkForShutdownCompletion(): void {
+      serverLogger.info(`${numberOfShutdownsCompleted}/${numberOfShutdownsNeeded} Shutdown Steps Complete`);
       if (numberOfShutdownsCompleted === numberOfShutdownsNeeded) {
-        serverLogger.info('Shutdown Complete');
-        resolve();
+        serverLogger.info('All Shutdown Steps Complete');
+
+        /**
+   * The previous Node Application did not shut down properly
+   * process.on('exit', ...) isn't called when the process crashes or is killed.
+   */
+        exec(`npx kill-port ${SERVER.SERVER_PORT}`, () => {
+          serverLogger.info(`All processes on port ${SERVER.SERVER_PORT} killed`);
+          process.exit(1);
+        });
       }
     }
 
     schedule.gracefulShutdown()
       .then(() => {
-        serverLogger.info('Schedule Gracefully Shutdown');
+        serverLogger.info("'schedule' Gracefully Shutdown");
       })
       .catch((error) => {
-        serverLogger.error('Schedule Couldn\'t Shutdown', error);
+        serverLogger.error("'schedule' Couldn't Be Shutdown", error);
       })
       .finally(() => {
         numberOfShutdownsCompleted += 1;
@@ -95,10 +114,10 @@ async function shutdown(): Promise<void> {
 
     httpsServer.close((error) => {
       if (error !== undefined && error !== null) {
-        serverLogger.info('Server Couldn\'t Shutdown', error);
+        serverLogger.info("'httpsServer' Couldn't Be Closed", error);
       }
       else {
-        serverLogger.info('Server Gracefully Shutdown');
+        serverLogger.info("'httpsServer' Gracefully Closed");
       }
       numberOfShutdownsCompleted += 1;
       checkForShutdownCompletion();
@@ -130,32 +149,17 @@ process.on('SIGUSR2', async () => {
 
 process.on('uncaughtException', async (error, origin) => {
   // uncaught error happened somewhere
-  serverLogger.info(`Uncaught exception from origin: ${origin}`);
   // Specifically await logServerError here to ensure that the error is logged before the server shuts down
   await logServerError(
     new HoundError(
-      'uncaughtException',
-      shutdown,
+      `uncaughtException from origin: ${origin}`,
+      process.on,
       undefined,
       error,
     ),
   );
-  await shutdown()
-    .catch((shutdownError) => serverLogger.error(`Experienced error while attempting to shutdown (shutdown): ${shutdownError}`));
 
-  if (error.message === 'EADDRINUSE' || error.stack === 'EADDRINUSE' || error.name === 'EADDRINUSE' || error.cause === 'EADDRINUSE' || error.houndDeclarationCode === 'EADDRINUSE') {
-    /**
-   * The previous Node Application did not shut down properly
-   * process.on('exit', ...) isn't called when the process crashes or is killed.
-   */
-    exec(`npx kill-port ${SERVER.SERVER_PORT}`, () => {
-      serverLogger.info(`EADDRINUSE; Process(es) on port ${SERVER.SERVER_PORT} killed`);
-      process.exit(1);
-    });
-    return;
-  }
-
-  process.exit(1);
+  await shutdown();
 });
 
 process.on('uncaughtRejection', async (reason, promise) => {

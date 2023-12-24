@@ -1,0 +1,1077 @@
+[2023-12-24 05:51:35.375 +0000] INFO (Server/790 on ip-172-31-40-88): Successfully tested databaseConnection with threadId 27549
+[2023-12-24 05:51:35.376 +0000] INFO (Server/790 on ip-172-31-40-88): Verified database pool 1
+[2023-12-24 05:54:35.365 +0000] INFO (Server/790 on ip-172-31-40-88): Performing 180 second maintenance
+[2023-12-24 05:54:35.366 +0000] INFO (Server/790 on ip-172-31-40-88): verifyDatabasePool for 0
+[2023-12-24 05:54:35.366 +0000] INFO (Server/790 on ip-172-31-40-88): Testing databaseConnection with threadId 27526
+[2023-12-24 05:54:35.368 +0000] INFO (Server/790 on ip-172-31-40-88): Successfully tested databaseConnection with threadId 27526
+[2023-12-24 05:54:35.368 +0000] INFO (Server/790 on ip-172-31-40-88): Verified database pool 0
+[2023-12-24 05:54:35.368 +0000] INFO (Server/790 on ip-172-31-40-88): verifyDatabasePool for 1
+[2023-12-24 05:54:35.368 +0000] INFO (Server/790 on ip-172-31-40-88): Testing databaseConnection with threadId 29037
+[2023-12-24 05:54:35.369 +0000] INFO (Server/790 on ip-172-31-40-88): Successfully tested databaseConnection with threadId 29037
+[2023-12-24 05:54:35.370 +0000] INFO (Server/790 on ip-172-31-40-88): Verified database pool 1
+[2023-12-24 05:57:35.381 +0000] INFO (Server/790 on ip-172-31-40-88): Performing 180 second maintenance
+[2023-12-24 05:57:35.381 +0000] INFO (Server/790 on ip-172-31-40-88): verifyDatabasePool for 0
+[2023-12-24 05:57:35.381 +0000] INFO (Server/790 on ip-172-31-40-88): Testing databaseConnection with threadId 27555
+[2023-12-24 05:57:36.093 +0000] INFO (Server/790 on ip-172-31-40-88): Successfully tested databaseConnection with threadId 27555
+[2023-12-24 05:57:36.093 +0000] INFO (Server/790 on ip-172-31-40-88): Verified database pool 0
+[2023-12-24 05:57:36.093 +0000] INFO (Server/790 on ip-172-31-40-88): verifyDatabasePool for 1
+[2023-12-24 05:57:36.093 +0000] INFO (Server/790 on ip-172-31-40-88): Testing databaseConnection with threadId 27523
+[2023-12-24 05:57:36.094 +0000] INFO (Server/790 on ip-172-31-40-88): Successfully tested databaseConnection with threadId 27523
+[2023-12-24 05:57:36.094 +0000] INFO (Server/790 on ip-172-31-40-88): Verified database pool 1
+[2023-12-24 06:00:35.381 +0000] INFO (Server/790 on ip-172-31-40-88): Performing 180 second maintenance
+[2023-12-24 06:00:35.382 +0000] INFO (Server/790 on ip-172-31-40-88): verifyDatabasePool for 0
+[2023-12-24 06:00:35.382 +0000] INFO (Server/790 on ip-172-31-40-88): Testing databaseConnection with threadId 27555
+[2023-12-24 06:00:37.059 +0000] INFO (Server/790 on ip-172-31-40-88): Successfully tested databaseConnection with threadId 27555
+[2023-12-24 06:00:37.060 +0000] INFO (Server/790 on ip-172-31-40-88): Verified database pool 0
+[2023-12-24 06:00:37.060 +0000] INFO (Server/790 on ip-172-31-40-88): verifyDatabasePool for 1
+[2023-12-24 06:00:37.060 +0000] INFO (Server/790 on ip-172-31-40-88): Testing databaseConnection with threadId 27523
+[2023-12-24 06:00:37.071 +0000] INFO (Server/790 on ip-172-31-40-88): Successfully tested databaseConnection with threadId 27523
+[2023-12-24 06:00:37.072 +0000] INFO (Server/790 on ip-172-31-40-88): Verified database pool 1
+[2023-12-24 06:00:54.356 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logRequest,Error
+    
+MESSAGE: Was not able to update previousRequest with requestUserId Unable to get a pool connection for pool 0 Queue limit reached.
+    
+CODE: Unknown Code
+    
+STACK: Error: Queue limit reached.
+    at Pool.getConnection (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/pool.js:74:17)
+    at file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:65:22
+    at new Promise (<anonymous>)
+    at getPoolConnection (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:64:12)
+    at addUserIdToLogRequest (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logRequest.js:83:45)
+    at validateUserId (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/tools/validate/validateUserRelatedId.js:77:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+[2023-12-24 06:00:54.358 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logServerError,Error
+    
+MESSAGE: logServerError could not insert error Unable to get a pool connection for pool 0 Queue limit reached.
+    
+CODE: Unknown Code
+    
+STACK: Error: Queue limit reached.
+    at Pool.getConnection (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/pool.js:74:17)
+    at file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:65:22
+    at new Promise (<anonymous>)
+    at getPoolConnection (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:64:12)
+    at logServerError (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logServerError.js:20:45)
+    at addUserIdToLogRequest (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logRequest.js:91:9)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+[2023-12-24 06:00:54.358 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logRequest,Error
+    
+MESSAGE: Was not able to update previousRequest with requestUserId Unable to get a pool connection for pool 0 Queue limit reached.
+    
+CODE: Unknown Code
+    
+STACK: Error: Queue limit reached.
+    at Pool.getConnection (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/pool.js:74:17)
+    at file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:65:22
+    at new Promise (<anonymous>)
+    at getPoolConnection (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:64:12)
+    at addUserIdToLogRequest (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logRequest.js:83:45)
+    at validateUserId (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/tools/validate/validateUserRelatedId.js:77:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+[2023-12-24 06:00:54.358 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logServerError,Error
+    
+MESSAGE: logServerError could not insert error Unable to get a pool connection for pool 0 Queue limit reached.
+    
+CODE: Unknown Code
+    
+STACK: Error: Queue limit reached.
+    at Pool.getConnection (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/pool.js:74:17)
+    at file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:65:22
+    at new Promise (<anonymous>)
+    at getPoolConnection (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:64:12)
+    at logServerError (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logServerError.js:20:45)
+    at addUserIdToLogRequest (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logRequest.js:91:9)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+[2023-12-24 06:00:54.359 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logRequest,Error
+    
+MESSAGE: Was not able to update previousRequest with requestFamilyId Unable to get a pool connection for pool 0 Queue limit reached.
+    
+CODE: Unknown Code
+    
+STACK: Error: Queue limit reached.
+    at Pool.getConnection (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/pool.js:74:17)
+    at file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:65:22
+    at new Promise (<anonymous>)
+    at getPoolConnection (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:64:12)
+    at addFamilyIdToLogRequest (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logRequest.js:98:45)
+    at validateFamilyId (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/tools/validate/validateUserRelatedId.js:112:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+[2023-12-24 06:00:54.359 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logServerError,Error
+    
+MESSAGE: logServerError could not insert error Unable to get a pool connection for pool 0 Queue limit reached.
+    
+CODE: Unknown Code
+    
+STACK: Error: Queue limit reached.
+    at Pool.getConnection (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/pool.js:74:17)
+    at file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:65:22
+    at new Promise (<anonymous>)
+    at getPoolConnection (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:64:12)
+    at logServerError (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logServerError.js:20:45)
+    at addFamilyIdToLogRequest (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logRequest.js:106:9)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+[2023-12-24 06:00:54.360 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logRequest,Error
+    
+MESSAGE: Was not able to update previousRequest with requestFamilyId Unable to get a pool connection for pool 0 Queue limit reached.
+    
+CODE: Unknown Code
+    
+STACK: Error: Queue limit reached.
+    at Pool.getConnection (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/pool.js:74:17)
+    at file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:65:22
+    at new Promise (<anonymous>)
+    at getPoolConnection (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:64:12)
+    at addFamilyIdToLogRequest (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logRequest.js:98:45)
+    at validateFamilyId (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/tools/validate/validateUserRelatedId.js:112:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+[2023-12-24 06:00:54.361 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logServerError,Error
+    
+MESSAGE: logServerError could not insert error Unable to get a pool connection for pool 0 Queue limit reached.
+    
+CODE: Unknown Code
+    
+STACK: Error: Queue limit reached.
+    at Pool.getConnection (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/pool.js:74:17)
+    at file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:65:22
+    at new Promise (<anonymous>)
+    at getPoolConnection (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:64:12)
+    at logServerError (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logServerError.js:20:45)
+    at addFamilyIdToLogRequest (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logRequest.js:106:9)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+[2023-12-24 06:00:56.091 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logRequest,Error
+    
+MESSAGE: Was not able to insert previousRequest Unable to get a pool connection for pool 0 Queue limit reached.
+    
+CODE: Unknown Code
+    
+STACK: Error: Queue limit reached.
+    at Pool.getConnection (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/pool.js:74:17)
+    at file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:65:22
+    at new Promise (<anonymous>)
+    at getPoolConnection (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:64:12)
+    at logRequest (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logRequest.js:31:45)
+    at Layer.handle [as handle_request] (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/express/lib/router/layer.js:95:5)
+    at trim_prefix (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/express/lib/router/index.js:328:13)
+    at /home/ubuntu/parent_dir/Hound-Server/Node/node_modules/express/lib/router/index.js:286:9
+    at Function.process_params (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/express/lib/router/index.js:346:12)
+    at next (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/express/lib/router/index.js:280:10)
+
+[2023-12-24 06:00:56.093 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logServerError,Error
+    
+MESSAGE: logServerError could not insert error Unable to get a pool connection for pool 0 Queue limit reached.
+    
+CODE: Unknown Code
+    
+STACK: Error: Queue limit reached.
+    at Pool.getConnection (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/pool.js:74:17)
+    at file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:65:22
+    at new Promise (<anonymous>)
+    at getPoolConnection (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:64:12)
+    at logServerError (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logServerError.js:20:45)
+    at logRequest (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logRequest.js:59:9)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+[2023-12-24 06:01:32.582 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logRequest,Error
+    
+MESSAGE: Was not able to insert previousRequest Unable to get a pool connection for pool 0 Queue limit reached.
+    
+CODE: Unknown Code
+    
+STACK: Error: Queue limit reached.
+    at Pool.getConnection (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/pool.js:74:17)
+    at file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:65:22
+    at new Promise (<anonymous>)
+    at getPoolConnection (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:64:12)
+    at logRequest (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logRequest.js:31:45)
+    at Layer.handle [as handle_request] (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/express/lib/router/layer.js:95:5)
+    at trim_prefix (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/express/lib/router/index.js:328:13)
+    at /home/ubuntu/parent_dir/Hound-Server/Node/node_modules/express/lib/router/index.js:286:9
+    at Function.process_params (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/express/lib/router/index.js:346:12)
+    at next (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/express/lib/router/index.js:280:10)
+
+[2023-12-24 06:01:32.583 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logServerError,Error
+    
+MESSAGE: logServerError could not insert error Unable to get a pool connection for pool 0 Queue limit reached.
+    
+CODE: Unknown Code
+    
+STACK: Error: Queue limit reached.
+    at Pool.getConnection (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/pool.js:74:17)
+    at file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:65:22
+    at new Promise (<anonymous>)
+    at getPoolConnection (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:64:12)
+    at logServerError (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logServerError.js:20:45)
+    at logRequest (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logRequest.js:59:9)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+[2023-12-24 06:01:32.583 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logRequest,Error
+    
+MESSAGE: Was not able to insert previousRequest Unable to get a pool connection for pool 0 Queue limit reached.
+    
+CODE: Unknown Code
+    
+STACK: Error: Queue limit reached.
+    at Pool.getConnection (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/pool.js:74:17)
+    at file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:65:22
+    at new Promise (<anonymous>)
+    at getPoolConnection (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:64:12)
+    at logRequest (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logRequest.js:31:45)
+    at Layer.handle [as handle_request] (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/express/lib/router/layer.js:95:5)
+    at trim_prefix (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/express/lib/router/index.js:328:13)
+    at /home/ubuntu/parent_dir/Hound-Server/Node/node_modules/express/lib/router/index.js:286:9
+    at Function.process_params (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/express/lib/router/index.js:346:12)
+    at next (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/express/lib/router/index.js:280:10)
+
+[2023-12-24 06:01:32.584 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logServerError,Error
+    
+MESSAGE: logServerError could not insert error Unable to get a pool connection for pool 0 Queue limit reached.
+    
+CODE: Unknown Code
+    
+STACK: Error: Queue limit reached.
+    at Pool.getConnection (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/pool.js:74:17)
+    at file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:65:22
+    at new Promise (<anonymous>)
+    at getPoolConnection (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:64:12)
+    at logServerError (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logServerError.js:20:45)
+    at logRequest (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logRequest.js:59:9)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+[2023-12-24 06:01:40.266 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logRequest,Error
+    
+MESSAGE: Was not able to insert previousRequest Unable to get a pool connection for pool 0 Queue limit reached.
+    
+CODE: Unknown Code
+    
+STACK: Error: Queue limit reached.
+    at Pool.getConnection (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/pool.js:74:17)
+    at file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:65:22
+    at new Promise (<anonymous>)
+    at getPoolConnection (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:64:12)
+    at logRequest (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logRequest.js:31:45)
+    at Layer.handle [as handle_request] (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/express/lib/router/layer.js:95:5)
+    at trim_prefix (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/express/lib/router/index.js:328:13)
+    at /home/ubuntu/parent_dir/Hound-Server/Node/node_modules/express/lib/router/index.js:286:9
+    at Function.process_params (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/express/lib/router/index.js:346:12)
+    at next (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/express/lib/router/index.js:280:10)
+
+[2023-12-24 06:01:40.267 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logServerError,Error
+    
+MESSAGE: logServerError could not insert error Unable to get a pool connection for pool 0 Queue limit reached.
+    
+CODE: Unknown Code
+    
+STACK: Error: Queue limit reached.
+    at Pool.getConnection (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/pool.js:74:17)
+    at file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:65:22
+    at new Promise (<anonymous>)
+    at getPoolConnection (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:64:12)
+    at logServerError (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logServerError.js:20:45)
+    at logRequest (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logRequest.js:59:9)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+[2023-12-24 06:01:52.814 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logRequest,Error
+    
+MESSAGE: Was not able to insert previousRequest Unable to get a pool connection for pool 0 Queue limit reached.
+    
+CODE: Unknown Code
+    
+STACK: Error: Queue limit reached.
+    at Pool.getConnection (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/pool.js:74:17)
+    at file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:65:22
+    at new Promise (<anonymous>)
+    at getPoolConnection (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:64:12)
+    at logRequest (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logRequest.js:31:45)
+    at Layer.handle [as handle_request] (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/express/lib/router/layer.js:95:5)
+    at trim_prefix (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/express/lib/router/index.js:328:13)
+    at /home/ubuntu/parent_dir/Hound-Server/Node/node_modules/express/lib/router/index.js:286:9
+    at Function.process_params (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/express/lib/router/index.js:346:12)
+    at next (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/express/lib/router/index.js:280:10)
+
+[2023-12-24 06:01:52.815 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logServerError,Error
+    
+MESSAGE: logServerError could not insert error Unable to get a pool connection for pool 0 Queue limit reached.
+    
+CODE: Unknown Code
+    
+STACK: Error: Queue limit reached.
+    at Pool.getConnection (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/pool.js:74:17)
+    at file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:65:22
+    at new Promise (<anonymous>)
+    at getPoolConnection (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:64:12)
+    at logServerError (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logServerError.js:20:45)
+    at logRequest (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logRequest.js:59:9)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+[2023-12-24 06:01:56.384 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logRequest,Error
+    
+MESSAGE: Was not able to insert previousRequest Unable to get a pool connection for pool 0 Queue limit reached.
+    
+CODE: Unknown Code
+    
+STACK: Error: Queue limit reached.
+    at Pool.getConnection (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/pool.js:74:17)
+    at file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:65:22
+    at new Promise (<anonymous>)
+    at getPoolConnection (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:64:12)
+    at logRequest (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logRequest.js:31:45)
+    at Layer.handle [as handle_request] (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/express/lib/router/layer.js:95:5)
+    at trim_prefix (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/express/lib/router/index.js:328:13)
+    at /home/ubuntu/parent_dir/Hound-Server/Node/node_modules/express/lib/router/index.js:286:9
+    at Function.process_params (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/express/lib/router/index.js:346:12)
+    at next (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/express/lib/router/index.js:280:10)
+
+[2023-12-24 06:01:56.386 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logServerError,Error
+    
+MESSAGE: logServerError could not insert error Unable to get a pool connection for pool 0 Queue limit reached.
+    
+CODE: Unknown Code
+    
+STACK: Error: Queue limit reached.
+    at Pool.getConnection (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/pool.js:74:17)
+    at file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:65:22
+    at new Promise (<anonymous>)
+    at getPoolConnection (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:64:12)
+    at logServerError (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logServerError.js:20:45)
+    at logRequest (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logRequest.js:59:9)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+[2023-12-24 06:02:30.352 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logRequest,Error
+    
+MESSAGE: Was not able to update previousRequest with requestUserId read ETIMEDOUT
+    
+CODE: Unknown Code
+    
+STACK: Error: read ETIMEDOUT
+    at TCP.onStreamRead (node:internal/stream_base_commons:217:20)
+
+[2023-12-24 06:02:30.354 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logRequest,Error
+    
+MESSAGE: Was not able to update previousRequest with requestAppVersion read ETIMEDOUT
+    
+CODE: Unknown Code
+    
+STACK: Error: read ETIMEDOUT
+    at TCP.onStreamRead (node:internal/stream_base_commons:217:20)
+
+[2023-12-24 06:02:31.184 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logRequest,Error
+    
+MESSAGE: Was not able to insert previousRequest Unable to get a pool connection for pool 0 connect EHOSTUNREACH 172.31.47.121:3306
+    
+CODE: Unknown Code
+    
+STACK: Error: connect EHOSTUNREACH 172.31.47.121:3306
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1495:16)
+
+[2023-12-24 06:02:31.186 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: rollbackTransaction,Error
+    
+MESSAGE: ROLLBACK failed Can't add new command when connection is in closed state
+    
+CODE: Unknown Code
+    
+STACK: Error: Can't add new command when connection is in closed state
+    at PoolConnection._addCommandClosedState (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/connection.js:148:17)
+    at PoolConnection.query (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/connection.js:546:17)
+    at file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseQuery.js:21:28
+    at new Promise (<anonymous>)
+    at databaseQuery (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseQuery.js:20:12)
+    at rollbackTransaction (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/server/configureRequestAndResponse.js:41:19)
+    at Object.sendFailureResponse (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/server/configureRequestAndResponse.js:118:27)
+    at logRequest (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logRequest.js:60:55)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+[2023-12-24 06:02:31.186 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logServerError,Error
+    
+MESSAGE: logServerError could not insert error Unable to get a pool connection for pool 0 Queue limit reached.
+    
+CODE: Unknown Code
+    
+STACK: Error: Queue limit reached.
+    at Pool.getConnection (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/pool.js:74:17)
+    at file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:65:22
+    at new Promise (<anonymous>)
+    at getPoolConnection (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:64:12)
+    at logServerError (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logServerError.js:20:45)
+    at rollbackTransaction (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/server/configureRequestAndResponse.js:46:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.sendFailureResponse (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/server/configureRequestAndResponse.js:118:21)
+
+[2023-12-24 06:02:31.187 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logRequest,Error
+    
+MESSAGE: Was not able to update previousRequest with requestAppVersion Unable to get a pool connection for pool 0 connect EHOSTUNREACH 172.31.47.121:3306
+    
+CODE: Unknown Code
+    
+STACK: Error: connect EHOSTUNREACH 172.31.47.121:3306
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1495:16)
+
+[2023-12-24 06:02:34.256 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logRequest,Error
+    
+MESSAGE: Was not able to update previousRequest with requestAppVersion Unable to get a pool connection for pool 0 connect EHOSTUNREACH 172.31.47.121:3306
+    
+CODE: Unknown Code
+    
+STACK: Error: connect EHOSTUNREACH 172.31.47.121:3306
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1495:16)
+
+[2023-12-24 06:02:34.258 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logRequest,Error
+    
+MESSAGE: Was not able to update previousRequest with requestUserId Unable to get a pool connection for pool 0 connect EHOSTUNREACH 172.31.47.121:3306
+    
+CODE: Unknown Code
+    
+STACK: Error: connect EHOSTUNREACH 172.31.47.121:3306
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1495:16)
+
+[2023-12-24 06:02:34.448 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logRequest,Error
+    
+MESSAGE: Was not able to update previousRequest with requestFamilyId read ETIMEDOUT
+    
+CODE: Unknown Code
+    
+STACK: Error: read ETIMEDOUT
+    at TCP.onStreamRead (node:internal/stream_base_commons:217:20)
+
+[2023-12-24 06:02:34.450 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logRequest,Error
+    
+MESSAGE: Was not able to insert previousRequest read ETIMEDOUT
+    
+CODE: Unknown Code
+    
+STACK: Error: read ETIMEDOUT
+    at TCP.onStreamRead (node:internal/stream_base_commons:217:20)
+
+[2023-12-24 06:02:34.450 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: rollbackTransaction,Error
+    
+MESSAGE: ROLLBACK failed Can't add new command when connection is in closed state
+    
+CODE: Unknown Code
+    
+STACK: Error: Can't add new command when connection is in closed state
+    at PoolConnection._addCommandClosedState (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/connection.js:148:17)
+    at PoolConnection.query (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/connection.js:546:17)
+    at file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseQuery.js:21:28
+    at new Promise (<anonymous>)
+    at databaseQuery (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseQuery.js:20:12)
+    at rollbackTransaction (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/server/configureRequestAndResponse.js:41:19)
+    at Object.sendFailureResponse (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/server/configureRequestAndResponse.js:118:27)
+    at logRequest (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logRequest.js:60:55)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+[2023-12-24 06:02:34.450 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logServerError,Error
+    
+MESSAGE: logServerError could not insert error Unable to get a pool connection for pool 0 Queue limit reached.
+    
+CODE: Unknown Code
+    
+STACK: Error: Queue limit reached.
+    at Pool.getConnection (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/pool.js:74:17)
+    at file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:65:22
+    at new Promise (<anonymous>)
+    at getPoolConnection (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:64:12)
+    at logServerError (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logServerError.js:20:45)
+    at rollbackTransaction (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/server/configureRequestAndResponse.js:46:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.sendFailureResponse (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/server/configureRequestAndResponse.js:118:21)
+
+[2023-12-24 06:02:37.328 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logRequest,Error
+    
+MESSAGE: Was not able to update previousRequest with requestUserId Unable to get a pool connection for pool 0 connect EHOSTUNREACH 172.31.47.121:3306
+    
+CODE: Unknown Code
+    
+STACK: Error: connect EHOSTUNREACH 172.31.47.121:3306
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1495:16)
+
+[2023-12-24 06:02:37.329 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logRequest,Error
+    
+MESSAGE: Was not able to update previousRequest with requestFamilyId Unable to get a pool connection for pool 0 connect EHOSTUNREACH 172.31.47.121:3306
+    
+CODE: Unknown Code
+    
+STACK: Error: connect EHOSTUNREACH 172.31.47.121:3306
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1495:16)
+
+[2023-12-24 06:02:37.330 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logRequest,Error
+    
+MESSAGE: Was not able to update previousRequest with requestAppVersion Unable to get a pool connection for pool 0 connect EHOSTUNREACH 172.31.47.121:3306
+    
+CODE: Unknown Code
+    
+STACK: Error: connect EHOSTUNREACH 172.31.47.121:3306
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1495:16)
+
+[2023-12-24 06:02:37.330 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logRequest,Error
+    
+MESSAGE: Was not able to update previousRequest with requestUserId Unable to get a pool connection for pool 0 connect EHOSTUNREACH 172.31.47.121:3306
+    
+CODE: Unknown Code
+    
+STACK: Error: connect EHOSTUNREACH 172.31.47.121:3306
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1495:16)
+
+[2023-12-24 06:02:40.400 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logRequest,Error
+    
+MESSAGE: Was not able to insert previousRequest Unable to get a pool connection for pool 0 connect EHOSTUNREACH 172.31.47.121:3306
+    
+CODE: Unknown Code
+    
+STACK: Error: connect EHOSTUNREACH 172.31.47.121:3306
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1495:16)
+
+[2023-12-24 06:02:40.401 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: rollbackTransaction,Error
+    
+MESSAGE: ROLLBACK failed Can't add new command when connection is in closed state
+    
+CODE: Unknown Code
+    
+STACK: Error: Can't add new command when connection is in closed state
+    at PoolConnection._addCommandClosedState (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/connection.js:148:17)
+    at PoolConnection.query (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/connection.js:546:17)
+    at file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseQuery.js:21:28
+    at new Promise (<anonymous>)
+    at databaseQuery (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseQuery.js:20:12)
+    at rollbackTransaction (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/server/configureRequestAndResponse.js:41:19)
+    at Object.sendFailureResponse (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/server/configureRequestAndResponse.js:118:27)
+    at logRequest (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logRequest.js:60:55)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+[2023-12-24 06:02:40.401 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logServerError,Error
+    
+MESSAGE: logServerError could not insert error Unable to get a pool connection for pool 0 Queue limit reached.
+    
+CODE: Unknown Code
+    
+STACK: Error: Queue limit reached.
+    at Pool.getConnection (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/pool.js:74:17)
+    at file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:65:22
+    at new Promise (<anonymous>)
+    at getPoolConnection (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:64:12)
+    at logServerError (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logServerError.js:20:45)
+    at rollbackTransaction (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/server/configureRequestAndResponse.js:46:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.sendFailureResponse (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/server/configureRequestAndResponse.js:118:21)
+
+[2023-12-24 06:02:40.402 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logRequest,Error
+    
+MESSAGE: Was not able to insert previousRequest Unable to get a pool connection for pool 0 connect EHOSTUNREACH 172.31.47.121:3306
+    
+CODE: Unknown Code
+    
+STACK: Error: connect EHOSTUNREACH 172.31.47.121:3306
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1495:16)
+
+[2023-12-24 06:02:40.403 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: rollbackTransaction,Error
+    
+MESSAGE: ROLLBACK failed Can't add new command when connection is in closed state
+    
+CODE: Unknown Code
+    
+STACK: Error: Can't add new command when connection is in closed state
+    at PoolConnection._addCommandClosedState (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/connection.js:148:17)
+    at PoolConnection.query (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/connection.js:546:17)
+    at file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseQuery.js:21:28
+    at new Promise (<anonymous>)
+    at databaseQuery (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseQuery.js:20:12)
+    at rollbackTransaction (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/server/configureRequestAndResponse.js:41:19)
+    at Object.sendFailureResponse (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/server/configureRequestAndResponse.js:118:27)
+    at logRequest (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logRequest.js:60:55)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+[2023-12-24 06:02:40.403 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logServerError,Error
+    
+MESSAGE: logServerError could not insert error Unable to get a pool connection for pool 0 Queue limit reached.
+    
+CODE: Unknown Code
+    
+STACK: Error: Queue limit reached.
+    at Pool.getConnection (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/pool.js:74:17)
+    at file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:65:22
+    at new Promise (<anonymous>)
+    at getPoolConnection (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:64:12)
+    at logServerError (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/logging/logServerError.js:20:45)
+    at rollbackTransaction (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/server/configureRequestAndResponse.js:46:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.sendFailureResponse (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/server/configureRequestAndResponse.js:118:21)
+
+[2023-12-24 06:02:40.404 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logServerError,Error
+    
+MESSAGE: logServerError could not insert error Unable to get a pool connection for pool 0 connect EHOSTUNREACH 172.31.47.121:3306
+    
+CODE: Unknown Code
+    
+STACK: Error: connect EHOSTUNREACH 172.31.47.121:3306
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1495:16)
+
+[2023-12-24 06:02:40.405 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logServerError,Error
+    
+MESSAGE: logServerError could not insert error Unable to get a pool connection for pool 0 connect EHOSTUNREACH 172.31.47.121:3306
+    
+CODE: Unknown Code
+    
+STACK: Error: connect EHOSTUNREACH 172.31.47.121:3306
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1495:16)
+
+[2023-12-24 06:02:43.475 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logServerError,Error
+    
+MESSAGE: logServerError could not insert error Unable to get a pool connection for pool 0 connect EHOSTUNREACH 172.31.47.121:3306
+    
+CODE: Unknown Code
+    
+STACK: Error: connect EHOSTUNREACH 172.31.47.121:3306
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1495:16)
+
+[2023-12-24 06:02:43.478 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logServerError,Error
+    
+MESSAGE: logServerError could not insert error Unable to get a pool connection for pool 0 connect EHOSTUNREACH 172.31.47.121:3306
+    
+CODE: Unknown Code
+    
+STACK: Error: connect EHOSTUNREACH 172.31.47.121:3306
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1495:16)
+
+[2023-12-24 06:02:43.479 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logServerError,Error
+    
+MESSAGE: logServerError could not insert error Unable to get a pool connection for pool 0 connect EHOSTUNREACH 172.31.47.121:3306
+    
+CODE: Unknown Code
+    
+STACK: Error: connect EHOSTUNREACH 172.31.47.121:3306
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1495:16)
+
+[2023-12-24 06:02:43.480 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logServerError,Error
+    
+MESSAGE: logServerError could not insert error Unable to get a pool connection for pool 0 connect EHOSTUNREACH 172.31.47.121:3306
+    
+CODE: Unknown Code
+    
+STACK: Error: connect EHOSTUNREACH 172.31.47.121:3306
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1495:16)
+
+[2023-12-24 06:02:46.544 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logServerError,Error
+    
+MESSAGE: logServerError could not insert error Unable to get a pool connection for pool 0 connect EHOSTUNREACH 172.31.47.121:3306
+    
+CODE: Unknown Code
+    
+STACK: Error: connect EHOSTUNREACH 172.31.47.121:3306
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1495:16)
+
+[2023-12-24 06:02:46.546 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logServerError,Error
+    
+MESSAGE: logServerError could not insert error Unable to get a pool connection for pool 0 connect EHOSTUNREACH 172.31.47.121:3306
+    
+CODE: Unknown Code
+    
+STACK: Error: connect EHOSTUNREACH 172.31.47.121:3306
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1495:16)
+
+[2023-12-24 06:02:46.547 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logServerError,Error
+    
+MESSAGE: logServerError could not insert error Unable to get a pool connection for pool 0 connect EHOSTUNREACH 172.31.47.121:3306
+    
+CODE: Unknown Code
+    
+STACK: Error: connect EHOSTUNREACH 172.31.47.121:3306
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1495:16)
+
+[2023-12-24 06:02:46.549 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logServerError,Error
+    
+MESSAGE: logServerError could not insert error Unable to get a pool connection for pool 0 connect EHOSTUNREACH 172.31.47.121:3306
+    
+CODE: Unknown Code
+    
+STACK: Error: connect EHOSTUNREACH 172.31.47.121:3306
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1495:16)
+
+[2023-12-24 06:02:48.783 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: setInterval,Error
+    
+MESSAGE: DELETE previousResponses read ETIMEDOUT
+    
+CODE: Unknown Code
+    
+STACK: Error: read ETIMEDOUT
+    at TCP.onStreamRead (node:internal/stream_base_commons:217:20)
+
+[2023-12-24 06:02:48.785 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: setInterval,Error
+    
+MESSAGE: DELETE previousRequests read ETIMEDOUT
+    
+CODE: Unknown Code
+    
+STACK: Error: read ETIMEDOUT
+    at TCP.onStreamRead (node:internal/stream_base_commons:217:20)
+
+[2023-12-24 06:02:49.617 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logServerError,Error
+    
+MESSAGE: logServerError could not insert error Unable to get a pool connection for pool 0 connect EHOSTUNREACH 172.31.47.121:3306
+    
+CODE: Unknown Code
+    
+STACK: Error: connect EHOSTUNREACH 172.31.47.121:3306
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1495:16)
+
+[2023-12-24 06:02:49.618 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logServerError,Error
+    
+MESSAGE: logServerError could not insert error Unable to get a pool connection for pool 0 connect EHOSTUNREACH 172.31.47.121:3306
+    
+CODE: Unknown Code
+    
+STACK: Error: connect EHOSTUNREACH 172.31.47.121:3306
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1495:16)
+
+[2023-12-24 06:02:49.618 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logServerError,Error
+    
+MESSAGE: logServerError could not insert error Unable to get a pool connection for pool 0 connect EHOSTUNREACH 172.31.47.121:3306
+    
+CODE: Unknown Code
+    
+STACK: Error: connect EHOSTUNREACH 172.31.47.121:3306
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1495:16)
+
+[2023-12-24 06:02:49.618 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logServerError,Error
+    
+MESSAGE: logServerError could not insert error Unable to get a pool connection for pool 0 connect EHOSTUNREACH 172.31.47.121:3306
+    
+CODE: Unknown Code
+    
+STACK: Error: connect EHOSTUNREACH 172.31.47.121:3306
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1495:16)
+
+[2023-12-24 06:02:49.619 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logServerError,Error
+    
+MESSAGE: logServerError could not insert error Unable to get a pool connection for pool 0 connect EHOSTUNREACH 172.31.47.121:3306
+    
+CODE: Unknown Code
+    
+STACK: Error: connect EHOSTUNREACH 172.31.47.121:3306
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1495:16)
+
+[2023-12-24 06:02:49.619 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logServerError,Error
+    
+MESSAGE: logServerError could not insert error Unable to get a pool connection for pool 0 connect EHOSTUNREACH 172.31.47.121:3306
+    
+CODE: Unknown Code
+    
+STACK: Error: connect EHOSTUNREACH 172.31.47.121:3306
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1495:16)
+
+[2023-12-24 06:02:50.831 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: setInterval,Error
+    
+MESSAGE: DELETE previousResponses read ETIMEDOUT
+    
+CODE: Unknown Code
+    
+STACK: Error: read ETIMEDOUT
+    at TCP.onStreamRead (node:internal/stream_base_commons:217:20)
+
+[2023-12-24 06:02:50.833 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: setInterval,Error
+    
+MESSAGE: DELETE previousRequests read ETIMEDOUT
+    
+CODE: Unknown Code
+    
+STACK: Error: read ETIMEDOUT
+    at TCP.onStreamRead (node:internal/stream_base_commons:217:20)
+
+[2023-12-24 06:02:55.835 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logServerError,Error
+    
+MESSAGE: logServerError could not insert error Unable to get a pool connection for pool 0 connect ETIMEDOUT
+    
+CODE: Unknown Code
+    
+STACK: Error: connect ETIMEDOUT
+    at PoolConnection._handleTimeoutError (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/connection.js:189:17)
+    at listOnTimeout (node:internal/timers:569:17)
+    at process.processTimers (node:internal/timers:512:7)
+
+[2023-12-24 06:02:55.836 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logServerError,Error
+    
+MESSAGE: logServerError could not insert error Unable to get a pool connection for pool 0 connect ETIMEDOUT
+    
+CODE: Unknown Code
+    
+STACK: Error: connect ETIMEDOUT
+    at PoolConnection._handleTimeoutError (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/connection.js:189:17)
+    at listOnTimeout (node:internal/timers:569:17)
+    at process.processTimers (node:internal/timers:512:7)
+
+[2023-12-24 06:02:56.975 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: setInterval,Error
+    
+MESSAGE: DELETE previousRequests read ETIMEDOUT
+    
+CODE: Unknown Code
+    
+STACK: Error: read ETIMEDOUT
+    at TCP.onStreamRead (node:internal/stream_base_commons:217:20)
+
+[2023-12-24 06:02:56.977 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: setInterval,Error
+    
+MESSAGE: DELETE previousResponses read ETIMEDOUT
+    
+CODE: Unknown Code
+    
+STACK: Error: read ETIMEDOUT
+    at TCP.onStreamRead (node:internal/stream_base_commons:217:20)
+
+[2023-12-24 06:03:01.978 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logServerError,Error
+    
+MESSAGE: logServerError could not insert error Unable to get a pool connection for pool 0 connect ETIMEDOUT
+    
+CODE: Unknown Code
+    
+STACK: Error: connect ETIMEDOUT
+    at PoolConnection._handleTimeoutError (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/connection.js:189:17)
+    at listOnTimeout (node:internal/timers:569:17)
+    at process.processTimers (node:internal/timers:512:7)
+
+[2023-12-24 06:03:01.980 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logServerError,Error
+    
+MESSAGE: logServerError could not insert error Unable to get a pool connection for pool 0 connect ETIMEDOUT
+    
+CODE: Unknown Code
+    
+STACK: Error: connect ETIMEDOUT
+    at PoolConnection._handleTimeoutError (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/connection.js:189:17)
+    at listOnTimeout (node:internal/timers:569:17)
+    at process.processTimers (node:internal/timers:512:7)
+
+[2023-12-24 06:03:35.382 +0000] INFO (Server/790 on ip-172-31-40-88): Performing 180 second maintenance
+[2023-12-24 06:03:35.383 +0000] INFO (Server/790 on ip-172-31-40-88): verifyDatabasePool for 0
+[2023-12-24 06:03:40.385 +0000] ERROR (Error/790 on ip-172-31-40-88):
+    sourceFunctions: "verifyDatabasePool,Error"
+    code: "Unknown Code"
+    message: "Unable to getPoolConnection from 0 and run an arbitrary databaseQuery Unable to get a pool connection for pool 0 connect ETIMEDOUT"
+    stack: "Error: connect ETIMEDOUT\n    at PoolConnection._handleTimeoutError (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/connection.js:189:17)\n    at listOnTimeout (node:internal/timers:569:17)\n    at process.processTimers (node:internal/timers:512:7)"
+[2023-12-24 06:03:45.390 +0000] ERROR (Error/790 on ip-172-31-40-88):
+    sourceFunctions: "verifyDatabasePool,Error"
+    code: "Unknown Code"
+    message: "Unable to re-create the pool for 0 Unable to createDatabasePool connect ETIMEDOUT"
+    stack: "Error: connect ETIMEDOUT\n    at PoolConnection._handleTimeoutError (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/connection.js:189:17)\n    at listOnTimeout (node:internal/timers:569:17)\n    at process.processTimers (node:internal/timers:512:7)"
+[2023-12-24 06:03:45.391 +0000] INFO (Server/790 on ip-172-31-40-88): verifyDatabasePool for 1
+[2023-12-24 06:03:50.394 +0000] ERROR (Error/790 on ip-172-31-40-88):
+    sourceFunctions: "verifyDatabasePool,Error"
+    code: "Unknown Code"
+    message: "Unable to getPoolConnection from 1 and run an arbitrary databaseQuery Unable to get a pool connection for pool 1 connect ETIMEDOUT"
+    stack: "Error: connect ETIMEDOUT\n    at PoolConnection._handleTimeoutError (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/connection.js:189:17)\n    at listOnTimeout (node:internal/timers:569:17)\n    at process.processTimers (node:internal/timers:512:7)"
+[2023-12-24 06:03:55.402 +0000] ERROR (Error/790 on ip-172-31-40-88):
+    sourceFunctions: "verifyDatabasePool,Error"
+    code: "Unknown Code"
+    message: "Unable to re-create the pool for 1 Unable to createDatabasePool connect ETIMEDOUT"
+    stack: "Error: connect ETIMEDOUT\n    at PoolConnection._handleTimeoutError (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/connection.js:189:17)\n    at listOnTimeout (node:internal/timers:569:17)\n    at process.processTimers (node:internal/timers:512:7)"
+[2023-12-24 06:03:55.404 +0000] INFO (Server/790 on ip-172-31-40-88): Uncaught exception from origin: unhandledRejection
+[2023-12-24 06:03:55.404 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: shutdown,Error
+    Shutdown
+MESSAGE: uncaughtException Unable to get a pool connection for pool 0 Pool is closed.
+    
+CODE: Unknown Code
+    
+STACK: Error: Pool is closed.
+    at /home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/pool.js:39:40
+    at process.processTicksAndRejections (node:internal/process/task_queues:77:11)
+
+[2023-12-24 06:03:55.404 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logServerError,Error
+    
+MESSAGE: logServerError could not insert error Unable to get a pool connection for pool 0 Pool is closed.
+    
+CODE: Unknown Code
+    
+STACK: Error: Pool is closed.
+    at /home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/pool.js:39:40
+    at process.processTicksAndRejections (node:internal/process/task_queues:77:11)
+
+[2023-12-24 06:03:55.404 +0000] INFO (Server/790 on ip-172-31-40-88): Shutdown Initiated
+[2023-12-24 06:03:55.405 +0000] INFO (Server/790 on ip-172-31-40-88): Successfully ended databasePoolForGeneral
+[2023-12-24 06:03:55.405 +0000] INFO (Server/790 on ip-172-31-40-88): Schedule Gracefully Shutdown
+[2023-12-24 06:03:55.406 +0000] INFO (Server/790 on ip-172-31-40-88): Server Gracefully Shutdown
+[2023-12-24 06:06:21.104 +0000] INFO (Server/790 on ip-172-31-40-88): Shutdown Initiated
+[2023-12-24 06:06:21.104 +0000] INFO (Server/790 on ip-172-31-40-88): Successfully ended databasePoolForGeneral
+[2023-12-24 06:06:21.105 +0000] INFO (Server/790 on ip-172-31-40-88): Server Couldn't Shutdown
+[2023-12-24 06:06:21.105 +0000] INFO (Server/790 on ip-172-31-40-88): Schedule Gracefully Shutdown
+[2023-12-24 06:06:21.105 +0000] INFO (Server/790 on ip-172-31-40-88): Shutdown Complete
+[2023-12-24 06:06:21.105 +0000] INFO (Server/790 on ip-172-31-40-88): Uncaught exception from origin: unhandledRejection
+[2023-12-24 06:06:21.105 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: shutdown,Error
+    
+MESSAGE: uncaughtException Can't add new command when connection is in closed state
+    
+CODE: Unknown Code
+    
+STACK: Error: Can't add new command when connection is in closed state
+    at PoolConnection._addCommandClosedState (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/connection.js:148:17)
+    at PoolConnection.end [as _realEnd] (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/connection.js:855:26)
+    at Pool.end (/home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/pool.js:125:18)
+    at file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:152:33
+    at new Promise (<anonymous>)
+    at endDatabasePools (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/database/databaseConnections.js:133:12)
+    at file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/server/instantiateServer.js:86:9
+    at new Promise (<anonymous>)
+    at shutdown (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/server/instantiateServer.js:52:12)
+    at process.<anonymous> (file:///home/ubuntu/parent_dir/Hound-Server/Node/built/main/server/instantiateServer.js:99:11)
+
+[2023-12-24 06:06:21.105 +0000] ERROR (Server/790 on ip-172-31-40-88): 
+UNCAUGHT FROM SOURCE FUNCTIONS: logServerError,Error
+    
+MESSAGE: logServerError could not insert error Unable to get a pool connection for pool 0 Pool is closed.
+    
+CODE: Unknown Code
+    
+STACK: Error: Pool is closed.
+    at /home/ubuntu/parent_dir/Hound-Server/Node/node_modules/mysql2/lib/pool.js:39:40
+    at process.processTicksAndRejections (node:internal/process/task_queues:77:11)
+
+[2023-12-24 06:06:21.105 +0000] INFO (Server/790 on ip-172-31-40-88): Shutdown Initiated
+[2023-12-24 06:06:21.105 +0000] INFO (Server/790 on ip-172-31-40-88): Successfully ended databasePoolForGeneral
+[2023-12-24 06:06:21.105 +0000] INFO (Server/790 on ip-172-31-40-88): Schedule Gracefully Shutdown
+[2023-12-24 06:06:21.105 +0000] INFO (Server/790 on ip-172-31-40-88): Server Couldn't Shutdown
+[2023-12-24 06:06:21.105 +0000] INFO (Server/790 on ip-172-31-40-88): Shutdown Complete
+[2023-12-24 06:06:21.104 +0000] INFO (Server/790 on ip-172-31-40-88): SIGINT
+
+> node@1.0.0 houndServer
+> sudo npm run compile && sudo npm run start
+
+
+> node@1.0.0 compile
+> tsc
+
+Files:                         448
+Lines of Library:            39420
+Lines of Definitions:        64480
+Lines of TypeScript:          9547
+Lines of JavaScript:             0
+Lines of JSON:                   0
+Lines of Other:                  0
+Identifiers:                107037
+Symbols:                    126642
+Types:                       55707
+Instantiations:              62485
+Memory used:               213245K
+Assignability cache size:    19589
+Identity cache size:           595
+Subtype cache size:            342
+Strict subtype cache size:      19
+I/O Read time:               0.52s
+Parse time:                  1.69s
+ResolveModule time:          0.17s
+ResolveTypeReference time:   0.02s
+ResolveLibrary time:         0.03s
+Program time:                2.63s
+Bind time:                   0.86s
+Check time:                  8.63s
+transformTime time:          0.06s
+commentTime time:            0.12s
+I/O Write time:              0.02s
+printTime time:              0.68s
+Emit time:                   0.68s
+Total time:                 12.80s
+
+> node@1.0.0 start
+> node ./built/main/server/instantiateServer.js | pino-pretty -c -t
+
+[2023-12-24 06:06:37.218 +0000] INFO (Server/2979 on ip-172-31-40-88): Running HTTPS server on port 443; Production database
+[2023-12-24 06:09:37.401 +0000] INFO (Server/2979 on ip-172-31-40-88): Performing 180 second maintenance
+[2023-12-24 06:09:37.403 +0000] INFO (Server/2979 on ip-172-31-40-88): verifyDatabasePool for 0
+[2023-12-24 06:09:37.403 +0000] INFO (Server/2979 on ip-172-31-40-88): Testing databaseConnection with threadId 13
+[2023-12-24 06:09:40.512 +0000] INFO (Server/2979 on ip-172-31-40-88): Successfully tested databaseConnection with threadId 13
+[2023-12-24 06:09:40.513 +0000] INFO (Server/2979 on ip-172-31-40-88): Verified database pool 0
+[2023-12-24 06:09:40.513 +0000] INFO (Server/2979 on ip-172-31-40-88): verifyDatabasePool for 1
+[2023-12-24 06:09:46.156 +0000] INFO (Server/2979 on ip-172-31-40-88): Testing databaseConnection with threadId 16
+[2023-12-24 06:09:48.455 +0000] INFO (Server/2979 on ip-172-31-40-88): Successfully tested databaseConnection with threadId 16
+[2023-12-24 06:09:48.456 +0000] INFO (Server/2979 on ip-172-31-40-88): Verified database pool 1
+[2023-12-24 06:12:37.401 +0000] INFO (Server/2979 on ip-172-31-40-88): Performing 180 second maintenance
+[2023-12-24 06:12:37.402 +0000] INFO (Server/2979 on ip-172-31-40-88): verifyDatabasePool for 0
+[2023-12-24 06:12:37.403 +0000] INFO (Server/2979 on ip-172-31-40-88): Testing databaseConnection with threadId 11
+[2023-12-24 06:12:37.425 +0000] INFO (Server/2979 on ip-172-31-40-88): Successfully tested databaseConnection with threadId 11
+[2023-12-24 06:12:37.426 +0000] INFO (Server/2979 on ip-172-31-40-88): Verified database pool 0
+[2023-12-24 06:12:37.426 +0000] INFO (Server/2979 on ip-172-31-40-88): verifyDatabasePool for 1
+[2023-12-24 06:12:37.426 +0000] INFO (Server/2979 on ip-172-31-40-88): Testing databaseConnection with threadId 14
+[2023-12-24 06:12:37.428 +0000] INFO (Server/2979 on ip-172-31-40-88): Successfully tested databaseConnection with threadId 14
+[2023-12-24 06:12:37.428 +0000] INFO (Server/2979 on ip-172-31-40-88): Verified database pool 1
+[2023-12-24 06:15:37.401 +0000] INFO (Server/2979 on ip-172-31-40-88): Performing 180 second maintenance
+[2023-12-24 06:15:37.402 +0000] INFO (Server/2979 on ip-172-31-40-88): verifyDatabasePool for 0
+[2023-12-24 06:15:37.402 +0000] INFO (Server/2979 on ip-172-31-40-88): Testing databaseConnection with threadId 13
+[2023-12-24 06:15:37.526 +0000] INFO (Server/2979 on ip-172-31-40-88): Successfully tested databaseConnection with threadId 13
+[2023-12-24 06:15:37.527 +0000] INFO (Server/2979 on ip-172-31-40-88): Verified database pool 0
+[2023-12-24 06:15:37.527 +0000] INFO (Server/2979 on ip-172-31-40-88): verifyDatabasePool for 1
+[2023-12-24 06:15:37.527 +0000] INFO (Server/2979 on ip-172-31-40-88): Testing databaseConnection with threadId 16
+[2023-12-24 06:15:37.528 +0000] INFO (Server/2979 on ip-172-31-40-88): Successfully tested databaseConnection with threadId 16
+[2023-12-24 06:15:37.530 +0000] INFO (Server/2979 on ip-172-31-40-88): Verified database pool 1

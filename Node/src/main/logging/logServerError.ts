@@ -8,7 +8,7 @@ function printServerError(houndError: HoundError): void {
   const readableError = houndError.toJSON();
 
   serverLogger.error(
-    `\nUNCAUGHT FROM SOURCE FUNCTIONS: ${readableError.sourceFunctions}
+    `\nPRINT SERVER ERROR FROM SOURCE FUNCTIONS: ${readableError.sourceFunctions}
     \nMESSAGE: ${readableError.message}
     \nCODE: ${readableError.code}
     \nSTACK: ${readableError.stack}\n`,
