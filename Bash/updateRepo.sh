@@ -41,7 +41,8 @@ echo "MOVING '/HOUND_SERVER_DIR/Bash/*' INTO '/PARENT_DIR/' "
 mv -f ${HOUND_SERVER_DIR}/Bash/* "${PARENT_DIR}"
 
 LOG_DIR="${HOUND_SERVER_DIR}/Node/logs"
-LOG_SIZE_LIMIT=$((1024))
+# 10 MB
+LOG_SIZE_LIMIT=$((1024 * 1000 * 10))
 
 echo
 echo "CHECKING LOG FILES IN ${LOG_DIR}"
@@ -51,7 +52,7 @@ echo
 for log_file in "${LOG_DIR}"/*; do
     # Check if the file size is greater than the size limit
     if [ $(stat -c%s "$log_file") -gt ${LOG_SIZE_LIMIT} ]; then
-        echo "File ${log_file} is larger than ${LOG_SIZE_LIMIT} bytes"
+        echo "File ${log_file} is larger than ${LOG_SIZE_LIMIT} bytes (Actual size: ${file_size} bytes)"
 
         rm "${log_file}"
     fi
