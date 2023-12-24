@@ -19,7 +19,6 @@ echo
 echo "UPDATING REPOSITORY"
 echo
 
-
 echo "DISCARDING LOCAL CHANGES TO REPO"
 git -C "${HOUND_SERVER_DIR}" reset --hard
 
@@ -40,13 +39,13 @@ echo "MOVING '/HOUND_SERVER_DIR/Bash/*' INTO '/PARENT_DIR/' "
 # When you include the * wildcard character inside quotes, bash doesn't expand it. So, bash is trying to find a file literally named *, which of course doesn't exist.
 mv -f ${HOUND_SERVER_DIR}/Bash/* "${PARENT_DIR}"
 
+echo
+echo "REMOVING LARGE LOG FILES"
+echo
+
 LOG_DIR="${HOUND_SERVER_DIR}/Node/logs"
 # 10 MB
-LOG_SIZE_LIMIT=$((1024))
-
-echo
-echo "CHECKING LOG FILES IN ${LOG_DIR}"
-echo
+LOG_SIZE_LIMIT=$((1024 * 1000 * 10))
 
 # Loop through each log file in the directory
 for log_file in "${LOG_DIR}"/*; do
@@ -64,7 +63,7 @@ for log_file in "${LOG_DIR}"/*; do
 done
 
 echo
-echo "LOG FILE MANAGEMENT COMPLETED"
+echo "LARGE LOG FILE MANAGEMENT COMPLETED"
 echo
 
 echo
