@@ -50,8 +50,11 @@ echo
 
 # Loop through each log file in the directory
 for log_file in "${LOG_DIR}"/*; do
+    # Capture the size of the file
+    file_size=$(stat -c%s "$log_file")
+
     # Check if the file size is greater than the size limit
-    if [ $(stat -c%s "$log_file") -gt ${LOG_SIZE_LIMIT} ]; then
+    if [ ${file_size} -gt ${LOG_SIZE_LIMIT} ]; then
         echo "File ${log_file} is larger than ${LOG_SIZE_LIMIT} bytes (Actual size: ${file_size} bytes)"
 
         rm "${log_file}"
