@@ -180,7 +180,7 @@ async function endDatabasePools(): Promise<void> {
 
     function checkForCompletion(): void {
       if (numberOfEndsCompleted === numberOfEndsNeeded) {
-        serverLogger.info('Successfully ended all of the pools');
+        serverLogger.info('Ended all of the pools');
         resolve();
       }
     }

@@ -124,6 +124,7 @@ async function shutdown(): Promise<void> {
     });
 
     endDatabasePools().finally(() => {
+      serverLogger.info("'endDatabasePools' Completed (either successfully or unsuccessfully)");
       numberOfShutdownsCompleted += 1;
       checkForShutdownCompletion();
     });
