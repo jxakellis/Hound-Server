@@ -40,6 +40,27 @@ echo "MOVING '/HOUND_SERVER_DIR/Bash/*' INTO '/PARENT_DIR/' "
 # When you include the * wildcard character inside quotes, bash doesn't expand it. So, bash is trying to find a file literally named *, which of course doesn't exist.
 mv -f ${HOUND_SERVER_DIR}/Bash/* "${PARENT_DIR}"
 
+LOG_DIR="${HOUND_SERVER_DIR}/Node/logs"
+LOG_SIZE_LIMIT=$((1024 * 1024 * 10))
+
+echo
+echo "CHECKING LOG FILES IN ${LOG_DIR}"
+echo
+
+# Loop through each log file in the directory
+for log_file in "${LOG_DIR}"/*; do
+    # Check if the file size is greater than the size limit
+    if [ $(stat -c%s "$log_file") -gt ${LOG_SIZE_LIMIT} ]; then
+        echo "File ${log_file} is larger than ${LOG_SIZE_LIMIT} bytes"
+
+        rm "${log_file}"
+    fi
+done
+
+echo
+echo "LOG FILE MANAGEMENT COMPLETED"
+echo
+
 echo
 echo "PM2"
 echo
