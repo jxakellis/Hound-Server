@@ -25,8 +25,11 @@ git -C "${HOUND_SERVER_DIR}" reset --hard
 echo "PULLING LATEST FROM 'Hound-Server/Node' IN '/PARENT_DIR/'"
 git -C "${HOUND_SERVER_DIR}" pull origin main
 
+echo
 echo "INSTALLING node_modules IN /HOUND_SERVER_DIR/Node/"
+echo
 npm --prefix "${HOUND_SERVER_DIR}/Node/" ci
+echo
 
 # chmod "${BASH_SOURCE[0]}" is used to ensure that the script itself has permissions
 echo "GRANTING PERMISSIONS FOR THIS SCRIPT"
@@ -51,8 +54,6 @@ LOG_SIZE_LIMIT=$((1024 * 1000 * 10))
 for log_file in "${LOG_DIR}"/*; do
     # Capture the size of the file
     file_size=$(stat -c%s "$log_file")
-
-    echo "${file_size}"
 
     # Check if the file size is greater than the size limit
     if [ ${file_size} -gt ${LOG_SIZE_LIMIT} ]; then
