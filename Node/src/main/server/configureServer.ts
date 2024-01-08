@@ -2,12 +2,9 @@ import https from 'https';
 import { IncomingMessage, ServerResponse } from 'http';
 
 import { serverLogger } from '../logging/loggers.js';
-import { databaseQuery } from '../database/databaseQuery.js';
-import { logServerError } from '../logging/logServerError.js';
 import { restoreAlarmNotificationsForAllFamilies } from '../tools/notifications/alarm/restoreAlarmNotification.js';
 import { SERVER } from './globalConstants.js';
-import { HoundError } from './globalErrors.js';
-import { DatabasePools, getPoolConnection, verifyDatabasePools } from '../database/databaseConnections.js';
+import { verifyDatabasePools } from '../database/databaseConnections.js';
 
 async function configureServer(server: https.Server<typeof IncomingMessage, typeof ServerResponse>): Promise<NodeJS.Timeout> {
   return new Promise((resolve) => {
@@ -22,9 +19,11 @@ async function configureServer(server: https.Server<typeof IncomingMessage, type
         serverLogger.info(`Performing ${SERVER.DATABASE_MAINTENANCE_INTERVAL / 1000} second maintenance`);
 
         await verifyDatabasePools();
+
+        /*
         // We use two separate connections so that upon completion each connection can be released independently
-        const deleteReqPoolConnection = await getPoolConnection(DatabasePools.general);
-        const deleteResPoolConnection = await getPoolConnection(DatabasePools.general);
+        // const deleteReqPoolConnection = await getPoolConnection(DatabasePools.general);
+        // const deleteResPoolConnection = await getPoolConnection(DatabasePools.general);
 
         // Keep the latest DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES previousRequests, then delete any entries that are older
         databaseQuery(
@@ -63,6 +62,7 @@ async function configureServer(server: https.Server<typeof IncomingMessage, type
           )).finally(() => {
             deleteResPoolConnection.release();
           });
+          */
       }, SERVER.DATABASE_MAINTENANCE_INTERVAL);
 
       resolve(databaseMaintenanceIntervalObject);
