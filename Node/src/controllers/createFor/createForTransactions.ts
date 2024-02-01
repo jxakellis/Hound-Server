@@ -61,13 +61,7 @@ async function createUpdateTransaction(
   // type; The type of the in-app purchase.
   // The unique identifier of subscription purchase events across devices, including subscription renewals.
 
-  /*
-  Allow transactions from other environments. We just mark their origin in the database. This allows App Store connect to test the production version of the app with sandbox transactions
-
-  if (transactionInfo.environment !== SERVER.ENVIRONMENT) {
-    throw new HoundError(`environment must be '${SERVER.ENVIRONMENT}', not '${transactionInfo.environment}'`, createUpdateTransaction, ERROR_CODES.VALUE.INVALID);
-  }
-  */
+  // Allow transactions from other environments. We just mark their origin in the database. This allows App Store connect to test the production version of the app with sandbox transactions
 
   if (transactionInfo.inAppOwnershipType !== 'PURCHASED') {
     throw new HoundError(`inAppOwnershipType must be 'PURCHASED', not '${transactionInfo.inAppOwnershipType}'`, createUpdateTransaction, ERROR_CODES.VALUE.INVALID);
@@ -168,13 +162,13 @@ async function createTransactionForAppStoreReceiptURL(databaseConnection: Querya
   const transactionId = extractTransactionIdFromAppStoreReceiptURL(appStoreReceiptURL);
 
   if (transactionId === undefined || transactionId === null) {
-    throw new HoundError('transactionId couldn\'t be constructed with extractTransactionIdFromAppStoreReceiptURL', createTransactionForAppStoreReceiptURL, ERROR_CODES.VALUE.INVALID);
+    throw new HoundError('transactionId couldn\'t be constructed with extractTransactionIdFromAppStoreReceiptURL', createTransactionForAppStoreReceiptURL, ERROR_CODES.VALUE.MISSING);
   }
 
   const subscriptions = await queryAllSubscriptionsForTransactionId(transactionId.toString());
 
   if (subscriptions.length === 0) {
-    throw new HoundError('subscriptions couldn\'t be queried with querySubscriptionStatusesFromAppStoreAPI', createTransactionForAppStoreReceiptURL, ERROR_CODES.VALUE.INVALID);
+    throw new HoundError('subscriptions couldn\'t be queried with querySubscriptionStatusesFromAppStoreAPI', createTransactionForAppStoreReceiptURL, ERROR_CODES.VALUE.MISSING);
   }
 
   // Create an array of Promises

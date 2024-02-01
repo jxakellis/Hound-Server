@@ -23,17 +23,17 @@ async function getLogs(req: express.Request, res: express.Response): Promise<voi
     const validatedDog = validatedDogs.safeIndex(0);
     const validatedLog = validatedLogs.safeIndex(0);
     if (databaseConnection === undefined || databaseConnection === null) {
-      throw new HoundError('databaseConnection missing', getLogs, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', getLogs, ERROR_CODES.VALUE.MISSING);
     }
     if (validatedDog === undefined || validatedDog === null) {
-      throw new HoundError('validatedDog missing', getLogs, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('validatedDog missing', getLogs, ERROR_CODES.VALUE.MISSING);
     }
 
     if (validatedLog !== undefined && validatedLog !== null) {
       const possiblyDeletedLog = await getLogForLogId(databaseConnection, validatedLog.validatedLogId, true);
 
       if (possiblyDeletedLog === undefined || possiblyDeletedLog === null) {
-        throw new HoundError('getLogForLogId possiblyDeletedLog missing', getLogs, ERROR_CODES.VALUE.INVALID);
+        throw new HoundError('getLogForLogId possiblyDeletedLog missing', getLogs, ERROR_CODES.VALUE.MISSING);
       }
 
       return res.houndDeclarationExtendedProperties.sendSuccessResponse(possiblyDeletedLog);
@@ -61,7 +61,7 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
     const { unvalidatedLogsDictionary } = req.houndDeclarationExtendedProperties.unvalidatedVariables;
     const unvalidatedLogDictionary = unvalidatedLogsDictionary.safeIndex(0);
     if (databaseConnection === undefined || databaseConnection === null) {
-      throw new HoundError('databaseConnection missing', createLog, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', createLog, ERROR_CODES.VALUE.MISSING);
     }
     if (validatedUserId === undefined || validatedUserId === null) {
       throw new HoundError('No user found or invalid permissions', createLog, ERROR_CODES.PERMISSION.NO.USER);
@@ -70,10 +70,10 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
       throw new HoundError('No family found or invalid permissions', createLog, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
     if (validatedDog === undefined || validatedDog === null) {
-      throw new HoundError('validatedDog missing', createLog, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('validatedDog missing', createLog, ERROR_CODES.VALUE.MISSING);
     }
     if (unvalidatedLogDictionary === undefined || unvalidatedLogDictionary === null) {
-      throw new HoundError('unvalidatedLogDictionary missing', createLog, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('unvalidatedLogDictionary missing', createLog, ERROR_CODES.VALUE.MISSING);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -92,16 +92,16 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
     const logNumberOfLogUnits = formatNumber(unvalidatedLogDictionary?.['logNumberOfLogUnits']);
 
     if (logStartDate === undefined || logStartDate === null) {
-      throw new HoundError('logStartDate missing', createLog, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('logStartDate missing', createLog, ERROR_CODES.VALUE.MISSING);
     }
     if (logAction === undefined || logAction === null) {
-      throw new HoundError('logAction missing', createLog, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('logAction missing', createLog, ERROR_CODES.VALUE.MISSING);
     }
     if (logCustomActionName === undefined || logCustomActionName === null) {
-      throw new HoundError('logCustomActionName missing', createLog, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('logCustomActionName missing', createLog, ERROR_CODES.VALUE.MISSING);
     }
     if (logNote === undefined || logNote === null) {
-      throw new HoundError('logNote missing', createLog, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('logNote missing', createLog, ERROR_CODES.VALUE.MISSING);
     }
 
     const result = await createLogForUserIdDogId(
@@ -139,13 +139,13 @@ async function updateLog(req: express.Request, res: express.Response): Promise<v
     const { validatedUserId, validatedLogs } = req.houndDeclarationExtendedProperties.validatedVariables;
     const validatedLog = validatedLogs.safeIndex(0);
     if (databaseConnection === undefined || databaseConnection === null) {
-      throw new HoundError('databaseConnection missing', updateLog, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', updateLog, ERROR_CODES.VALUE.MISSING);
     }
     if (validatedUserId === undefined || validatedUserId === null) {
       throw new HoundError('No user found or invalid permissions', updateLog, ERROR_CODES.PERMISSION.NO.USER);
     }
     if (validatedLog === undefined || validatedLog === null) {
-      throw new HoundError('validatedLog missing', updateLog, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('validatedLog missing', updateLog, ERROR_CODES.VALUE.MISSING);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -164,16 +164,16 @@ async function updateLog(req: express.Request, res: express.Response): Promise<v
     const logNumberOfLogUnits = formatNumber(validatedLog.unvalidatedLogDictionary?.['logNumberOfLogUnits']);
 
     if (logStartDate === undefined || logStartDate === null) {
-      throw new HoundError('logStartDate missing', updateLog, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('logStartDate missing', updateLog, ERROR_CODES.VALUE.MISSING);
     }
     if (logAction === undefined || logAction === null) {
-      throw new HoundError('logAction missing', updateLog, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('logAction missing', updateLog, ERROR_CODES.VALUE.MISSING);
     }
     if (logCustomActionName === undefined || logCustomActionName === null) {
-      throw new HoundError('logCustomActionName missing', updateLog, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('logCustomActionName missing', updateLog, ERROR_CODES.VALUE.MISSING);
     }
     if (logNote === undefined || logNote === null) {
-      throw new HoundError('logNote missing', updateLog, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('logNote missing', updateLog, ERROR_CODES.VALUE.MISSING);
     }
 
     await updateLogForDogIdLogId(
@@ -207,10 +207,10 @@ async function deleteLog(req: express.Request, res: express.Response): Promise<v
     const { validatedLogs } = req.houndDeclarationExtendedProperties.validatedVariables;
     const validatedLog = validatedLogs.safeIndex(0);
     if (databaseConnection === undefined || databaseConnection === null) {
-      throw new HoundError('databaseConnection missing', deleteLog, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', deleteLog, ERROR_CODES.VALUE.MISSING);
     }
     if (validatedLog === undefined || validatedLog === null) {
-      throw new HoundError('validatedLog missing', deleteLog, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('validatedLog missing', deleteLog, ERROR_CODES.VALUE.MISSING);
     }
 
     await deleteLogForLogId(databaseConnection, validatedLog.validatedLogId);

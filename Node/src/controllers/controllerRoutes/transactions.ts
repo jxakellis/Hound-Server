@@ -14,7 +14,7 @@ async function getTransactions(req: express.Request, res: express.Response): Pro
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined || databaseConnection === null) {
-      throw new HoundError('databaseConnection missing', getTransactions, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', getTransactions, ERROR_CODES.VALUE.MISSING);
     }
     if (validatedUserId === undefined || validatedUserId === null) {
       throw new HoundError('No user found or invalid permissions', getTransactions, ERROR_CODES.PERMISSION.NO.USER);
@@ -23,7 +23,7 @@ async function getTransactions(req: express.Request, res: express.Response): Pro
     const result = await getAllTransactions(databaseConnection, validatedUserId);
 
     if (result === undefined || result === null) {
-      throw new HoundError('result missing', getTransactions, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('result missing', getTransactions, ERROR_CODES.VALUE.MISSING);
     }
 
     return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
@@ -38,7 +38,7 @@ async function createTransactions(req: express.Request, res: express.Response): 
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined || databaseConnection === null) {
-      throw new HoundError('databaseConnection missing', createTransactions, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', createTransactions, ERROR_CODES.VALUE.MISSING);
     }
     if (validatedUserId === undefined || validatedUserId === null) {
       throw new HoundError('No user found or invalid permissions', createTransactions, ERROR_CODES.PERMISSION.NO.USER);
@@ -47,7 +47,7 @@ async function createTransactions(req: express.Request, res: express.Response): 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const appStoreReceiptURL = formatUnknownString(req.body['appStoreReceiptURL']);
     if (appStoreReceiptURL === undefined || appStoreReceiptURL === null) {
-      throw new HoundError('appStoreReceiptURL missing', createTransactions, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('appStoreReceiptURL missing', createTransactions, ERROR_CODES.VALUE.MISSING);
     }
 
     await createTransactionForAppStoreReceiptURL(databaseConnection, validatedUserId, appStoreReceiptURL);
@@ -56,7 +56,7 @@ async function createTransactions(req: express.Request, res: express.Response): 
     const result = await getActiveTransaction(databaseConnection, validatedUserId);
 
     if (result === undefined || result === null) {
-      throw new HoundError('result missing', createTransactions, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('result missing', createTransactions, ERROR_CODES.VALUE.MISSING);
     }
 
     return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);

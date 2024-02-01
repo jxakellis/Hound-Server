@@ -20,7 +20,7 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedFamilyId } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined || databaseConnection === null) {
-      throw new HoundError('databaseConnection missing', validateDogId, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', validateDogId, ERROR_CODES.VALUE.MISSING);
     }
     if (validatedFamilyId === undefined || validatedFamilyId === null) {
       throw new HoundError('No family found or invalid permissions', validateDogId, ERROR_CODES.PERMISSION.NO.FAMILY);
@@ -91,10 +91,10 @@ async function validateLogId(req: express.Request, res: express.Response, next: 
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedDogs } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined || databaseConnection === null) {
-      throw new HoundError('databaseConnection missing', validateLogId, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', validateLogId, ERROR_CODES.VALUE.MISSING);
     }
     if (validatedDogs === undefined || validatedDogs === null) {
-      throw new HoundError('validatedDogs missing', validateLogId, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('validatedDogs missing', validateLogId, ERROR_CODES.VALUE.MISSING);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -159,10 +159,10 @@ async function validateReminderId(req: express.Request, res: express.Response, n
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedDogs } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined || databaseConnection === null) {
-      throw new HoundError('databaseConnection missing', validateReminderId, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', validateReminderId, ERROR_CODES.VALUE.MISSING);
     }
     if (validatedDogs === undefined || validatedDogs === null) {
-      throw new HoundError('validatedDogs missing', validateReminderId, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('validatedDogs missing', validateReminderId, ERROR_CODES.VALUE.MISSING);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access

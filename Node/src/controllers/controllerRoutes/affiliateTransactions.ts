@@ -8,18 +8,18 @@ async function getAffiliateTransactions(req: express.Request, res: express.Respo
   try {
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     if (databaseConnection === undefined || databaseConnection === null) {
-      throw new HoundError('databaseConnection missing', getAffiliateTransactions, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', getAffiliateTransactions, ERROR_CODES.VALUE.MISSING);
     }
 
     const offerIdentifier = formatUnknownString(req.params['offerIdentifier']);
     if (offerIdentifier === undefined || offerIdentifier === null) {
-      throw new HoundError('offerIdentifier missing', getAffiliateTransactions, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('offerIdentifier missing', getAffiliateTransactions, ERROR_CODES.VALUE.MISSING);
     }
 
     const result = await getAffiliateTransactionsForOfferIdentifier(databaseConnection, offerIdentifier);
 
     if (result === undefined || result === null) {
-      throw new HoundError('result missing', getAffiliateTransactions, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('result missing', getAffiliateTransactions, ERROR_CODES.VALUE.MISSING);
     }
 
     return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);

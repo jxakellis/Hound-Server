@@ -25,10 +25,10 @@ async function getReminders(req: express.Request, res: express.Response): Promis
     const { validatedDogs } = req.houndDeclarationExtendedProperties.validatedVariables;
     const validatedDog = validatedDogs.safeIndex(0);
     if (databaseConnection === undefined || databaseConnection === null) {
-      throw new HoundError('databaseConnection missing', getReminders, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', getReminders, ERROR_CODES.VALUE.MISSING);
     }
     if (validatedDog === undefined || validatedDog === null) {
-      throw new HoundError('validatedDog missing', getReminders, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('validatedDog missing', getReminders, ERROR_CODES.VALUE.MISSING);
     }
 
     const { validatedReminders } = req.houndDeclarationExtendedProperties.validatedVariables;
@@ -38,7 +38,7 @@ async function getReminders(req: express.Request, res: express.Response): Promis
       const possibleDeletedReminder = await getReminderForReminderId(databaseConnection, validatedReminder.validatedReminderId, true);
 
       if (possibleDeletedReminder === undefined || possibleDeletedReminder === null) {
-        throw new HoundError('getReminderForReminderId possibleDeletedReminder missing', getReminders, ERROR_CODES.VALUE.INVALID);
+        throw new HoundError('getReminderForReminderId possibleDeletedReminder missing', getReminders, ERROR_CODES.VALUE.MISSING);
       }
 
       return res.houndDeclarationExtendedProperties.sendSuccessResponse(possibleDeletedReminder);
@@ -65,16 +65,16 @@ async function createReminder(req: express.Request, res: express.Response): Prom
     const validatedDog = validatedDogs.safeIndex(0);
     const { unvalidatedRemindersDictionary } = req.houndDeclarationExtendedProperties.unvalidatedVariables;
     if (databaseConnection === undefined || databaseConnection === null) {
-      throw new HoundError('databaseConnection missing', createReminder, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', createReminder, ERROR_CODES.VALUE.MISSING);
     }
     if (validatedFamilyId === undefined || validatedFamilyId === null) {
       throw new HoundError('No family found or invalid permissions', createReminder, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
     if (validatedDog === undefined || validatedDog === null) {
-      throw new HoundError('validatedDog missing', createReminder, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('validatedDog missing', createReminder, ERROR_CODES.VALUE.MISSING);
     }
     if (unvalidatedRemindersDictionary === undefined || unvalidatedRemindersDictionary === null) {
-      throw new HoundError('unvalidatedRemindersDictionary missing', createReminder, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('unvalidatedRemindersDictionary missing', createReminder, ERROR_CODES.VALUE.MISSING);
     }
 
     const reminders: NotYetCreatedDogRemindersRow[] = [];
@@ -221,13 +221,13 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedFamilyId, validatedReminders } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined || databaseConnection === null) {
-      throw new HoundError('databaseConnection missing', updateReminder, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', updateReminder, ERROR_CODES.VALUE.MISSING);
     }
     if (validatedFamilyId === undefined || validatedFamilyId === null) {
       throw new HoundError('No family found or invalid permissions', updateReminder, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
     if (validatedReminders === undefined || validatedReminders === null) {
-      throw new HoundError('validatedReminders missing', updateReminder, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('validatedReminders missing', updateReminder, ERROR_CODES.VALUE.MISSING);
     }
 
     const reminders: NotYetUpdatedDogRemindersRow[] = [];
@@ -378,13 +378,13 @@ async function deleteReminder(req: express.Request, res: express.Response): Prom
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedFamilyId, validatedReminders } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined || databaseConnection === null) {
-      throw new HoundError('databaseConnection missing', deleteReminder, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', deleteReminder, ERROR_CODES.VALUE.MISSING);
     }
     if (validatedFamilyId === undefined || validatedFamilyId === null) {
       throw new HoundError('No family found or invalid permissions', deleteReminder, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
     if (validatedReminders === undefined || validatedReminders === null) {
-      throw new HoundError('validatedReminders missing', deleteReminder, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('validatedReminders missing', deleteReminder, ERROR_CODES.VALUE.MISSING);
     }
 
     await deleteRemindersForFamilyIdDogIdReminderIds(databaseConnection, validatedFamilyId, validatedReminders.map((validatedReminder) => validatedReminder.validatedReminderId));

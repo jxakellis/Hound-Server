@@ -35,6 +35,7 @@ declare module 'express-serve-static-core' {
                 unvalidatedDogsDictionary: HoundDictionary[]
                 unvalidatedLogsDictionary: HoundDictionary[]
                 unvalidatedRemindersDictionary: HoundDictionary[]
+                unvalidatedSurveyFeedbackDictionary: HoundDictionary
             }
         }
     }

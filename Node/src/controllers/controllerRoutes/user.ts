@@ -16,10 +16,10 @@ async function getUser(req: express.Request, res: express.Response): Promise<voi
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedUserIdentifier } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined || databaseConnection === null) {
-      throw new HoundError('databaseConnection missing', getUser, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', getUser, ERROR_CODES.VALUE.MISSING);
     }
     if (validatedUserIdentifier === undefined || validatedUserIdentifier === null) {
-      throw new HoundError('validatedUserIdentifier missing', getUser, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('validatedUserIdentifier missing', getUser, ERROR_CODES.VALUE.MISSING);
     }
 
     const result = await getPrivateCombinedUsersInformation(databaseConnection, validatedUserIdentifier);
@@ -43,10 +43,10 @@ async function createUser(req: express.Request, res: express.Response): Promise<
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedUserIdentifier } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined || databaseConnection === null) {
-      throw new HoundError('databaseConnection missing', createUser, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', createUser, ERROR_CODES.VALUE.MISSING);
     }
     if (validatedUserIdentifier === undefined || validatedUserIdentifier === null) {
-      throw new HoundError('validatedUserIdentifier missing', createUser, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('validatedUserIdentifier missing', createUser, ERROR_CODES.VALUE.MISSING);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -85,43 +85,43 @@ async function createUser(req: express.Request, res: express.Response): Promise<
     const userConfigurationSilentModeEndUTCMinute = formatNumber(req.body['userConfigurationSilentModeEndUTCMinute']);
 
     if (userConfigurationIsNotificationEnabled === undefined || userConfigurationIsNotificationEnabled === null) {
-      throw new HoundError('userConfigurationIsNotificationEnabled missing', createUser, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('userConfigurationIsNotificationEnabled missing', createUser, ERROR_CODES.VALUE.MISSING);
     }
     if (userConfigurationIsLoudNotificationEnabled === undefined || userConfigurationIsLoudNotificationEnabled === null) {
-      throw new HoundError('userConfigurationIsLoudNotificationEnabled missing', createUser, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('userConfigurationIsLoudNotificationEnabled missing', createUser, ERROR_CODES.VALUE.MISSING);
     }
     if (userConfigurationIsLogNotificationEnabled === undefined || userConfigurationIsLogNotificationEnabled === null) {
-      throw new HoundError('userConfigurationIsLogNotificationEnabled missing', createUser, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('userConfigurationIsLogNotificationEnabled missing', createUser, ERROR_CODES.VALUE.MISSING);
     }
     if (userConfigurationIsReminderNotificationEnabled === undefined || userConfigurationIsReminderNotificationEnabled === null) {
-      throw new HoundError('userConfigurationIsReminderNotificationEnabled missing', createUser, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('userConfigurationIsReminderNotificationEnabled missing', createUser, ERROR_CODES.VALUE.MISSING);
     }
     if (userConfigurationMeasurementSystem === undefined || userConfigurationMeasurementSystem === null) {
-      throw new HoundError('userConfigurationMeasurementSystem missing', createUser, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('userConfigurationMeasurementSystem missing', createUser, ERROR_CODES.VALUE.MISSING);
     }
     if (userConfigurationInterfaceStyle === undefined || userConfigurationInterfaceStyle === null) {
-      throw new HoundError('userConfigurationInterfaceStyle missing', createUser, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('userConfigurationInterfaceStyle missing', createUser, ERROR_CODES.VALUE.MISSING);
     }
     if (userConfigurationSnoozeLength === undefined || userConfigurationSnoozeLength === null) {
-      throw new HoundError('userConfigurationSnoozeLength missing', createUser, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('userConfigurationSnoozeLength missing', createUser, ERROR_CODES.VALUE.MISSING);
     }
     if (userConfigurationNotificationSound === undefined || userConfigurationNotificationSound === null) {
-      throw new HoundError('userConfigurationNotificationSound missing', createUser, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('userConfigurationNotificationSound missing', createUser, ERROR_CODES.VALUE.MISSING);
     }
     if (userConfigurationIsSilentModeEnabled === undefined || userConfigurationIsSilentModeEnabled === null) {
-      throw new HoundError('userConfigurationIsSilentModeEnabled missing', createUser, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('userConfigurationIsSilentModeEnabled missing', createUser, ERROR_CODES.VALUE.MISSING);
     }
     if (userConfigurationSilentModeStartUTCHour === undefined || userConfigurationSilentModeStartUTCHour === null) {
-      throw new HoundError('userConfigurationSilentModeStartUTCHour missing', createUser, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('userConfigurationSilentModeStartUTCHour missing', createUser, ERROR_CODES.VALUE.MISSING);
     }
     if (userConfigurationSilentModeEndUTCHour === undefined || userConfigurationSilentModeEndUTCHour === null) {
-      throw new HoundError('userConfigurationSilentModeEndUTCHour missing', createUser, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('userConfigurationSilentModeEndUTCHour missing', createUser, ERROR_CODES.VALUE.MISSING);
     }
     if (userConfigurationSilentModeStartUTCMinute === undefined || userConfigurationSilentModeStartUTCMinute === null) {
-      throw new HoundError('userConfigurationSilentModeStartUTCMinute missing', createUser, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('userConfigurationSilentModeStartUTCMinute missing', createUser, ERROR_CODES.VALUE.MISSING);
     }
     if (userConfigurationSilentModeEndUTCMinute === undefined || userConfigurationSilentModeEndUTCMinute === null) {
-      throw new HoundError('userConfigurationSilentModeEndUTCMinute missing', createUser, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('userConfigurationSilentModeEndUTCMinute missing', createUser, ERROR_CODES.VALUE.MISSING);
     }
 
     const result = await createUserForUserIdentifier(
@@ -163,7 +163,7 @@ async function updateUser(req: express.Request, res: express.Response): Promise<
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined || databaseConnection === null) {
-      throw new HoundError('databaseConnection missing', updateUser, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', updateUser, ERROR_CODES.VALUE.MISSING);
     }
     if (validatedUserId === undefined || validatedUserId === null) {
       throw new HoundError('No user found or invalid permissions', updateUser, ERROR_CODES.PERMISSION.NO.USER);
@@ -234,7 +234,7 @@ async function deleteUser(req: express.Request, res: express.Response): Promise<
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined || databaseConnection === null) {
-      throw new HoundError('databaseConnection missing', deleteUser, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', deleteUser, ERROR_CODES.VALUE.MISSING);
     }
     if (validatedUserId === undefined || validatedUserId === null) {
       throw new HoundError('No user found or invalid permissions', deleteUser, ERROR_CODES.PERMISSION.NO.USER);

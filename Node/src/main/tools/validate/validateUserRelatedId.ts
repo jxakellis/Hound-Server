@@ -19,10 +19,10 @@ async function validateUserIdentifier(req: express.Request, res: express.Respons
     const userIdentifier = formatUnknownString(req.headers['houndheader-useridentifier']);
 
     if (databaseConnection === undefined || databaseConnection === null) {
-      throw new HoundError('databaseConnection missing', validateUserIdentifier, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', validateUserIdentifier, ERROR_CODES.VALUE.MISSING);
     }
     if (userIdentifier === undefined || userIdentifier === null) {
-      throw new HoundError('userIdentifier missing', validateUserIdentifier, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('userIdentifier missing', validateUserIdentifier, ERROR_CODES.VALUE.MISSING);
     }
 
     // we are verifying that a user is able to use the provided userId, and to do so they must know the corresponding secret (the userIdentifier)
@@ -83,10 +83,10 @@ async function validateUserId(req: express.Request, res: express.Response, next:
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedUserIdentifier } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined || databaseConnection === null) {
-      throw new HoundError('databaseConnection missing', validateUserId, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', validateUserId, ERROR_CODES.VALUE.MISSING);
     }
     if (validatedUserIdentifier === undefined || validatedUserIdentifier === null) {
-      throw new HoundError('validatedUserIdentifier missing', validateUserId, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('validatedUserIdentifier missing', validateUserId, ERROR_CODES.VALUE.MISSING);
     }
 
     // we are verifying that a user is able to use the provided userId, and to do so they must know the corresponding secret (the userIdentifier)
@@ -128,7 +128,7 @@ async function validateFamilyId(req: express.Request, res: express.Response, nex
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined || databaseConnection === null) {
-      throw new HoundError('databaseConnection missing', validateFamilyId, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', validateFamilyId, ERROR_CODES.VALUE.MISSING);
     }
     if (validatedUserId === undefined || validatedUserId === null) {
       throw new HoundError('No user found or invalid permissions', validateFamilyId, ERROR_CODES.PERMISSION.NO.USER);

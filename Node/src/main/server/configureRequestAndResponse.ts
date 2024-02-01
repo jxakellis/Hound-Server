@@ -94,6 +94,7 @@ function configureRequestAndResponseExtendedProperties(req: express.Request, res
       unvalidatedDogsDictionary: [],
       unvalidatedLogsDictionary: [],
       unvalidatedRemindersDictionary: [],
+      unvalidatedSurveyFeedbackDictionary: {},
     },
   };
   res.houndDeclarationExtendedProperties = {

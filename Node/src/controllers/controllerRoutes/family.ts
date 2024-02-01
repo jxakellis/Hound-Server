@@ -19,7 +19,7 @@ async function getFamily(req: express.Request, res: express.Response): Promise<v
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedFamilyId } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined || databaseConnection === null) {
-      throw new HoundError('databaseConnection missing', getFamily, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', getFamily, ERROR_CODES.VALUE.MISSING);
     }
     if (validatedFamilyId === undefined || validatedFamilyId === null) {
       throw new HoundError('No family found or invalid permissions', getFamily, ERROR_CODES.PERMISSION.NO.FAMILY);
@@ -27,13 +27,13 @@ async function getFamily(req: express.Request, res: express.Response): Promise<v
 
     const { familyActiveSubscription } = req.houndDeclarationExtendedProperties;
     if (familyActiveSubscription === undefined || familyActiveSubscription === null) {
-      throw new HoundError('familyActiveSubscription missing', getFamily, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('familyActiveSubscription missing', getFamily, ERROR_CODES.VALUE.MISSING);
     }
 
     const result = await getAllFamilyInformationForFamilyId(databaseConnection, validatedFamilyId, familyActiveSubscription);
 
     if (result === undefined || result === null) {
-      throw new HoundError('result missing', getFamily, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('result missing', getFamily, ERROR_CODES.VALUE.MISSING);
     }
 
     return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
@@ -51,7 +51,7 @@ async function createFamily(req: express.Request, res: express.Response): Promis
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined || databaseConnection === null) {
-      throw new HoundError('databaseConnection missing', createFamily, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', createFamily, ERROR_CODES.VALUE.MISSING);
     }
     if (validatedUserId === undefined || validatedUserId === null) {
       throw new HoundError('No user found or invalid permissions', createFamily, ERROR_CODES.PERMISSION.NO.USER);
@@ -74,7 +74,7 @@ async function updateFamily(req: express.Request, res: express.Response): Promis
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined || databaseConnection === null) {
-      throw new HoundError('databaseConnection missing', updateFamily, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', updateFamily, ERROR_CODES.VALUE.MISSING);
     }
     if (validatedUserId === undefined || validatedUserId === null) {
       throw new HoundError('No user found or invalid permissions', updateFamily, ERROR_CODES.PERMISSION.NO.USER);
@@ -102,7 +102,7 @@ async function deleteFamily(req: express.Request, res: express.Response): Promis
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedUserId, validatedFamilyId } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined || databaseConnection === null) {
-      throw new HoundError('databaseConnection missing', deleteFamily, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('databaseConnection missing', deleteFamily, ERROR_CODES.VALUE.MISSING);
     }
     if (validatedUserId === undefined || validatedUserId === null) {
       throw new HoundError('No user found or invalid permissions', deleteFamily, ERROR_CODES.PERMISSION.NO.USER);
@@ -115,7 +115,7 @@ async function deleteFamily(req: express.Request, res: express.Response): Promis
     const familyKickUserId = formatUnknownString(req.body['familyKickUserId']);
     const { familyActiveSubscription } = req.houndDeclarationExtendedProperties;
     if (familyActiveSubscription === undefined || familyActiveSubscription === null) {
-      throw new HoundError('familyActiveSubscription missing', deleteFamily, ERROR_CODES.VALUE.INVALID);
+      throw new HoundError('familyActiveSubscription missing', deleteFamily, ERROR_CODES.VALUE.MISSING);
     }
 
     if (familyKickUserId !== undefined && familyKickUserId !== null) {
