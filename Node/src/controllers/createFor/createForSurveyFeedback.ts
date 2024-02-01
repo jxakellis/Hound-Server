@@ -9,7 +9,7 @@ import { formatKnownString } from '../../main/format/formatObject.js';
 async function createSurveyFeedbackForCancelSubscription(databaseConnection: Queryable, surveyFeedback: NotYetCreatedSurveyFeedbackCancelSubscriptionRow): Promise<void> {
   await databaseQuery<ResultSetHeader>(
     databaseConnection,
-    `INSERT INTO surveySurveyFeedbackCancelSubscription
+    `INSERT INTO surveyFeedbackCancelSubscription
       (
         surveyFeedbackDate,
         userId, familyId,
