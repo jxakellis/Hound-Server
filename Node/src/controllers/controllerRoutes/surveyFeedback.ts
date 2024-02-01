@@ -3,7 +3,7 @@ import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 
 import { formatUnknownString } from '../../main/format/formatObject.js';
 import { createSurveyFeedbackForCancelSubscription } from '../createFor/createForSurveyFeedback.js';
-import { SurveyFeedbackTypes } from '../../main/enums/SurveyFeedbackTypes.js';
+import { SurveyFeedbackType } from '../../main/enums/SurveyFeedbackType.js';
 
 async function createSurveyFeedback(req: express.Request, res: express.Response): Promise<void> {
   try {
@@ -35,13 +35,13 @@ async function createSurveyFeedback(req: express.Request, res: express.Response)
     }
 
     switch (surveyFeedbackType) {
-      case SurveyFeedbackTypes.cancelSubscription:
+      case SurveyFeedbackType.cancelSubscription:
         break;
       default:
         throw new HoundError(`surveyFeedbackType of '${surveyFeedbackType}' invalid`, createSurveyFeedback, ERROR_CODES.VALUE.INVALID);
     }
 
-    if (surveyFeedbackType === SurveyFeedbackTypes.cancelSubscription) {
+    if (surveyFeedbackType === SurveyFeedbackType.cancelSubscription) {
       const { familyActiveSubscription } = req.houndDeclarationExtendedProperties;
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       const userCancellationReason = formatUnknownString(unvalidatedSurveyFeedbackDictionary?.['userCancellationReason']);

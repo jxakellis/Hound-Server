@@ -1,7 +1,7 @@
-enum SurveyFeedbackTypes {
+enum SurveyFeedbackType {
     cancelSubscription = 'cancelSubscription',
 }
 
 export {
-  SurveyFeedbackTypes,
+  SurveyFeedbackType,
 };
