@@ -7,6 +7,14 @@ import { formatKnownString } from '../../main/format/formatObject.js';
 *  If a problem is encountered, creates and throws custom error
 */
 async function createSurveyFeedbackForCancelSubscription(databaseConnection: Queryable, surveyFeedback: NotYetCreatedSurveyFeedbackCancelSubscriptionRow): Promise<void> {
+  // If there is a placeholder transactionId, then leave its value as null
+  let activeSubscriptionTransactionId: (number | undefined);
+  if (surveyFeedback.activeSubscriptionTransactionId !== undefined && surveyFeedback.activeSubscriptionTransactionId !== null) {
+    if (surveyFeedback.activeSubscriptionTransactionId >= 0) {
+      activeSubscriptionTransactionId = surveyFeedback.activeSubscriptionTransactionId;
+    }
+  }
+
   await databaseQuery<ResultSetHeader>(
     databaseConnection,
     `INSERT INTO surveyFeedbackCancelSubscription
@@ -25,7 +33,7 @@ async function createSurveyFeedbackForCancelSubscription(databaseConnection: Que
     [
       // none, default values
       surveyFeedback.userId, surveyFeedback.familyId,
-      surveyFeedback.activeSubscriptionTransactionId,
+      activeSubscriptionTransactionId,
       surveyFeedback.userCancellationReason, formatKnownString(surveyFeedback.userCancellationFeedback, 1000),
     ],
   );
