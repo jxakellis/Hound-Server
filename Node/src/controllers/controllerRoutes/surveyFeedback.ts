@@ -14,6 +14,8 @@ async function createSurveyFeedback(req: express.Request, res: express.Response)
     const { validatedUserId, validatedFamilyId } = req.houndDeclarationExtendedProperties.validatedVariables;
     const { unvalidatedSurveyFeedbackDictionary } = req.houndDeclarationExtendedProperties.unvalidatedVariables;
 
+    console.log('createSurveyFeedback', validatedUserId, validatedFamilyId, unvalidatedSurveyFeedbackDictionary);
+
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', createSurveyFeedback, ERROR_CODES.VALUE.MISSING);
     }
