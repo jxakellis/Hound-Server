@@ -40,7 +40,8 @@ async function createUserForUserIdentifier(
           userFirstName,
           userLastName,
           userNotificationToken,
-          userAccountCreationDate
+          userAccountCreationDate,
+          userLatestRequestDate
           ) 
           VALUES (
             ?,
@@ -50,6 +51,7 @@ async function createUserForUserIdentifier(
             ?,
             ?,
             ?,
+            CURRENT_TIMESTAMP(),
             CURRENT_TIMESTAMP()
             )`,
       [
@@ -60,6 +62,7 @@ async function createUserForUserIdentifier(
         formatUnknownString(userFirstName, 32),
         formatUnknownString(userLastName, 32),
         formatUnknownString(userNotificationToken, 256),
+        // none, default value
         // none, default value
       ],
     ),

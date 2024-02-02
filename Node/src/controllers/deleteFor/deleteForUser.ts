@@ -41,6 +41,7 @@ async function deleteUserForUserId(databaseConnection: Queryable, userId: string
       userLastName,
       userNotificationToken,
       userAccountCreationDate,
+      userLatestRequestDate,
       userAccountDeletionDate
       )
       SELECT 
@@ -52,6 +53,7 @@ async function deleteUserForUserId(databaseConnection: Queryable, userId: string
       userLastName, 
       userNotificationToken, 
       userAccountCreationDate, 
+      CURRENT_TIMESTAMP(),
       CURRENT_TIMESTAMP()
       FROM users u
       WHERE userId = ?`,

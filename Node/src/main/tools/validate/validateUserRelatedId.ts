@@ -1,5 +1,5 @@
 import express from 'express';
-import { addFamilyIdToLogRequest, addUserIdToLogRequest } from '../../logging/logRequest.js';
+import { addUserActivityToLatestRequestDate, addFamilyIdToLogRequest, addUserIdToLogRequest } from '../../logging/logRequest.js';
 import { databaseQuery } from '../../database/databaseQuery.js';
 import {
   formatUnknownString, formatNumber,
@@ -109,6 +109,7 @@ async function validateUserId(req: express.Request, res: express.Response, next:
     req.houndDeclarationExtendedProperties.validatedVariables.validatedUserId = userId;
     const requestId = formatNumber(req.houndDeclarationExtendedProperties.requestId);
     if (requestId !== undefined && requestId !== null) {
+      addUserActivityToLatestRequestDate(requestId, userId);
       addUserIdToLogRequest(requestId, userId);
     }
   }

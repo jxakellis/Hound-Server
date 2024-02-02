@@ -115,6 +115,37 @@ async function addAppVersionToLogRequest(requestId: number, appVersion: string):
   }
 }
 
+async function addUserActivityToLatestRequestDate(requestId: number, validatedUserId: string): Promise<void> {
+  try {
+    // This pool connection is obtained manually here. Therefore we must also release it manually.
+    // Therefore, we need to be careful in our usage of this pool connection, as if errors get thrown, then it could escape the block and be unused
+    const generalPoolConnection = await getPoolConnection(DatabasePools.general);
+
+    await databaseQuery(
+      generalPoolConnection,
+      `UPDATE users
+                      SET userLatestRequestDate = (SELECT requestDate FROM previousRequests WHERE requestId = ? LIMIT 1)
+                      WHERE userId = ?`,
+      [
+        requestId,
+        formatKnownString(validatedUserId, 64),
+      ],
+    ).finally(() => {
+      generalPoolConnection.release();
+    });
+  }
+  catch (error) {
+    logServerError(
+      new HoundError(
+        'Was not able to update previousRequest with requestUserId',
+        logRequest,
+        undefined,
+        error,
+      ),
+    );
+  }
+}
+
 async function addUserIdToLogRequest(requestId: number, validatedUserId: string): Promise<void> {
   try {
     // This pool connection is obtained manually here. Therefore we must also release it manually.
@@ -178,5 +209,5 @@ async function addFamilyIdToLogRequest(requestId: number, validatedFamilyId: str
 }
 
 export {
-  logRequest, addAppVersionToLogRequest, addUserIdToLogRequest, addFamilyIdToLogRequest,
+  logRequest, addAppVersionToLogRequest, addUserActivityToLatestRequestDate, addUserIdToLogRequest, addFamilyIdToLogRequest,
 };
