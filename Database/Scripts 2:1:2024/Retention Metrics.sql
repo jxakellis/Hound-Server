@@ -1,5 +1,5 @@
 /*
- * NUMBER OF USERS WHO HAVE/HAD FAMILIES OF DIFFERENT SIZES
+ * NUMBER OF USERS WHO HAVE/HAD FAMILIES OF A GIVEN SIZE
  */
 WITH combinedFamilyMembers AS (
     -- Combine current and previous families
@@ -62,6 +62,59 @@ GROUP BY dlc.dogLogCount;
 
 
 /*
+ * NUMBER OF ACTIVE ACCOUNTS PER ACCOUNT AGE PER TIME FRAME
+ */
+WITH combinedUsers AS (
+    SELECT userId, userAccountCreationDate, userLatestRequestDate FROM users
+    UNION ALL
+    SELECT userId, userAccountCreationDate, userLatestRequestDate FROM previousUsers
+),
+eligibleUsers AS (
+    SELECT 
+        userId,
+        userAccountCreationDate,
+        userLatestRequestDate,
+        CASE
+            WHEN DATEDIFF(CURRENT_TIMESTAMP, userAccountCreationDate) > 365 THEN "Accounts Older Than 365 Days"
+            WHEN DATEDIFF(CURRENT_TIMESTAMP, userAccountCreationDate) > 90 THEN "Accounts Older Than 90 Days"
+            WHEN DATEDIFF(CURRENT_TIMESTAMP, userAccountCreationDate) > 30 THEN "Accounts Older Than 30 Days"
+            WHEN DATEDIFF(CURRENT_TIMESTAMP, userAccountCreationDate) > 7 THEN "Accounts Older Than 7 Days"
+            WHEN DATEDIFF(CURRENT_TIMESTAMP, userAccountCreationDate) > 1 THEN "Accounts Older Than 1 Day"
+        END AS accountAgeCategory
+    FROM combinedUsers
+    WHERE DATEDIFF(CURRENT_TIMESTAMP, userAccountCreationDate) > 1
+),
+activityCounts AS (
+    SELECT
+        accountAgeCategory,
+        SUM(CASE WHEN userLatestRequestDate BETWEEN DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 1 DAY) AND CURRENT_TIMESTAMP THEN 1 ELSE 0 END) AS activePastDay,
+        SUM(CASE WHEN userLatestRequestDate BETWEEN DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 7 DAY) AND CURRENT_TIMESTAMP THEN 1 ELSE 0 END) AS activePast7Days,
+        SUM(CASE WHEN userLatestRequestDate BETWEEN DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 30 DAY) AND CURRENT_TIMESTAMP THEN 1 ELSE 0 END) AS activePast30Days,
+        SUM(CASE WHEN userLatestRequestDate BETWEEN DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 90 DAY) AND CURRENT_TIMESTAMP THEN 1 ELSE 0 END) AS activePast90Days,
+        SUM(CASE WHEN userLatestRequestDate BETWEEN DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 365 DAY) AND CURRENT_TIMESTAMP THEN 1 ELSE 0 END) AS activePast365Days
+    FROM eligibleUsers
+    GROUP BY accountAgeCategory
+)
+SELECT 
+        accountAgeCategory AS "Account Age",
+        activePastDay AS "Active Past Day",
+        activePast7Days AS "Active Past 7 Days",
+        activePast30Days AS "Active Past 30 Days",
+        activePast90Days AS "Active Past 90 Days",
+        activePast365Days AS "Active Past 365 Days"
+FROM activityCounts
+ORDER BY 
+    CASE accountAgeCategory
+        WHEN "Accounts Older Than 365 Days" THEN 5
+        WHEN "Accounts Older Than 90 Days" THEN 4
+        WHEN "Accounts Older Than 30 Days" THEN 3
+        WHEN "Accounts Older Than 7 Days" THEN 2
+        WHEN "Accounts Older Than 1 Day" THEN 1
+    END;
+
+
+
+/*
  * PERCENTAGE OF USERS STILL ACTIVE AFTER A CERTAIN NUMBER OF DAYS
  */
 WITH combinedUsers AS (
@@ -93,7 +146,6 @@ retention AS (
         GROUP BY tu.numberOfDaysActiveFromAccountCreation
     ) AS subquery
 )
-# Our main SELECT statement then uses the Retention CTE to determine the day-over-day change in retention percentage.
 SELECT 
     r.daysFromAccountCreation AS 'Days From Account Creation',
     r.retentionPercentage AS 'Total Users Retained (%)',

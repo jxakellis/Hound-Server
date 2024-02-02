@@ -31,7 +31,7 @@ FROM purchaseStatistics ps;
 
 
 
-/**
+/*
  * NUMBER OF ACTIVE (FREE TRIAL AND PAID) SUBSCRIPTIONS
  */
 WITH activeTransactionsWithRanks AS (
@@ -82,7 +82,7 @@ FROM activeHighestRankTransactions ahrt;
 
 
 
-/**
+/*
  * PERCENTAGE OF EXPIRED FREE TRIALS CONVERTED INTO PAID TRANSACTIONS
  */
 WITH 
@@ -132,7 +132,7 @@ FROM cumulativeMetrics cm;
 
 
 
-/**
+/*
  * AVERAGE NUMBER OF TRANSACTIONS PER TIME PERIOD
  */
 WITH 

@@ -1,9 +1,8 @@
 
-/**
+/*
  * AVERAGE NUMBER OF SIGN UPS PER TIME PERIOD
  */
-WITH 
-TimeFrames AS (
+WITH timeFrames AS (
     SELECT
         COUNT(*) AS signUpCount,
         CASE 
@@ -25,7 +24,7 @@ SELECT
         WHEN period = 'Past 90 Days' THEN signUpCount / 90
         WHEN period = 'Past 365 Days' THEN signUpCount / 365
     END AS 'Sign Ups for Average Day in Period'
-FROM TimeFrames
+FROM timeFrames
 WHERE period IS NOT NULL
 ORDER BY 
     CASE
