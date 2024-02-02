@@ -1,40 +1,3 @@
-
-
-
-
-/*
- * RATIO OF FAMILY HEADS WHO HAVE BOUGHT FREE TRIALS AND/OR PURCHASES
- */
-WITH combinedFamilyHeads AS (
-    -- Combine current and previous families
-    SELECT familyHeadUserId, familyId FROM families
-    UNION ALL
-    SELECT familyHeadUserId, familyId FROM previousFamilies
-),
-familyHeadWithTransactions AS (
-    SELECT 
-        fm.familyHeadUserId,
-        COUNT(CASE WHEN (t.offerType IS NULL AND t.userId IS NOT NULL) THEN 1 END) AS numberOfPurchasedSubscriptions,
-        COUNT(CASE WHEN (t.offerType IS NOT NULL AND t.userId IS NOT NULL) THEN 1 END) AS numberOfFreeTrials
-    FROM combinedFamilyHeads fm
-    LEFT JOIN transactions t ON fm.familyHeadUserId = t.userId
-    GROUP BY fm.familyHeadUserId
-),
-purchaseStatistics AS (
-	SELECT 
-    	COUNT(CASE WHEN (fht.numberOfFreeTrials = 0 AND fht.numberOfPurchasedSubscriptions = 0) THEN 1 END) AS noFreeTrialOrPurchase,
-    	COUNT(CASE WHEN (fht.numberOfFreeTrials > 0 AND fht.numberOfPurchasedSubscriptions = 0) THEN 1 END) AS freeTrialButNoPurchase,
-    	COUNT(CASE WHEN (fht.numberOfFreeTrials > 0 AND fht.numberOfPurchasedSubscriptions > 0) THEN 1 END) AS freeTrialAndPurchase
-	FROM familyHeadWithTransactions fht
-)
-SELECT 
-    ps.noFreeTrialOrPurchase AS "Number of Family Heads With No Free Trial or Purchase",
-    ps.freeTrialButNoPurchase AS "Number of Family Heads With Free Trial But No Purchase",
-    ps.freeTrialAndPurchase AS "Number of Family Heads With Free Trial And Purchase"
-FROM purchaseStatistics ps;
-
-
-
 /*
  * NUMBER OF USERS WHO HAVE/HAD FAMILIES OF DIFFERENT SIZES
  */
@@ -99,7 +62,7 @@ GROUP BY dlc.dogLogCount;
 
 
 /*
- * PERCENTAGE OF USERS STILL ACTIVE AFTER A CERTAIN NUMBER OF DAYS FROM THEIR ACCOUNT CREATION
+ * PERCENTAGE OF USERS STILL ACTIVE AFTER A CERTAIN NUMBER OF DAYS
  */
 WITH combinedUsers AS (
     SELECT userId, userAccountCreationDate, userLatestRequestDate FROM users

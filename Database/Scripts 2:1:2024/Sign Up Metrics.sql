@@ -1,13 +1,7 @@
 
-# make a query to check how many users download the app and actually join a family and start a saubscription. 
-#This will get first glance feedback to see how many get the app and actually decide to pursue it. 
-# find out how many users actually get a subscription, etc.
-
-
-
-
-
--- Number of Sign Ups for Average Day in Last Day, Last Week, Last Month, Last Quarter, and Last Year
+/**
+ * AVERAGE NUMBER OF SIGN UPS PER TIME PERIOD
+ */
 WITH 
 TimeFrames AS (
     SELECT

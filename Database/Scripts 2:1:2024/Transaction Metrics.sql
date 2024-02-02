@@ -1,34 +1,39 @@
--- Recent transactions (all)
-SELECT  
-	REPLACE(t.productId, 'com.jonathanxakellis.hound.sixfamilymembers.', '') AS 'Product',
-	t.purchaseDate,
-	t.autoRenewStatus,
-	REPLACE(t.autoRenewProductId, 'com.jonathanxakellis.hound.sixfamilymembers.', '') AS 'Renewal Product',
-	t.offerType,
-	t.offerIdentifier,
-	t.expiresDate,
-	t.revocationReason
-FROM transactions t
-ORDER BY purchaseDate DESC;
-
-
-
--- Recent transactions (non-free trials)
+/*
+ * NUMBER OF FAMILY HEADS WHO HAVE BOUGHT FREE TRIALS AND/OR PAID TRANSACTIONS
+ */
+WITH combinedFamilyHeads AS (
+    -- Combine current and previous families
+    SELECT familyHeadUserId, familyId FROM families
+    UNION ALL
+    SELECT familyHeadUserId, familyId FROM previousFamilies
+),
+familyHeadWithTransactions AS (
+    SELECT 
+        fm.familyHeadUserId,
+        COUNT(CASE WHEN (t.offerType IS NULL AND t.userId IS NOT NULL) THEN 1 END) AS numberOfPurchasedSubscriptions,
+        COUNT(CASE WHEN (t.offerType IS NOT NULL AND t.userId IS NOT NULL) THEN 1 END) AS numberOfFreeTrials
+    FROM combinedFamilyHeads fm
+    LEFT JOIN transactions t ON fm.familyHeadUserId = t.userId
+    GROUP BY fm.familyHeadUserId
+),
+purchaseStatistics AS (
+	SELECT 
+    	COUNT(CASE WHEN (fht.numberOfFreeTrials = 0 AND fht.numberOfPurchasedSubscriptions = 0) THEN 1 END) AS noFreeTrialOrPurchase,
+    	COUNT(CASE WHEN (fht.numberOfFreeTrials > 0 AND fht.numberOfPurchasedSubscriptions = 0) THEN 1 END) AS freeTrialButNoPurchase,
+    	COUNT(CASE WHEN (fht.numberOfFreeTrials > 0 AND fht.numberOfPurchasedSubscriptions > 0) THEN 1 END) AS freeTrialAndPurchase
+	FROM familyHeadWithTransactions fht
+)
 SELECT 
-	REPLACE(t.productId, 'com.jonathanxakellis.hound.sixfamilymembers.', '') AS 'Product',
-	t.purchaseDate,
-	t.autoRenewStatus,
-	REPLACE(t.autoRenewProductId, 'com.jonathanxakellis.hound.sixfamilymembers.', '') AS 'Renewal Product',
-	t.offerIdentifier,
-	t.expiresDate,
-	t.revocationReason
-FROM transactions t
-WHERE offerType IS NULL
-ORDER BY purchaseDate DESC;
+    ps.noFreeTrialOrPurchase AS "Number of Family Heads With No Free Trial or Purchase",
+    ps.freeTrialButNoPurchase AS "Number of Family Heads With Free Trial But No Purchase",
+    ps.freeTrialAndPurchase AS "Number of Family Heads With Free Trial And Purchase"
+FROM purchaseStatistics ps;
 
 
 
--- Number of active subscriptions for each productId, broken down by renewal status (TREATS FREE TRIALS AND PAID TRANSACTIONS AS EQUIVALENT)
+/**
+ * NUMBER OF ACTIVE (FREE TRIAL AND PAID) SUBSCRIPTIONS
+ */
 WITH activeTransactionsWithRanks AS (
     SELECT
         userId,
@@ -77,7 +82,9 @@ FROM activeHighestRankTransactions ahrt;
 
 
 
--- Number of expired free trials that converted to some paid transaction for each productId
+/**
+ * PERCENTAGE OF EXPIRED FREE TRIALS CONVERTED INTO PAID TRANSACTIONS
+ */
 WITH 
 expiredFreeTrials AS (
     # Identifying transactions that are expired, non-revoked free trials
@@ -125,7 +132,9 @@ FROM cumulativeMetrics cm;
 
 
 
--- Number of transactions for average day in last day, week, month, quarter, and year
+/**
+ * AVERAGE NUMBER OF TRANSACTIONS PER TIME PERIOD
+ */
 WITH 
 TimeFrames AS (
     SELECT
