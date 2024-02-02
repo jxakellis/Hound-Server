@@ -7,8 +7,6 @@ async function attachSurveyFeedback(req: express.Request, res: express.Response,
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const surveyFeedbackDictionary = req.body['surveyFeedback'] as (StringKeyDictionary | undefined);
 
-    console.log('attachSurveyFeedback', req.body, surveyFeedbackDictionary);
-
     if (surveyFeedbackDictionary === undefined || surveyFeedbackDictionary === null) {
       // We have no feedback to attach
       return next();

@@ -2,13 +2,11 @@
 SELECT  
 	REPLACE(t.productId, 'com.jonathanxakellis.hound.sixfamilymembers.', '') AS 'Product',
 	t.purchaseDate,
-	t.expiresDate,
-	# t.numberOfFamilyMembers,
-	# t.numberOfDogs,
 	t.autoRenewStatus,
 	REPLACE(t.autoRenewProductId, 'com.jonathanxakellis.hound.sixfamilymembers.', '') AS 'Renewal Product',
 	t.offerType,
 	t.offerIdentifier,
+	t.expiresDate,
 	t.revocationReason
 FROM transactions t
 ORDER BY purchaseDate DESC;
@@ -19,11 +17,10 @@ ORDER BY purchaseDate DESC;
 SELECT 
 	REPLACE(t.productId, 'com.jonathanxakellis.hound.sixfamilymembers.', '') AS 'Product',
 	t.purchaseDate,
-	# t.numberOfFamilyMembers,
-	# t.numberOfDogs,
 	t.autoRenewStatus,
 	REPLACE(t.autoRenewProductId, 'com.jonathanxakellis.hound.sixfamilymembers.', '') AS 'Renewal Product',
 	t.offerIdentifier,
+	t.expiresDate,
 	t.revocationReason
 FROM transactions t
 WHERE offerType IS NULL
@@ -49,7 +46,7 @@ WITH activeTransactionsWithRanks AS (
                 ELSE 0
             END DESC) AS correspondingRank
     FROM transactions t
-    WHERE revocationReason = 0 AND TIMESTAMPDIFF(SECOND, CURRENT_TIMESTAMP(), expiresDate) >= 0
+    WHERE revocationReason IS NULL AND TIMESTAMPDIFF(SECOND, CURRENT_TIMESTAMP(), expiresDate) >= 0
 ),
 activeHighestRankTransactions AS (
     SELECT 
@@ -80,8 +77,6 @@ FROM activeHighestRankTransactions ahrt;
 
 
 
- 
-
 -- Number of expired free trials that converted to some paid transaction for each productId
 WITH 
 expiredFreeTrials AS (
@@ -94,7 +89,7 @@ expiredFreeTrials AS (
     FROM transactions t
     WHERE t.transactionId = t.originalTransactionId
     AND TIMESTAMPDIFF(MICROSECOND, CURRENT_TIMESTAMP(), expiresDate) < 0
-    AND t.revocationReason = 0
+    AND t.revocationReason IS NULL
 ),
 expiredFreeTrialsWithPaidFlag AS (
     # Adding whether or not the free trial transactions led to at least one non-free trial purchase
@@ -106,7 +101,7 @@ expiredFreeTrialsWithPaidFlag AS (
         (TIMESTAMPDIFF(MICROSECOND, CURRENT_TIMESTAMP(), MAX(t.expiresDate)) >= 0) AS isPaidTransactionActive
     FROM expiredFreeTrials eft
     # Attempt to link a non free trial transaction. It should be linked to the free trial (eft.origTranId = t.tranId) but is not a free trial itself (t.tranId != t.origTranId)
-    LEFT JOIN transactions t ON (t.originalTransactionId = eft.transactionId AND t.transactionId != t.originalTransactionId AND t.revocationReason = 0)
+    LEFT JOIN transactions t ON (t.originalTransactionId = eft.transactionId AND t.transactionId != t.originalTransactionId AND t.revocationReason IS NULL)
     GROUP BY eft.originalTransactionId
 ),
 cumulativeMetrics AS (
@@ -127,8 +122,6 @@ SELECT
     # This means the user still has some form of subscription active. Not necessarily the same as the free trial product.
 	cm.activePaidConversions AS 'Active Paid Conversions (could be diff from product)'
 FROM cumulativeMetrics cm;
-
-
 
 
 

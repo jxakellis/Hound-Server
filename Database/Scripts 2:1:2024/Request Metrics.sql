@@ -2,8 +2,9 @@
 SELECT COUNT(requestId) AS 'Total Requests' 
 FROM previousRequests;
 
-
 SELECT * FROM appStoreServerNotifications assn ORDER BY signedDate DESC LIMIT 100;
+
+
 
 -- Most Recent 100 Requests
 SELECT
@@ -27,11 +28,7 @@ WHERE
 	#AND pReq.requestId > (1128328 - 15)
 	#AND pReq.requestId < (1128328 + 15)
 ORDER BY pReq.requestId DESC
-LIMIT 1000;
-
-SELECT * FROM previousServerErrors p
-
-
+LIMIT 100;
 
 
 
@@ -50,14 +47,12 @@ FROM previousRequests pReq
 JOIN previousResponses pRes ON pReq.requestId = pRes.requestId 
 WHERE 
     # If responseStatus is not null, check if it's not in the 200-299 range
-    (pRes.responseStatus IS NOT NULL AND (pRes.responseStatus < 200 OR pRes.responseStatus > 299))
+    (pRes.responseStatus < 200 OR pRes.responseStatus > 299)
     # OR 
     # If responseStatus is null, look for the word "message" in responseBody to identify a failure
     # (pRes.responseStatus IS NULL AND JSON_VALID(pRes.responseBody) AND JSON_EXTRACT(pRes.responseBody, '$.message') IS NOT NULL)
 ORDER BY pReq.requestDate DESC
 LIMIT 100;
-
-
 
 
 
@@ -83,8 +78,6 @@ SELECT
 	SUM(CASE WHEN requestDay BETWEEN DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 365 DAY) AND CURRENT_TIMESTAMP THEN numberOfRequestForDayForHour ELSE 0 END) / 365 AS 'Average Last 365 Days'
 FROM HourlyHistoricalCounts
 GROUP BY hourOfDay;
-
-
 
 
 
