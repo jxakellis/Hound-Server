@@ -1,17 +1,17 @@
 const surveyFeedbackCancelSubscriptionColumns = `
-fcs.feedbackId,
-fcs.feedbackDate,
-fcs.userId,
-fcs.familyId,
-fcs.activeSubscriptionTransactionId,
-fcs.userCancellationReason,
-fcs.userCancellationFeedback
+sfcs.surveyFeedbackId,
+sfcs.surveyFeedbackDate,
+sfcs.userId,
+sfcs.familyId,
+sfcs.activeSubscriptionTransactionId,
+sfcs.userCancellationReason,
+sfcs.userCancellationFeedback
 `;
 
 type SurveyFeedbackCancelSubscriptionRow = {
     // NOTE: database booleans (tinyint(1)) are returned as 0 or 1 numbers, not booleans. therefore, we have to use number instead of boolean
-    feedbackId: number
-    feedbackDate: Date
+    surveyFeedbackId: number
+    surveyFeedbackDate: Date
     userId: string
     familyId: string
     activeSubscriptionTransactionId?: number
@@ -19,7 +19,7 @@ type SurveyFeedbackCancelSubscriptionRow = {
     userCancellationFeedback: string
 };
 
-type NotYetCreatedSurveyFeedbackCancelSubscriptionRow = Omit<SurveyFeedbackCancelSubscriptionRow, 'feedbackId' | 'feedbackDate'>;
+type NotYetCreatedSurveyFeedbackCancelSubscriptionRow = Omit<SurveyFeedbackCancelSubscriptionRow, 'surveyFeedbackId' | 'surveyFeedbackDate'>;
 
 export {
   type SurveyFeedbackCancelSubscriptionRow,

@@ -1,17 +1,14 @@
 import { type Queryable, type ResultSetHeader, databaseQuery } from '../../main/database/databaseQuery.js';
 import { type NotYetCreatedSurveyFeedbackCancelSubscriptionRow } from '../../main/types/SurveyFeedbackCancelSubscriptionRow.js';
+import { type NotYetCreatedSurveyFeedbackAppExperienceRow } from '../../main/types/SurveyFeedbackAppExperienceRow.js';
 import { formatKnownString } from '../../main/format/formatObject.js';
 
-/**
-*  Queries the database to create a log. If the query is successful, then returns the logId.
-*  If a problem is encountered, creates and throws custom error
-*/
-async function createSurveyFeedbackForCancelSubscription(databaseConnection: Queryable, surveyFeedback: NotYetCreatedSurveyFeedbackCancelSubscriptionRow): Promise<void> {
+async function createSurveyFeedbackForCancelSubscription(databaseConnection: Queryable, surveyFeedbackCancelSubscription: NotYetCreatedSurveyFeedbackCancelSubscriptionRow): Promise<void> {
   // If there is a placeholder transactionId, then leave its value as null
   let activeSubscriptionTransactionId: (number | undefined);
-  if (surveyFeedback.activeSubscriptionTransactionId !== undefined && surveyFeedback.activeSubscriptionTransactionId !== null) {
-    if (surveyFeedback.activeSubscriptionTransactionId >= 0) {
-      activeSubscriptionTransactionId = surveyFeedback.activeSubscriptionTransactionId;
+  if (surveyFeedbackCancelSubscription.activeSubscriptionTransactionId !== undefined && surveyFeedbackCancelSubscription.activeSubscriptionTransactionId !== null) {
+    if (surveyFeedbackCancelSubscription.activeSubscriptionTransactionId >= 0) {
+      activeSubscriptionTransactionId = surveyFeedbackCancelSubscription.activeSubscriptionTransactionId;
     }
   }
 
@@ -32,11 +29,33 @@ async function createSurveyFeedbackForCancelSubscription(databaseConnection: Que
           )`,
     [
       // none, default values
-      surveyFeedback.userId, surveyFeedback.familyId,
+      surveyFeedbackCancelSubscription.userId, surveyFeedbackCancelSubscription.familyId,
       activeSubscriptionTransactionId,
-      surveyFeedback.userCancellationReason, formatKnownString(surveyFeedback.userCancellationFeedback, 1000),
+      surveyFeedbackCancelSubscription.userCancellationReason, formatKnownString(surveyFeedbackCancelSubscription.userCancellationFeedback, 1000),
     ],
   );
 }
 
-export { createSurveyFeedbackForCancelSubscription };
+async function createSurveyFeedbackForAppExperience(databaseConnection: Queryable, surveyFeedbackAppExperience: NotYetCreatedSurveyFeedbackAppExperienceRow): Promise<void> {
+  await databaseQuery<ResultSetHeader>(
+    databaseConnection,
+    `INSERT INTO surveyFeedbackAppExperience
+      (
+        surveyFeedbackDate,
+        userId, familyId,
+        appExperienceNumberOfStars, appExperienceFeedback
+        )
+        VALUES (
+          CURRENT_TIMESTAMP(),
+          ?, ?,
+          ?, ?,
+          )`,
+    [
+      // none, default values
+      surveyFeedbackAppExperience.userId, surveyFeedbackAppExperience.familyId,
+      surveyFeedbackAppExperience.appExperienceNumberOfStars, formatKnownString(surveyFeedbackAppExperience.appExperienceFeedback, 1000),
+    ],
+  );
+}
+
+export { createSurveyFeedbackForCancelSubscription, createSurveyFeedbackForAppExperience };

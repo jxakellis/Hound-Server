@@ -1,8 +1,8 @@
 import express from 'express';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 
-import { formatUnknownString } from '../../main/format/formatObject.js';
-import { createSurveyFeedbackForCancelSubscription } from '../createFor/createForSurveyFeedback.js';
+import { formatUnknownString, formatNumber } from '../../main/format/formatObject.js';
+import { createSurveyFeedbackForCancelSubscription, createSurveyFeedbackForAppExperience } from '../createFor/createForSurveyFeedback.js';
 import { SurveyFeedbackType } from '../../main/enums/SurveyFeedbackType.js';
 
 async function createSurveyFeedback(req: express.Request, res: express.Response): Promise<void> {
@@ -36,6 +36,7 @@ async function createSurveyFeedback(req: express.Request, res: express.Response)
 
     switch (surveyFeedbackType) {
       case SurveyFeedbackType.cancelSubscription:
+      case SurveyFeedbackType.appExperience:
         break;
       default:
         throw new HoundError(`surveyFeedbackType of '${surveyFeedbackType}' invalid`, createSurveyFeedback, ERROR_CODES.VALUE.INVALID);
@@ -62,6 +63,29 @@ async function createSurveyFeedback(req: express.Request, res: express.Response)
           activeSubscriptionTransactionId: familyActiveSubscription?.transactionId,
           userCancellationReason,
           userCancellationFeedback,
+        },
+      );
+    }
+    else if (surveyFeedbackType === SurveyFeedbackType.appExperience) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      const appExperienceNumberOfStars = formatNumber(unvalidatedSurveyFeedbackDictionary?.['appExperienceNumberOfStars']);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      const appExperienceFeedback = formatUnknownString(unvalidatedSurveyFeedbackDictionary?.['appExperienceFeedback']) ?? '';
+
+      if (appExperienceNumberOfStars === undefined || appExperienceNumberOfStars === null) {
+        throw new HoundError('appExperienceNumberOfStars missing', createSurveyFeedback, ERROR_CODES.VALUE.MISSING);
+      }
+      if (appExperienceFeedback === undefined || appExperienceFeedback === null) {
+        throw new HoundError('appExperienceFeedback missing', createSurveyFeedback, ERROR_CODES.VALUE.MISSING);
+      }
+
+      await createSurveyFeedbackForAppExperience(
+        databaseConnection,
+        {
+          userId: validatedUserId,
+          familyId: validatedFamilyId,
+          appExperienceNumberOfStars,
+          appExperienceFeedback,
         },
       );
     }
