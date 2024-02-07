@@ -73,7 +73,7 @@ function formatReminderActionToReadableValue(includeMatchingEmoji: boolean, remi
     case 'Medicine':
     case 'medicine':
       if (reminderCustomActionName !== undefined && reminderCustomActionName.trim() !== '') {
-        return `Medicine - ${reminderCustomActionName.trim()}${includeMatchingEmoji ? ' 💊' : ''}`;
+        return `${reminderCustomActionName.trim()}${includeMatchingEmoji ? ' 💊' : ''}`;
       }
       return `Medicine${includeMatchingEmoji ? ' 💊' : ''}`;
     case 'Sleep':

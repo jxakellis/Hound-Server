@@ -123,13 +123,13 @@ function formatLogActionToReadableValue(includeMatchingEmoji: boolean, logAction
     case 'Medicine':
     case 'medicine':
       if (logCustomActionName !== undefined && logCustomActionName.trim() !== '') {
-        return `Medicine - ${logCustomActionName.trim()}${includeMatchingEmoji ? ' 💊' : ''}`;
+        return `${logCustomActionName.trim()}${includeMatchingEmoji ? ' 💊' : ''}`;
       }
       return `Medicine${includeMatchingEmoji ? ' 💊' : ''}`;
     case 'Vaccine':
     case 'vaccine':
       if (logCustomActionName !== undefined && logCustomActionName.trim() !== '') {
-        return `Vaccine - ${logCustomActionName.trim()}${includeMatchingEmoji ? ' 💉' : ''}`;
+        return `${logCustomActionName.trim()}${includeMatchingEmoji ? ' 💉' : ''}`;
       }
       return `Vaccine${includeMatchingEmoji ? ' 💉' : ''}`;
     case 'Weight':
