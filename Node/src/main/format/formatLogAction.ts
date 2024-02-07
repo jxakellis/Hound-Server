@@ -45,6 +45,9 @@ function formatLogActionToInternalValue(logAction?: string): string | undefined 
     case 'Medicine':
     case 'medicine':
       return 'medicine';
+    case 'Vaccine':
+    case 'vaccine':
+      return 'vaccine';
     case 'Weight':
     case 'weight':
       return 'weight';
@@ -119,7 +122,16 @@ function formatLogActionToReadableValue(includeMatchingEmoji: boolean, logAction
       return `Bathe${includeMatchingEmoji ? ' 🛁' : ''}`;
     case 'Medicine':
     case 'medicine':
+      if (logCustomActionName !== undefined && logCustomActionName.trim() !== '') {
+        return `Medicine - ${logCustomActionName.trim()}${includeMatchingEmoji ? ' 💊' : ''}`;
+      }
       return `Medicine${includeMatchingEmoji ? ' 💊' : ''}`;
+    case 'Vaccine':
+    case 'vaccine':
+      if (logCustomActionName !== undefined && logCustomActionName.trim() !== '') {
+        return `Vaccine - ${logCustomActionName.trim()}${includeMatchingEmoji ? ' 💉' : ''}`;
+      }
+      return `Vaccine${includeMatchingEmoji ? ' 💉' : ''}`;
     case 'Weight':
     case 'weight':
       return `Weight${includeMatchingEmoji ? ' ⚖️' : ''}`;
