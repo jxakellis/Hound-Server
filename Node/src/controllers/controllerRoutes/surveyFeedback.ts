@@ -2,7 +2,7 @@ import express from 'express';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 
 import { formatUnknownString, formatNumber } from '../../main/format/formatObject.js';
-import { createSurveyFeedbackForCancelSubscription, createSurveyFeedbackForAppExperience } from '../createFor/createForSurveyFeedback.js';
+import { createSurveyFeedbackForSurveyFeedback } from '../createFor/createForSurveyFeedback.js';
 import { SurveyFeedbackType } from '../../main/enums/SurveyFeedbackType.js';
 
 async function createSurveyFeedback(req: express.Request, res: express.Response): Promise<void> {
@@ -42,53 +42,59 @@ async function createSurveyFeedback(req: express.Request, res: express.Response)
         throw new HoundError(`surveyFeedbackType of '${surveyFeedbackType}' invalid`, createSurveyFeedback, ERROR_CODES.VALUE.INVALID);
     }
 
-    if (surveyFeedbackType === SurveyFeedbackType.cancelSubscription) {
-      const { familyActiveSubscription } = req.houndDeclarationExtendedProperties;
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      const userCancellationReason = formatUnknownString(unvalidatedSurveyFeedbackDictionary?.['userCancellationReason']);
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      const userCancellationFeedback = formatUnknownString(unvalidatedSurveyFeedbackDictionary?.['userCancellationFeedback']) ?? '';
+    // Survey Feedback Device Metrics
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const surveyFeedbackDeviceMetricModel = formatUnknownString(unvalidatedSurveyFeedbackDictionary?.['surveyFeedbackDeviceMetricModel']);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const surveyFeedbackDeviceMetricSystemVersion = formatUnknownString(unvalidatedSurveyFeedbackDictionary?.['surveyFeedbackDeviceMetricSystemVersion']);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const surveyFeedbackDeviceMetricAppVersion = formatUnknownString(unvalidatedSurveyFeedbackDictionary?.['surveyFeedbackDeviceMetricAppVersion']);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const surveyFeedbackDeviceMetricLocale = formatUnknownString(unvalidatedSurveyFeedbackDictionary?.['surveyFeedbackDeviceMetricLocale']);
 
-      // activeSubscriptionTransactionId can be missing
-      // userCancellationReason can be missing
-      if (userCancellationFeedback === undefined || userCancellationFeedback === null) {
-        throw new HoundError('userCancellationFeedback missing', createSurveyFeedback, ERROR_CODES.VALUE.MISSING);
-      }
-
-      await createSurveyFeedbackForCancelSubscription(
-        databaseConnection,
-        {
-          userId: validatedUserId,
-          familyId: validatedFamilyId,
-          activeSubscriptionTransactionId: familyActiveSubscription?.transactionId,
-          userCancellationReason,
-          userCancellationFeedback,
-        },
-      );
+    if (surveyFeedbackDeviceMetricModel === undefined || surveyFeedbackDeviceMetricModel === null) {
+      throw new HoundError('surveyFeedbackDeviceMetricModel missing', createSurveyFeedback, ERROR_CODES.VALUE.MISSING);
     }
-    else if (surveyFeedbackType === SurveyFeedbackType.appExperience) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      const appExperienceNumberOfStars = formatNumber(unvalidatedSurveyFeedbackDictionary?.['appExperienceNumberOfStars']);
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      const appExperienceFeedback = formatUnknownString(unvalidatedSurveyFeedbackDictionary?.['appExperienceFeedback']) ?? '';
-
-      if (appExperienceNumberOfStars === undefined || appExperienceNumberOfStars === null) {
-        throw new HoundError('appExperienceNumberOfStars missing', createSurveyFeedback, ERROR_CODES.VALUE.MISSING);
-      }
-      if (appExperienceFeedback === undefined || appExperienceFeedback === null) {
-        throw new HoundError('appExperienceFeedback missing', createSurveyFeedback, ERROR_CODES.VALUE.MISSING);
-      }
-
-      await createSurveyFeedbackForAppExperience(
-        databaseConnection,
-        {
-          userId: validatedUserId,
-          familyId: validatedFamilyId,
-          appExperienceNumberOfStars,
-          appExperienceFeedback,
-        },
-      );
+    if (surveyFeedbackDeviceMetricSystemVersion === undefined || surveyFeedbackDeviceMetricSystemVersion === null) {
+      throw new HoundError('surveyFeedbackDeviceMetricSystemVersion missing', createSurveyFeedback, ERROR_CODES.VALUE.MISSING);
     }
+    if (surveyFeedbackDeviceMetricAppVersion === undefined || surveyFeedbackDeviceMetricAppVersion === null) {
+      throw new HoundError('surveyFeedbackDeviceMetricAppVersion missing', createSurveyFeedback, ERROR_CODES.VALUE.MISSING);
+    }
+    if (surveyFeedbackDeviceMetricLocale === undefined || surveyFeedbackDeviceMetricLocale === null) {
+      throw new HoundError('surveyFeedbackDeviceMetricLocale missing', createSurveyFeedback, ERROR_CODES.VALUE.MISSING);
+    }
+
+    // Survey Feedback User Cancellation Specifics
+    const activeSubscriptionTransactionId = req.houndDeclarationExtendedProperties.familyActiveSubscription?.transactionId;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const surveyFeedbackUserCancellationReason = formatUnknownString(unvalidatedSurveyFeedbackDictionary?.['surveyFeedbackUserCancellationReason']);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const surveyFeedbackUserCancellationFeedback = formatUnknownString(unvalidatedSurveyFeedbackDictionary?.['surveyFeedbackUserCancellationFeedback']) ?? '';
+
+    // Survey Feedback App Experience Specifics
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const surveyFeedbackAppExperienceNumberOfStars = formatNumber(unvalidatedSurveyFeedbackDictionary?.['surveyFeedbackAppExperienceNumberOfStars']);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const surveyFeedbackAppExperienceFeedback = formatUnknownString(unvalidatedSurveyFeedbackDictionary?.['surveyFeedbackAppExperienceFeedback']) ?? '';
+
+    await createSurveyFeedbackForSurveyFeedback(
+      databaseConnection,
+      {
+        userId: validatedUserId,
+        familyId: validatedFamilyId,
+        surveyFeedbackType,
+        surveyFeedbackDeviceMetricModel,
+        surveyFeedbackDeviceMetricSystemVersion,
+        surveyFeedbackDeviceMetricAppVersion,
+        surveyFeedbackDeviceMetricLocale,
+        activeSubscriptionTransactionId,
+        surveyFeedbackUserCancellationReason,
+        surveyFeedbackUserCancellationFeedback,
+        surveyFeedbackAppExperienceNumberOfStars,
+        surveyFeedbackAppExperienceFeedback,
+      },
+    );
 
     return res.houndDeclarationExtendedProperties.sendSuccessResponse('');
   }

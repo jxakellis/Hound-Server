@@ -1,24 +1,17 @@
 const surveyFeedbackAppExperienceColumns = `
 sfae.surveyFeedbackId,
-sfae.surveyFeedbackDate,
-sfae.userId,
-sfae.familyId,
-sfae.activeSubscriptionTransactionId,
-sfae.userCancellationReason,
-sfae.userCancellationFeedback
+sfae.surveyFeedbackAppExperienceNumberOfStars,
+sfae.surveyFeedbackAppExperienceFeedback
 `;
 
 type SurveyFeedbackAppExperienceRow = {
     // NOTE: database booleans (tinyint(1)) are returned as 0 or 1 numbers, not booleans. therefore, we have to use number instead of boolean
     surveyFeedbackId: number
-    surveyFeedbackDate: Date
-    userId: string
-    familyId: string
-    appExperienceNumberOfStars: number
-    appExperienceFeedback: string
+    surveyFeedbackAppExperienceNumberOfStars: number
+    surveyFeedbackAppExperienceFeedback: string
 };
 
-type NotYetCreatedSurveyFeedbackAppExperienceRow= Omit<SurveyFeedbackAppExperienceRow, 'surveyFeedbackId' | 'surveyFeedbackDate'>;
+type NotYetCreatedSurveyFeedbackAppExperienceRow= Omit<SurveyFeedbackAppExperienceRow, 'surveyFeedbackId'>;
 
 export {
   type SurveyFeedbackAppExperienceRow,
