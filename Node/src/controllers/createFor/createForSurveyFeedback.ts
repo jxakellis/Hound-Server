@@ -82,8 +82,8 @@ async function createSurveyFeedbackForSurveyFeedback(
     [
       surveyFeedback.userId, surveyFeedback.familyId,
       surveyFeedback.surveyFeedbackType,
-      formatKnownString(surveyFeedback.surveyFeedbackDeviceMetricModel, 100), formatKnownString(surveyFeedback.surveyFeedbackDeviceMetricSystemVersion, 100),
-      formatKnownString(surveyFeedback.surveyFeedbackDeviceMetricAppVersion, 100), formatKnownString(surveyFeedback.surveyFeedbackDeviceMetricLocale, 100),
+      formatKnownString(surveyFeedback.surveyFeedbackDeviceMetricModel, 100), formatKnownString(surveyFeedback.surveyFeedbackDeviceMetricSystemVersion, 10),
+      formatKnownString(surveyFeedback.surveyFeedbackDeviceMetricAppVersion, 10), formatKnownString(surveyFeedback.surveyFeedbackDeviceMetricLocale, 100),
     ],
   );
 
