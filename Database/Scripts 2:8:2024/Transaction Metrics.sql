@@ -132,6 +132,7 @@ FROM cumulativeMetrics cm;
 
 
 
+
 /*
  * AVERAGE NUMBER OF TRANSACTIONS PER TIME PERIOD
  */

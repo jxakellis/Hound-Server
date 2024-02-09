@@ -111,9 +111,44 @@ ORDER BY
         WHEN "Accounts Older Than 7 Days" THEN 2
         WHEN "Accounts Older Than 1 Day" THEN 1
     END;
+   
+/*
+ * ACCOUNTS WITH AN EMAIL THAT ARE INACTIVE
+ */
+WITH combinedUsers AS (
+    SELECT userId, userFirstName, userLastName, userEmail, userAccountCreationDate, userLatestRequestDate FROM users
+    UNION ALL
+    SELECT userId, userFirstName, userLastName, userEmail, userAccountCreationDate, userLatestRequestDate FROM previousUsers
+),
+usersWithMetrics AS (
+	SELECT
+		cu.userId,
+		cu.userFirstName,
+		cu.userLastName,
+		cu.userEmail,
+		cu.userAccountCreationDate,
+		cu.userLatestRequestDate,
+		DATEDIFF(CURRENT_DATE() , cu.userAccountCreationDate) AS accountAge, 
+		DATEDIFF(CURRENT_DATE() , cu.userLatestRequestDate) AS daysInactive
+	FROM combinedUsers cu
+) 
+SELECT 
+	uwm.userFirstName,
+	uwm.userLastName,
+	uwm.userEmail,
+	DATE_FORMAT(uwm.userAccountCreationDate, '%Y-%m-%d') AS "Account Creation Date",
+	(uwm.accountAge - uwm.daysInactive) AS "Number of Days Active",
+	DATE_FORMAT(uwm.userLatestRequestDate, '%Y-%m-%d') AS "Last Active Date"
+FROM usersWithMetrics uwm
+WHERE 
+	uwm.daysInactive >= 30
+	AND uwm.userEmail IS NOT NULL
+ORDER BY uwm.accountAge ASC;
+ 
+   
+    userId, userFirstName, userLastName, userEmail, userAccountCreationDate, userLatestRequestDate
 
-
-
+  
 /*
  * PERCENTAGE OF USERS STILL ACTIVE AFTER A CERTAIN NUMBER OF DAYS
  */

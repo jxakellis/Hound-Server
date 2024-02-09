@@ -34,4 +34,26 @@ ORDER BY
         WHEN period = 'Past 90 Days' THEN 4
         WHEN period = 'Past 365 Days' THEN 5
     END;
+   
+   
+   
+/*
+ *	NUMBER OF SIGN UPS FOR A GIVEN DATE
+ */
+WITH combinedUsers AS (
+    SELECT userId, userAccountCreationDate FROM users
+    UNION ALL
+    SELECT userId, userAccountCreationDate FROM previousUsers
+),
+timeFrames AS (
+    SELECT
+    	userAccountCreationDate,
+        COUNT(*) AS signUpCount
+    FROM users
+    GROUP BY DATEDIFF(CURRENT_TIMESTAMP, userAccountCreationDate)
+)
+SELECT
+    DATE_FORMAT(userAccountCreationDate, '%Y-%m-%d') AS 'Sign Up Date',
+    signUpCount AS 'Sign Ups for Date'
+FROM timeFrames;
 
