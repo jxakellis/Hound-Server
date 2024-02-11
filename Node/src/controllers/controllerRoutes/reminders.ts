@@ -1,4 +1,5 @@
 import express from 'express';
+import crypto from 'crypto';
 import { createAlarmNotificationForFamily } from '../../main/tools/notifications/alarm/createAlarmNotification.js';
 
 import { getReminderForReminderId, getAllRemindersForDogId } from '../getFor/getForReminders.js';
@@ -79,6 +80,7 @@ async function createReminder(req: express.Request, res: express.Response): Prom
 
     const reminders: NotYetCreatedDogRemindersRow[] = [];
     unvalidatedRemindersDictionary.forEach((unvalidatedReminderDictionary) => {
+      const reminderUUID = formatUnknownString(unvalidatedReminderDictionary['reminderUUID'] ?? crypto.randomUUID(), 36);
       const reminderAction = formatReminderActionToInternalValue(formatUnknownString(unvalidatedReminderDictionary['reminderAction']));
       const reminderCustomActionName = formatUnknownString(unvalidatedReminderDictionary['reminderCustomActionName']);
       const reminderType = formatUnknownString(unvalidatedReminderDictionary['reminderType']);
@@ -105,6 +107,9 @@ async function createReminder(req: express.Request, res: express.Response): Prom
 
       const oneTimeDate = formatDate(unvalidatedReminderDictionary['oneTimeDate']);
 
+      if (reminderUUID === undefined || reminderUUID === null) {
+        throw new HoundError('reminderUUID missing', createReminder, ERROR_CODES.VALUE.MISSING);
+      }
       if (reminderAction === undefined || reminderAction === null) {
         throw new HoundError('reminderAction missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
@@ -169,6 +174,7 @@ async function createReminder(req: express.Request, res: express.Response): Prom
 
       reminders.push({
         dogId: validatedDog.validatedDogId,
+        reminderUUID,
         reminderAction,
         reminderCustomActionName,
         reminderType,
@@ -234,6 +240,7 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
     validatedReminders.forEach((validatedReminder) => {
       // validate reminder id against validatedReminders
       const reminderId = validatedReminder.validatedReminderId;
+      const reminderUUID = validatedReminder.validatedReminderUUID;
       const dogId = validatedReminder.validatedDogId;
       const reminderAction = formatReminderActionToInternalValue(formatUnknownString(validatedReminder.unvalidatedReminderDictionary?.['reminderAction']));
       const reminderCustomActionName = formatUnknownString(validatedReminder.unvalidatedReminderDictionary?.['reminderCustomActionName']);
@@ -325,6 +332,7 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
 
       reminders.push({
         reminderId,
+        reminderUUID,
         dogId,
         reminderAction,
         reminderCustomActionName,

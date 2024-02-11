@@ -24,11 +24,11 @@ declare module 'express-serve-static-core' {
                 // familyId of the request that has been verified with correct permissions
                 validatedFamilyId?: string
                 // Each element in validatedDogs has a validatedDogId which corresponds to an existing dog
-                validatedDogs: { validatedDogId: number, unvalidatedDogDictionary: (HoundDictionary | undefined) }[]
+                validatedDogs: { validatedDogId: number, validatedDogUUID: string, unvalidatedDogDictionary: (HoundDictionary | undefined) }[]
                 // Each element in validatedLogs has a validatedDogId and validatedLogId which corresponds to an existing log
-                validatedLogs: { validatedDogId: number, validatedLogId: number, unvalidatedLogDictionary: (HoundDictionary | undefined) }[]
+                validatedLogs: { validatedDogId: number, validatedLogId: number, validatedLogUUID: string, unvalidatedLogDictionary: (HoundDictionary | undefined) }[]
                 // Each element in validatedReminders has a validatedDogId and validatedReminderId which corresponds to an existing reminder
-                validatedReminders: { validatedDogId: number, validatedReminderId: number, unvalidatedReminderDictionary: (HoundDictionary | undefined) }[]
+                validatedReminders: { validatedDogId: number, validatedReminderId: number, validatedReminderUUID: string, unvalidatedReminderDictionary: (HoundDictionary | undefined) }[]
 
             },
             unvalidatedVariables: {

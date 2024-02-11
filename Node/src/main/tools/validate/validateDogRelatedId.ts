@@ -12,6 +12,8 @@ import { getDogForDogId } from '../../../controllers/getFor/getForDogs.js';
 import { getLogForLogId } from '../../../controllers/getFor/getForLogs.js';
 import { getReminderForReminderId } from '../../../controllers/getFor/getForReminders.js';
 
+// TODO FUTURE once all versions are >= 3.4.0, switch from dogId/reminderId/logId to uuids for verification, identification, and other stuff.
+
 async function validateDogId(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
@@ -71,6 +73,7 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
       req.houndDeclarationExtendedProperties.validatedVariables.validatedDogs.push(
         {
           validatedDogId: queriedDog.dogId,
+          validatedDogUUID: queriedDog.dogUUID,
           unvalidatedDogDictionary: dogsDictionary?.find((unvalidatedDogDictionary) => formatNumber(unvalidatedDogDictionary['dogId']) === queriedDog.dogId),
         },
       );
@@ -139,6 +142,7 @@ async function validateLogId(req: express.Request, res: express.Response, next: 
         {
           validatedDogId: queriedLog.dogId,
           validatedLogId: queriedLog.logId,
+          validatedLogUUID: queriedLog.logUUID,
           unvalidatedLogDictionary: logsDictionary?.find((unvalidatedLogDictionary) => formatNumber(unvalidatedLogDictionary['logId']) === queriedLog.logId),
         },
       );
@@ -209,6 +213,7 @@ async function validateReminderId(req: express.Request, res: express.Response, n
         {
           validatedDogId: queriedReminder.dogId,
           validatedReminderId: queriedReminder.reminderId,
+          validatedReminderUUID: queriedReminder.reminderUUID,
           unvalidatedReminderDictionary: remindersDictionary?.find((unvalidatedReminderDictionary) => formatNumber(unvalidatedReminderDictionary['reminderId']) === queriedReminder.reminderId),
         },
       );

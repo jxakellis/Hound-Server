@@ -1,4 +1,5 @@
 import express from 'express';
+import crypto from 'crypto';
 import { createLogNotification } from '../../main/tools/notifications/alert/createLogNotification.js';
 
 import { getLogForLogId, getAllLogsForDogId } from '../getFor/getForLogs.js';
@@ -77,6 +78,8 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const logUUID = formatUnknownString(unvalidatedLogDictionary?.['logUUID'] ?? crypto.randomUUID(), 36);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const logStartDate = formatDate(unvalidatedLogDictionary?.['logStartDate']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const logEndDate = formatDate(unvalidatedLogDictionary?.['logEndDate']);
@@ -91,6 +94,9 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const logNumberOfLogUnits = formatNumber(unvalidatedLogDictionary?.['logNumberOfLogUnits']);
 
+    if (logUUID === undefined || logUUID === null) {
+      throw new HoundError('logUUID missing', createLog, ERROR_CODES.VALUE.MISSING);
+    }
     if (logStartDate === undefined || logStartDate === null) {
       throw new HoundError('logStartDate missing', createLog, ERROR_CODES.VALUE.MISSING);
     }
@@ -109,6 +115,7 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
       {
         userId: validatedUserId,
         dogId: validatedDog.validatedDogId,
+        logUUID,
         logStartDate,
         logEndDate,
         logAction,
@@ -182,6 +189,7 @@ async function updateLog(req: express.Request, res: express.Response): Promise<v
         userId: validatedUserId,
         dogId: validatedLog.validatedDogId,
         logId: validatedLog.validatedLogId,
+        logUUID: validatedLog.validatedLogUUID,
         logStartDate,
         logEndDate,
         logAction,

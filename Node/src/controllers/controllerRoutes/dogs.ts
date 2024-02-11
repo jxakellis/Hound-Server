@@ -1,4 +1,5 @@
 import express from 'express';
+import crypto from 'crypto';
 
 import { getDogForDogId, getAllDogsForFamilyId } from '../getFor/getForDogs.js';
 
@@ -84,12 +85,17 @@ async function createDog(req: express.Request, res: express.Response): Promise<v
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const dogUUID = formatUnknownString(unvalidatedDogDictionary?.['dogUUID'] ?? crypto.randomUUID(), 36);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const dogName = formatUnknownString(unvalidatedDogDictionary?.['dogName']);
+    if (dogUUID === undefined || dogUUID === null) {
+      throw new HoundError('dogUUID missing', createDog, ERROR_CODES.VALUE.MISSING);
+    }
     if (dogName === undefined || dogName === null) {
       throw new HoundError('dogName missing', createDog, ERROR_CODES.VALUE.MISSING);
     }
 
-    const result = await createDogForFamilyId(databaseConnection, { familyId: validatedFamilyId, dogName });
+    const result = await createDogForFamilyId(databaseConnection, { familyId: validatedFamilyId, dogUUID, dogName });
 
     return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
   }
@@ -122,7 +128,12 @@ async function updateDog(req: express.Request, res: express.Response): Promise<v
       throw new HoundError('dogName missing', updateDog, ERROR_CODES.VALUE.MISSING);
     }
 
-    await updateDogForDogId(databaseConnection, { familyId: validatedFamilyId, dogId: validatedDog.validatedDogId, dogName });
+    await updateDogForDogId(databaseConnection, {
+      familyId: validatedFamilyId,
+      dogId: validatedDog.validatedDogId,
+      dogUUID: validatedDog.validatedDogUUID,
+      dogName,
+    });
 
     return res.houndDeclarationExtendedProperties.sendSuccessResponse('');
   }

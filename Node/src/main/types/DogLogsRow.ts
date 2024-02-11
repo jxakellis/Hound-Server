@@ -1,5 +1,6 @@
 const dogLogsColumns = `
 dl.logId,
+dl.logUUID,
 dl.dogId,
 dl.userId,
 dl.logStartDate,
@@ -16,6 +17,7 @@ dl.logIsDeleted
 type DogLogsRow = {
     // NOTE: database booleans (tinyint(1)) are returned as 0 or 1 numbers, not booleans. therefore, we have to use number instead of boolean
     logId: number
+    logUUID: string
     dogId: number
     userId: string
     logStartDate: Date
