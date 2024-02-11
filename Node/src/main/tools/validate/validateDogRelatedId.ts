@@ -13,6 +13,7 @@ import { getLogForLogId } from '../../../controllers/getFor/getForLogs.js';
 import { getReminderForReminderId } from '../../../controllers/getFor/getForReminders.js';
 
 // TODO FUTURE once all versions are >= 3.4.0, switch from dogId/reminderId/logId to uuids for verification, identification, and other stuff.
+// TODO NOW if can't validate off of dog/reminder/log id, then attempt to validate using uuid
 
 async function validateDogId(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
