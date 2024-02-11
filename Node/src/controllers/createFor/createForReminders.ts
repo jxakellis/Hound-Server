@@ -25,6 +25,7 @@ async function createReminderForDogIdReminder(
     databaseConnection,
     `INSERT INTO dogReminders(
           dogId,
+          reminderUUID,
           reminderAction, reminderCustomActionName, reminderType, reminderIsEnabled,
           reminderExecutionBasis, reminderExecutionDate,
           reminderLastModified, reminderIsDeleted,
@@ -38,6 +39,7 @@ async function createReminderForDogIdReminder(
           oneTimeDate
           )
           VALUES (
+            ?,
             ?,
             ?, ?, ?, ?,
             ?, ?,
@@ -53,6 +55,7 @@ async function createReminderForDogIdReminder(
             )`,
     [
       reminder.dogId,
+      reminder.reminderUUID,
       reminder.reminderAction, formatKnownString(reminder.reminderCustomActionName, 32), reminder.reminderType, reminder.reminderIsEnabled,
       reminder.reminderExecutionBasis, reminder.reminderExecutionDate,
       // none, default values

@@ -35,7 +35,7 @@ async function createLogForUserIdDogId(databaseConnection: Queryable, log: NotYe
           CURRENT_TIMESTAMP(), 0,
           )`,
     [
-      log.logUUID,
+      formatKnownString(log.logUUID, 36),
       log.dogId, log.userId,
       log.logStartDate, log.logEndDate, formatKnownString(log.logNote, 500), log.logAction, formatKnownString(log.logCustomActionName, 32),
       log.logUnit, log.logNumberOfLogUnits,

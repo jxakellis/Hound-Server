@@ -22,16 +22,19 @@ async function createDogForFamilyId(databaseConnection: Queryable, dog: NotYetCr
     `INSERT INTO dogs
       (
         familyId,
+        dogUUID,
         dogName,
         dogLastModified
         )
         VALUES (
           ?,
           ?,
+          ?,
           CURRENT_TIMESTAMP()
           )`,
     [
       dog.familyId,
+      formatKnownString(dog.dogUUID, 36),
       formatKnownString(dog.dogName, 32),
       // none, default value
     ],
