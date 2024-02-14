@@ -2,7 +2,7 @@ import express from 'express';
 import crypto from 'crypto';
 import { createAlarmNotificationForFamily } from '../../main/tools/notifications/alarm/createAlarmNotification.js';
 
-import { getReminderForReminderId, getAllRemindersForDogId } from '../getFor/getForReminders.js';
+import { getReminderForReminderIdUUID, getAllRemindersForDogId } from '../getFor/getForReminders.js';
 
 import { createRemindersForDogIdReminders } from '../createFor/createForReminders.js';
 
@@ -36,10 +36,10 @@ async function getReminders(req: express.Request, res: express.Response): Promis
     const validatedReminder = validatedReminders.safeIndex(0);
 
     if (validatedReminder !== undefined && validatedReminder !== null) {
-      const possibleDeletedReminder = await getReminderForReminderId(databaseConnection, validatedReminder.validatedReminderId, true);
+      const possibleDeletedReminder = await getReminderForReminderIdUUID(databaseConnection, validatedReminder.validatedReminderId, true);
 
       if (possibleDeletedReminder === undefined || possibleDeletedReminder === null) {
-        throw new HoundError('getReminderForReminderId possibleDeletedReminder missing', getReminders, ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('getReminderForReminderIdUUID possibleDeletedReminder missing', getReminders, ERROR_CODES.VALUE.MISSING);
       }
 
       return res.houndDeclarationExtendedProperties.sendSuccessResponse(possibleDeletedReminder);

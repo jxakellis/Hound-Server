@@ -2,7 +2,7 @@ import { alertLogger } from '../../../logging/loggers.js';
 import { DatabasePools, getPoolConnection } from '../../../database/databaseConnections.js';
 
 import { logServerError } from '../../../logging/logServerError.js';
-import { getDogForDogId } from '../../../../controllers/getFor/getForDogs.js';
+import { getDogForDogIdUUID } from '../../../../controllers/getFor/getForDogs.js';
 import { getPublicUser } from '../../../../controllers/getFor/getForUser.js';
 import { sendNotificationForFamilyExcludingUser } from '../apn/sendNotification.js';
 import { formatFirstLastName } from '../../../format/formatFirstLastName.js';
@@ -26,7 +26,7 @@ async function createLogNotification(userId: string, familyId: string, dogId: nu
     // This pool connection is obtained manually here. Therefore we must also release it manually.
     // Therefore, we need to be careful in our usage of this pool connection, as if errors get thrown, then it could escape the block and be unused
     const generalPoolConnectionB = await getPoolConnection(DatabasePools.general);
-    const notDeletedDog = await getDogForDogId(generalPoolConnectionB, dogId, false, false, undefined).finally(() => {
+    const notDeletedDog = await getDogForDogIdUUID(generalPoolConnectionB, false, false, undefined, dogId).finally(() => {
       generalPoolConnectionB.release();
     });
 

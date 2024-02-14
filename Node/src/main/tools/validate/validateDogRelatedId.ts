@@ -1,6 +1,6 @@
 import express from 'express';
 import {
-  formatNumber, formatArray,
+  formatNumber, formatArray, formatUnknownString,
 } from '../../format/formatObject.js';
 import { HoundError, ERROR_CODES } from '../../server/globalErrors.js';
 
@@ -8,12 +8,12 @@ import { type DogsRow } from '../../types/DogsRow.js';
 import { type DogLogsRow } from '../../types/DogLogsRow.js';
 import { type DogRemindersRow } from '../../types/DogRemindersRow.js';
 import { type StringKeyDictionary } from '../../types/StringKeyDictionary.js';
-import { getDogForDogId } from '../../../controllers/getFor/getForDogs.js';
-import { getLogForLogId } from '../../../controllers/getFor/getForLogs.js';
-import { getReminderForReminderId } from '../../../controllers/getFor/getForReminders.js';
+import { getDogForDogIdUUID } from '../../../controllers/getFor/getForDogs.js';
+import { getLogForLogIdUUID } from '../../../controllers/getFor/getForLogs.js';
+import { getReminderForReminderIdUUID } from '../../../controllers/getFor/getForReminders.js';
 
-// TODO FUTURE once all versions are >= 3.4.0, switch from dogId/reminderId/logId to uuids for verification, identification, and other stuff.
-// TODO NOW if can't validate off of dog/reminder/log id, then attempt to validate using uuid
+// TODO DEPRECIATE < 3.4.0. switch from dogId/reminderId/logId to uuids for verification, identification, and other stuff.
+// TODO TEST this id and uuid dual logic is backwards compatible
 
 async function validateDogId(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
@@ -37,25 +37,35 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
       return next();
     }
 
-    const promises: Promise<DogsRow | undefined>[] = [];
-    // query for all reminders provided
-    dogsDictionary.forEach((dogDictionary) => {
-      const dogId = formatNumber(dogDictionary['dogId']);
+    // Tuples of unvalidatedDogsDictionary and getDogForDogIdUUID promise.
+    const dogVerificationPromises: (StringKeyDictionary | Promise<DogsRow | undefined>)[][] = [];
 
-      if (dogId === undefined || dogId === null || dogId <= -1) {
-        // If dogId is missing or -1, it either a dog body wasn't provided or it was provided but dogId is invalid because the dog is yet to be created
+    // query for all dogs provided
+    dogsDictionary.forEach((dogDictionary) => {
+      // TODO DEPRECIATE < 3.4.0. After that version, dogUUID will always be provided for all types of requests, but dogId won't.
+      const dogId = formatNumber(dogDictionary['dogId']);
+      const dogUUID = formatUnknownString(dogDictionary['dogUUID']);
+
+      if ((dogUUID === undefined || dogUUID === null) && (dogId === undefined || dogId === null || dogId <= -1)) {
+        // If dogUUID and dogId are missing, it either a dog body wasn't provided or it was provided but dogId is invalid because the dog is yet to be created
         req.houndDeclarationExtendedProperties.unvalidatedVariables.unvalidatedDogsDictionary.push(dogDictionary);
         return;
       }
 
-      promises.push(getDogForDogId(databaseConnection, dogId, true, false));
+      // Add these objects to verify to an array. We resolve the promise and use dogDictionary if the promise resolved to nothing.
+      dogVerificationPromises.push([dogDictionary, getDogForDogIdUUID(databaseConnection, true, false, undefined, dogId, dogUUID)]);
     });
 
-    const queriedDogs = await Promise.all(promises);
+    const dogsVerificationInformation = await Promise.all(dogVerificationPromises);
 
-    queriedDogs.forEach((queriedDog) => {
+    dogsVerificationInformation.forEach((dogVerificationInformation) => {
+      const dogDictionary = dogVerificationInformation[0] as StringKeyDictionary;
+      const queriedDog = dogVerificationInformation[1] as DogsRow;
+
       if (queriedDog === undefined || queriedDog === null) {
-        throw new HoundError('Dog could not be located', validateDogId, ERROR_CODES.PERMISSION.NO.DOG);
+        // If queriedDog doesn't exist, then a dog corresponding to that dogUUID doesn't exist yet.
+        req.houndDeclarationExtendedProperties.unvalidatedVariables.unvalidatedDogsDictionary.push(dogDictionary);
+        return;
       }
 
       if (validatedFamilyId !== queriedDog.familyId) {
@@ -89,7 +99,7 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
 
 async function validateLogId(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
-  // Confirm that databaseConnection and validatedIds are defined and non-null first.
+    // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
@@ -109,25 +119,32 @@ async function validateLogId(req: express.Request, res: express.Response, next: 
       return next();
     }
 
-    const promises: Promise<DogLogsRow | undefined>[] = [];
+    const logVerificationPromises: (StringKeyDictionary | Promise<DogLogsRow | undefined>)[][] = [];
     // query for all logs provided
     logsDictionary.forEach((logDictionary) => {
+      // TODO DEPRECIATE < 3.4.0. After that version, logUUID will always be provided for all types of requests, but logId won't.
       const logId = formatNumber(logDictionary['logId']);
+      const logUUID = formatUnknownString(logDictionary['logUUID']);
 
-      if (logId === undefined || logId === null || logId <= -1) {
+      if ((logUUID === undefined || logUUID == null) && (logId === undefined || logId === null || logId <= -1)) {
         // If logId is missing or -1, it either a log body wasn't provided or it was provided but logId is invalid because the log is yet to be created
         req.houndDeclarationExtendedProperties.unvalidatedVariables.unvalidatedLogsDictionary.push(logDictionary);
         return;
       }
 
-      promises.push(getLogForLogId(databaseConnection, logId, true));
+      logVerificationPromises.push([logDictionary, getLogForLogIdUUID(databaseConnection, true, logId, logUUID)]);
     });
 
-    const queriedLogs = await Promise.all(promises);
+    const logsVerificationInformation = await Promise.all(logVerificationPromises);
 
-    queriedLogs.forEach((queriedLog) => {
+    logsVerificationInformation.forEach((logVerificationInformation) => {
+      const logDictionary = logVerificationInformation[0] as StringKeyDictionary;
+      const queriedLog = logVerificationInformation[1] as DogLogsRow;
+
       if (queriedLog === undefined || queriedLog === null) {
-        throw new HoundError('Log could not be located', validateLogId, ERROR_CODES.PERMISSION.NO.LOG);
+        // If queriedLog doesn't exist, then a log corresponding to that logUUID doesn't exist yet.
+        req.houndDeclarationExtendedProperties.unvalidatedVariables.unvalidatedLogsDictionary.push(logDictionary);
+        return;
       }
 
       if (validatedDogs.findIndex((dog) => dog.validatedDogId === queriedLog.dogId) === -1) {
@@ -178,23 +195,34 @@ async function validateReminderId(req: express.Request, res: express.Response, n
       return next();
     }
 
-    const promises: Promise<DogRemindersRow | undefined>[] = [];
+    const reminderVerificationPromises: (StringKeyDictionary | Promise<DogRemindersRow | undefined>)[][] = [];
     // query for all reminders provided
     remindersDictionary.forEach((reminderDictionary) => {
+      // TODO DEPRECIATE < 3.4.0. After that version, reminderUUID will always be provided for all types of requests, but reminderId won't.
       const reminderId = formatNumber(reminderDictionary['reminderId']);
+      const reminderUUID = formatUnknownString(reminderDictionary['reminderUUID']);
 
-      if (reminderId === undefined || reminderId === null || reminderId <= -1) {
+      if ((reminderUUID === undefined || reminderUUID === null) && (reminderId === undefined || reminderId === null || reminderId <= -1)) {
         // If reminderId is missing or -1, it either a reminder body wasn't provided or it was provided but reminderId is invalid because the reminder is yet to be created
         req.houndDeclarationExtendedProperties.unvalidatedVariables.unvalidatedRemindersDictionary.push(reminderDictionary);
         return;
       }
 
-      promises.push(getReminderForReminderId(databaseConnection, reminderId, true));
+      reminderVerificationPromises.push([reminderDictionary, getReminderForReminderIdUUID(databaseConnection, true, reminderId, reminderUUID)]);
     });
 
-    const queriedReminders = await Promise.all(promises);
+    const remindersVerificationInformation = await Promise.all(reminderVerificationPromises);
 
-    queriedReminders.forEach((queriedReminder) => {
+    remindersVerificationInformation.forEach((reminderVerificationInformation) => {
+      const reminderDictionary = reminderVerificationInformation[0] as StringKeyDictionary;
+      const queriedReminder = reminderVerificationInformation[1] as DogRemindersRow;
+
+      if (queriedReminder === undefined || queriedReminder === null) {
+        // If queriedReminder doesn't exist, then a reminder corresponding to that reminderUUID doesn't exist yet.
+        req.houndDeclarationExtendedProperties.unvalidatedVariables.unvalidatedRemindersDictionary.push(reminderDictionary);
+        return;
+      }
+
       if (queriedReminder === undefined || queriedReminder === null) {
         // the reminderId does not exist and/or the dog does not have access to that reminderId
         throw new HoundError('Reminder could not be located', validateReminderId, ERROR_CODES.PERMISSION.NO.REMINDER);

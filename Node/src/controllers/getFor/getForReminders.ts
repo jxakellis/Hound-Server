@@ -5,15 +5,34 @@ import { type DogRemindersRow, dogRemindersColumns } from '../../main/types/DogR
  * If you are querying a single elements from the database, previousDogManagerSynchronization is not taken.
  * We always want to fetch the specified element.
  */
-async function getReminderForReminderId(databaseConnection: Queryable, reminderId: number, includeDeletedReminders: boolean): Promise<DogRemindersRow | undefined> {
-  let reminders = await databaseQuery<DogRemindersRow[]>(
-    databaseConnection,
-    `SELECT ${dogRemindersColumns}
-      FROM dogReminders dr
-      WHERE reminderId = ?
-      LIMIT 1`,
-    [reminderId],
-  );
+async function getReminderForReminderIdUUID(
+  databaseConnection: Queryable,
+  includeDeletedReminders: boolean,
+  reminderId?: number,
+  reminderUUID?: string,
+): Promise<DogRemindersRow | undefined> {
+  let reminders: DogRemindersRow[] = [];
+
+  if (reminderUUID !== undefined && reminderUUID !== null) {
+    reminders = await databaseQuery<DogRemindersRow[]>(
+      databaseConnection,
+      `SELECT ${dogRemindersColumns}
+        FROM dogReminders dr
+        WHERE reminderUUID = ?
+        LIMIT 1`,
+      [reminderUUID],
+    );
+  }
+  else if (reminderId !== undefined && reminderId !== null) {
+    reminders = await databaseQuery<DogRemindersRow[]>(
+      databaseConnection,
+      `SELECT ${dogRemindersColumns}
+        FROM dogReminders dr
+        WHERE reminderId = ?
+        LIMIT 1`,
+      [reminderId],
+    );
+  }
 
   if (includeDeletedReminders === false) {
     reminders = reminders.filter((possiblyDeletedReminders) => possiblyDeletedReminders.reminderIsDeleted === 0);
@@ -52,4 +71,4 @@ async function getAllRemindersForDogId(databaseConnection: Queryable, dogId: num
   return reminders;
 }
 
-export { getReminderForReminderId, getAllRemindersForDogId };
+export { getReminderForReminderIdUUID, getAllRemindersForDogId };

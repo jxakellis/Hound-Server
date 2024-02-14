@@ -2,7 +2,7 @@ import express from 'express';
 import crypto from 'crypto';
 import { createLogNotification } from '../../main/tools/notifications/alert/createLogNotification.js';
 
-import { getLogForLogId, getAllLogsForDogId } from '../getFor/getForLogs.js';
+import { getLogForLogIdUUID, getAllLogsForDogId } from '../getFor/getForLogs.js';
 
 import { createLogForUserIdDogId } from '../createFor/createForLogs.js';
 
@@ -31,10 +31,10 @@ async function getLogs(req: express.Request, res: express.Response): Promise<voi
     }
 
     if (validatedLog !== undefined && validatedLog !== null) {
-      const possiblyDeletedLog = await getLogForLogId(databaseConnection, validatedLog.validatedLogId, true);
+      const possiblyDeletedLog = await getLogForLogIdUUID(databaseConnection, true, validatedLog.validatedLogId);
 
       if (possiblyDeletedLog === undefined || possiblyDeletedLog === null) {
-        throw new HoundError('getLogForLogId possiblyDeletedLog missing', getLogs, ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('getLogForLogIdUUID possiblyDeletedLog missing', getLogs, ERROR_CODES.VALUE.MISSING);
       }
 
       return res.houndDeclarationExtendedProperties.sendSuccessResponse(possiblyDeletedLog);

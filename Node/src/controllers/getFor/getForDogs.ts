@@ -6,28 +6,46 @@ import { type DogsRow, dogsColumns } from '../../main/types/DogsRow.js';
 import { getAllLogsForDogId } from './getForLogs.js';
 import { getAllRemindersForDogId } from './getForReminders.js';
 
+// TODO DEPRECIATE < 3.4.0 dogId, switch to only using dogUUID
+
 /**
  * If you are querying a single elements from the database, previousDogManagerSynchronization is not taken.
  * We always want to fetch the specified element.
  * However, previousDogManagerSynchronization is taken here as we are querying multiple sub elements for the dog (logs and reminders)
  */
-async function getDogForDogId(
+async function getDogForDogIdUUID(
   databaseConnection: Queryable,
-  dogId: number,
   includeDeletedDogs: boolean,
   includeRemindersAndLogs: boolean,
   previousDogManagerSynchronization?: Date,
+  dogId?: number,
+  dogUUID?: string,
 ): Promise<DogsRow | undefined> {
   // If retrieving a singleDog, then always retrieve
-  let dogs = await databaseQuery<DogsRow[]>(
-    databaseConnection,
-    `SELECT ${dogsColumns}
-      FROM dogs d
-      WHERE dogId = ?
-      GROUP BY dogId
-      LIMIT 1`,
-    [dogId],
-  );
+  let dogs: DogsRow[] = [];
+
+  if (dogUUID !== undefined && dogUUID !== null) {
+    dogs = await databaseQuery<DogsRow[]>(
+      databaseConnection,
+      `SELECT ${dogsColumns}
+        FROM dogs d
+        WHERE dogUUID = ?
+        GROUP BY dogUUID
+        LIMIT 1`,
+      [dogUUID],
+    );
+  }
+  else if (dogId !== undefined && dogId !== null) {
+    dogs = await databaseQuery<DogsRow[]>(
+      databaseConnection,
+      `SELECT ${dogsColumns}
+        FROM dogs d
+        WHERE dogId = ?
+        GROUP BY dogId
+        LIMIT 1`,
+      [dogId],
+    );
+  }
 
   if (includeDeletedDogs === false) {
     dogs = dogs.filter((possiblyDeletedDog) => possiblyDeletedDog.dogIsDeleted === 0);
@@ -119,4 +137,4 @@ async function getAllDogsForFamilyId(
   return dogs;
 }
 
-export { getDogForDogId, getAllDogsForFamilyId };
+export { getDogForDogIdUUID, getAllDogsForFamilyId };

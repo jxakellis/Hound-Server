@@ -1,7 +1,7 @@
 import express from 'express';
 import crypto from 'crypto';
 
-import { getDogForDogId, getAllDogsForFamilyId } from '../getFor/getForDogs.js';
+import { getDogForDogIdUUID, getAllDogsForFamilyId } from '../getFor/getForDogs.js';
 
 import { createDogForFamilyId } from '../createFor/createForDogs.js';
 
@@ -35,16 +35,16 @@ async function getDogs(req: express.Request, res: express.Response): Promise<voi
     const { validatedDogs } = req.houndDeclarationExtendedProperties.validatedVariables;
     const validatedDog = validatedDogs.safeIndex(0);
     if (validatedDog !== undefined && validatedDog !== null) {
-      const possiblyDeletedDog = await getDogForDogId(
+      const possiblyDeletedDog = await getDogForDogIdUUID(
         databaseConnection,
-        validatedDog.validatedDogId,
         true,
         true,
         previousDogManagerSynchronization,
+        validatedDog.validatedDogId,
       );
 
       if (possiblyDeletedDog === undefined || possiblyDeletedDog === null) {
-        throw new HoundError('getDogForDogId possiblyDeletedDog missing', getDogs, ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('getDogForDogIdUUID possiblyDeletedDog missing', getDogs, ERROR_CODES.VALUE.MISSING);
       }
 
       return res.houndDeclarationExtendedProperties.sendSuccessResponse(possiblyDeletedDog);

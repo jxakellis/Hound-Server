@@ -5,15 +5,34 @@ import { type DogLogsRow, dogLogsColumns } from '../../main/types/DogLogsRow.js'
  * If you are querying a single elements from the database, previousDogManagerSynchronization is not taken.
  * We always want to fetch the specified element.
  */
-async function getLogForLogId(databaseConnection: Queryable, logId: number, includeDeletedLogs: boolean): Promise<DogLogsRow | undefined> {
-  let logs = await databaseQuery<DogLogsRow[]>(
-    databaseConnection,
-    `SELECT ${dogLogsColumns}
-      FROM dogLogs dl
-      WHERE logId = ?
-      LIMIT 1`,
-    [logId],
-  );
+async function getLogForLogIdUUID(
+  databaseConnection: Queryable,
+  includeDeletedLogs: boolean,
+  logId?: number,
+  logUUID?: string,
+): Promise<DogLogsRow | undefined> {
+  let logs: DogLogsRow[] = [];
+
+  if (logUUID !== undefined && logUUID !== null) {
+    logs = await databaseQuery<DogLogsRow[]>(
+      databaseConnection,
+      `SELECT ${dogLogsColumns}
+        FROM dogLogs dl
+        WHERE logUUID = ?
+        LIMIT 1`,
+      [logUUID],
+    );
+  }
+  else if (logId !== undefined && logId !== null) {
+    logs = await databaseQuery<DogLogsRow[]>(
+      databaseConnection,
+      `SELECT ${dogLogsColumns}
+        FROM dogLogs dl
+        WHERE logId = ?
+        LIMIT 1`,
+      [logId],
+    );
+  }
 
   if (includeDeletedLogs === false) {
     logs = logs.filter((possiblyDeletedLog) => possiblyDeletedLog.logIsDeleted === 0);
@@ -52,4 +71,4 @@ async function getAllLogsForDogId(databaseConnection: Queryable, dogId: number, 
   return logs;
 }
 
-export { getLogForLogId, getAllLogsForDogId };
+export { getLogForLogIdUUID, getAllLogsForDogId };
