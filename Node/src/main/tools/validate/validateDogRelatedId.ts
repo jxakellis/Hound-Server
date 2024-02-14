@@ -53,8 +53,6 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
         return;
       }
 
-      console.log('foreach', dogId, dogUUID);
-
       // Add these objects to verify to an array. We resolve the promise and use dogDictionary if the promise resolved to nothing.
       dogPromises.push(getDogForDogIdUUID(databaseConnection, true, false, undefined, dogId, dogUUID));
       dogDictionaries.push(dogDictionary);
@@ -64,8 +62,6 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
 
     queriedDogs.forEach((queriedDog, index) => {
       const dogDictionary = dogDictionaries[index];
-
-      console.log('verify', dogDictionary, queriedDog);
 
       if (queriedDog === undefined || queriedDog === null) {
         // If queriedDog doesn't exist, then a dog corresponding to that dogUUID doesn't exist yet.
@@ -124,7 +120,10 @@ async function validateLogId(req: express.Request, res: express.Response, next: 
       return next();
     }
 
-    const logVerificationPromises: (StringKeyDictionary | Promise<DogLogsRow | undefined>)[][] = [];
+    // 1:1 arrays of unvalidatedLogsDictionary and getLogForLogIdUUID promise.
+    const logPromises: Promise<DogLogsRow | undefined>[] = [];
+    const logDictionaries: StringKeyDictionary[] = [];
+
     // query for all logs provided
     logsDictionary.forEach((logDictionary) => {
       // TODO DEPRECIATE < 3.4.0. After that version, logUUID will always be provided for all types of requests, but logId won't.
@@ -137,14 +136,14 @@ async function validateLogId(req: express.Request, res: express.Response, next: 
         return;
       }
 
-      logVerificationPromises.push([logDictionary, getLogForLogIdUUID(databaseConnection, true, logId, logUUID)]);
+      logPromises.push(getLogForLogIdUUID(databaseConnection, true, logId, logUUID));
+      logDictionaries.push(logDictionary);
     });
 
-    const logsVerificationInformation = await Promise.all(logVerificationPromises);
+    const queriedLogs = await Promise.all(logPromises);
 
-    logsVerificationInformation.forEach((logVerificationInformation) => {
-      const logDictionary = logVerificationInformation[0] as StringKeyDictionary;
-      const queriedLog = logVerificationInformation[1] as DogLogsRow;
+    queriedLogs.forEach((queriedLog, index) => {
+      const logDictionary = logDictionaries[index];
 
       if (queriedLog === undefined || queriedLog === null) {
         // If queriedLog doesn't exist, then a log corresponding to that logUUID doesn't exist yet.
@@ -200,7 +199,10 @@ async function validateReminderId(req: express.Request, res: express.Response, n
       return next();
     }
 
-    const reminderVerificationPromises: (StringKeyDictionary | Promise<DogRemindersRow | undefined>)[][] = [];
+    // 1:1 arrays of unvalidatedRemindersDictionary and getReminderForReminderIdUUID promise.
+    const reminderPromises: Promise<DogRemindersRow | undefined>[] = [];
+    const reminderDictionaries: StringKeyDictionary[] = [];
+
     // query for all reminders provided
     remindersDictionary.forEach((reminderDictionary) => {
       // TODO DEPRECIATE < 3.4.0. After that version, reminderUUID will always be provided for all types of requests, but reminderId won't.
@@ -213,14 +215,14 @@ async function validateReminderId(req: express.Request, res: express.Response, n
         return;
       }
 
-      reminderVerificationPromises.push([reminderDictionary, getReminderForReminderIdUUID(databaseConnection, true, reminderId, reminderUUID)]);
+      reminderPromises.push(getReminderForReminderIdUUID(databaseConnection, true, reminderId, reminderUUID));
+      reminderDictionaries.push(reminderDictionary);
     });
 
-    const remindersVerificationInformation = await Promise.all(reminderVerificationPromises);
+    const queriedReminders = await Promise.all(reminderPromises);
 
-    remindersVerificationInformation.forEach((reminderVerificationInformation) => {
-      const reminderDictionary = reminderVerificationInformation[0] as StringKeyDictionary;
-      const queriedReminder = reminderVerificationInformation[1] as DogRemindersRow;
+    queriedReminders.forEach((queriedReminder, index) => {
+      const reminderDictionary = reminderDictionaries[index];
 
       if (queriedReminder === undefined || queriedReminder === null) {
         // If queriedReminder doesn't exist, then a reminder corresponding to that reminderUUID doesn't exist yet.
