@@ -52,6 +52,8 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
         return;
       }
 
+      console.log('foreach', dogId, dogUUID);
+
       // Add these objects to verify to an array. We resolve the promise and use dogDictionary if the promise resolved to nothing.
       dogVerificationPromises.push([dogDictionary, getDogForDogIdUUID(databaseConnection, true, false, undefined, dogId, dogUUID)]);
     });
@@ -62,13 +64,13 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
       const dogDictionary = dogVerificationInformation[0] as StringKeyDictionary;
       const queriedDog = dogVerificationInformation[1] as DogsRow;
 
+      console.log('verify', dogDictionary, queriedDog);
+
       if (queriedDog === undefined || queriedDog === null) {
         // If queriedDog doesn't exist, then a dog corresponding to that dogUUID doesn't exist yet.
         req.houndDeclarationExtendedProperties.unvalidatedVariables.unvalidatedDogsDictionary.push(dogDictionary);
         return;
       }
-
-      console.log(dogDictionary, queriedDog);
 
       if (validatedFamilyId !== queriedDog.familyId) {
         throw new HoundError(
