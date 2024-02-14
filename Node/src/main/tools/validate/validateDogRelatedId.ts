@@ -37,8 +37,9 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
       return next();
     }
 
-    // Tuples of unvalidatedDogsDictionary and getDogForDogIdUUID promise.
-    const dogVerificationPromises: (StringKeyDictionary | Promise<DogsRow | undefined>)[][] = [];
+    // 1:1 arrays of unvalidatedDogsDictionary and getDogForDogIdUUID promise.
+    const dogPromises: Promise<DogsRow | undefined>[] = [];
+    const dogDictionaries: StringKeyDictionary[] = [];
 
     // query for all dogs provided
     dogsDictionary.forEach((dogDictionary) => {
@@ -55,14 +56,14 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
       console.log('foreach', dogId, dogUUID);
 
       // Add these objects to verify to an array. We resolve the promise and use dogDictionary if the promise resolved to nothing.
-      dogVerificationPromises.push([dogDictionary, getDogForDogIdUUID(databaseConnection, true, false, undefined, dogId, dogUUID)]);
+      dogPromises.push(getDogForDogIdUUID(databaseConnection, true, false, undefined, dogId, dogUUID));
+      dogDictionaries.push(dogDictionary);
     });
 
-    const dogsVerificationInformation = await Promise.all(dogVerificationPromises);
+    const queriedDogs = await Promise.all(dogPromises);
 
-    dogsVerificationInformation.forEach((dogVerificationInformation) => {
-      const dogDictionary = dogVerificationInformation[0] as StringKeyDictionary;
-      const queriedDog = dogVerificationInformation[1] as DogsRow;
+    queriedDogs.forEach((queriedDog, index) => {
+      const dogDictionary = dogDictionaries[index];
 
       console.log('verify', dogDictionary, queriedDog);
 
