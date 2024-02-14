@@ -36,7 +36,7 @@ async function getReminders(req: express.Request, res: express.Response): Promis
     const validatedReminder = validatedReminders.safeIndex(0);
 
     if (validatedReminder !== undefined && validatedReminder !== null) {
-      const possibleDeletedReminder = await getReminderForReminderIdUUID(databaseConnection, validatedReminder.validatedReminderId, true);
+      const possibleDeletedReminder = await getReminderForReminderIdUUID(databaseConnection, true, validatedReminder.validatedReminderId);
 
       if (possibleDeletedReminder === undefined || possibleDeletedReminder === null) {
         throw new HoundError('getReminderForReminderIdUUID possibleDeletedReminder missing', getReminders, ERROR_CODES.VALUE.MISSING);
