@@ -60,8 +60,6 @@ async function validateDogId(req: express.Request, res: express.Response, next: 
 
     const queriedDogs = await Promise.all(dogPromises);
 
-    console.log(queriedDogs);
-
     queriedDogs.forEach((queriedDog, index) => {
       const dogDictionary = dogDictionaries[index];
 
