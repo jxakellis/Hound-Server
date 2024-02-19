@@ -3,8 +3,6 @@ echo
 echo "BEGIN SCRIPT"
 echo
 
-set -ef
-
 echo
 echo "UPDATING"
 echo

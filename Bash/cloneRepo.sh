@@ -3,8 +3,6 @@ echo
 echo "BEGIN SCRIPT"
 echo
 
-set -ef
-
 cd
 
 PARENT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
