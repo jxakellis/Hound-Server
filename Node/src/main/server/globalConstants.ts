@@ -25,7 +25,7 @@ const SERVER = {
   // App versions of the iOS Hound app that work properly with the server.
   // A version would be depreciated if an endpoint path is changed or endpoint data return format is changed
   // Allows for testing of new versions in development but leave production alone
-  COMPATIBLE_IOS_APP_VERSIONS: ['3.3.0', '3.4.0'],
+  COMPATIBLE_IOS_APP_VERSIONS: ['3.2.2', '3.3.0', '3.4.0'],
   // How often the database connections are tested as being connected and excess previousRequests/previousResponses are deleted (in milliseconds)
   DATABASE_MAINTENANCE_INTERVAL: (1000 * 60),
   // How long the database connection can stay idle before being killed (in seconds)
