@@ -13,7 +13,6 @@ import { getLogForLogIdUUID } from '../../../controllers/getFor/getForLogs.js';
 import { getReminderForReminderIdUUID } from '../../../controllers/getFor/getForReminders.js';
 
 // TODO DEPRECIATE < 3.4.0. switch from dogId/reminderId/logId to uuids for verification, identification, and other stuff.
-// TODO TEST this id and uuid dual logic is backwards compatible
 
 async function validateDogId(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
