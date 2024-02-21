@@ -1,11 +1,31 @@
 /*
  * NUMBER OF FAMILY HEADS WHO HAVE BOUGHT FREE TRIALS AND/OR PAID TRANSACTIONS
  */
-WITH combinedFamilyHeads AS (
-    -- Combine current and previous families
-    SELECT familyHeadUserId, familyId FROM families
-    UNION ALL
-    SELECT familyHeadUserId, familyId FROM previousFamilies
+
+WITH combinedUsers AS (
+	SELECT userId FROM users
+	UNION ALL
+	SELECT userId FROM previousUsers
+),
+currentFamilyHeads AS (
+	# First way a user can be counted as a family head is: 1. they are the head of a current family
+    SELECT 
+        userId AS familyHeadUserId
+    FROM combinedUsers cu
+    JOIN families f ON cu.userId = f.familyHeadUserId
+),
+previousFamilyHeads AS (
+	# Second way a user ca be counted as a family head is: 1. they were the head of a previous family AND 2. they are not the head of a current family AND 3. they are not a member of a current family
+    SELECT 
+        userId AS familyHeadUserId
+    FROM combinedUsers cu
+    JOIN previousFamilies pf ON cu.userId = pf.familyHeadUserId
+    WHERE cu.userId NOT IN (SELECT familyHeadUserId FROM families) AND cu.userId NOT IN (SELECT userId FROM familyMembers)
+),
+combinedFamilyHeads AS (
+    SELECT familyHeadUserId FROM currentFamilyHeads
+    UNION
+    SELECT familyHeadUserId FROM previousFamilyHeads
 ),
 familyHeadWithTransactions AS (
     SELECT 
@@ -24,9 +44,9 @@ purchaseStatistics AS (
 	FROM familyHeadWithTransactions fht
 )
 SELECT 
-    ps.noFreeTrialOrPurchase AS "Number of Family Heads With No Free Trial or Purchase",
-    ps.freeTrialButNoPurchase AS "Number of Family Heads With Free Trial But No Purchase",
-    ps.freeTrialAndPurchase AS "Number of Family Heads With Free Trial And Purchase"
+    ps.noFreeTrialOrPurchase AS "Family Heads With No Free Trial or Purchase",
+    ps.freeTrialButNoPurchase AS "Family Heads With Free Trial But No Purchase",
+    ps.freeTrialAndPurchase AS "Family Heads With Free Trial And Purchase"
 FROM purchaseStatistics ps;
 
 

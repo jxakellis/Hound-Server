@@ -145,10 +145,8 @@ WHERE
 	AND uwm.userEmail IS NOT NULL
 ORDER BY uwm.accountAge ASC;
  
-   
-    userId, userFirstName, userLastName, userEmail, userAccountCreationDate, userLatestRequestDate
 
-  
+
 /*
  * PERCENTAGE OF USERS STILL ACTIVE AFTER A CERTAIN NUMBER OF DAYS
  */

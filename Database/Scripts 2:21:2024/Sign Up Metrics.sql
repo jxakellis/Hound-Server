@@ -36,7 +36,7 @@ ORDER BY
     END;
    
    
-   
+  
 /*
  *	NUMBER OF SIGN UPS FOR A GIVEN DATE
  */
