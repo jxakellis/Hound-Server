@@ -48,7 +48,7 @@ async function insertAppStoreServerNotification(
 
   // https://developer.apple.com/documentation/appstoreservernotifications/data
   // The unique identifier of the app that the notification applies to. This property is available for apps that are downloaded from the App Store; it isn’t present in the sandbox environment.
-  const dataAppAppleId = formatKnownString(data.appAppleId, 100);
+  const dataAppAppleId = formatUnknownString(data.appAppleId, 100);
   // The bundle identifier of the app.
   const dataBundleId = data.bundleId;
   // The version of the build that identifies an iteration of the bundle.
