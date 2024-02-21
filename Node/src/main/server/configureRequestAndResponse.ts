@@ -141,7 +141,7 @@ function configureRequestAndResponseExtendedProperties(req: express.Request, res
       res.houndDeclarationExtendedProperties.hasSentResponse = true;
       res.status(status).json(response);
     },
-    sendFailureResponse: async function sendFailureResponse(error?: HoundError): Promise<void> {
+    sendFailureResponse: async function sendFailureResponse(error?: unknown): Promise<void> {
       const status = 400;
       // Check to see if the request has an active databaseConnection
       // If it does, then we attempt to COMMIT or ROLLBACK (and if they fail, the functions release() anyways)
@@ -168,11 +168,18 @@ function configureRequestAndResponseExtendedProperties(req: express.Request, res
       }
 
       // If we user provided an error, then we convert that error to JSON and use it as the body
+      // By default, we initialize this message to the error missing message
+      let unsafeForUsersResponseDoNotSendWithoutRemovingStack = new HoundError('error missing', sendFailureResponse, undefined, error).toJSON();
 
-      const unsafeForUsersResponseDoNotSendWithoutRemovingStack = (
-        error !== undefined
-        && error !== null
-      ) ? error.toJSON() : new HoundError('error missing', sendFailureResponse, undefined, error).toJSON();
+      // If there is an Error provided that we can decode, overwrite the original message
+      if (error !== undefined && error !== null) {
+        if (error instanceof HoundError) {
+          unsafeForUsersResponseDoNotSendWithoutRemovingStack = error.toJSON();
+        }
+        else if (error instanceof Error) {
+          unsafeForUsersResponseDoNotSendWithoutRemovingStack = new HoundError(undefined, sendFailureResponse, undefined, error).toJSON();
+        }
+      }
 
       await logResponse(req, res, status, JSON.stringify(unsafeForUsersResponseDoNotSendWithoutRemovingStack));
 
