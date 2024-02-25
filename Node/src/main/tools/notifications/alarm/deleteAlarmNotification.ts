@@ -20,7 +20,7 @@ async function deleteAlarmNotificationsForFamily(familyId: string): Promise<void
       generalPoolConnection,
       `SELECT ${dogRemindersColumns}
       FROM dogReminders dr
-      JOIN dogs d ON dr.dogId = d.dogId
+      JOIN dogs d ON dr.dogUUID = d.dogUUID
       WHERE d.familyId = ? AND d.dogIsDeleted = 0 AND dr.reminderIsDeleted = 0 
       LIMIT 18446744073709551615`,
       [familyId],
@@ -28,7 +28,7 @@ async function deleteAlarmNotificationsForFamily(familyId: string): Promise<void
       generalPoolConnection.release();
     });
 
-    reminders.forEach((reminder) => cancelJobForFamilyForReminder(familyId, reminder.reminderId));
+    reminders.forEach((reminder) => cancelJobForFamilyForReminder(familyId, reminder.reminderUUID));
   }
   catch (error) {
     logServerError(
@@ -43,10 +43,10 @@ async function deleteAlarmNotificationsForFamily(familyId: string): Promise<void
 }
 
 /**
- * Cancels and deletes any job scheduled with the provided reminderId
+ * Cancels and deletes any job scheduled with the provided reminderUUID
  */
-async function deleteAlarmNotificationsForReminder(familyId: string, reminderId: number): Promise<void> {
-  cancelJobForFamilyForReminder(familyId, reminderId);
+async function deleteAlarmNotificationsForReminder(familyId: string, reminderUUID: string): Promise<void> {
+  cancelJobForFamilyForReminder(familyId, reminderUUID);
 }
 
 export {

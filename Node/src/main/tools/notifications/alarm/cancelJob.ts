@@ -3,11 +3,11 @@ import { alarmLogger } from '../../../logging/loggers.js';
 import { schedule } from './schedule.js';
 
 /**
- * Cancels jobs scheduled with the provided familyId and reminderId
+ * Cancels jobs scheduled with the provided familyId and reminderUUID
  */
-async function cancelJobForFamilyForReminder(familyId: string, reminderId: number): Promise<void> {
-  // attempt to locate job that has the userId and reminderId
-  const jobKey = `Family${familyId}Reminder${reminderId}`;
+async function cancelJobForFamilyForReminder(familyId: string, reminderUUID: string): Promise<void> {
+  // attempt to locate job that has the userId and reminderUUID
+  const jobKey = `Family${familyId}Reminder${reminderUUID}`;
   const job = schedule.scheduledJobs[jobKey];
 
   if (job === undefined || job === null) {

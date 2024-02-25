@@ -5,7 +5,7 @@ import { validateSubscription } from '../main/tools/validate/validateSubscriptio
 import {
   getDogs, createDog, updateDog, deleteDog,
 } from '../controllers/controllerRoutes/dogs.js';
-import { validateDogId } from '../main/tools/validate/validateDogRelatedId.js';
+import { validateDogUUID } from '../main/tools/validate/validateDogRelatedId.js';
 
 // route to dogs
 import { logsRouter } from './logs.js';
@@ -15,7 +15,7 @@ import { remindersRouter } from './reminders.js';
 
 const dogsRouter = express.Router({ mergeParams: true });
 
-dogsRouter.use(['/'], validateSubscription, validateDogId);
+dogsRouter.use(['/'], validateSubscription, validateDogUUID);
 
 dogsRouter.use(['/logs'], logsRouter);
 dogsRouter.use(['/reminders'], remindersRouter);

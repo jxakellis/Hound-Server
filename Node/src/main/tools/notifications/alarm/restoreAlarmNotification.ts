@@ -23,13 +23,13 @@ async function restoreAlarmNotificationsForAllFamilies(): Promise<void> {
     // Therefore, we need to be careful in our usage of this pool connection, as if errors get thrown, then it could escape the block and be unused
     const generalPoolConnection = await getPoolConnection(DatabasePools.general);
 
-    // for ALL reminders get: familyId, reminderId, dogName, reminderExecutionDate, reminderAction, and reminderCustomActionName
+    // for ALL reminders get: familyId, reminderUUID, dogName, reminderExecutionDate, reminderAction, and reminderCustomActionName
     const alarmNotificationInformationResult = await databaseQuery<(
 DogsRow & DogRemindersRow)[]>(
       generalPoolConnection,
       `SELECT ${dogsColumns}, ${dogRemindersColumns}
       FROM dogReminders dr
-      JOIN dogs d ON d.dogId = dr.dogId
+      JOIN dogs d ON d.dogUUID = dr.dogUUID
       WHERE d.dogIsDeleted = 0
       AND dr.reminderIsDeleted = 0 
       AND dr.reminderExecutionDate IS NOT NULL
@@ -45,7 +45,7 @@ DogsRow & DogRemindersRow)[]>(
       // don't use await here as that will significantly slow down process
       createAlarmNotificationForFamily(
         alarmNotificationInformation.familyId,
-        alarmNotificationInformation.reminderId,
+        alarmNotificationInformation.reminderUUID,
         alarmNotificationInformation.reminderExecutionDate,
       );
     });

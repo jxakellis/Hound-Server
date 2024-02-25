@@ -2,19 +2,19 @@ import { type Queryable, type ResultSetHeader, databaseQuery } from '../../main/
 import { LIMIT } from '../../main/server/globalConstants.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 import { type NotYetCreatedDogLogsRow } from '../../main/types/DogLogsRow.js';
-import { getAllLogsForDogId } from '../getFor/getForLogs.js';
+import { getAllLogsForDogUUID } from '../getFor/getForLogs.js';
 import { formatKnownString } from '../../main/format/formatObject.js';
 
 /**
 *  Queries the database to create a log. If the query is successful, then returns the logId.
 *  If a problem is encountered, creates and throws custom error
 */
-async function createLogForUserIdDogId(databaseConnection: Queryable, log: NotYetCreatedDogLogsRow): Promise<number> {
-  const notDeletedLogs = await getAllLogsForDogId(databaseConnection, log.dogId, false, undefined);
+async function createLogForLog(databaseConnection: Queryable, log: NotYetCreatedDogLogsRow): Promise<number> {
+  const notDeletedLogs = await getAllLogsForDogUUID(databaseConnection, log.dogUUID, false, undefined);
 
   // make sure that the user isn't creating too many logs
   if (notDeletedLogs.length >= LIMIT.NUMBER_OF_LOGS_PER_DOG) {
-    throw new HoundError(`Dog log limit of ${LIMIT.NUMBER_OF_LOGS_PER_DOG} exceeded`, createLogForUserIdDogId, ERROR_CODES.FAMILY.LIMIT.LOG_TOO_LOW);
+    throw new HoundError(`Dog log limit of ${LIMIT.NUMBER_OF_LOGS_PER_DOG} exceeded`, createLogForLog, ERROR_CODES.FAMILY.LIMIT.LOG_TOO_LOW);
   }
 
   const result = await databaseQuery<ResultSetHeader>(
@@ -22,7 +22,7 @@ async function createLogForUserIdDogId(databaseConnection: Queryable, log: NotYe
     `INSERT INTO dogLogs
       (
         logUUID,
-        dogId, userId,
+        dogUUID, userId,
         logStartDate, logEndDate, logNote, logAction, logCustomActionName,
         logUnit, logNumberOfLogUnits,
         logLastModified, logIsDeleted,
@@ -36,7 +36,7 @@ async function createLogForUserIdDogId(databaseConnection: Queryable, log: NotYe
           )`,
     [
       formatKnownString(log.logUUID, 36),
-      log.dogId, log.userId,
+      log.dogUUID, log.userId,
       log.logStartDate, log.logEndDate, formatKnownString(log.logNote, 500), log.logAction, formatKnownString(log.logCustomActionName, 32),
       log.logUnit, log.logNumberOfLogUnits,
       // none, default values
@@ -46,4 +46,4 @@ async function createLogForUserIdDogId(databaseConnection: Queryable, log: NotYe
   return result.insertId;
 }
 
-export { createLogForUserIdDogId };
+export { createLogForLog };

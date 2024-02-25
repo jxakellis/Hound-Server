@@ -15,7 +15,6 @@ async function getFamily(req: express.Request, res: express.Response): Promise<v
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedFamilyId } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined || databaseConnection === null) {
@@ -47,7 +46,6 @@ async function createFamily(req: express.Request, res: express.Response): Promis
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined || databaseConnection === null) {
@@ -70,7 +68,6 @@ async function updateFamily(req: express.Request, res: express.Response): Promis
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined || databaseConnection === null) {
@@ -98,7 +95,6 @@ async function deleteFamily(req: express.Request, res: express.Response): Promis
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedUserId, validatedFamilyId } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined || databaseConnection === null) {

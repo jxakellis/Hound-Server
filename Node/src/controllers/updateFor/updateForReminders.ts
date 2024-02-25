@@ -7,7 +7,7 @@ import { formatKnownString } from '../../main/format/formatObject.js';
  *  Queries the database to create a update reminder. If the query is successful, then returns the provided reminder
  *  If a problem is encountered, creates and throws custom error
  */
-async function updateReminderForDogIdReminder(
+async function updateReminderForReminder(
   databaseConnection: Queryable,
   reminder: NotYetUpdatedDogRemindersRow,
 ): Promise<void> {
@@ -22,7 +22,7 @@ async function updateReminderForDogIdReminder(
     weeklySunday = ?, weeklyMonday = ?, weeklyTuesday = ?, weeklyWednesday = ?, weeklyThursday = ?, weeklyFriday = ?, weeklySaturday = ?, weeklySkippedDate = ?,
     monthlyUTCDay = ?, monthlyUTCHour = ?, monthlyUTCMinute = ?, monthlySkippedDate = ?,
     oneTimeDate = ?
-    WHERE reminderId = ?`,
+    WHERE reminderUUID = ?`,
     [
       reminder.reminderAction, formatKnownString(reminder.reminderCustomActionName, 32), reminder.reminderType, reminder.reminderIsEnabled,
       reminder.reminderExecutionBasis, reminder.reminderExecutionDate,
@@ -32,7 +32,7 @@ async function updateReminderForDogIdReminder(
       reminder.weeklySkippedDate,
       reminder.monthlyUTCDay, reminder.monthlyUTCHour, reminder.monthlyUTCMinute, reminder.monthlySkippedDate,
       reminder.oneTimeDate,
-      reminder.reminderId,
+      reminder.reminderUUID,
     ],
   );
 }
@@ -41,9 +41,9 @@ async function updateReminderForDogIdReminder(
  *  Queries the database to update multiple reminders. If the query is successful, then return the provided reminders
  *  If a problem is encountered, creates and throws custom error
  */
-async function updateRemindersForDogIdReminders(databaseConnection: Queryable, reminders: NotYetUpdatedDogRemindersRow[]): Promise<void> {
+async function updateRemindersForReminders(databaseConnection: Queryable, reminders: NotYetUpdatedDogRemindersRow[]): Promise<void> {
   const promises: Promise<void>[] = [];
-  reminders.forEach((reminder) => promises.push(updateReminderForDogIdReminder(
+  reminders.forEach((reminder) => promises.push(updateReminderForReminder(
     databaseConnection,
     reminder,
   )));
@@ -51,4 +51,4 @@ async function updateRemindersForDogIdReminders(databaseConnection: Queryable, r
   await Promise.all(promises);
 }
 
-export { updateRemindersForDogIdReminders };
+export { updateRemindersForReminders };

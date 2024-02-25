@@ -18,23 +18,23 @@ import { HoundError } from '../../../server/globalErrors.js';
  * Helper method for createAlarmNotificationForFamily, actually queries database to get most updated version of dog and reminder.
  * Physically sends the APN
  */
-async function sendAPNNotificationForFamily(familyId: string, reminderId: number): Promise<void> {
+async function sendAPNNotificationForFamily(familyId: string, reminderUUID: string): Promise<void> {
   try {
     // This pool connection is obtained manually here. Therefore we must also release it manually.
     // Therefore, we need to be careful in our usage of this pool connection, as if errors get thrown, then it could escape the block and be unused
     const generalPoolConnection = await getPoolConnection(DatabasePools.general);
 
-    // get the dogName, reminderAction, and reminderCustomActionName for the given reminderId
-    // the reminderId has to exist to search and we check to make sure the dogId isn't null (to make sure the dog still exists too)
+    // get the dogName, reminderAction, and reminderCustomActionName for the given reminderUUID
+    // the reminderUUID has to exist to search and we check to make sure the dogUUID isn't null (to make sure the dog still exists too)
     const result = await databaseQuery<(
 DogsRow & DogRemindersRow)[]>(
       generalPoolConnection,
       `SELECT ${dogsColumns}, ${dogRemindersColumns}
       FROM dogReminders dr
-      JOIN dogs d ON dr.dogId = d.dogId
-      WHERE d.dogId IS NOT NULL AND dr.reminderId = ? AND d.dogIsDeleted = 0 AND dr.reminderIsDeleted = 0 AND dr.reminderExecutionDate IS NOT NULL 
+      JOIN dogs d ON dr.dogUUID = d.dogUUID
+      WHERE d.dogUUID IS NOT NULL AND dr.reminderUUID = ? AND d.dogIsDeleted = 0 AND dr.reminderIsDeleted = 0 AND dr.reminderExecutionDate IS NOT NULL 
       LIMIT 1`,
-      [reminderId],
+      [reminderUUID],
       ).finally(() => {
         generalPoolConnection.release();
       });
@@ -59,7 +59,7 @@ DogsRow & DogRemindersRow)[]>(
     }
 
     // send immediate APN notification for family
-    const customPayload = { reminderId, reminderLastModified: reminder.reminderLastModified };
+    const customPayload = { reminderUUID, reminderLastModified: reminder.reminderLastModified };
     sendNotificationForFamily(familyId, NOTIFICATION.CATEGORY.REMINDER.ALARM, alertTitle, alertBody, customPayload);
   }
   catch (error) {
@@ -77,14 +77,14 @@ DogsRow & DogRemindersRow)[]>(
 /**
  * For a given reminder for a given family, handles the alarm notifications
  * If the reminderExecutionDate is in the past, sends APN notification asap. Otherwise, schedule job to send at reminderExecutionDate.
- * If a job with that name from reminderId already exists, then we cancel and replace that job
+ * If a job with that name from reminderUUID already exists, then we cancel and replace that job
  */
-async function createAlarmNotificationForFamily(familyId: string, reminderId: number, reminderExecutionDate?: Date): Promise<void> {
+async function createAlarmNotificationForFamily(familyId: string, reminderUUID: string, reminderExecutionDate?: Date): Promise<void> {
   try {
-    alarmLogger.debug(`createAlarmNotificationForFamily ${familyId}, ${reminderId}, ${reminderExecutionDate}, ${reminderExecutionDate}`);
+    alarmLogger.debug(`createAlarmNotificationForFamily ${familyId}, ${reminderUUID}, ${reminderExecutionDate}, ${reminderExecutionDate}`);
 
     // We are potentially overriding a job, so we must cancel it first
-    await deleteAlarmNotificationsForReminder(familyId, reminderId);
+    await deleteAlarmNotificationsForReminder(familyId, reminderUUID);
 
     // If a user updates a reminder, this function is invoked. When a reminder is updated, is reminderExecutionDate can be null
     // Therefore we want to delete the old alarm notifications for that reminder and (if it has a reminderExecutionDate) create new alarm notifications
@@ -97,14 +97,14 @@ async function createAlarmNotificationForFamily(familyId: string, reminderId: nu
     // reminderExecutionDate is present or in the past, so we should execute immediately
     if (new Date() >= reminderExecutionDate) {
       // do these async, no need to await
-      sendAPNNotificationForFamily(familyId, reminderId);
+      sendAPNNotificationForFamily(familyId, reminderUUID);
     }
     // reminderExecutionDate is in the future
     else {
       alarmLogger.debug(`Scheduling a new job; count will be ${Object.keys(schedule.scheduledJobs).length + 1}`);
-      schedule.scheduleJob(`Family${familyId}Reminder${reminderId}`, reminderExecutionDate, async () => {
+      schedule.scheduleJob(`Family${familyId}Reminder${reminderUUID}`, reminderExecutionDate, async () => {
         // do these async, no need to await
-        sendAPNNotificationForFamily(familyId, reminderId);
+        sendAPNNotificationForFamily(familyId, reminderUUID);
       });
     }
   }

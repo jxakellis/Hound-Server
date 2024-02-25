@@ -1,13 +1,12 @@
 import express from 'express';
-import crypto from 'crypto';
 
-import { getDogForDogIdUUID, getAllDogsForFamilyId } from '../getFor/getForDogs.js';
+import { getDogForDogUUID, getAllDogsForFamilyId } from '../getFor/getForDogs.js';
 
 import { createDogForFamilyId } from '../createFor/createForDogs.js';
 
-import { updateDogForDogId } from '../updateFor/updateForDogs.js';
+import { updateDogForDog } from '../updateFor/updateForDogs.js';
 
-import { deleteDogForFamilyIdDogId } from '../deleteFor/deleteForDogs.js';
+import { deleteDogForFamilyIdDogUUID } from '../deleteFor/deleteForDogs.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 
 import { formatDate, formatUnknownString } from '../../main/format/formatObject.js';
@@ -16,7 +15,6 @@ async function getDogs(req: express.Request, res: express.Response): Promise<voi
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedUserId, validatedFamilyId } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined || databaseConnection === null) {
@@ -35,16 +33,16 @@ async function getDogs(req: express.Request, res: express.Response): Promise<voi
     const { validatedDogs } = req.houndDeclarationExtendedProperties.validatedVariables;
     const validatedDog = validatedDogs.safeIndex(0);
     if (validatedDog !== undefined && validatedDog !== null) {
-      const possiblyDeletedDog = await getDogForDogIdUUID(
+      const possiblyDeletedDog = await getDogForDogUUID(
         databaseConnection,
+        validatedDog.validatedDogUUID,
         true,
         true,
         previousDogManagerSynchronization,
-        validatedDog.validatedDogId,
       );
 
       if (possiblyDeletedDog === undefined || possiblyDeletedDog === null) {
-        throw new HoundError('getDogForDogIdUUID possiblyDeletedDog missing', getDogs, ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('getDogForDogUUID possiblyDeletedDog missing', getDogs, ERROR_CODES.VALUE.MISSING);
       }
 
       return res.houndDeclarationExtendedProperties.sendSuccessResponse(possiblyDeletedDog);
@@ -69,7 +67,6 @@ async function createDog(req: express.Request, res: express.Response): Promise<v
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedFamilyId } = req.houndDeclarationExtendedProperties.validatedVariables;
     const { unvalidatedDogsDictionary } = req.houndDeclarationExtendedProperties.unvalidatedVariables;
@@ -85,7 +82,7 @@ async function createDog(req: express.Request, res: express.Response): Promise<v
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const dogUUID = formatUnknownString(unvalidatedDogDictionary?.['dogUUID'] ?? crypto.randomUUID(), 36);
+    const dogUUID = formatUnknownString(unvalidatedDogDictionary?.['dogUUID'], 36);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const dogName = formatUnknownString(unvalidatedDogDictionary?.['dogName']);
     if (dogUUID === undefined || dogUUID === null) {
@@ -108,7 +105,6 @@ async function updateDog(req: express.Request, res: express.Response): Promise<v
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedFamilyId, validatedDogs } = req.houndDeclarationExtendedProperties.validatedVariables;
     const validatedDog = validatedDogs.safeIndex(0);
@@ -128,7 +124,7 @@ async function updateDog(req: express.Request, res: express.Response): Promise<v
       throw new HoundError('dogName missing', updateDog, ERROR_CODES.VALUE.MISSING);
     }
 
-    await updateDogForDogId(databaseConnection, {
+    await updateDogForDog(databaseConnection, {
       familyId: validatedFamilyId,
       dogId: validatedDog.validatedDogId,
       dogUUID: validatedDog.validatedDogUUID,
@@ -146,7 +142,6 @@ async function deleteDog(req: express.Request, res: express.Response): Promise<v
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedFamilyId, validatedDogs } = req.houndDeclarationExtendedProperties.validatedVariables;
     const validatedDog = validatedDogs.safeIndex(0);
@@ -160,7 +155,7 @@ async function deleteDog(req: express.Request, res: express.Response): Promise<v
       throw new HoundError('validatedDog missing', deleteDog, ERROR_CODES.VALUE.MISSING);
     }
 
-    await deleteDogForFamilyIdDogId(databaseConnection, validatedFamilyId, validatedDog.validatedDogId);
+    await deleteDogForFamilyIdDogUUID(databaseConnection, validatedFamilyId, validatedDog.validatedDogUUID);
 
     return res.houndDeclarationExtendedProperties.sendSuccessResponse('');
   }

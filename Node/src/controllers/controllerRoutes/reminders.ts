@@ -1,14 +1,13 @@
 import express from 'express';
-import crypto from 'crypto';
 import { createAlarmNotificationForFamily } from '../../main/tools/notifications/alarm/createAlarmNotification.js';
 
-import { getReminderForReminderIdUUID, getAllRemindersForDogId } from '../getFor/getForReminders.js';
+import { getReminderForReminderUUID, getAllRemindersForDogUUID } from '../getFor/getForReminders.js';
 
-import { createRemindersForDogIdReminders } from '../createFor/createForReminders.js';
+import { createRemindersForReminders } from '../createFor/createForReminders.js';
 
-import { updateRemindersForDogIdReminders } from '../updateFor/updateForReminders.js';
+import { updateRemindersForReminders } from '../updateFor/updateForReminders.js';
 
-import { deleteRemindersForFamilyIdDogIdReminderIds } from '../deleteFor/deleteForReminders.js';
+import { deleteRemindersForFamilyIdReminderUUIDs } from '../deleteFor/deleteForReminders.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 
 import {
@@ -21,7 +20,6 @@ async function getReminders(req: express.Request, res: express.Response): Promis
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedDogs } = req.houndDeclarationExtendedProperties.validatedVariables;
     const validatedDog = validatedDogs.safeIndex(0);
@@ -36,10 +34,10 @@ async function getReminders(req: express.Request, res: express.Response): Promis
     const validatedReminder = validatedReminders.safeIndex(0);
 
     if (validatedReminder !== undefined && validatedReminder !== null) {
-      const possibleDeletedReminder = await getReminderForReminderIdUUID(databaseConnection, true, validatedReminder.validatedReminderId);
+      const possibleDeletedReminder = await getReminderForReminderUUID(databaseConnection, validatedReminder.validatedReminderUUID, true);
 
       if (possibleDeletedReminder === undefined || possibleDeletedReminder === null) {
-        throw new HoundError('getReminderForReminderIdUUID possibleDeletedReminder missing', getReminders, ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('getReminderForReminderUUID possibleDeletedReminder missing', getReminders, ERROR_CODES.VALUE.MISSING);
       }
 
       return res.houndDeclarationExtendedProperties.sendSuccessResponse(possibleDeletedReminder);
@@ -47,7 +45,7 @@ async function getReminders(req: express.Request, res: express.Response): Promis
 
     const previousDogManagerSynchronization = formatDate(req.query['previousDogManagerSynchronization'] ?? req.query['userConfigurationPreviousDogManagerSynchronization']);
 
-    const possibleDeletedReminders = await getAllRemindersForDogId(databaseConnection, validatedDog.validatedDogId, true, previousDogManagerSynchronization);
+    const possibleDeletedReminders = await getAllRemindersForDogUUID(databaseConnection, validatedDog.validatedDogUUID, true, previousDogManagerSynchronization);
 
     return res.houndDeclarationExtendedProperties.sendSuccessResponse(possibleDeletedReminders);
   }
@@ -60,7 +58,6 @@ async function createReminder(req: express.Request, res: express.Response): Prom
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedFamilyId, validatedDogs } = req.houndDeclarationExtendedProperties.validatedVariables;
     const validatedDog = validatedDogs.safeIndex(0);
@@ -80,7 +77,7 @@ async function createReminder(req: express.Request, res: express.Response): Prom
 
     const reminders: NotYetCreatedDogRemindersRow[] = [];
     unvalidatedRemindersDictionary.forEach((unvalidatedReminderDictionary) => {
-      const reminderUUID = formatUnknownString(unvalidatedReminderDictionary['reminderUUID'] ?? crypto.randomUUID(), 36);
+      const reminderUUID = formatUnknownString(unvalidatedReminderDictionary['reminderUUID'], 36);
       const reminderAction = formatReminderActionToInternalValue(formatUnknownString(unvalidatedReminderDictionary['reminderAction']));
       const reminderCustomActionName = formatUnknownString(unvalidatedReminderDictionary['reminderCustomActionName']);
       const reminderType = formatUnknownString(unvalidatedReminderDictionary['reminderType']);
@@ -173,7 +170,7 @@ async function createReminder(req: express.Request, res: express.Response): Prom
       }
 
       reminders.push({
-        dogId: validatedDog.validatedDogId,
+        dogUUID: validatedDog.validatedDogUUID,
         reminderUUID,
         reminderAction,
         reminderCustomActionName,
@@ -201,13 +198,13 @@ async function createReminder(req: express.Request, res: express.Response): Prom
       });
     });
 
-    const results = await createRemindersForDogIdReminders(databaseConnection, reminders);
+    const results = await createRemindersForReminders(databaseConnection, reminders);
 
     // create was successful, so we can create all the alarm notifications
     results.forEach((result) => {
       createAlarmNotificationForFamily(
         validatedFamilyId,
-        result.reminderId,
+        result.reminderUUID,
         result.reminderExecutionDate,
       );
     });
@@ -223,7 +220,6 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedFamilyId, validatedReminders } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined || databaseConnection === null) {
@@ -241,7 +237,7 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
       // validate reminder id against validatedReminders
       const reminderId = validatedReminder.validatedReminderId;
       const reminderUUID = validatedReminder.validatedReminderUUID;
-      const dogId = validatedReminder.validatedDogId;
+      const dogUUID = validatedReminder.validatedDogUUID;
       const reminderAction = formatReminderActionToInternalValue(formatUnknownString(validatedReminder.unvalidatedReminderDictionary?.['reminderAction']));
       const reminderCustomActionName = formatUnknownString(validatedReminder.unvalidatedReminderDictionary?.['reminderCustomActionName']);
       const reminderType = formatUnknownString(validatedReminder.unvalidatedReminderDictionary?.['reminderType']);
@@ -333,7 +329,7 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
       reminders.push({
         reminderId,
         reminderUUID,
-        dogId,
+        dogUUID,
         reminderAction,
         reminderCustomActionName,
         reminderType,
@@ -360,13 +356,13 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
       });
     });
 
-    await updateRemindersForDogIdReminders(databaseConnection, reminders);
+    await updateRemindersForReminders(databaseConnection, reminders);
 
     // update was successful, so we can create all new alarm notifications
     reminders.forEach((reminder) => {
       createAlarmNotificationForFamily(
         validatedFamilyId,
-        reminder.reminderId,
+        reminder.reminderUUID,
         reminder.reminderExecutionDate,
       );
     });
@@ -382,7 +378,6 @@ async function deleteReminder(req: express.Request, res: express.Response): Prom
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedFamilyId, validatedReminders } = req.houndDeclarationExtendedProperties.validatedVariables;
     if (databaseConnection === undefined || databaseConnection === null) {
@@ -395,7 +390,7 @@ async function deleteReminder(req: express.Request, res: express.Response): Prom
       throw new HoundError('validatedReminders missing', deleteReminder, ERROR_CODES.VALUE.MISSING);
     }
 
-    await deleteRemindersForFamilyIdDogIdReminderIds(databaseConnection, validatedFamilyId, validatedReminders.map((validatedReminder) => validatedReminder.validatedReminderId));
+    await deleteRemindersForFamilyIdReminderUUIDs(databaseConnection, validatedFamilyId, validatedReminders.map((validatedReminder) => validatedReminder.validatedReminderUUID));
 
     return res.houndDeclarationExtendedProperties.sendSuccessResponse('');
   }

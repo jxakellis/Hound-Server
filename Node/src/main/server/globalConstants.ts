@@ -25,7 +25,7 @@ const SERVER = {
   // App versions of the iOS Hound app that work properly with the server.
   // A version would be depreciated if an endpoint path is changed or endpoint data return format is changed
   // Allows for testing of new versions in development but leave production alone
-  COMPATIBLE_IOS_APP_VERSIONS: ['3.3.0', '3.4.0', '3.4.1', '3.4.2'],
+  COMPATIBLE_IOS_APP_VERSIONS: ['3.4.2', '3.4.3'],
   // How often the database connections are tested as being connected and excess previousRequests/previousResponses are deleted (in milliseconds)
   DATABASE_MAINTENANCE_INTERVAL: (1000 * 60),
   // How long the database connection can stay idle before being killed (in seconds)
@@ -41,7 +41,7 @@ const LIMIT = {
   NUMBER_OF_SCHEDULED_JOBS_ALLOWED: 1000000,
   // A user can have <= the number listed below of logs for each dog. E.g. if 100,000 then the family can have <= 100,000 logs per dog
   // IMPORTANT: If you modify this value, change the value on Hound app's DogConstant
-  NUMBER_OF_LOGS_PER_DOG: 50000,
+  NUMBER_OF_LOGS_PER_DOG: 100000,
   // A user can have <= the number listed below of reminders for each dog. E.g. if 10 then the family can have <= 10 reminders per dog
   // IMPORTANT: If you modify this value, change the value on Hound app's DogConstant
   NUMBER_OF_REMINDERS_PER_DOG: 10,

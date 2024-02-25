@@ -1,22 +1,22 @@
 import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
 import { getAllDogsForFamilyId } from '../getFor/getForDogs.js';
 
-import { deleteAllLogsForDogId } from './deleteForLogs.js';
-import { deleteAllRemindersForFamilyIdDogId } from './deleteForReminders.js';
+import { deleteAllLogsForDogUUID } from './deleteForLogs.js';
+import { deleteAllRemindersForFamilyIdDogUUID } from './deleteForReminders.js';
 
 /**
  *  Queries the database to delete a dog and everything nested under it. If the query is successful, then returns
  *  If an error is encountered, creates and throws custom error
  */
-async function deleteDogForFamilyIdDogId(databaseConnection: Queryable, familyId: string, dogId: number): Promise<void> {
-  await deleteAllRemindersForFamilyIdDogId(databaseConnection, familyId, dogId);
-  await deleteAllLogsForDogId(databaseConnection, dogId);
+async function deleteDogForFamilyIdDogUUID(databaseConnection: Queryable, familyId: string, dogUUID: string): Promise<void> {
+  await deleteAllRemindersForFamilyIdDogUUID(databaseConnection, familyId, dogUUID);
+  await deleteAllLogsForDogUUID(databaseConnection, dogUUID);
   await databaseQuery(
     databaseConnection,
     `UPDATE dogs
     SET dogIsDeleted = 1, dogLastModified = CURRENT_TIMESTAMP()
-    WHERE dogId = ?`,
-    [dogId],
+    WHERE dogUUID = ?`,
+    [dogUUID],
   );
 }
 
@@ -29,9 +29,9 @@ async function deleteAllDogsForFamilyId(databaseConnection: Queryable, familyId:
 
   // delete all the dogs
   const promises: Promise<void>[] = [];
-  notDeletedDogs.forEach((notDeletedDog) => promises.push(deleteDogForFamilyIdDogId(databaseConnection, familyId, notDeletedDog.dogId)));
+  notDeletedDogs.forEach((notDeletedDog) => promises.push(deleteDogForFamilyIdDogUUID(databaseConnection, familyId, notDeletedDog.dogUUID)));
 
   await Promise.all(promises);
 }
 
-export { deleteDogForFamilyIdDogId, deleteAllDogsForFamilyId };
+export { deleteDogForFamilyIdDogUUID, deleteAllDogsForFamilyId };

@@ -87,8 +87,8 @@ async function deleteFamily(databaseConnection: Queryable, familyId: string, fam
       databaseConnection,
       `DELETE d, dr, dl
                       FROM dogs d
-                      LEFT JOIN dogLogs dl ON d.dogId = dl.dogId
-                      LEFT JOIN dogReminders dr ON d.dogId = dr.dogId
+                      LEFT JOIN dogLogs dl ON d.dogUUID = dl.dogUUID
+                      LEFT JOIN dogReminders dr ON d.dogUUID = dr.dogUUID
                       WHERE d.familyId = ?`,
       [familyId],
     ),

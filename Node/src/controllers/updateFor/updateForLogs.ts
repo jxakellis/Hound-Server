@@ -6,7 +6,7 @@ import { formatKnownString } from '../../main/format/formatObject.js';
  *  Queries the database to update a log. If the query is successful, then returns
  *  If a problem is encountered, creates and throws custom error
  */
-async function updateLogForDogIdLogId(databaseConnection: Queryable, log: NotYetUpdatedDogLogsRow): Promise<void> {
+async function updateLogForLog(databaseConnection: Queryable, log: NotYetUpdatedDogLogsRow): Promise<void> {
   await databaseQuery(
     databaseConnection,
     `UPDATE dogLogs
@@ -15,15 +15,15 @@ async function updateLogForDogIdLogId(databaseConnection: Queryable, log: NotYet
     logAction = ?, logCustomActionName = ?,
     logNote = ?, logUnit = ?, logNumberOfLogUnits = ?,
     logLastModified = CURRENT_TIMESTAMP()
-    WHERE logId = ?`,
+    WHERE logUUID = ?`,
     [
       log.logStartDate, log.logEndDate,
       log.logAction, formatKnownString(log.logCustomActionName, 32),
       formatKnownString(log.logNote, 500), log.logUnit, log.logNumberOfLogUnits,
       // none, default values
-      log.logId,
+      log.logUUID,
     ],
   );
 }
 
-export { updateLogForDogIdLogId };
+export { updateLogForLog };

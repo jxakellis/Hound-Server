@@ -1,14 +1,13 @@
 import express from 'express';
-import crypto from 'crypto';
 import { createLogNotification } from '../../main/tools/notifications/alert/createLogNotification.js';
 
-import { getLogForLogIdUUID, getAllLogsForDogId } from '../getFor/getForLogs.js';
+import { getLogForLogUUID, getAllLogsForDogUUID } from '../getFor/getForLogs.js';
 
-import { createLogForUserIdDogId } from '../createFor/createForLogs.js';
+import { createLogForLog } from '../createFor/createForLogs.js';
 
-import { updateLogForDogIdLogId } from '../updateFor/updateForLogs.js';
+import { updateLogForLog } from '../updateFor/updateForLogs.js';
 
-import { deleteLogForLogId } from '../deleteFor/deleteForLogs.js';
+import { deleteLogForLogUUID } from '../deleteFor/deleteForLogs.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 
 import { formatDate, formatNumber, formatUnknownString } from '../../main/format/formatObject.js';
@@ -18,7 +17,6 @@ async function getLogs(req: express.Request, res: express.Response): Promise<voi
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedDogs, validatedLogs } = req.houndDeclarationExtendedProperties.validatedVariables;
     const validatedDog = validatedDogs.safeIndex(0);
@@ -31,10 +29,10 @@ async function getLogs(req: express.Request, res: express.Response): Promise<voi
     }
 
     if (validatedLog !== undefined && validatedLog !== null) {
-      const possiblyDeletedLog = await getLogForLogIdUUID(databaseConnection, true, validatedLog.validatedLogId);
+      const possiblyDeletedLog = await getLogForLogUUID(databaseConnection, validatedLog.validatedLogUUID, true);
 
       if (possiblyDeletedLog === undefined || possiblyDeletedLog === null) {
-        throw new HoundError('getLogForLogIdUUID possiblyDeletedLog missing', getLogs, ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('getLogForLogUUID possiblyDeletedLog missing', getLogs, ERROR_CODES.VALUE.MISSING);
       }
 
       return res.houndDeclarationExtendedProperties.sendSuccessResponse(possiblyDeletedLog);
@@ -42,7 +40,7 @@ async function getLogs(req: express.Request, res: express.Response): Promise<voi
 
     const previousDogManagerSynchronization = formatDate(req.query['previousDogManagerSynchronization'] ?? req.query['userConfigurationPreviousDogManagerSynchronization']);
 
-    const possibleDeletedLogs = await getAllLogsForDogId(databaseConnection, validatedDog.validatedDogId, true, previousDogManagerSynchronization);
+    const possibleDeletedLogs = await getAllLogsForDogUUID(databaseConnection, validatedDog.validatedDogUUID, true, previousDogManagerSynchronization);
 
     return res.houndDeclarationExtendedProperties.sendSuccessResponse(possibleDeletedLogs);
   }
@@ -55,7 +53,6 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedUserId, validatedFamilyId, validatedDogs } = req.houndDeclarationExtendedProperties.validatedVariables;
     const validatedDog = validatedDogs.safeIndex(0);
@@ -78,7 +75,7 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const logUUID = formatUnknownString(unvalidatedLogDictionary?.['logUUID'] ?? crypto.randomUUID(), 36);
+    const logUUID = formatUnknownString(unvalidatedLogDictionary?.['logUUID'], 36);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const logStartDate = formatDate(unvalidatedLogDictionary?.['logStartDate']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -110,11 +107,11 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
       throw new HoundError('logNote missing', createLog, ERROR_CODES.VALUE.MISSING);
     }
 
-    const result = await createLogForUserIdDogId(
+    const result = await createLogForLog(
       databaseConnection,
       {
         userId: validatedUserId,
-        dogId: validatedDog.validatedDogId,
+        dogUUID: validatedDog.validatedDogUUID,
         logUUID,
         logStartDate,
         logEndDate,
@@ -128,7 +125,7 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
     createLogNotification(
       validatedUserId,
       validatedFamilyId,
-      validatedDog.validatedDogId,
+      validatedDog.validatedDogUUID,
       logAction,
       logCustomActionName,
     );
@@ -183,11 +180,11 @@ async function updateLog(req: express.Request, res: express.Response): Promise<v
       throw new HoundError('logNote missing', updateLog, ERROR_CODES.VALUE.MISSING);
     }
 
-    await updateLogForDogIdLogId(
+    await updateLogForLog(
       databaseConnection,
       {
         userId: validatedUserId,
-        dogId: validatedLog.validatedDogId,
+        dogUUID: validatedLog.validatedDogUUID,
         logId: validatedLog.validatedLogId,
         logUUID: validatedLog.validatedLogUUID,
         logStartDate,
@@ -210,7 +207,6 @@ async function deleteLog(req: express.Request, res: express.Response): Promise<v
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderIds is undefined, then we use validatedDogId to get all dogs
     const { databaseConnection } = req.houndDeclarationExtendedProperties;
     const { validatedLogs } = req.houndDeclarationExtendedProperties.validatedVariables;
     const validatedLog = validatedLogs.safeIndex(0);
@@ -221,7 +217,7 @@ async function deleteLog(req: express.Request, res: express.Response): Promise<v
       throw new HoundError('validatedLog missing', deleteLog, ERROR_CODES.VALUE.MISSING);
     }
 
-    await deleteLogForLogId(databaseConnection, validatedLog.validatedLogId);
+    await deleteLogForLogUUID(databaseConnection, validatedLog.validatedLogUUID);
 
     return res.houndDeclarationExtendedProperties.sendSuccessResponse('');
   }

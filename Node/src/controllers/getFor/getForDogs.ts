@@ -3,49 +3,30 @@ import { type DogLogsRow } from '../../main/types/DogLogsRow.js';
 import { type DogRemindersRow } from '../../main/types/DogRemindersRow.js';
 import { type DogsRow, dogsColumns } from '../../main/types/DogsRow.js';
 
-import { getAllLogsForDogId } from './getForLogs.js';
-import { getAllRemindersForDogId } from './getForReminders.js';
-
-// TODO DEPRECIATE < 3.4.0 dogId, switch to only using dogUUID
+import { getAllLogsForDogUUID } from './getForLogs.js';
+import { getAllRemindersForDogUUID } from './getForReminders.js';
 
 /**
  * If you are querying a single elements from the database, previousDogManagerSynchronization is not taken.
  * We always want to fetch the specified element.
  * However, previousDogManagerSynchronization is taken here as we are querying multiple sub elements for the dog (logs and reminders)
  */
-async function getDogForDogIdUUID(
+async function getDogForDogUUID(
   databaseConnection: Queryable,
+  dogUUID: string,
   includeDeletedDogs: boolean,
   includeRemindersAndLogs: boolean,
   previousDogManagerSynchronization?: Date,
-  dogId?: number,
-  dogUUID?: string,
 ): Promise<DogsRow | undefined> {
-  // If retrieving a singleDog, then always retrieve
-  let dogs: DogsRow[] = [];
-
-  if (dogUUID !== undefined && dogUUID !== null) {
-    dogs = await databaseQuery<DogsRow[]>(
-      databaseConnection,
-      `SELECT ${dogsColumns}
-        FROM dogs d
-        WHERE dogUUID = ?
-        GROUP BY dogUUID
-        LIMIT 1`,
-      [dogUUID],
-    );
-  }
-  else if (dogId !== undefined && dogId !== null) {
-    dogs = await databaseQuery<DogsRow[]>(
-      databaseConnection,
-      `SELECT ${dogsColumns}
-        FROM dogs d
-        WHERE dogId = ?
-        GROUP BY dogId
-        LIMIT 1`,
-      [dogId],
-    );
-  }
+  let dogs = await databaseQuery<DogsRow[]>(
+    databaseConnection,
+    `SELECT ${dogsColumns}
+      FROM dogs d
+      WHERE dogUUID = ?
+      GROUP BY dogUUID
+      LIMIT 1`,
+    [dogUUID],
+  );
 
   if (includeDeletedDogs === false) {
     dogs = dogs.filter((possiblyDeletedDog) => possiblyDeletedDog.dogIsDeleted === 0);
@@ -59,8 +40,8 @@ async function getDogForDogIdUUID(
   }
 
   if (includeRemindersAndLogs === true) {
-    dog.reminders = await getAllRemindersForDogId(databaseConnection, dog.dogId, includeDeletedDogs, previousDogManagerSynchronization);
-    dog.logs = await getAllLogsForDogId(databaseConnection, dog.dogId, includeDeletedDogs, previousDogManagerSynchronization);
+    dog.reminders = await getAllRemindersForDogUUID(databaseConnection, dog.dogUUID, includeDeletedDogs, previousDogManagerSynchronization);
+    dog.logs = await getAllLogsForDogUUID(databaseConnection, dog.dogUUID, includeDeletedDogs, previousDogManagerSynchronization);
   }
 
   return dog;
@@ -83,14 +64,14 @@ async function getAllDogsForFamilyId(
       databaseConnection,
       `SELECT ${dogsColumns}
       FROM dogs d
-      LEFT JOIN dogReminders dr ON d.dogId = dr.dogId
-      LEFT JOIN dogLogs dl ON d.dogId = dl.dogId
+      LEFT JOIN dogReminders dr ON d.dogUUID = dr.dogUUID
+      LEFT JOIN dogLogs dl ON d.dogUUID = dl.dogUUID
       WHERE d.familyId = ? AND (
         TIMESTAMPDIFF(MICROSECOND, d.dogLastModified, ?) <= 0
         OR TIMESTAMPDIFF(MICROSECOND, dr.reminderLastModified, ?) <= 0
         OR TIMESTAMPDIFF(MICROSECOND, dl.logLastModified, ?) <= 0
       )
-      GROUP BY d.dogId
+      GROUP BY d.dogUUID
       LIMIT 18446744073709551615`,
       [familyId, previousDogManagerSynchronization, previousDogManagerSynchronization, previousDogManagerSynchronization],
     )
@@ -101,7 +82,7 @@ async function getAllDogsForFamilyId(
       `SELECT ${dogsColumns}
       FROM dogs d
       WHERE familyId = ?
-      GROUP BY dogId
+      GROUP BY dogUUID
       LIMIT 18446744073709551615`,
       [familyId],
     );
@@ -113,7 +94,7 @@ async function getAllDogsForFamilyId(
   if (includeRemindersAndLogs === true) {
     const reminderPromises: Promise<DogRemindersRow[]>[] = [];
     // add all the reminders we want to retrieving into an array, 1:1 corresponding to dogs
-    dogs.forEach((dog) => reminderPromises.push(getAllRemindersForDogId(databaseConnection, dog.dogId, includeDeletedDogs, previousDogManagerSynchronization)));
+    dogs.forEach((dog) => reminderPromises.push(getAllRemindersForDogUUID(databaseConnection, dog.dogUUID, includeDeletedDogs, previousDogManagerSynchronization)));
 
     // resolve this array (or throw error for whole request if there is a problem)
     const remindersForDogs = await Promise.all(reminderPromises);
@@ -124,7 +105,7 @@ async function getAllDogsForFamilyId(
 
     const logPromises: Promise<DogLogsRow[]>[] = [];
     // add all the logs we want to retrieving into an array, 1:1 corresponding to dogs
-    dogs.forEach((dog) => logPromises.push(getAllLogsForDogId(databaseConnection, dog.dogId, includeDeletedDogs, previousDogManagerSynchronization)));
+    dogs.forEach((dog) => logPromises.push(getAllLogsForDogUUID(databaseConnection, dog.dogUUID, includeDeletedDogs, previousDogManagerSynchronization)));
 
     // resolve this array (or throw error for whole request if there is a problem)
     const logsForDogs = await Promise.all(logPromises);
@@ -137,4 +118,4 @@ async function getAllDogsForFamilyId(
   return dogs;
 }
 
-export { getDogForDogIdUUID, getAllDogsForFamilyId };
+export { getDogForDogUUID, getAllDogsForFamilyId };

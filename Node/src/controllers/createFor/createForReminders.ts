@@ -3,28 +3,28 @@ import { type DogRemindersRow, type NotYetCreatedDogRemindersRow } from '../../m
 import { type Queryable, type ResultSetHeader, databaseQuery } from '../../main/database/databaseQuery.js';
 import { LIMIT } from '../../main/server/globalConstants.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
-import { getAllRemindersForDogId } from '../getFor/getForReminders.js';
+import { getAllRemindersForDogUUID } from '../getFor/getForReminders.js';
 import { formatKnownString } from '../../main/format/formatObject.js';
 
 /**
 *  Queries the database to create a single reminder. If the query is successful, then returns the reminder with created reminderId added to it.
 *  If a problem is encountered, creates and throws custom error
 */
-async function createReminderForDogIdReminder(
+async function createReminderForReminder(
   databaseConnection: Queryable,
   reminder: NotYetCreatedDogRemindersRow,
 ): Promise<number> {
-  const notDeletedReminders = await getAllRemindersForDogId(databaseConnection, reminder.dogId, false, undefined);
+  const notDeletedReminders = await getAllRemindersForDogUUID(databaseConnection, reminder.dogUUID, false, undefined);
 
   // make sure that the user isn't creating too many reminders
   if (notDeletedReminders.length >= LIMIT.NUMBER_OF_REMINDERS_PER_DOG) {
-    throw new HoundError(`Dog reminder limit of ${LIMIT.NUMBER_OF_REMINDERS_PER_DOG} exceeded`, createReminderForDogIdReminder, ERROR_CODES.FAMILY.LIMIT.REMINDER_TOO_LOW);
+    throw new HoundError(`Dog reminder limit of ${LIMIT.NUMBER_OF_REMINDERS_PER_DOG} exceeded`, createReminderForReminder, ERROR_CODES.FAMILY.LIMIT.REMINDER_TOO_LOW);
   }
 
   const result = await databaseQuery<ResultSetHeader>(
     databaseConnection,
     `INSERT INTO dogReminders(
-          dogId,
+          dogUUID,
           reminderUUID,
           reminderAction, reminderCustomActionName, reminderType, reminderIsEnabled,
           reminderExecutionBasis, reminderExecutionDate,
@@ -54,7 +54,7 @@ async function createReminderForDogIdReminder(
             ?
             )`,
     [
-      reminder.dogId,
+      reminder.dogUUID,
       reminder.reminderUUID,
       reminder.reminderAction, formatKnownString(reminder.reminderCustomActionName, 32), reminder.reminderType, reminder.reminderIsEnabled,
       reminder.reminderExecutionBasis, reminder.reminderExecutionDate,
@@ -77,14 +77,14 @@ async function createReminderForDogIdReminder(
           * Queries the database to create a multiple reminders. If the query is successful, then returns the reminders with their created reminderIds added to them.
           *  If a problem is encountered, creates and throws custom error
           */
-async function createRemindersForDogIdReminders(
+async function createRemindersForReminders(
   databaseConnection: Queryable,
   reminders: NotYetCreatedDogRemindersRow[],
 ): Promise<DogRemindersRow[]> {
   const promises: Promise<number>[] = [];
   reminders.forEach((reminder) => {
     // retrieve the original provided body AND the created id
-    promises.push(createReminderForDogIdReminder(
+    promises.push(createReminderForReminder(
       databaseConnection,
       reminder,
     ));
@@ -99,11 +99,11 @@ async function createRemindersForDogIdReminders(
     return [];
   }
 
-  const notDeletedReminders = await getAllRemindersForDogId(databaseConnection, someReminder.dogId, false);
-  // Once we have created all of the reminders, we need to return them to the user. Its hard to link the omit and non-omit types, so just use the dogId to query the reminders, and only include the ones we just created
+  const notDeletedReminders = await getAllRemindersForDogUUID(databaseConnection, someReminder.reminderUUID, false);
+  // Once we have created all of the reminders, we need to return them to the user. Its hard to link the omit and non-omit types, so just use the dogUUID to query the reminders, and only include the ones we just created
   const notDeletedReturnReminders = notDeletedReminders.filter((reminderFromDatabase) => reminderIds.includes(reminderFromDatabase.reminderId));
 
   return notDeletedReturnReminders;
 }
 
-export { createRemindersForDogIdReminders };
+export { createRemindersForReminders };
