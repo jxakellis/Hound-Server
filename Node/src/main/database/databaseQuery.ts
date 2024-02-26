@@ -27,6 +27,8 @@ const databaseQuery = <T>(
     return variable;
   });
 
+  console.log(SQLString);
+
   return new Promise<T>((resolve, reject) => {
     databaseConnection.query(
       SQLString,
