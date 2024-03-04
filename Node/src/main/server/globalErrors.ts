@@ -84,6 +84,7 @@ class HoundError extends Error {
     customMessage = customMessage ?? 'Unknown Message';
 
     // Attempt to initialize this.stackDebugInfo to forStackDebugInfo
+    console.log(forStackDebugInfo);
     if (forStackDebugInfo !== undefined && forStackDebugInfo !== null) {
       console.log(`forStackDebugInfo ${forStackDebugInfo}`);
       if (this.stackDebugInfo === undefined || this.stackDebugInfo === null) {
