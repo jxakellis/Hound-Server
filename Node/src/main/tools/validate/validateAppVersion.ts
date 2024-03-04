@@ -35,6 +35,8 @@ async function validateAppVersion(req: express.Request, res: express.Response, n
         `App version of ${appVersion} is incompatible. Compatible version(s): ${SERVER.COMPATIBLE_IOS_APP_VERSIONS}`,
         validateAppVersion,
         ERROR_CODES.GENERAL.APP_VERSION_OUTDATED,
+        undefined,
+        'some debug info test',
       );
     }
   }
