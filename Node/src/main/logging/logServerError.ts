@@ -2,7 +2,7 @@ import { serverLogger } from './loggers.js';
 import { DatabasePools, getPoolConnection } from '../database/databaseConnections.js';
 import { databaseQuery } from '../database/databaseQuery.js';
 import { HoundError } from '../server/globalErrors.js';
-import { formatKnownString } from '../format/formatObject.js';
+import { formatKnownString, formatUnknownString } from '../format/formatObject.js';
 
 function printServerError(houndError: HoundError): void {
   const readableError = houndError.toJSON();
@@ -11,7 +11,8 @@ function printServerError(houndError: HoundError): void {
     `\nPRINT SERVER ERROR FROM SOURCE FUNCTIONS: ${readableError.sourceFunctions}
     \nMESSAGE: ${readableError.message}
     \nCODE: ${readableError.code}
-    \nSTACK: ${readableError.stack}\n`,
+    \nSTACK: ${readableError.stack}
+    \nDEBUG INFO: ${readableError.debugInfo}\n`,
   );
 }
 
@@ -35,10 +36,12 @@ async function logServerError(houndError: HoundError): Promise<void> {
         errorName, 
         errorMessage, 
         errorCode, 
-        errorStack
+        errorStack,
+        errorDebugInfo
         )
         VALUES (
           CURRENT_TIMESTAMP(),
+          ?,
           ?,
           ?,
           ?,
@@ -52,6 +55,7 @@ async function logServerError(houndError: HoundError): Promise<void> {
         formatKnownString(readableError.message, 500),
         formatKnownString(readableError.code, 500),
         formatKnownString(readableError.stack, 2500),
+        formatUnknownString(readableError.debugInfo, 2500),
       ],
     ).finally(() => {
       generalPoolConnection.release();

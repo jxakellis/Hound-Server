@@ -4,6 +4,7 @@ type ResponseBodyType = {
     sourceFunctions: string
     name: string
     stack: undefined
+    debugInfo: undefined
     // THE RESPONSE SHOULD NEVER INCLUDE THE STACK. THAT IS CONFIDENTIAL
     requestId?: number
     responseId?: number

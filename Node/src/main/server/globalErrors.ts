@@ -1,5 +1,3 @@
-import { formatKnownString } from '../format/formatObject.js';
-
 const ERROR_CODES = {
   GENERAL: {
     APP_VERSION_OUTDATED: { ERROR_CODE_FROM_ERROR_CODES: 'ER_GENERAL_APP_VERSION_OUTDATED' },
@@ -55,9 +53,9 @@ const ERROR_CODES = {
 class HoundError extends Error {
   sourceFunctions: (string[] | undefined);
 
-  stackDebugInfo: (string | undefined);
+  debugInfo: (string | undefined);
 
-  constructor(forCustomMessage?: string, forSourceFunction?: { name: string }, forCode?: { ERROR_CODE_FROM_ERROR_CODES: string }, fromError?: unknown, forStackDebugInfo?: string) {
+  constructor(forCustomMessage?: string, forSourceFunction?: { name: string }, forCode?: { ERROR_CODE_FROM_ERROR_CODES: string }, fromError?: unknown, forDebugInfo?: string) {
     // We want the message to be the customMessage (if supplied), otherwise try to extract it fromError, otherwise result to default
     let customMessage = forCustomMessage;
 
@@ -83,22 +81,16 @@ class HoundError extends Error {
 
     customMessage = customMessage ?? 'Unknown Message';
 
-    // Attempt to initialize this.stackDebugInfo to forStackDebugInfo
-    console.log(forStackDebugInfo);
-    if (forStackDebugInfo !== undefined && forStackDebugInfo !== null) {
-      console.log(`forStackDebugInfo ${forStackDebugInfo}`);
-      if (this.stackDebugInfo === undefined || this.stackDebugInfo === null) {
-        console.log(1, this.stackDebugInfo);
-        this.stackDebugInfo = forStackDebugInfo;
+    // Attempt to initialize this.debugInfo to forDebugInfo
+    if (forDebugInfo !== undefined && forDebugInfo !== null) {
+      if (this.debugInfo === undefined || this.debugInfo === null) {
+        this.debugInfo = forDebugInfo;
       }
       else {
-        console.log(2, this.stackDebugInfo);
-        this.stackDebugInfo += `->APPENDING NEXT DEBUG->${forStackDebugInfo}`;
+        this.debugInfo += `->APPENDING NEXT DEBUG->${forDebugInfo}`;
       }
     }
-    console.log(3, this.stackDebugInfo);
-    // If stackDebugInfo still null, then just set it to an empty string
-    this.stackDebugInfo = this.stackDebugInfo ?? '';
+    // debugInfo can be null, but thats fine
 
     // Attempt to set other parameters, using the parameters first, then fromError seconds if no value found
     if (fromError !== undefined && fromError !== null && fromError instanceof Error) {
@@ -112,14 +104,15 @@ class HoundError extends Error {
     }
   }
 
-  toJSON(): {code: string, message: string, sourceFunctions: string, name: string, stack: string} {
+  toJSON(): {code: string, message: string, sourceFunctions: string, name: string, stack: string, debugInfo?: string} {
     return {
-      sourceFunctions: formatKnownString(this.sourceFunctions?.toString() ?? 'Unknown Source Functions'), // , 100),
-      code: formatKnownString(this.houndDeclarationCode ?? 'Unknown Code'), // , 500),
+      sourceFunctions: this.sourceFunctions?.toString() ?? 'Unknown Source Functions', // , 100),
+      code: this.houndDeclarationCode ?? 'Unknown Code',
       // Remove all newlines, remove all carriage returns, and make all >1 length spaces into 1 length spaces
-      message: formatKnownString(this.message.replace('/\r?\n|\r/g', '').replace(/\s+/g, ' ') ?? 'Unknown Message'), // , 500),
-      name: formatKnownString(this.name ?? 'Unknown Name'), // , 500),
-      stack: formatKnownString(`STACK DEBUG: ${this.stackDebugInfo ?? ''}\nSTACK: ${this.stack ?? 'Unknown Stack'}`), // , 2500),
+      message: this.message.replace('/\r?\n|\r/g', '').replace(/\s+/g, ' ') ?? 'Unknown Message',
+      name: this.name ?? 'Unknown Name',
+      stack: this.stack ?? 'Unknown Stack',
+      debugInfo: this.debugInfo,
     };
   }
 }

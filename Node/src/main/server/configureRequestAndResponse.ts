@@ -169,23 +169,24 @@ function configureRequestAndResponseExtendedProperties(req: express.Request, res
 
       // If we user provided an error, then we convert that error to JSON and use it as the body
       // By default, we initialize this message to the error missing message
-      let unsafeForUsersResponseDoNotSendWithoutRemovingStack = new HoundError('error missing', sendFailureResponse, undefined, error).toJSON();
+      let unsafeForUsersResponseDoNotSendWithoutRemovingPrivateInfo = new HoundError('error missing', sendFailureResponse, undefined, error).toJSON();
 
       // If there is an Error provided that we can decode, overwrite the original message
       if (error !== undefined && error !== null) {
         if (error instanceof HoundError) {
-          unsafeForUsersResponseDoNotSendWithoutRemovingStack = error.toJSON();
+          unsafeForUsersResponseDoNotSendWithoutRemovingPrivateInfo = error.toJSON();
         }
         else if (error instanceof Error) {
-          unsafeForUsersResponseDoNotSendWithoutRemovingStack = new HoundError(undefined, sendFailureResponse, undefined, error).toJSON();
+          unsafeForUsersResponseDoNotSendWithoutRemovingPrivateInfo = new HoundError(undefined, sendFailureResponse, undefined, error).toJSON();
         }
       }
 
-      await logResponse(req, res, status, JSON.stringify(unsafeForUsersResponseDoNotSendWithoutRemovingStack));
+      await logResponse(req, res, status, JSON.stringify(unsafeForUsersResponseDoNotSendWithoutRemovingPrivateInfo));
 
       const safeResponse: ResponseBodyType = {
-        ...unsafeForUsersResponseDoNotSendWithoutRemovingStack,
+        ...unsafeForUsersResponseDoNotSendWithoutRemovingPrivateInfo,
         stack: undefined,
+        debugInfo: undefined,
       };
 
       if (req.originalUrl !== '/watchdog') {
