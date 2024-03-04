@@ -55,7 +55,9 @@ const ERROR_CODES = {
 class HoundError extends Error {
   sourceFunctions: (string[] | undefined);
 
-  constructor(forCustomMessage?: string, forSourceFunction?: { name: string }, forCode?: { ERROR_CODE_FROM_ERROR_CODES: string }, fromError?: unknown) {
+  stackDebugInfo: (string | undefined);
+
+  constructor(forCustomMessage?: string, forSourceFunction?: { name: string }, forCode?: { ERROR_CODE_FROM_ERROR_CODES: string }, fromError?: unknown, forStackDebugInfo?: string) {
     // We want the message to be the customMessage (if supplied), otherwise try to extract it fromError, otherwise result to default
     let customMessage = forCustomMessage;
 
@@ -64,7 +66,7 @@ class HoundError extends Error {
         customMessage = fromError.message;
       }
       else {
-        customMessage += `->NEXT MESSAGE->${fromError.message}`;
+        customMessage += `->APPENDING NEXT MESSAGE->${fromError.message}`;
       }
     }
 
@@ -78,6 +80,20 @@ class HoundError extends Error {
     if (forSourceFunction !== undefined && forSourceFunction !== null) {
       this.sourceFunctions.push(forSourceFunction?.name);
     }
+
+    customMessage = customMessage ?? 'Unknown Message';
+
+    // Attempt to initialize this.stackDebugInfo to forStackDebugInfo
+    if (forStackDebugInfo !== undefined && forStackDebugInfo !== null) {
+      if (this.stackDebugInfo === undefined || this.stackDebugInfo === null) {
+        this.stackDebugInfo = forStackDebugInfo;
+      }
+      else {
+        this.stackDebugInfo += `->APPENDING NEXT DEBUG->${forStackDebugInfo}`;
+      }
+    }
+    // If stackDebugInfo still null, then just set it to an empty string
+    this.stackDebugInfo = this.stackDebugInfo ?? '';
 
     // Attempt to set other parameters, using the parameters first, then fromError seconds if no value found
     if (fromError !== undefined && fromError !== null && fromError instanceof Error) {
@@ -98,7 +114,7 @@ class HoundError extends Error {
       // Remove all newlines, remove all carriage returns, and make all >1 length spaces into 1 length spaces
       message: formatKnownString(this.message.replace('/\r?\n|\r/g', '').replace(/\s+/g, ' ') ?? 'Unknown Message'), // , 500),
       name: formatKnownString(this.name ?? 'Unknown Name'), // , 500),
-      stack: formatKnownString(this.stack ?? 'Unknown Stack'), // , 2500),
+      stack: formatKnownString(`STACK DEBUG: ${this.stackDebugInfo ?? ''}\nSTACK: ${this.stack ?? 'Unknown Stack'}`), // , 2500),
     };
   }
 }

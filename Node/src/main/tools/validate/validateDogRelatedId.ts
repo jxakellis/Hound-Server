@@ -217,7 +217,19 @@ async function validateReminderUUID(req: express.Request, res: express.Response,
       }
 
       if (validatedDogs.findIndex((dog) => dog.validatedDogUUID === queriedReminder.dogUUID) <= -1) {
-        throw new HoundError('Reminder has invalid permissions', validateReminderUUID, ERROR_CODES.PERMISSION.NO.REMINDER);
+        throw new HoundError(
+          'Reminder has invalid permissions',
+          validateReminderUUID,
+          ERROR_CODES.PERMISSION.NO.REMINDER,
+          undefined,
+          `
+          index ${index};
+          validatedDogs.length ${validatedDogs.length}; masterUnvalidatedRemindersDictionary.length ${masterUnvalidatedRemindersDictionary.length};
+          reminderPromises.length ${reminderPromises.length}; unvalidatedReminderDictionariesForPromises.length ${unvalidatedReminderDictionariesForPromises};
+          unvalidatedReminderDictionaryForQueriedReminder.reminderUUID ${unvalidatedReminderDictionaryForQueriedReminder['reminderUUID']};
+          queriedReminder.reminderId ${queriedReminder.reminderId}; queriedReminder.reminderUUID ${queriedReminder.reminderUUID}; queriedReminder.dogUUID ${queriedReminder.dogUUID}
+          `,
+        );
       }
 
       if (queriedReminder.reminderIsDeleted === 1) {
