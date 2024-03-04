@@ -85,13 +85,17 @@ class HoundError extends Error {
 
     // Attempt to initialize this.stackDebugInfo to forStackDebugInfo
     if (forStackDebugInfo !== undefined && forStackDebugInfo !== null) {
+      console.log(`forStackDebugInfo ${forStackDebugInfo}`);
       if (this.stackDebugInfo === undefined || this.stackDebugInfo === null) {
+        console.log(1, this.stackDebugInfo);
         this.stackDebugInfo = forStackDebugInfo;
       }
       else {
+        console.log(2, this.stackDebugInfo);
         this.stackDebugInfo += `->APPENDING NEXT DEBUG->${forStackDebugInfo}`;
       }
     }
+    console.log(3, this.stackDebugInfo);
     // If stackDebugInfo still null, then just set it to an empty string
     this.stackDebugInfo = this.stackDebugInfo ?? '';
 
