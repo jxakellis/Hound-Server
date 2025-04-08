@@ -167,3 +167,8 @@ process.on('uncaughtRejection', async (reason, promise) => {
   // uncaught rejection of a promise happened somewhere
   serverLogger.info(`Uncaught rejection of promise: ${promise}`, `reason: ${reason}`);
 });
+
+httpsServer.on('error', async (error: NodeJS.ErrnoException) => {
+  serverLogger.error('Error from httpsServer', error);
+  await shutdown();
+});
