@@ -1,63 +1,20 @@
-//
-//
-// Import modules to create the server
-//
-//
-
 import { exec } from 'child_process';
 import https from 'https';
+import { IncomingMessage, ServerResponse } from 'http';
 import express from 'express';
-
-// Import the global constant values to instantiate them
 import { SERVER } from './globalConstants.js';
 import './globalDeclare.js';
-
 import { serverLogger } from '../logging/loggers.js';
 import { key, cert } from '../secrets/houndOrganizerHTTPS.js';
-
-//
-//
-// Configure the server to receive requests
-//
-//
-
 import { configureServer } from './configureServer.js';
 import { configureApp } from './configureApp.js';
-
-//
-//
-// Configure the server to handle a shutdown
-//
-//
-
 import { logServerError } from '../logging/logServerError.js';
 import { schedule } from '../tools/notifications/alarm/schedule.js';
-import {
-  endDatabasePools,
-} from '../database/databaseConnections.js';
+import { endDatabasePools } from '../database/databaseConnections.js';
 import { HoundError } from './globalErrors.js';
 
-// Initialize the express engine
-const app: express.Application = express();
-
-//
-//
-// Create the server
-//
-//
-
-// Create a NodeJS HTTPS listener on port that points to the Express app
-https.createServer();
-const httpsServer = https.createServer({
-  key,
-  cert,
-}, app);
-
-// Setup the server to process requests
-const testDatabaseConnectionInterval = await configureServer(httpsServer);
-
-// Setup the app to process requests
-configureApp(app);
+let httpsServer: https.Server<typeof IncomingMessage, typeof ServerResponse> | null = null;
+let testDatabaseConnectionInterval: NodeJS.Timeout | null;
 
 // This prevents multiple shutdowns from occurring at once
 let shutdownInProgress = false;
@@ -79,7 +36,7 @@ async function shutdown(): Promise<void> {
     const numberOfShutdownsNeeded = 3;
     let numberOfShutdownsCompleted = 0;
 
-    if (testDatabaseConnectionInterval !== undefined && testDatabaseConnectionInterval !== null) {
+    if (testDatabaseConnectionInterval !== null) {
       serverLogger.info('Cleared Interval for testDatabaseConnectionInterval');
       clearInterval(testDatabaseConnectionInterval);
     }
@@ -90,9 +47,9 @@ async function shutdown(): Promise<void> {
         serverLogger.info('All Shutdown Steps Complete');
 
         /**
-   * The previous Node Application did not shut down properly
-   * process.on('exit', ...) isn't called when the process crashes or is killed.
-   */
+        * The previous Node Application did not shut down properly
+        * process.on('exit', ...) isn't called when the process crashes or is killed.
+        */
         exec(`npx kill-port ${SERVER.SERVER_PORT}`, () => {
           serverLogger.info(`All processes on port ${SERVER.SERVER_PORT} killed`);
           process.exit(1);
@@ -112,7 +69,7 @@ async function shutdown(): Promise<void> {
         checkForShutdownCompletion();
       });
 
-    httpsServer.close((error) => {
+    httpsServer?.close((error) => {
       if (error !== undefined && error !== null) {
         serverLogger.info("'httpsServer' Couldn't Be Closed", error);
       }
@@ -168,7 +125,28 @@ process.on('uncaughtRejection', async (reason, promise) => {
   serverLogger.info(`Uncaught rejection of promise: ${promise}`, `reason: ${reason}`);
 });
 
+// Initialize the express engine
+const app: express.Application = express();
+
+// Create a NodeJS HTTPS listener on port that points to the Express app
+https.createServer();
+httpsServer = https.createServer({
+  key,
+  cert,
+}, app);
+
 httpsServer.on('error', async (error: NodeJS.ErrnoException) => {
-  serverLogger.error('Error from httpsServer', error);
+  if (error.code === 'EADDRINUSE') {
+    serverLogger.error(`httpsServer error: Port ${SERVER.SERVER_PORT} is already in use.`);
+  }
+  else {
+    serverLogger.error('httpsServer error: ', error);
+  }
   await shutdown();
 });
+
+// Setup the server to process requests
+testDatabaseConnectionInterval = await configureServer(httpsServer);
+
+// Setup the app to process requests
+configureApp(app);
