@@ -99,7 +99,7 @@ async function createRemindersForReminders(
     return [];
   }
 
-  const notDeletedReminders = await getAllRemindersForDogUUID(databaseConnection, someReminder.reminderUUID, false);
+  const notDeletedReminders = await getAllRemindersForDogUUID(databaseConnection, someReminder.dogUUID, false);
   // Once we have created all of the reminders, we need to return them to the user. Its hard to link the omit and non-omit types, so just use the dogUUID to query the reminders, and only include the ones we just created
   const notDeletedReturnReminders = notDeletedReminders.filter((reminderFromDatabase) => reminderIds.includes(reminderFromDatabase.reminderId));
 

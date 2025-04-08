@@ -51,7 +51,7 @@ async function shutdown(): Promise<void> {
         * process.on('exit', ...) isn't called when the process crashes or is killed.
         */
         exec(`npx kill-port ${SERVER.SERVER_PORT}`, () => {
-          serverLogger.info(`All processes on port ${SERVER.SERVER_PORT} killed`);
+          serverLogger.info(`All processes on port ${SERVER.SERVER_PORT} absolutely killed and obliterated GTFO`);
           process.exit(1);
         });
       }
