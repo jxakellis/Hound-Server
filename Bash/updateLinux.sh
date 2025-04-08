@@ -10,12 +10,6 @@ echo
 sudo apt-get update
 
 echo
-echo "UPDATING"
-echo
-
-sudo apt-get upgrade
-
-echo
 echo "UPDATING DIST"
 echo
 
