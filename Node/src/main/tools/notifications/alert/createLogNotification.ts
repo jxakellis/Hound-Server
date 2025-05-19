@@ -2,8 +2,8 @@ import { alertLogger } from '../../../logging/loggers.js';
 import { DatabasePools, getPoolConnection } from '../../../database/databaseConnections.js';
 
 import { logServerError } from '../../../logging/logServerError.js';
-import { getDogForDogUUID } from '../../../../controllers/getFor/getForDogs.js';
-import { getPublicUser } from '../../../../controllers/getFor/getForUser.js';
+import { getDogForDogUUID } from '../../../../controllers/get/getDogs.js';
+import { getPublicUser } from '../../../../controllers/get/getUser.js';
 import { sendNotificationForFamilyExcludingUser } from '../apn/sendNotification.js';
 import { formatFirstLastName } from '../../../format/formatFirstLastName.js';
 import { formatLogActionToReadableValue } from '../../../format/formatLogAction.js';

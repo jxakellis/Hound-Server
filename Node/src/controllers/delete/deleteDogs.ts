@@ -1,8 +1,9 @@
 import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
-import { getAllDogsForFamilyId } from '../getFor/getForDogs.js';
+import { getAllDogsForFamilyId } from '../get/getDogs.js';
 
-import { deleteAllLogsForDogUUID } from './deleteForLogs.js';
-import { deleteAllRemindersForFamilyIdDogUUID } from './deleteForReminders.js';
+import { deleteAllLogsForDogUUID } from './deleteLogs.js';
+import { deleteAllRemindersForFamilyIdDogUUID } from './deleteReminders.js';
+import { deleteAllTriggersForDogUUID } from './deleteTriggers.js';
 
 /**
  *  Queries the database to delete a dog and everything nested under it. If the query is successful, then returns
@@ -11,6 +12,7 @@ import { deleteAllRemindersForFamilyIdDogUUID } from './deleteForReminders.js';
 async function deleteDogForFamilyIdDogUUID(databaseConnection: Queryable, familyId: string, dogUUID: string): Promise<void> {
   await deleteAllRemindersForFamilyIdDogUUID(databaseConnection, familyId, dogUUID);
   await deleteAllLogsForDogUUID(databaseConnection, dogUUID);
+  await deleteAllTriggersForDogUUID(databaseConnection, dogUUID);
   await databaseQuery(
     databaseConnection,
     `UPDATE dogs

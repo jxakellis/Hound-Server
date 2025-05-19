@@ -3,7 +3,7 @@ import { type DogRemindersRow, type NotYetCreatedDogRemindersRow } from '../../m
 import { type Queryable, type ResultSetHeader, databaseQuery } from '../../main/database/databaseQuery.js';
 import { LIMIT } from '../../main/server/globalConstants.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
-import { getAllRemindersForDogUUID } from '../getFor/getForReminders.js';
+import { getAllRemindersForDogUUID } from '../get/getReminders.js';
 import { formatKnownString } from '../../main/format/formatObject.js';
 
 /**

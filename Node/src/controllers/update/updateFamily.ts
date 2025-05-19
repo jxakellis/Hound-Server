@@ -3,8 +3,8 @@ import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 import { createFamilyMemberJoinNotification, createFamilyLockedNotification } from '../../main/tools/notifications/alert/createFamilyNotification.js';
 import { type FamiliesRow, familiesColumns } from '../../main/types/FamiliesRow.js';
 
-import { getFamilyMembersForFamilyId, getFamilyForUserId } from '../getFor/getForFamily.js';
-import { getActiveTransaction } from '../getFor/getForTransactions.js';
+import { getFamilyMembersForFamilyId, getFamilyForUserId } from '../get/getFamily.js';
+import { getActiveTransaction } from '../get/getTransactions.js';
 
 /**
 * Helper method for createFamilyForUserId, goes through checks to attempt to add user to desired family

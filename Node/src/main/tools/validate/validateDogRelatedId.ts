@@ -8,9 +8,11 @@ import { type DogsRow } from '../../types/DogsRow.js';
 import { type DogLogsRow } from '../../types/DogLogsRow.js';
 import { type DogRemindersRow } from '../../types/DogRemindersRow.js';
 import { type StringKeyDictionary } from '../../types/StringKeyDictionary.js';
-import { getDogForDogUUID } from '../../../controllers/getFor/getForDogs.js';
-import { getLogForLogUUID } from '../../../controllers/getFor/getForLogs.js';
-import { getReminderForReminderUUID } from '../../../controllers/getFor/getForReminders.js';
+import { getDogForDogUUID } from '../../../controllers/get/getDogs.js';
+import { getLogForLogUUID } from '../../../controllers/get/getLogs.js';
+import { getReminderForReminderUUID } from '../../../controllers/get/getReminders.js';
+import { type DogTriggersRow } from '../../types/DogTriggersRow.js';
+import { getTriggerForTriggerUUID } from '../../../controllers/get/triggers/getTriggers.js';
 
 async function validateDogUUID(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
@@ -255,6 +257,95 @@ async function validateReminderUUID(req: express.Request, res: express.Response,
   return next();
 }
 
+async function validateTriggerUUID(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
+  try {
+    // Confirm that databaseConnection and validatedIds are defined and non-null first.
+    // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
+    const { databaseConnection } = req.houndDeclarationExtendedProperties;
+    const { validatedDogs } = req.houndDeclarationExtendedProperties.validatedVariables;
+    if (databaseConnection === undefined || databaseConnection === null) {
+      throw new HoundError('databaseConnection missing', validateTriggerUUID, ERROR_CODES.VALUE.MISSING);
+    }
+    if (validatedDogs === undefined || validatedDogs === null) {
+      throw new HoundError('validatedDogs missing', validateTriggerUUID, ERROR_CODES.VALUE.MISSING);
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const masterUnvalidatedTriggersDictionary = formatArray(req.body['triggers'] ?? [req.body]) as (StringKeyDictionary[] | undefined);
+
+    if (masterUnvalidatedTriggersDictionary === undefined || masterUnvalidatedTriggersDictionary === null) {
+      return next();
+    }
+
+    // 1:1 arrays of unvalidatedTriggersDictionary and getTriggerForTriggerUUID promise.
+    const triggerPromises: Promise<DogTriggersRow | undefined>[] = [];
+    const unvalidatedTriggerDictionariesForPromises: StringKeyDictionary[] = [];
+
+    // query for all triggers provided
+    masterUnvalidatedTriggersDictionary.forEach((unvalidatedTriggerDictionary) => {
+      const triggerUUID = formatUnknownString(unvalidatedTriggerDictionary['triggerUUID']);
+
+      if (triggerUUID === undefined || triggerUUID === null) {
+        // If triggerUUID is missing, the trigger body wasn't provided
+        req.houndDeclarationExtendedProperties.unvalidatedVariables.unvalidatedTriggersDictionary.push(unvalidatedTriggerDictionary);
+        return;
+      }
+
+      triggerPromises.push(getTriggerForTriggerUUID(databaseConnection, triggerUUID, true));
+      unvalidatedTriggerDictionariesForPromises.push(unvalidatedTriggerDictionary);
+    });
+
+    const queriedTriggers = await Promise.all(triggerPromises);
+
+    queriedTriggers.forEach((queriedTrigger, index) => {
+      const unvalidatedTriggerDictionaryForQueriedTrigger = unvalidatedTriggerDictionariesForPromises[index];
+
+      if (queriedTrigger === undefined || queriedTrigger === null) {
+        // If queriedTrigger doesn't exist, then a trigger corresponding to that triggerUUID doesn't exist yet.
+        req.houndDeclarationExtendedProperties.unvalidatedVariables.unvalidatedTriggersDictionary.push(unvalidatedTriggerDictionaryForQueriedTrigger);
+        return;
+      }
+
+      if (validatedDogs.findIndex((dog) => dog.validatedDogUUID === queriedTrigger.triggerUUID) <= -1) {
+        throw new HoundError(
+          'Trigger has invalid permissions',
+          validateTriggerUUID,
+          // TODO on the front end make sure this error exists
+          ERROR_CODES.PERMISSION.NO.TRIGGER,
+          undefined,
+          `
+          index ${index};
+          validatedDogs.length ${validatedDogs.length}; masterUnvalidatedTriggersDictionary.length ${masterUnvalidatedTriggersDictionary.length};
+          triggerPromises.length ${triggerPromises.length}; unvalidatedTriggerDictionariesForPromises.length ${unvalidatedTriggerDictionariesForPromises};
+          unvalidatedTriggerDictionaryForQueriedTrigger.triggerUUID ${unvalidatedTriggerDictionaryForQueriedTrigger['triggerUUID']};
+          queriedTrigger.triggerId ${queriedTrigger.triggerId}; queriedTrigger.triggerUUID ${queriedTrigger.triggerUUID}; queriedTrigger.dogUUID ${queriedTrigger.dogUUID}
+          `,
+        );
+      }
+
+      if (queriedTrigger.triggerIsDeleted === 1) {
+        // the trigger has been found but its been deleted
+        throw new HoundError('Trigger has been deleted', validateTriggerUUID, ERROR_CODES.FAMILY.DELETED.TRIGGER);
+      }
+
+      // triggerUUID has been validated. Save it to validatedVariables
+      req.houndDeclarationExtendedProperties.validatedVariables.validatedTriggers.push(
+        {
+          validatedDogUUID: queriedTrigger.dogUUID,
+          validatedTriggerId: queriedTrigger.triggerId,
+          validatedTriggerUUID: queriedTrigger.triggerUUID,
+          unvalidatedTriggerDictionary: unvalidatedTriggerDictionaryForQueriedTrigger,
+        },
+      );
+    });
+  }
+  catch (error) {
+    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
+  }
+
+  return next();
+}
+
 export {
-  validateDogUUID, validateLogUUID, validateReminderUUID,
+  validateDogUUID, validateLogUUID, validateReminderUUID, validateTriggerUUID,
 };

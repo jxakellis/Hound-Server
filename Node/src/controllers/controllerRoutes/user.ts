@@ -1,9 +1,9 @@
 import express from 'express';
 
-import { getPrivateCombinedUsersInformation } from '../getFor/getForUser.js';
-import { createUserForUserIdentifier } from '../createFor/createForUser.js';
-import { updateUserForUserId } from '../updateFor/updateForUser.js';
-import { deleteUserForUserId } from '../deleteFor/deleteForUser.js';
+import { getPrivateCombinedUsersInformation } from '../get/getUser.js';
+import { createUserForUserIdentifier } from '../create/createUser.js';
+import { updateUserForUserId } from '../update/updateUser.js';
+import { deleteUserForUserId } from '../delete/deleteUser.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 
 import { formatNumber, formatUnknownString } from '../../main/format/formatObject.js';

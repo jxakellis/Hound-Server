@@ -1,7 +1,7 @@
 import express from 'express';
 
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
-import { getAffiliateTransactionsForOfferIdentifier } from '../getFor/getForAffiliateTransactions.js';
+import { getAffiliateTransactionsForOfferIdentifier } from '../get/getAffiliateTransactions.js';
 import { formatUnknownString } from '../../main/format/formatObject.js';
 
 async function getAffiliateTransactions(req: express.Request, res: express.Response): Promise<void> {

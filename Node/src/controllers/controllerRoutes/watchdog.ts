@@ -1,5 +1,5 @@
 import express from 'express';
-import { getDatabaseStatusForWatchdog } from '../getFor/getForWatchdog.js';
+import { getDatabaseStatusForWatchdog } from '../get/getWatchdog.js';
 
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 

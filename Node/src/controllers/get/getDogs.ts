@@ -3,8 +3,8 @@ import { type DogLogsRow } from '../../main/types/DogLogsRow.js';
 import { type DogRemindersRow } from '../../main/types/DogRemindersRow.js';
 import { type DogsRow, dogsColumns } from '../../main/types/DogsRow.js';
 
-import { getAllLogsForDogUUID } from './getForLogs.js';
-import { getAllRemindersForDogUUID } from './getForReminders.js';
+import { getAllLogsForDogUUID } from './getLogs.js';
+import { getAllRemindersForDogUUID } from './getReminders.js';
 
 /**
  * If you are querying a single elements from the database, previousDogManagerSynchronization is not taken.
@@ -40,6 +40,7 @@ async function getDogForDogUUID(
   }
 
   if (includeRemindersAndLogs === true) {
+    // TODO make it retrieve triggers as well
     dog.reminders = await getAllRemindersForDogUUID(databaseConnection, dog.dogUUID, includeDeletedDogs, previousDogManagerSynchronization);
     dog.logs = await getAllLogsForDogUUID(databaseConnection, dog.dogUUID, includeDeletedDogs, previousDogManagerSynchronization);
   }
@@ -92,6 +93,7 @@ async function getAllDogsForFamilyId(
   }
 
   if (includeRemindersAndLogs === true) {
+    // TODO make it retrieve triggers as well
     const reminderPromises: Promise<DogRemindersRow[]>[] = [];
     // add all the reminders we want to retrieving into an array, 1:1 corresponding to dogs
     dogs.forEach((dog) => reminderPromises.push(getAllRemindersForDogUUID(databaseConnection, dog.dogUUID, includeDeletedDogs, previousDogManagerSynchronization)));

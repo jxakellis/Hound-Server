@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
 import { hash } from '../../main/format/hash.js';
 
-import { getPublicUser } from '../getFor/getForUser.js';
+import { getPublicUser } from '../get/getUser.js';
 import { type UserConfigurationRow } from '../../main/types/UserConfigurationRow.js';
 import { formatEmail, formatUnknownString, formatKnownString } from '../../main/format/formatObject.js';
 

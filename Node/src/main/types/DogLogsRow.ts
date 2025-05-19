@@ -14,6 +14,8 @@ dl.logLastModified,
 dl.logIsDeleted
 `;
 
+// TODO add cross compatibility for logActionTypeId. Primarily check for this when get/create/update dog logs but also allow backwards compatibiltiy for logAction raw string
+
 type DogLogsRow = {
     // NOTE: database booleans (tinyint(1)) are returned as 0 or 1 numbers, not booleans. therefore, we have to use number instead of boolean
     logId: number

@@ -1,13 +1,13 @@
 import express from 'express';
 import { createAlarmNotificationForFamily } from '../../main/tools/notifications/alarm/createAlarmNotification.js';
 
-import { getReminderForReminderUUID, getAllRemindersForDogUUID } from '../getFor/getForReminders.js';
+import { getReminderForReminderUUID, getAllRemindersForDogUUID } from '../get/getReminders.js';
 
-import { createRemindersForReminders } from '../createFor/createForReminders.js';
+import { createRemindersForReminders } from '../create/createReminders.js';
 
-import { updateRemindersForReminders } from '../updateFor/updateForReminders.js';
+import { updateRemindersForReminders } from '../update/updateReminders.js';
 
-import { deleteRemindersForFamilyIdReminderUUIDs } from '../deleteFor/deleteForReminders.js';
+import { deleteRemindersForFamilyIdReminderUUIDs } from '../delete/deleteReminders.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 
 import {

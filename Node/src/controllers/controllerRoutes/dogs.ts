@@ -1,12 +1,12 @@
 import express from 'express';
 
-import { getDogForDogUUID, getAllDogsForFamilyId } from '../getFor/getForDogs.js';
+import { getDogForDogUUID, getAllDogsForFamilyId } from '../get/getDogs.js';
 
-import { createDogForFamilyId } from '../createFor/createForDogs.js';
+import { createDogForFamilyId } from '../create/createDogs.js';
 
-import { updateDogForDog } from '../updateFor/updateForDogs.js';
+import { updateDogForDog } from '../update/updateDogs.js';
 
-import { deleteDogForFamilyIdDogUUID } from '../deleteFor/deleteForDogs.js';
+import { deleteDogForFamilyIdDogUUID } from '../delete/deleteDogs.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 
 import { formatDate, formatUnknownString } from '../../main/format/formatObject.js';

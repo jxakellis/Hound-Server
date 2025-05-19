@@ -1,6 +1,6 @@
 import express from 'express';
 import { ERROR_CODES, HoundError } from '../../server/globalErrors.js';
-import { getActiveTransaction } from '../../../controllers/getFor/getForTransactions.js';
+import { getActiveTransaction } from '../../../controllers/get/getTransactions.js';
 
 /**
  * Checks the family's subscription

@@ -4,7 +4,8 @@ import { type Queryable } from '../types/Queryable.js';
 
 // Define the "impossible" type to force callers to specify a type parameter for the function.
 // type MustSpecifyType<T> = T & { __mustSpecifyType__: void };
-type SQLVariableType = (string | number | boolean | Date | null | undefined);
+type SQLPrimitive = (string | number | boolean | Date | null | undefined);
+export type SQLVariableType = SQLPrimitive | SQLPrimitive[]
 
 /**
  * Queries the database with the given sqlString. If a databaseConnection is provided, then uses that databaseConnection, otherwise uses the databaseConnectionForGeneral.

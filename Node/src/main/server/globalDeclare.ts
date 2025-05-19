@@ -29,12 +29,14 @@ declare module 'express-serve-static-core' {
                 validatedLogs: { validatedDogUUID: string, validatedLogId: number, validatedLogUUID: string, unvalidatedLogDictionary: (HoundDictionary | undefined) }[]
                 // Each element in validatedReminders has a validatedDogId and validatedReminderId which corresponds to an existing reminder
                 validatedReminders: { validatedDogUUID: string, validatedReminderId: number, validatedReminderUUID: string, unvalidatedReminderDictionary: (HoundDictionary | undefined) }[]
-
+                // Each element in validatedTriggers has a validatedDogId and validatedTriggerId which corresponds to an existing reminder
+                validatedTriggers: { validatedDogUUID: string, validatedTriggerId: number, validatedTriggerUUID: string, unvalidatedTriggerDictionary: (HoundDictionary | undefined) }[]
             },
             unvalidatedVariables: {
                 unvalidatedDogsDictionary: HoundDictionary[]
                 unvalidatedLogsDictionary: HoundDictionary[]
                 unvalidatedRemindersDictionary: HoundDictionary[]
+                unvalidatedTriggersDictionary: HoundDictionary[]
                 unvalidatedSurveyFeedbackDictionary: HoundDictionary
             }
         }

@@ -2,7 +2,7 @@ import { type Queryable, type RowDataPacket, databaseQuery } from '../../main/da
 import { hash } from '../../main/format/hash.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 
-import { getFamilyForUserId } from '../getFor/getForFamily.js';
+import { getFamilyForUserId } from '../get/getFamily.js';
 
 const familyCodeLength = 8;
 

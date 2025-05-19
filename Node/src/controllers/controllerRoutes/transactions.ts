@@ -1,7 +1,7 @@
 import express from 'express';
-import { getAllTransactions, getActiveTransaction } from '../getFor/getForTransactions.js';
+import { getAllTransactions, getActiveTransaction } from '../get/getTransactions.js';
 
-import { createTransactionForAppStoreReceiptURL } from '../createFor/createForTransactions.js';
+import { createTransactionForAppStoreReceiptURL } from '../create/createTransactions.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 
 import { formatUnknownString } from '../../main/format/formatObject.js';

@@ -4,7 +4,7 @@ import { type PrivateCombinedUsersInformation } from '../../main/types/Composite
 import { userConfigurationColumns } from '../../main/types/UserConfigurationRow.js';
 import { type PublicUsersRow, privateUsersColumns, publicUsersColumns } from '../../main/types/UsersRow.js';
 
-import { updateUserForUserIdentifierHashedUserIdentifier } from '../updateFor/updateForUser.js';
+import { updateUserForUserIdentifierHashedUserIdentifier } from '../update/updateUser.js';
 
 /**
 * If the query is successful, returns the user for the userIdentifier.

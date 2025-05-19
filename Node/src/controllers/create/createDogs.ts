@@ -2,7 +2,7 @@ import { type Queryable, type ResultSetHeader, databaseQuery } from '../../main/
 import { LIMIT } from '../../main/server/globalConstants.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 import { type NotYetCreatedDogsRow } from '../../main/types/DogsRow.js';
-import { getAllDogsForFamilyId } from '../getFor/getForDogs.js';
+import { getAllDogsForFamilyId } from '../get/getDogs.js';
 import { formatKnownString } from '../../main/format/formatObject.js';
 
 /**

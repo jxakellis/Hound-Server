@@ -10,9 +10,9 @@ import { requestLogger } from '../../main/logging/loggers.js';
 
 import { validateSignedPayload } from '../../main/tools/appStoreConnectAPI/validateSignedPayload.js';
 
-import { getTransactionOwner } from '../getFor/getForTransactions.js';
+import { getTransactionOwner } from '../get/getTransactions.js';
 
-import { createUpdateTransaction } from './createForTransactions.js';
+import { createUpdateTransaction } from './createTransactions.js';
 
 import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
 import { type AppStoreServerNotificationsRow, appStoreServerNotificationsColumns } from '../../main/types/AppStoreServerNotificationsRow.js';

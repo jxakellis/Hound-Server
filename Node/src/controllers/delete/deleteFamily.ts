@@ -1,6 +1,6 @@
 import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
 
-import { getFamilyMembersForFamilyId, getFamilyForUserId } from '../getFor/getForFamily.js';
+import { getFamilyMembersForFamilyId, getFamilyForUserId } from '../get/getFamily.js';
 
 import { createFamilyMemberLeaveNotification } from '../../main/tools/notifications/alert/createFamilyNotification.js';
 import { createUserKickedNotification } from '../../main/tools/notifications/alert/createUserKickedNotification.js';

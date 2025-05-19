@@ -1,7 +1,7 @@
 import express from 'express';
 import { logServerError } from '../../main/logging/logServerError.js';
 
-import { createASSNForSignedPayload } from '../createFor/createForAppStoreServerNotifications.js';
+import { createASSNForSignedPayload } from '../create/createAppStoreServerNotifications.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 
 import { formatUnknownString } from '../../main/format/formatObject.js';

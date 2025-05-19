@@ -2,7 +2,7 @@ import { alertLogger } from '../../../logging/loggers.js';
 import { DatabasePools, getPoolConnection } from '../../../database/databaseConnections.js';
 
 import { logServerError } from '../../../logging/logServerError.js';
-import { getPublicUser } from '../../../../controllers/getFor/getForUser.js';
+import { getPublicUser } from '../../../../controllers/get/getUser.js';
 import { sendNotificationForFamilyExcludingUser } from '../apn/sendNotification.js';
 import { formatFirstLastName } from '../../../format/formatFirstLastName.js';
 import { NOTIFICATION } from '../../../server/globalConstants.js';

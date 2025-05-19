@@ -89,11 +89,13 @@ function configureRequestAndResponseExtendedProperties(req: express.Request, res
       validatedDogs: [],
       validatedLogs: [],
       validatedReminders: [],
+      validatedTriggers: [],
     },
     unvalidatedVariables: {
       unvalidatedDogsDictionary: [],
       unvalidatedLogsDictionary: [],
       unvalidatedRemindersDictionary: [],
+      unvalidatedTriggersDictionary: [],
       unvalidatedSurveyFeedbackDictionary: {},
     },
   };

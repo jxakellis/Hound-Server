@@ -3,7 +3,7 @@ import { SUBSCRIPTION } from '../../main/server/globalConstants.js';
 import { type TransactionsRow, transactionsColumns } from '../../main/types/TransactionsRow.js';
 import { type PublicUsersRow, publicUsersColumns } from '../../main/types/UsersRow.js';
 
-import { getFamilyForUserId } from './getForFamily.js';
+import { getFamilyForUserId } from './getFamily.js';
 
 /**
  *  If the query is successful, returns the most recent subscription for the userId's family (if no most recent subscription, fills in default subscription details).

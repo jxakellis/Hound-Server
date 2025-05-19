@@ -1,13 +1,13 @@
 import express from 'express';
 import { createLogNotification } from '../../main/tools/notifications/alert/createLogNotification.js';
 
-import { getLogForLogUUID, getAllLogsForDogUUID } from '../getFor/getForLogs.js';
+import { getLogForLogUUID, getAllLogsForDogUUID } from '../get/getLogs.js';
 
-import { createLogForLog } from '../createFor/createForLogs.js';
+import { createLogForLog } from '../create/createLogs.js';
 
-import { updateLogForLog } from '../updateFor/updateForLogs.js';
+import { updateLogForLog } from '../update/updateLogs.js';
 
-import { deleteLogForLogUUID } from '../deleteFor/deleteForLogs.js';
+import { deleteLogForLogUUID } from '../delete/deleteLogs.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 
 import { formatDate, formatNumber, formatUnknownString } from '../../main/format/formatObject.js';

@@ -1,6 +1,6 @@
 import express from 'express';
 import { ERROR_CODES, HoundError } from '../../server/globalErrors.js';
-import { getFamilyMembersForFamilyId } from '../../../controllers/getFor/getForFamily.js';
+import { getFamilyMembersForFamilyId } from '../../../controllers/get/getFamily.js';
 
 /**
  * Checks the family's subscription to see if it's expired
