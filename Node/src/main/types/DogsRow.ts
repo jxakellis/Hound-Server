@@ -1,5 +1,6 @@
 import { type DogLogsRow } from './DogLogsRow.js';
 import { type DogRemindersRow } from './DogRemindersRow.js';
+import type { DogTriggersRow } from './DogTriggersRow.js';
 
 const dogsColumns = `
 d.dogId,
@@ -20,6 +21,7 @@ type DogsRow = {
     dogIsDeleted: number
     logs?: DogLogsRow[]
     reminders?: DogRemindersRow[]
+    dogTriggers?: DogTriggersRow[]
 };
 
 type NotYetCreatedDogsRow = Omit<DogsRow, 'dogId' | 'dogIsDeleted' | 'dogLastModified'>;

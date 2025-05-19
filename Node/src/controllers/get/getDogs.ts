@@ -1,3 +1,4 @@
+import { type DogTriggersRow } from '../../main/types/DogTriggersRow.js';
 import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
 import { type DogLogsRow } from '../../main/types/DogLogsRow.js';
 import { type DogRemindersRow } from '../../main/types/DogRemindersRow.js';
@@ -5,6 +6,7 @@ import { type DogsRow, dogsColumns } from '../../main/types/DogsRow.js';
 
 import { getAllLogsForDogUUID } from './getLogs.js';
 import { getAllRemindersForDogUUID } from './getReminders.js';
+import { getAllTriggersForDogUUID } from './triggers/getTriggers.js';
 
 /**
  * If you are querying a single elements from the database, previousDogManagerSynchronization is not taken.
@@ -15,7 +17,7 @@ async function getDogForDogUUID(
   databaseConnection: Queryable,
   dogUUID: string,
   includeDeletedDogs: boolean,
-  includeRemindersAndLogs: boolean,
+  includeRemindersLogsTriggers: boolean,
   previousDogManagerSynchronization?: Date,
 ): Promise<DogsRow | undefined> {
   let dogs = await databaseQuery<DogsRow[]>(
@@ -39,10 +41,10 @@ async function getDogForDogUUID(
     return undefined;
   }
 
-  if (includeRemindersAndLogs === true) {
-    // TODO make it retrieve triggers as well
+  if (includeRemindersLogsTriggers === true) {
     dog.reminders = await getAllRemindersForDogUUID(databaseConnection, dog.dogUUID, includeDeletedDogs, previousDogManagerSynchronization);
     dog.logs = await getAllLogsForDogUUID(databaseConnection, dog.dogUUID, includeDeletedDogs, previousDogManagerSynchronization);
+    dog.dogTriggers = await getAllTriggersForDogUUID(databaseConnection, dog.dogUUID, includeDeletedDogs, previousDogManagerSynchronization);
   }
 
   return dog;
@@ -56,7 +58,7 @@ async function getAllDogsForFamilyId(
   databaseConnection: Queryable,
   familyId: string,
   includeDeletedDogs: boolean,
-  includeRemindersAndLogs: boolean,
+  includeRemindersLogsTriggers: boolean,
   previousDogManagerSynchronization?: Date,
 ): Promise<DogsRow[]> {
   // if the user provides a last sync, then we look for dogs that were modified after this last sync. Therefore, only providing dogs that were modified and the local client is outdated on
@@ -92,8 +94,7 @@ async function getAllDogsForFamilyId(
     dogs = dogs.filter((possiblyDeletedDog) => possiblyDeletedDog.dogIsDeleted === 0);
   }
 
-  if (includeRemindersAndLogs === true) {
-    // TODO make it retrieve triggers as well
+  if (includeRemindersLogsTriggers === true) {
     const reminderPromises: Promise<DogRemindersRow[]>[] = [];
     // add all the reminders we want to retrieving into an array, 1:1 corresponding to dogs
     dogs.forEach((dog) => reminderPromises.push(getAllRemindersForDogUUID(databaseConnection, dog.dogUUID, includeDeletedDogs, previousDogManagerSynchronization)));
@@ -114,6 +115,17 @@ async function getAllDogsForFamilyId(
     // since logPromises is 1:1 and index the same as dogs, we can take the resolved logPromises and assign to the dogs in the dogs array
     logsForDogs.forEach((logsForDog, index) => {
       dogs[index].logs = logsForDog;
+    });
+
+    const triggerPromises: Promise<DogTriggersRow[]>[] = [];
+    // add all the triggers we want to retrieving into an array, 1:1 corresponding to dogs
+    dogs.forEach((dog) => triggerPromises.push(getAllTriggersForDogUUID(databaseConnection, dog.dogUUID, includeDeletedDogs, previousDogManagerSynchronization)));
+
+    // resolve this array (or throw error for whole request if there is a problem)
+    const triggersForDogs = await Promise.all(triggerPromises);
+    // since triggerPromises is 1:1 and index the same as dogs, we can take the resolved triggerPromises and assign to the dogs in the dogs array
+    triggersForDogs.forEach((triggersForDog, index) => {
+      dogs[index].dogTriggers = triggersForDog;
     });
   }
 

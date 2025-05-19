@@ -14,7 +14,8 @@ dl.logLastModified,
 dl.logIsDeleted
 `;
 
-// TODO add cross compatibility for logActionTypeId. Primarily check for this when get/create/update dog logs but also allow backwards compatibiltiy for logAction raw string
+// TODO make logAction into logActionTypeId column and add a FK from it to the logActionTypes table
+// TODO add cross compatibility, so this change works even when internal value is still passed
 
 type DogLogsRow = {
     // NOTE: database booleans (tinyint(1)) are returned as 0 or 1 numbers, not booleans. therefore, we have to use number instead of boolean

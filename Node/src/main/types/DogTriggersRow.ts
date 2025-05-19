@@ -13,6 +13,9 @@ dt.triggerLastModified,
 dt.triggerIsDeleted
 `;
 
+// TODO add reminderActionResultId column
+// TODO add table for ReminderActionType
+
 type DogTriggersRow = {
     // NOTE: database booleans (tinyint(1)) are returned as 0 or 1 numbers, not booleans. therefore, we have to use number instead of boolean
     triggerId: number

@@ -271,7 +271,7 @@ async function validateTriggerUUID(req: express.Request, res: express.Response, 
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const masterUnvalidatedTriggersDictionary = formatArray(req.body['triggers'] ?? [req.body]) as (StringKeyDictionary[] | undefined);
+    const masterUnvalidatedTriggersDictionary = formatArray(req.body['dogTriggers'] ?? [req.body]) as (StringKeyDictionary[] | undefined);
 
     if (masterUnvalidatedTriggersDictionary === undefined || masterUnvalidatedTriggersDictionary === null) {
       return next();
@@ -310,7 +310,6 @@ async function validateTriggerUUID(req: express.Request, res: express.Response, 
         throw new HoundError(
           'Trigger has invalid permissions',
           validateTriggerUUID,
-          // TODO on the front end make sure this error exists
           ERROR_CODES.PERMISSION.NO.TRIGGER,
           undefined,
           `

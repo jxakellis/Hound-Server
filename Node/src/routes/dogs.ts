@@ -17,7 +17,7 @@ dogsRouter.use(['/'], validateSubscription, validateDogUUID);
 
 dogsRouter.use(['/logs'], logsRouter);
 dogsRouter.use(['/reminders'], remindersRouter);
-dogsRouter.use(['/triggers'], triggersRouter);
+dogsRouter.use(['/dogTriggers'], triggersRouter);
 
 dogsRouter.get(['/'], getDogs);
 dogsRouter.patch(['/'], getDogs);
