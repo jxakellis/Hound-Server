@@ -1,6 +1,6 @@
-import { dogTriggersLogActionReactionsColumns, type DogTriggersLogActionReactionsRow } from '../../../main/types/DogTriggersLogActionReactionsRow.js';
-import { logActionTypeColumns, type LogActionTypeRow } from '../../../main/types/LogActionTypeRow.js';
+import { logActionTypeColumns, type LogActionTypeRow } from '../../../main/types/rows/LogActionTypeRow.js';
 import { type Queryable, databaseQuery } from '../../../main/database/databaseQuery.js';
+import { dogTriggerLogActionReactionColumns, type DogTriggerLogActionReactionRow } from '../../../main/types/rows/DogTriggerLogActionReactionRow.js';
 
 async function getTriggerLogActionReactionsForTriggerUUID(
   databaseConnection: Queryable,
@@ -9,8 +9,8 @@ async function getTriggerLogActionReactionsForTriggerUUID(
   return databaseQuery<LogActionTypeRow[]>(
     databaseConnection,
     `SELECT ${logActionTypeColumns}
-           FROM dogTriggersLogActionReactions dtlar
-           JOIN logActionTypes lat ON dtlar.logActionTypeId = lat.logActionTypeId
+           FROM dogTriggerLogActionReaction dtlar
+           JOIN logActionType lat ON dtlar.logActionTypeId = lat.logActionTypeId
           WHERE dtlar.triggerUUID = ?
           LIMIT 18446744073709551615`,
     [triggerUUID],
@@ -21,13 +21,13 @@ async function getTriggerLogActionReactionsForTriggerUUIDs(
   databaseConnection: Queryable,
   triggerUUIDs: string[],
 ): Promise<(
-    DogTriggersLogActionReactionsRow & LogActionTypeRow)[]> {
+    DogTriggerLogActionReactionRow & LogActionTypeRow)[]> {
   return databaseQuery<(
-        DogTriggersLogActionReactionsRow & LogActionTypeRow)[]>(
+        DogTriggerLogActionReactionRow & LogActionTypeRow)[]>(
     databaseConnection,
-    `SELECT ${dogTriggersLogActionReactionsColumns}, ${logActionTypeColumns}
-             FROM dogTriggersLogActionReactions dtlar
-             JOIN logActionTypes lat ON dtlar.logActionTypeId = lat.logActionTypeId
+    `SELECT ${dogTriggerLogActionReactionColumns}, ${logActionTypeColumns}
+             FROM dogTriggerLogActionReaction dtlar
+             JOIN logActionType lat ON dtlar.logActionTypeId = lat.logActionTypeId
             WHERE dtlar.triggerUUID IN (?)
             LIMIT 18446744073709551615`,
     [triggerUUIDs],

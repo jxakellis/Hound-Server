@@ -4,7 +4,7 @@ import { getFamilyMembersForFamilyId, getFamilyForUserId } from '../get/getFamil
 
 import { createFamilyMemberLeaveNotification } from '../../main/tools/notifications/alert/createFamilyNotification.js';
 import { createUserKickedNotification } from '../../main/tools/notifications/alert/createUserKickedNotification.js';
-import { type TransactionsRow } from '../../main/types/TransactionsRow.js';
+import { type TransactionsRow } from '../../main/types/rows/TransactionsRow.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 import { SUBSCRIPTION } from '../../main/server/globalConstants.js';
 

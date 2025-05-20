@@ -1,7 +1,7 @@
 import { DatabasePools, getPoolConnection } from '../../../database/databaseConnections.js';
 import { databaseQuery } from '../../../database/databaseQuery.js';
-import { type UserConfigurationWithPartialPrivateUsers } from '../../../types/CompositeRow.js';
-import { userConfigurationColumns } from '../../../types/UserConfigurationRow.js';
+import { type UserConfigurationWithPartialPrivateUsers } from '../../../types/rows/CompositeRow.js';
+import { userConfigurationColumns } from '../../../types/rows/UserConfigurationRow.js';
 
 /**
  *  Takes a userId

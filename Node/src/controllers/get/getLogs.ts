@@ -1,5 +1,5 @@
 import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
-import { type DogLogsRow, dogLogsColumns } from '../../main/types/DogLogsRow.js';
+import { type DogLogsRow, dogLogsColumns } from '../../main/types/rows/DogLogsRow.js';
 
 /**
  * If you are querying a single elements from the database, previousDogManagerSynchronization is not taken.

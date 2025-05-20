@@ -1,4 +1,4 @@
-import { transactionsColumns, type TransactionsRow } from '../../main/types/TransactionsRow.js';
+import { transactionsColumns, type TransactionsRow } from '../../main/types/rows/TransactionsRow.js';
 import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
 
 async function getAffiliateTransactionsForOfferIdentifier(databaseConnection: Queryable, offerIdentifier: string): Promise<TransactionsRow[]> {

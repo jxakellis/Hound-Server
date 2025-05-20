@@ -4,7 +4,7 @@ import * as fs from 'fs';
 
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { type TransactionsRow } from '../types/TransactionsRow.js';
+import { type TransactionsRow } from '../types/rows/TransactionsRow.js';
 
 const fileName = fileURLToPath(import.meta.url);
 const dirName = path.dirname(fileName);

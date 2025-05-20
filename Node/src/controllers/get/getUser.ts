@@ -1,8 +1,8 @@
 import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
 import { hash } from '../../main/format/hash.js';
-import { type PrivateCombinedUsersInformation } from '../../main/types/CompositeRow.js';
-import { userConfigurationColumns } from '../../main/types/UserConfigurationRow.js';
-import { type PublicUsersRow, privateUsersColumns, publicUsersColumns } from '../../main/types/UsersRow.js';
+import { type PrivateCombinedUsersInformation } from '../../main/types/rows/CompositeRow.js';
+import { userConfigurationColumns } from '../../main/types/rows/UserConfigurationRow.js';
+import { type PublicUsersRow, privateUsersColumns, publicUsersColumns } from '../../main/types/rows/UsersRow.js';
 
 import { updateUserForUserIdentifierHashedUserIdentifier } from '../update/updateUser.js';
 

@@ -1,7 +1,7 @@
 import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 import { createFamilyMemberJoinNotification, createFamilyLockedNotification } from '../../main/tools/notifications/alert/createFamilyNotification.js';
-import { type FamiliesRow, familiesColumns } from '../../main/types/FamiliesRow.js';
+import { type FamiliesRow, familiesColumns } from '../../main/types/rows/FamiliesRow.js';
 
 import { getFamilyMembersForFamilyId, getFamilyForUserId } from '../get/getFamily.js';
 import { getActiveTransaction } from '../get/getTransactions.js';

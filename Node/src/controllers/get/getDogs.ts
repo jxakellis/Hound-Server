@@ -1,8 +1,8 @@
-import { type DogTriggersRow } from '../../main/types/DogTriggersRow.js';
+import { type DogTriggersRow } from '../../main/types/rows/DogTriggersRow.js';
 import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
-import { type DogLogsRow } from '../../main/types/DogLogsRow.js';
-import { type DogRemindersRow } from '../../main/types/DogRemindersRow.js';
-import { type DogsRow, dogsColumns } from '../../main/types/DogsRow.js';
+import { type DogLogsRow } from '../../main/types/rows/DogLogsRow.js';
+import { type DogRemindersRow } from '../../main/types/rows/DogRemindersRow.js';
+import { type DogsRow, dogsColumns } from '../../main/types/rows/DogsRow.js';
 
 import { getAllLogsForDogUUID } from './getLogs.js';
 import { getAllRemindersForDogUUID } from './getReminders.js';

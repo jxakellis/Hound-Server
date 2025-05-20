@@ -1,7 +1,7 @@
 import { type Queryable, databaseQuery } from '../../../main/database/databaseQuery.js';
-import { type DogTriggersRow, dogTriggersColumns } from '../../../main/types/DogTriggersRow.js';
-import { getTriggerLogActionReactionsForTriggerUUID, getTriggerLogActionReactionsForTriggerUUIDs } from './getTriggerLogActionReactions.js';
-import { getTriggerLogCustomActionNameReactionsForTriggerUUID, getTriggerLogCustomActionNameReactionsForTriggerUUIDs } from './getTriggerLogCustomActionNameReactions.js';
+import { type DogTriggersRow, dogTriggersColumns } from '../../../main/types/rows/DogTriggersRow.js';
+import { getTriggerLogActionReactionsForTriggerUUID, getTriggerLogActionReactionsForTriggerUUIDs } from './getTriggerLogActionReaction.js';
+import { getTriggerLogCustomActionNameReactionsForTriggerUUID, getTriggerLogCustomActionNameReactionsForTriggerUUIDs } from './getTriggerLogCustomActionNameReaction.js';
 
 /**
  * If you are querying a single element from the database, previousTriggerManagerSynchronization is not taken.
@@ -31,7 +31,7 @@ async function getTriggerForTriggerUUID(
     return undefined;
   }
 
-  // TODO future instead of making log actions to react to a string, make it a JSON array
+  // TODO FUTURE instead of making log actions to react to a string, make it a JSON array
   const logActionReactionsRows = await getTriggerLogActionReactionsForTriggerUUID(databaseConnection, trigger.triggerUUID);
   const logCustomActionNameRows = await getTriggerLogCustomActionNameReactionsForTriggerUUID(databaseConnection, trigger.triggerUUID);
 

@@ -1,4 +1,4 @@
-import { type DogRemindersRow, type NotYetCreatedDogRemindersRow } from '../../main/types/DogRemindersRow.js';
+import { type DogRemindersRow, type NotYetCreatedDogRemindersRow } from '../../main/types/rows/DogRemindersRow.js';
 
 import { type Queryable, type ResultSetHeader, databaseQuery } from '../../main/database/databaseQuery.js';
 import { LIMIT } from '../../main/server/globalConstants.js';

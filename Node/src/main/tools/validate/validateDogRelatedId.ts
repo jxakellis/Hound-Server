@@ -4,14 +4,14 @@ import {
 } from '../../format/formatObject.js';
 import { HoundError, ERROR_CODES } from '../../server/globalErrors.js';
 
-import { type DogsRow } from '../../types/DogsRow.js';
-import { type DogLogsRow } from '../../types/DogLogsRow.js';
-import { type DogRemindersRow } from '../../types/DogRemindersRow.js';
+import { type DogsRow } from '../../types/rows/DogsRow.js';
+import { type DogLogsRow } from '../../types/rows/DogLogsRow.js';
+import { type DogRemindersRow } from '../../types/rows/DogRemindersRow.js';
 import { type StringKeyDictionary } from '../../types/StringKeyDictionary.js';
 import { getDogForDogUUID } from '../../../controllers/get/getDogs.js';
 import { getLogForLogUUID } from '../../../controllers/get/getLogs.js';
 import { getReminderForReminderUUID } from '../../../controllers/get/getReminders.js';
-import { type DogTriggersRow } from '../../types/DogTriggersRow.js';
+import { type DogTriggersRow } from '../../types/rows/DogTriggersRow.js';
 import { getTriggerForTriggerUUID } from '../../../controllers/get/triggers/getTriggers.js';
 
 async function validateDogUUID(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {

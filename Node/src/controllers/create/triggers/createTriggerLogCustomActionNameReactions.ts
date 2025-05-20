@@ -1,7 +1,7 @@
-import type { DogTriggersLogCustomActionNameReactionsRow, NotYetCreatedDogTriggersLogCustomActionNameReactionsRow } from '../../../main/types/DogTriggersLogCustomActionNameReactions.js';
+import type { DogTriggerLogCustomActionNameReactionRow, NotYetCreatedDogTriggerLogCustomActionNameReactionRow } from '../../../main/types/rows/DogTriggerLogCustomActionNameReactionRow.js';
 import { formatKnownString } from '../../../main/format/formatObject.js';
 import { type Queryable, type ResultSetHeader, databaseQuery } from '../../../main/database/databaseQuery.js';
-import { getTriggerLogCustomActionNameReactionsForTriggerUUIDs } from '../../../controllers/get/triggers/getTriggerLogCustomActionNameReactions.js';
+import { getTriggerLogCustomActionNameReactionsForTriggerUUIDs } from '../../get/triggers/getTriggerLogCustomActionNameReaction.js';
 
 /**
 *  Queries the database to create a single trigger. If the query is successful, then returns the trigger with created triggerId added to it.
@@ -9,11 +9,11 @@ import { getTriggerLogCustomActionNameReactionsForTriggerUUIDs } from '../../../
 */
 async function createTriggerLogCustomActionNameReaction(
   databaseConnection: Queryable,
-  reaction: NotYetCreatedDogTriggersLogCustomActionNameReactionsRow,
+  reaction: NotYetCreatedDogTriggerLogCustomActionNameReactionRow,
 ): Promise<number> {
   const result = await databaseQuery<ResultSetHeader>(
     databaseConnection,
-    'INSERT INTO dogTriggersLogCustomActionNameReactions(triggerUUID, logCustomActionName) VALUES (?, ?)',
+    'INSERT INTO dogTriggerLogCustomActionNameReaction(triggerUUID, logCustomActionName) VALUES (?, ?)',
     [
       reaction.triggerUUID,
       formatKnownString(reaction.logCustomActionName, 32),
@@ -29,8 +29,8 @@ async function createTriggerLogCustomActionNameReaction(
           */
 async function createTriggerLogCustomActionNameReactions(
   databaseConnection: Queryable,
-  reactions: NotYetCreatedDogTriggersLogCustomActionNameReactionsRow[],
-): Promise<DogTriggersLogCustomActionNameReactionsRow[]> {
+  reactions: NotYetCreatedDogTriggerLogCustomActionNameReactionRow[],
+): Promise<DogTriggerLogCustomActionNameReactionRow[]> {
   const promises: Promise<number>[] = [];
   reactions.forEach((reaction) => {
     // retrieve the original provided body AND the created id

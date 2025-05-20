@@ -1,4 +1,4 @@
-import { type NotYetUpdatedDogTriggersRow } from '../../../main/types/DogTriggersRow.js';
+import { type NotYetUpdatedDogTriggersRow } from '../../../main/types/rows/DogTriggersRow.js';
 import { type Queryable, databaseQuery } from '../../../main/database/databaseQuery.js';
 import { formatKnownString } from '../../../main/format/formatObject.js';
 import { updateTriggerLogCustomNameActionReactionForTrigger } from './updateTriggerLogCustomActionNameReactions.js';

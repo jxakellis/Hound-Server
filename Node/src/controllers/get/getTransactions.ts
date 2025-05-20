@@ -1,7 +1,7 @@
 import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
 import { SUBSCRIPTION } from '../../main/server/globalConstants.js';
-import { type TransactionsRow, transactionsColumns } from '../../main/types/TransactionsRow.js';
-import { type PublicUsersRow, publicUsersColumns } from '../../main/types/UsersRow.js';
+import { type TransactionsRow, transactionsColumns } from '../../main/types/rows/TransactionsRow.js';
+import { type PublicUsersRow, publicUsersColumns } from '../../main/types/rows/UsersRow.js';
 
 import { getFamilyForUserId } from './getFamily.js';
 

@@ -1,7 +1,7 @@
-import { createTriggerLogCustomActionNameReaction } from 'src/controllers/create/triggers/createTriggerLogCustomActionNameReactions.js';
-import { type NotYetUpdatedDogTriggersRow } from '../../../main/types/DogTriggersRow.js';
+import { createTriggerLogCustomActionNameReaction } from '../../../controllers/create/triggers/createTriggerLogCustomActionNameReactions.js';
+import { type NotYetUpdatedDogTriggersRow } from '../../../main/types/rows/DogTriggersRow.js';
 import { type Queryable, databaseQuery } from '../../../main/database/databaseQuery.js';
-import { getTriggerLogCustomActionNameReactionsForTriggerUUID } from '../../get/triggers/getTriggerLogCustomActionNameReactions.js';
+import { getTriggerLogCustomActionNameReactionsForTriggerUUID } from '../../get/triggers/getTriggerLogCustomActionNameReaction.js';
 
 /**
  *  Queries the database to update a single trigger and its reactions.
@@ -33,7 +33,7 @@ async function updateTriggerLogCustomNameActionReactionForTrigger(
     promises.push(
       databaseQuery(
         databaseConnection,
-        `DELETE FROM dogTriggersLogCustomActionNameReactions
+        `DELETE FROM dogTriggerLogCustomActionNameReaction
               WHERE triggerUUID = ? AND logCustomActionName IN (?)`,
         [trigger.triggerUUID, toRemoveNames],
       ),

@@ -1,7 +1,7 @@
 import { type Queryable, type ResultSetHeader, databaseQuery } from '../../main/database/databaseQuery.js';
 import { LIMIT } from '../../main/server/globalConstants.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
-import { type NotYetCreatedDogsRow } from '../../main/types/DogsRow.js';
+import { type NotYetCreatedDogsRow } from '../../main/types/rows/DogsRow.js';
 import { getAllDogsForFamilyId } from '../get/getDogs.js';
 import { formatKnownString } from '../../main/format/formatObject.js';
 

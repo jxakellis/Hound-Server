@@ -9,8 +9,8 @@ import { sendNotificationForFamily } from '../apn/sendNotification.js';
 import { logServerError } from '../../../logging/logServerError.js';
 import { deleteAlarmNotificationsForReminder } from './deleteAlarmNotification.js';
 import { formatReminderActionToReadableValue } from '../../../format/formatReminderAction.js';
-import { type DogsRow, dogsColumns } from '../../../types/DogsRow.js';
-import { type DogRemindersRow, dogRemindersColumns } from '../../../types/DogRemindersRow.js';
+import { type DogsRow, dogsColumns } from '../../../types/rows/DogsRow.js';
+import { type DogRemindersRow, dogRemindersColumns } from '../../../types/rows/DogRemindersRow.js';
 import { NOTIFICATION } from '../../../server/globalConstants.js';
 import { HoundError } from '../../../server/globalErrors.js';
 

@@ -19,6 +19,7 @@ type DogsRow = {
     dogName: string
     dogLastModified: Date
     dogIsDeleted: number
+    // TODO separate this into 2 diff types
     logs?: DogLogsRow[]
     reminders?: DogRemindersRow[]
     dogTriggers?: DogTriggersRow[]

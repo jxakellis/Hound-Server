@@ -15,7 +15,7 @@ import { getTransactionOwner } from '../get/getTransactions.js';
 import { createUpdateTransaction } from './createTransactions.js';
 
 import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
-import { type AppStoreServerNotificationsRow, appStoreServerNotificationsColumns } from '../../main/types/AppStoreServerNotificationsRow.js';
+import { type AppStoreServerNotificationsRow, appStoreServerNotificationsColumns } from '../../main/types/rows/AppStoreServerNotificationsRow.js';
 /**
 * Extracts data from parameters provided and attempts to insert a corresponding notification into the appStoreServerNotification table.
 * If a duplicate key is found for notificationUUID, a no-op operation is performed.

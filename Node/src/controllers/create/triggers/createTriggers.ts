@@ -1,5 +1,5 @@
-import { getLogActionTypeMap } from 'src/controllers/get/getLogActionType.js';
-import { type DogTriggersRow, type NotYetCreatedDogTriggersRow } from '../../../main/types/DogTriggersRow.js';
+import { getLogActionTypeMap } from '../../get/types/getLogActionType.js';
+import { type DogTriggersRow, type NotYetCreatedDogTriggersRow } from '../../../main/types/rows/DogTriggersRow.js';
 
 import { type Queryable, type ResultSetHeader, databaseQuery } from '../../../main/database/databaseQuery.js';
 import { LIMIT } from '../../../main/server/globalConstants.js';

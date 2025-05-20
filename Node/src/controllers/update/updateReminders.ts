@@ -1,4 +1,4 @@
-import { type NotYetUpdatedDogRemindersRow } from '../../main/types/DogRemindersRow.js';
+import { type NotYetUpdatedDogRemindersRow } from '../../main/types/rows/DogRemindersRow.js';
 
 import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
 import { formatKnownString } from '../../main/format/formatObject.js';

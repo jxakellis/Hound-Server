@@ -22,6 +22,7 @@ type DogTriggersRow = {
     triggerUUID: string
     dogUUID: string
     triggerCustomName: string
+    // TODO separate this into 2 diff types
     logActionReactions?: string[]
     logCustomActionNameReactions?: string[]
     triggerType: string

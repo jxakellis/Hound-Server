@@ -8,8 +8,8 @@ import { HoundError, ERROR_CODES } from '../../server/globalErrors.js';
 import { hash } from '../../format/hash.js';
 
 import { updateUserForUserIdentifierHashedUserIdentifier } from '../../../controllers/update/updateUser.js';
-import { type PublicUsersRow, publicUsersColumns } from '../../types/UsersRow.js';
-import { type FamilyMembersRow, familyMembersColumns } from '../../types/FamilyMembersRow.js';
+import { type PublicUsersRow, publicUsersColumns } from '../../types/rows/UsersRow.js';
+import { type FamilyMembersRow, familyMembersColumns } from '../../types/rows/FamilyMembersRow.js';
 
 async function validateUserIdentifier(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {

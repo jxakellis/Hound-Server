@@ -1,5 +1,5 @@
 import { type PoolConnection } from 'mysql2';
-import { type TransactionsRow } from '../types/TransactionsRow.js';
+import { type TransactionsRow } from '../types/rows/TransactionsRow.js';
 import type { StringKeyDictionary as HoundDictionary } from '../types/StringKeyDictionary.js';
 
 declare global {

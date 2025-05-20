@@ -1,7 +1,7 @@
-import type { DogTriggersLogActionReactionsRow, NotYetCreatedDogTriggersLogActionReactionsRow } from '../../../main/types/DogTriggersLogActionReactionsRow.js';
 import { type Queryable, type ResultSetHeader, databaseQuery } from '../../../main/database/databaseQuery.js';
-import { getTriggerLogActionReactionsForTriggerUUIDs } from '../../../controllers/get/triggers/getTriggerLogActionReactions.js';
-import { type LogActionTypeRow } from '../../../main/types/LogActionTypeRow.js';
+import { getTriggerLogActionReactionsForTriggerUUIDs } from '../../get/triggers/getTriggerLogActionReaction.js';
+import { type LogActionTypeRow } from '../../../main/types/rows/LogActionTypeRow.js';
+import type { DogTriggerLogActionReactionRow, NotYetCreatedDogTriggerLogActionReactionRow } from '../../../main/types/rows/DogTriggerLogActionReactionRow.js';
 
 /**
 *  Queries the database to create a single trigger. If the query is successful, then returns the trigger with created triggerId added to it.
@@ -9,11 +9,11 @@ import { type LogActionTypeRow } from '../../../main/types/LogActionTypeRow.js';
 */
 async function createTriggerLogActionReaction(
   databaseConnection: Queryable,
-  reaction: NotYetCreatedDogTriggersLogActionReactionsRow,
+  reaction: NotYetCreatedDogTriggerLogActionReactionRow,
 ): Promise<number> {
   const result = await databaseQuery<ResultSetHeader>(
     databaseConnection,
-    'INSERT INTO dogTriggersLogActionReactions(triggerUUID, logActionTypeId) VALUES (?, ?)',
+    'INSERT INTO dogTriggerLogActionReaction(triggerUUID, logActionTypeId) VALUES (?, ?)',
     [
       reaction.triggerUUID,
       reaction.logActionTypeId,
@@ -29,8 +29,8 @@ async function createTriggerLogActionReaction(
           */
 async function createTriggerLogActionReactions(
   databaseConnection: Queryable,
-  reactions: NotYetCreatedDogTriggersLogActionReactionsRow[],
-): Promise<(DogTriggersLogActionReactionsRow & LogActionTypeRow)[]> {
+  reactions: NotYetCreatedDogTriggerLogActionReactionRow[],
+): Promise<(DogTriggerLogActionReactionRow & LogActionTypeRow)[]> {
   const promises: Promise<number>[] = [];
   reactions.forEach((reaction) => {
     // retrieve the original provided body AND the created id

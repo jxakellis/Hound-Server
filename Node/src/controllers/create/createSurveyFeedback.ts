@@ -1,7 +1,7 @@
 import { type Queryable, type ResultSetHeader, databaseQuery } from '../../main/database/databaseQuery.js';
-import { type NotYetCreatedSurveyFeedbackRow } from '../../main/types/SurveyFeedbackRow.js';
-import { type NotYetCreatedSurveyFeedbackCancelSubscriptionRow, type SurveyFeedbackCancelSubscriptionRow } from '../../main/types/SurveyFeedbackCancelSubscriptionRow.js';
-import { type NotYetCreatedSurveyFeedbackAppExperienceRow, type SurveyFeedbackAppExperienceRow } from '../../main/types/SurveyFeedbackAppExperienceRow.js';
+import { type NotYetCreatedSurveyFeedbackRow } from '../../main/types/rows/SurveyFeedbackRow.js';
+import { type NotYetCreatedSurveyFeedbackCancelSubscriptionRow, type SurveyFeedbackCancelSubscriptionRow } from '../../main/types/rows/SurveyFeedbackCancelSubscriptionRow.js';
+import { type NotYetCreatedSurveyFeedbackAppExperienceRow, type SurveyFeedbackAppExperienceRow } from '../../main/types/rows/SurveyFeedbackAppExperienceRow.js';
 import { formatKnownString } from '../../main/format/formatObject.js';
 import { SurveyFeedbackType } from '../../main/enums/SurveyFeedbackType.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';

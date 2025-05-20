@@ -4,7 +4,7 @@ import { type Queryable, databaseQuery } from '../../main/database/databaseQuery
 import { hash } from '../../main/format/hash.js';
 
 import { getPublicUser } from '../get/getUser.js';
-import { type UserConfigurationRow } from '../../main/types/UserConfigurationRow.js';
+import { type UserConfigurationRow } from '../../main/types/rows/UserConfigurationRow.js';
 import { formatEmail, formatUnknownString, formatKnownString } from '../../main/format/formatObject.js';
 
 /**

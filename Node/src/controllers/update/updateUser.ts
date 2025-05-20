@@ -1,6 +1,6 @@
 import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
 import { hash } from '../../main/format/hash.js';
-import { type UserConfigurationRow } from '../../main/types/UserConfigurationRow.js';
+import { type UserConfigurationRow } from '../../main/types/rows/UserConfigurationRow.js';
 
 /**
  *  Queries the database to update a user. If the query is successful, then returns

@@ -14,7 +14,7 @@ import {
   formatDate, formatNumber, formatUnknownString,
 } from '../../main/format/formatObject.js';
 import { formatReminderActionToInternalValue } from '../../main/format/formatReminderAction.js';
-import { type NotYetCreatedDogRemindersRow, type NotYetUpdatedDogRemindersRow } from '../../main/types/DogRemindersRow.js';
+import { type NotYetCreatedDogRemindersRow, type NotYetUpdatedDogRemindersRow } from '../../main/types/rows/DogRemindersRow.js';
 
 async function getReminders(req: express.Request, res: express.Response): Promise<void> {
   try {

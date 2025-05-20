@@ -5,7 +5,7 @@ import { formatKnownString } from '../../../format/formatObject.js';
 
 import { apn, productionAPNProvider, developmentAPNProvider } from './apnProvider.js';
 import { NOTIFICATION } from '../../../server/globalConstants.js';
-import { type UserConfigurationWithPartialPrivateUsers } from '../../../types/CompositeRow.js';
+import { type UserConfigurationWithPartialPrivateUsers } from '../../../types/rows/CompositeRow.js';
 import { HoundError } from '../../../server/globalErrors.js';
 import { type StringKeyDictionary } from '../../../types/StringKeyDictionary.js';
 

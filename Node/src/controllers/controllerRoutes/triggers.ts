@@ -13,7 +13,7 @@ import {
   formatArray,
   formatDate, formatNumber, formatUnknownString,
 } from '../../main/format/formatObject.js';
-import { type NotYetCreatedDogTriggersRow, type NotYetUpdatedDogTriggersRow } from '../../main/types/DogTriggersRow.js';
+import { type NotYetCreatedDogTriggersRow, type NotYetUpdatedDogTriggersRow } from '../../main/types/rows/DogTriggersRow.js';
 
 async function getTriggers(req: express.Request, res: express.Response): Promise<void> {
   try {

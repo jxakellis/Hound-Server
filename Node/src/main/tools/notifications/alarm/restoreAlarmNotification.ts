@@ -4,8 +4,8 @@ import { createAlarmNotificationForFamily } from './createAlarmNotification.js';
 import { logServerError } from '../../../logging/logServerError.js';
 import { DatabasePools, getPoolConnection } from '../../../database/databaseConnections.js';
 import { databaseQuery } from '../../../database/databaseQuery.js';
-import { type DogsRow, dogsColumns } from '../../../types/DogsRow.js';
-import { type DogRemindersRow, dogRemindersColumns } from '../../../types/DogRemindersRow.js';
+import { type DogsRow, dogsColumns } from '../../../types/rows/DogsRow.js';
+import { type DogRemindersRow, dogRemindersColumns } from '../../../types/rows/DogRemindersRow.js';
 import { HoundError } from '../../../server/globalErrors.js';
 
 /**

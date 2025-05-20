@@ -1,9 +1,9 @@
 import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
-import { type FamilyInformation } from '../../main/types/CompositeRow.js';
-import { type FamiliesRow, familiesColumns } from '../../main/types/FamiliesRow.js';
-import { type PreviousFamilyMembersRow, previousFamilyMembersColumns } from '../../main/types/PreviousFamilyMembersRow.js';
-import { type TransactionsRow } from '../../main/types/TransactionsRow.js';
-import { type PublicUsersRow, publicUsersColumns } from '../../main/types/UsersRow.js';
+import { type FamilyInformation } from '../../main/types/rows/CompositeRow.js';
+import { type FamiliesRow, familiesColumns } from '../../main/types/rows/FamiliesRow.js';
+import { type PreviousFamilyMembersRow, previousFamilyMembersColumns } from '../../main/types/rows/PreviousFamilyMembersRow.js';
+import { type TransactionsRow } from '../../main/types/rows/TransactionsRow.js';
+import { type PublicUsersRow, publicUsersColumns } from '../../main/types/rows/UsersRow.js';
 
 async function getFamilyForFamilyId(databaseConnection: Queryable, familyId: string): Promise<FamiliesRow | undefined> {
   // family id is validated, therefore we know familyMembers is >= 1 for familyId
