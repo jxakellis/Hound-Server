@@ -4,10 +4,10 @@
   "description": "Hound Server",
   "type": "module",
   "scripts": {
-    "compile": "tsc",
-    "start": "node ./built/main/server/instantiateServer.js | pino-pretty -c -t",
-    "houndServer": "sudo npm run compile && sudo npm run start",
-    "personalDev": "npm run compile && node ./built/main/server/instantiateServer.js | pino-pretty -c -t"
+    "compileTypescript": "tsc",
+    "startNode": "node ./built/main/server/instantiateServer.js | pino-pretty -c -t",
+    "houndServer": "sudo npm run compileTypescript && sudo npm run startNode",
+    "localHostServer": "npm run compileTypescript && npm run startNode"
   },
   "author": "",
   "license": "ISC",

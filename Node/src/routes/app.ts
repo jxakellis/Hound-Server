@@ -12,4 +12,8 @@ appRouter.use(['/'], validateAppVersion);
 // Route the request to the userRouter
 appRouter.use(['/user'], userRouter);
 
+// TODO NOW add a types route that that allows for retrieval of all the types or only partial ones
+
+// TODO NOW check FK constraints for all the tables. if tables reference each other, we should have FK in place
+
 export { appRouter };
