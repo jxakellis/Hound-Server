@@ -9,11 +9,11 @@
     "moduleResolution": "nodenext",
     "verbatimModuleSyntax": true,
     // Specifies the location where the compiled JS files will be.
-    "outDir": "./built",
-    // keep imports resolving from here in Node as the base:
-    "baseUrl": ".",
-    // this is the key—tell TS that all source lives here in Node
-    "rootDir": ".",
+    "outDir": "./Node/built",
+    // keep imports resolving from Node/ as the base:
+    "baseUrl": "./Node",
+    // this is the key—tell TS that all source lives under Node/
+    "rootDir": "./Node",
     // Enable all strict type checking options.
     "strict": true,
     // Allow default imports from modules with no default export.
@@ -36,5 +36,5 @@
   },
   
   // Specifies the root files and patterns to include in the compilation.
-  "include": ["./src/**/*"],
+  "include": ["./Node/src/**/*"],
 }
