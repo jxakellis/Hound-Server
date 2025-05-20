@@ -26,7 +26,6 @@ async function createSurveyFeedback(req: express.Request, res: express.Response)
       throw new HoundError('unvalidatedSurveyFeedbackDictionary missing', createSurveyFeedback, ERROR_CODES.VALUE.MISSING);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const surveyFeedbackType = formatUnknownString(unvalidatedSurveyFeedbackDictionary?.['surveyFeedbackType']);
 
     if (surveyFeedbackType === undefined || surveyFeedbackType === null) {
@@ -42,13 +41,9 @@ async function createSurveyFeedback(req: express.Request, res: express.Response)
     }
 
     // Survey Feedback Device Metrics
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const surveyFeedbackDeviceMetricModel = formatUnknownString(unvalidatedSurveyFeedbackDictionary?.['surveyFeedbackDeviceMetricModel']);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const surveyFeedbackDeviceMetricSystemVersion = formatUnknownString(unvalidatedSurveyFeedbackDictionary?.['surveyFeedbackDeviceMetricSystemVersion']);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const surveyFeedbackDeviceMetricAppVersion = formatUnknownString(unvalidatedSurveyFeedbackDictionary?.['surveyFeedbackDeviceMetricAppVersion']);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const surveyFeedbackDeviceMetricLocale = formatUnknownString(unvalidatedSurveyFeedbackDictionary?.['surveyFeedbackDeviceMetricLocale']);
 
     if (surveyFeedbackDeviceMetricModel === undefined || surveyFeedbackDeviceMetricModel === null) {
@@ -66,15 +61,11 @@ async function createSurveyFeedback(req: express.Request, res: express.Response)
 
     // Survey Feedback User Cancellation Specifics
     const activeSubscriptionTransactionId = req.houndDeclarationExtendedProperties.familyActiveSubscription?.transactionId;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const surveyFeedbackUserCancellationReason = formatUnknownString(unvalidatedSurveyFeedbackDictionary?.['surveyFeedbackUserCancellationReason']);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const surveyFeedbackUserCancellationFeedback = formatUnknownString(unvalidatedSurveyFeedbackDictionary?.['surveyFeedbackUserCancellationFeedback']) ?? '';
 
     // Survey Feedback App Experience Specifics
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const surveyFeedbackAppExperienceNumberOfStars = formatNumber(unvalidatedSurveyFeedbackDictionary?.['surveyFeedbackAppExperienceNumberOfStars']);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const surveyFeedbackAppExperienceFeedback = formatUnknownString(unvalidatedSurveyFeedbackDictionary?.['surveyFeedbackAppExperienceFeedback']) ?? '';
 
     await createSurveyFeedbackForSurveyFeedback(

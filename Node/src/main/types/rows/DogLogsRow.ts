@@ -6,16 +6,13 @@ dl.userId,
 dl.logStartDate,
 dl.logEndDate,
 dl.logNote,
-dl.logAction,
+dl.logActionTypeId,
 dl.logCustomActionName,
 dl.logUnit,
 dl.logNumberOfLogUnits,
 dl.logLastModified,
 dl.logIsDeleted
 `;
-
-// TODO make logAction into logActionTypeId column and add a FK from it to the logActionTypes table
-// TODO add cross compatibility, so this change works even when internal value is still passed
 
 type DogLogsRow = {
     // NOTE: database booleans (tinyint(1)) are returned as 0 or 1 numbers, not booleans. therefore, we have to use number instead of boolean
@@ -26,7 +23,7 @@ type DogLogsRow = {
     logStartDate: Date
     logEndDate?: Date
     logNote: string
-    logAction: string
+    logActionTypeId: number
     logCustomActionName: string
     logUnit?: string
     logNumberOfLogUnits?: number

@@ -1,19 +1,19 @@
 import express from 'express';
 
-import { getTriggerForTriggerUUID, getAllTriggersForDogUUID } from '../get/triggers/getTriggers.js';
+import { getTriggerForTriggerUUID, getAllTriggersForDogUUID } from '../../../../../get/triggers/getTriggers.js';
 
-import { createTriggersForTriggers } from '../create/triggers/createTriggers.js';
+import { createTriggersForTriggers } from '../../../../../create/triggers/createTriggers.js';
 
-import { updateTriggersForTriggers } from '../update/triggers/updateTriggers.js';
+import { updateTriggersForTriggers } from '../../../../../update/triggers/updateTriggers.js';
 
-import { deleteTriggersTriggerUUIDs } from '../delete/deleteTriggers.js';
-import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
+import { deleteTriggersTriggerUUIDs } from '../../../../../delete/deleteTriggers.js';
+import { ERROR_CODES, HoundError } from '../../../../../../main/server/globalErrors.js';
 
 import {
   formatArray,
   formatDate, formatNumber, formatUnknownString,
-} from '../../main/format/formatObject.js';
-import { type NotYetCreatedDogTriggersRow, type NotYetUpdatedDogTriggersRow } from '../../main/types/rows/DogTriggersRow.js';
+} from '../../../../../../main/format/formatObject.js';
+import { type NotYetCreatedDogTriggersRow, type NotYetUpdatedDogTriggersRow } from '../../../../../../main/types/rows/DogTriggersRow.js';
 
 async function getTriggers(req: express.Request, res: express.Response): Promise<void> {
   try {
@@ -78,12 +78,13 @@ async function createTrigger(req: express.Request, res: express.Response): Promi
     unvalidatedTriggersDictionary.forEach((unvalidatedTriggerDictionary) => {
       const triggerUUID = formatUnknownString(unvalidatedTriggerDictionary['triggerUUID'], 36);
       const triggerCustomName = formatUnknownString(unvalidatedTriggerDictionary['triggerCustomName']);
-      const logActionReactions = formatArray(unvalidatedTriggerDictionary['logActionReactions'])
-        ?.map((lar) => formatUnknownString(lar))
-        .filter((lar): lar is string => lar !== undefined);
-      const logCustomActionNameReactions = formatArray(unvalidatedTriggerDictionary['logCustomActionNameReactions'])
-        ?.map((lar) => formatUnknownString(lar))
-        .filter((lar): lar is string => lar !== undefined);
+      const reactionLogActionTypeIds = formatArray(unvalidatedTriggerDictionary['reactionLogActionTypeIds'])
+        ?.map((rlati) => formatNumber(rlati))
+        .filter((rlati): rlati is number => rlati !== undefined);
+      const reactionLogCustomActionNames = formatArray(unvalidatedTriggerDictionary['reactionLogCustomActionNames'])
+        ?.map((rlcan) => formatUnknownString(rlcan))
+        .filter((rlcan): rlcan is string => rlcan !== undefined);
+      const resultReminderActionTypeId = formatNumber(unvalidatedTriggerDictionary['resultReminderActionTypeId']);
       const triggerType = formatUnknownString(unvalidatedTriggerDictionary['triggerType']);
       const triggerTimeDelay = formatNumber(unvalidatedTriggerDictionary['triggerTimeDelay']);
       const triggerFixedTimeType = formatUnknownString(unvalidatedTriggerDictionary['triggerFixedTimeType']);
@@ -97,11 +98,14 @@ async function createTrigger(req: express.Request, res: express.Response): Promi
       if (triggerCustomName === undefined || triggerCustomName === null) {
         throw new HoundError('triggerCustomName missing', createTrigger, ERROR_CODES.VALUE.MISSING);
       }
-      if (logActionReactions === undefined || logActionReactions === null) {
-        throw new HoundError('logActionReactions missing', createTrigger, ERROR_CODES.VALUE.MISSING);
+      if (reactionLogActionTypeIds === undefined || reactionLogActionTypeIds === null) {
+        throw new HoundError('reactionLogActionTypeIds missing', createTrigger, ERROR_CODES.VALUE.MISSING);
       }
-      if (logCustomActionNameReactions === undefined || logCustomActionNameReactions === null) {
-        throw new HoundError('logCustomActionNameReactions missing', createTrigger, ERROR_CODES.VALUE.MISSING);
+      if (reactionLogCustomActionNames === undefined || reactionLogCustomActionNames === null) {
+        throw new HoundError('reactionLogCustomActionNames missing', createTrigger, ERROR_CODES.VALUE.MISSING);
+      }
+      if (resultReminderActionTypeId === undefined || resultReminderActionTypeId === null) {
+        throw new HoundError('resultReminderActionTypeId missing', createTrigger, ERROR_CODES.VALUE.MISSING);
       }
       if (triggerType === undefined || triggerType === null) {
         throw new HoundError('triggerType missing', createTrigger, ERROR_CODES.VALUE.MISSING);
@@ -126,8 +130,9 @@ async function createTrigger(req: express.Request, res: express.Response): Promi
         dogUUID: validatedDog.validatedDogUUID,
         triggerUUID,
         triggerCustomName,
-        logActionReactions,
-        logCustomActionNameReactions,
+        reactionLogActionTypeIds,
+        reactionLogCustomActionNames,
+        resultReminderActionTypeId,
         triggerType,
         triggerTimeDelay,
         triggerFixedTimeType,
@@ -169,12 +174,13 @@ async function updateTrigger(req: express.Request, res: express.Response): Promi
       const triggerUUID = validatedTrigger.validatedTriggerUUID;
       const dogUUID = validatedTrigger.validatedDogUUID;
       const triggerCustomName = formatUnknownString(validatedTrigger.unvalidatedTriggerDictionary?.['triggerCustomName']);
-      const logActionReactions = formatArray(validatedTrigger.unvalidatedTriggerDictionary?.['logActionReactions'])
-        ?.map((lar) => formatUnknownString(lar))
-        .filter((lar): lar is string => lar !== undefined);
-      const logCustomActionNameReactions = formatArray(validatedTrigger.unvalidatedTriggerDictionary?.['logCustomActionNameReactions'])
-        ?.map((lar) => formatUnknownString(lar))
-        .filter((lar): lar is string => lar !== undefined);
+      const reactionLogActionTypeIds = formatArray(validatedTrigger.unvalidatedTriggerDictionary?.['reactionLogActionTypeIds'])
+        ?.map((rlati) => formatNumber(rlati))
+        .filter((rlati): rlati is number => rlati !== undefined);
+      const reactionLogCustomActionNames = formatArray(validatedTrigger.unvalidatedTriggerDictionary?.['reactionLogCustomActionNames'])
+        ?.map((rlcan) => formatUnknownString(rlcan))
+        .filter((rlcan): rlcan is string => rlcan !== undefined);
+      const resultReminderActionTypeId = formatNumber(validatedTrigger.unvalidatedTriggerDictionary?.['resultReminderActionTypeId']);
       const triggerType = formatUnknownString(validatedTrigger.unvalidatedTriggerDictionary?.['triggerType']);
       const triggerTimeDelay = formatNumber(validatedTrigger.unvalidatedTriggerDictionary?.['triggerTimeDelay']);
       const triggerFixedTimeType = formatUnknownString(validatedTrigger.unvalidatedTriggerDictionary?.['triggerFixedTimeType']);
@@ -188,11 +194,14 @@ async function updateTrigger(req: express.Request, res: express.Response): Promi
       if (triggerCustomName === undefined || triggerCustomName === null) {
         throw new HoundError('triggerCustomName missing', createTrigger, ERROR_CODES.VALUE.MISSING);
       }
-      if (logActionReactions === undefined || logActionReactions === null) {
-        throw new HoundError('logActionReactions missing', createTrigger, ERROR_CODES.VALUE.MISSING);
+      if (reactionLogActionTypeIds === undefined || reactionLogActionTypeIds === null) {
+        throw new HoundError('reactionLogActionTypeIds missing', createTrigger, ERROR_CODES.VALUE.MISSING);
       }
-      if (logCustomActionNameReactions === undefined || logCustomActionNameReactions === null) {
-        throw new HoundError('logCustomActionNameReactions missing', createTrigger, ERROR_CODES.VALUE.MISSING);
+      if (reactionLogCustomActionNames === undefined || reactionLogCustomActionNames === null) {
+        throw new HoundError('reactionLogCustomActionNames missing', createTrigger, ERROR_CODES.VALUE.MISSING);
+      }
+      if (resultReminderActionTypeId === undefined || resultReminderActionTypeId === null) {
+        throw new HoundError('resultReminderActionTypeId missing', createTrigger, ERROR_CODES.VALUE.MISSING);
       }
       if (triggerType === undefined || triggerType === null) {
         throw new HoundError('triggerType missing', createTrigger, ERROR_CODES.VALUE.MISSING);
@@ -218,8 +227,9 @@ async function updateTrigger(req: express.Request, res: express.Response): Promi
         triggerUUID,
         dogUUID,
         triggerCustomName,
-        logActionReactions,
-        logCustomActionNameReactions,
+        reactionLogActionTypeIds,
+        reactionLogCustomActionNames,
+        resultReminderActionTypeId,
         triggerType,
         triggerTimeDelay,
         triggerFixedTimeType,

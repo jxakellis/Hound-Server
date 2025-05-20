@@ -4,7 +4,8 @@ lat.internalValue,
 lat.readableValue,
 lat.emoji,
 lat.sortOrder,
-lat.isDefault
+lat.isDefault,
+lat.allowsCustom
 `;
 
 type LogActionTypeRow = {
@@ -15,6 +16,7 @@ type LogActionTypeRow = {
     emoji: string
     sortOrder: number
     isDefault: number
+    allowsCustom: number
 };
 
 type LogActionTypeRowWithMapping = LogActionTypeRow & {

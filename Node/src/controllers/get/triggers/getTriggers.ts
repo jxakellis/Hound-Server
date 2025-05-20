@@ -31,12 +31,11 @@ async function getTriggerForTriggerUUID(
     return undefined;
   }
 
-  // TODO FUTURE instead of making log actions to react to a string, make it a JSON array
   const logActionReactionsRows = await getTriggerLogActionReactionsForTriggerUUID(databaseConnection, trigger.triggerUUID);
   const logCustomActionNameRows = await getTriggerLogCustomActionNameReactionsForTriggerUUID(databaseConnection, trigger.triggerUUID);
 
-  trigger.logActionReactions = logActionReactionsRows.map((r) => r.internalValue);
-  trigger.logCustomActionNameReactions = logCustomActionNameRows.map((r) => r.logCustomActionName);
+  trigger.reactionLogActionTypeIds = logActionReactionsRows.map((r) => r.logActionTypeId);
+  trigger.reactionLogCustomActionNames = logCustomActionNameRows.map((r) => r.logCustomActionName);
 
   return trigger;
 }
@@ -84,8 +83,8 @@ async function getAllTriggersForDogUUID(
 
   triggers.forEach((trigger) => {
     const updatedTrigger = { ...trigger };
-    updatedTrigger.logActionReactions = logActionReactionsRows.filter((r) => r.triggerUUID === trigger.triggerUUID).map((r) => r.internalValue);
-    updatedTrigger.logCustomActionNameReactions = logCustomActionNameRows.filter((r) => r.triggerUUID === trigger.triggerUUID).map((r) => r.logCustomActionName);
+    updatedTrigger.reactionLogActionTypeIds = logActionReactionsRows.filter((r) => r.triggerUUID === trigger.triggerUUID).map((r) => r.logActionTypeId);
+    updatedTrigger.reactionLogCustomActionNames = logCustomActionNameRows.filter((r) => r.triggerUUID === trigger.triggerUUID).map((r) => r.logCustomActionName);
     Object.assign(trigger, updatedTrigger);
   });
 

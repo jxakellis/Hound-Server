@@ -1,17 +1,17 @@
 import express from 'express';
-import { createLogNotification } from '../../main/tools/notifications/alert/createLogNotification.js';
+import { createLogNotification } from '../../../../../../main/tools/notifications/alert/createLogNotification.js';
 
-import { getLogForLogUUID, getAllLogsForDogUUID } from '../get/getLogs.js';
+import { getLogForLogUUID, getAllLogsForDogUUID } from '../../../../../get/getLogs.js';
 
-import { createLogForLog } from '../create/createLogs.js';
+import { createLogForLog } from '../../../../../create/createLogs.js';
 
-import { updateLogForLog } from '../update/updateLogs.js';
+import { updateLogForLog } from '../../../../../update/updateLogs.js';
 
-import { deleteLogForLogUUID } from '../delete/deleteLogs.js';
-import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
+import { deleteLogForLogUUID } from '../../../../../delete/deleteLogs.js';
+import { ERROR_CODES, HoundError } from '../../../../../../main/server/globalErrors.js';
 
-import { formatDate, formatNumber, formatUnknownString } from '../../main/format/formatObject.js';
-import { formatLogActionToInternalValue } from '../../main/format/formatLogAction.js';
+import { formatDate, formatNumber, formatUnknownString } from '../../../../../../main/format/formatObject.js';
+import { getAllLogActionTypes } from '../../../../../../controllers/get/types/getLogActionType.js';
 
 async function getLogs(req: express.Request, res: express.Response): Promise<void> {
   try {
@@ -74,21 +74,18 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
       throw new HoundError('unvalidatedLogDictionary missing', createLog, ERROR_CODES.VALUE.MISSING);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const logUUID = formatUnknownString(unvalidatedLogDictionary?.['logUUID'], 36);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const logActionTypes = await getAllLogActionTypes(databaseConnection);
+
+    const logUUID = formatUnknownString(unvalidatedLogDictionary['logUUID'], 36);
     const logStartDate = formatDate(unvalidatedLogDictionary?.['logStartDate']);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const logEndDate = formatDate(unvalidatedLogDictionary?.['logEndDate']);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const logAction = formatLogActionToInternalValue(formatUnknownString(unvalidatedLogDictionary?.['logAction']));
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    // TODO FUTURE DEPRECIATE this is compatibility for <= 3.5.0
+    const depreciatedLogAction = formatUnknownString(unvalidatedLogDictionary?.['logAction']);
+    const logActionTypeId = formatNumber(unvalidatedLogDictionary?.['logActionTypeId'])
+    ?? logActionTypes.find((rat) => rat.internalValue === depreciatedLogAction)?.logActionTypeId;
     const logCustomActionName = formatUnknownString(unvalidatedLogDictionary?.['logCustomActionName']);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const logNote = formatUnknownString(unvalidatedLogDictionary?.['logNote']);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const logUnit = formatUnknownString(unvalidatedLogDictionary?.['logUnit']);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const logNumberOfLogUnits = formatNumber(unvalidatedLogDictionary?.['logNumberOfLogUnits']);
 
     if (logUUID === undefined || logUUID === null) {
@@ -97,8 +94,8 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
     if (logStartDate === undefined || logStartDate === null) {
       throw new HoundError('logStartDate missing', createLog, ERROR_CODES.VALUE.MISSING);
     }
-    if (logAction === undefined || logAction === null) {
-      throw new HoundError('logAction missing', createLog, ERROR_CODES.VALUE.MISSING);
+    if (logActionTypeId === undefined || logActionTypeId === null) {
+      throw new HoundError('logActionTypeId missing', createLog, ERROR_CODES.VALUE.MISSING);
     }
     if (logCustomActionName === undefined || logCustomActionName === null) {
       throw new HoundError('logCustomActionName missing', createLog, ERROR_CODES.VALUE.MISSING);
@@ -115,7 +112,7 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
         logUUID,
         logStartDate,
         logEndDate,
-        logAction,
+        logActionTypeId,
         logCustomActionName,
         logNote,
         logUnit,
@@ -126,7 +123,7 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
       validatedUserId,
       validatedFamilyId,
       validatedDog.validatedDogUUID,
-      logAction,
+      logActionTypeId,
       logCustomActionName,
     );
 
@@ -152,26 +149,24 @@ async function updateLog(req: express.Request, res: express.Response): Promise<v
       throw new HoundError('validatedLog missing', updateLog, ERROR_CODES.VALUE.MISSING);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const logActionTypes = await getAllLogActionTypes(databaseConnection);
+
     const logStartDate = formatDate(validatedLog.unvalidatedLogDictionary?.['logStartDate']);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const logEndDate = formatDate(validatedLog.unvalidatedLogDictionary?.['logEndDate']);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const logAction = formatLogActionToInternalValue(formatUnknownString(validatedLog.unvalidatedLogDictionary?.['logAction']));
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    // TODO FUTURE DEPRECIATE this is compatibility for <= 3.5.0
+    const depreciatedLogAction = formatUnknownString(validatedLog.unvalidatedLogDictionary?.['logAction']);
+    const logActionTypeId = formatNumber(validatedLog.unvalidatedLogDictionary?.['logActionTypeId'])
+    ?? logActionTypes.find((rat) => rat.internalValue === depreciatedLogAction)?.logActionTypeId;
     const logCustomActionName = formatUnknownString(validatedLog.unvalidatedLogDictionary?.['logCustomActionName']);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const logNote = formatUnknownString(validatedLog.unvalidatedLogDictionary?.['logNote']);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const logUnit = formatUnknownString(validatedLog.unvalidatedLogDictionary?.['logUnit']);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const logNumberOfLogUnits = formatNumber(validatedLog.unvalidatedLogDictionary?.['logNumberOfLogUnits']);
 
     if (logStartDate === undefined || logStartDate === null) {
       throw new HoundError('logStartDate missing', updateLog, ERROR_CODES.VALUE.MISSING);
     }
-    if (logAction === undefined || logAction === null) {
-      throw new HoundError('logAction missing', updateLog, ERROR_CODES.VALUE.MISSING);
+    if (logActionTypeId === undefined || logActionTypeId === null) {
+      throw new HoundError('logActionTypeId missing', updateLog, ERROR_CODES.VALUE.MISSING);
     }
     if (logCustomActionName === undefined || logCustomActionName === null) {
       throw new HoundError('logCustomActionName missing', updateLog, ERROR_CODES.VALUE.MISSING);
@@ -189,7 +184,7 @@ async function updateLog(req: express.Request, res: express.Response): Promise<v
         logUUID: validatedLog.validatedLogUUID,
         logStartDate,
         logEndDate,
-        logAction,
+        logActionTypeId,
         logCustomActionName,
         logNote,
         logUnit,

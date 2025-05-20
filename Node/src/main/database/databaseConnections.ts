@@ -23,7 +23,7 @@ const host = SERVER.IS_PRODUCTION_DATABASE ? productionHoundHost : developmentHo
 const password = SERVER.IS_PRODUCTION_DATABASE ? productionHoundPassword : developmentHoundPassword;
 const database = SERVER.IS_PRODUCTION_DATABASE ? productionHoundDatabase : developmentHoundDatabase;
 
-// TODO FUTURE switch to namedPlaceholders. set the config option to true then modify databaseQuery to support it.
+// TODO FUTURE NICE-TO-HAVE switch to namedPlaceholders. set the config option to true then modify databaseQuery to support it.
 
 // CREATE DATABASE CONNECTIONS
 async function createDatabasePool(): Promise<mysql2.Pool> {

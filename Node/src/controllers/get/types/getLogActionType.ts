@@ -1,43 +1,34 @@
 import { logActionTypeColumns, type LogActionTypeRow, type LogActionTypeRowWithMapping } from '../../../main/types/rows/LogActionTypeRow.js';
 import { type Queryable, databaseQuery } from '../../../main/database/databaseQuery.js';
 import { getAllMappingLogActionTypeReminderActionType } from './getMappingLogActionTypeReminderActionType.js';
-
-async function getLogActionTypeMap(
-  databaseConnection: Queryable,
-  internalValues: string[],
-): Promise<Map<string, number>> {
-  if (internalValues.length === 0) {
-    return new Map();
-  }
-
-  const logActionTypeRows = await databaseQuery<LogActionTypeRow[]>(
-    databaseConnection,
-    `SELECT ${logActionTypeColumns}
-         FROM logActionType lat
-        WHERE internalValue IN (?)`,
-    [internalValues],
-  );
-
-  const map = new Map<string, number>();
-  logActionTypeRows.forEach((logActionTypeRow) => map.set(logActionTypeRow.internalValue, logActionTypeRow.logActionTypeId));
-  return map;
-}
+import { CACHE_KEYS, getCached, setCached } from '../../../main/database/databaseCache.js';
 
 async function getAllLogActionTypes(
   databaseConnection: Queryable,
 ): Promise<LogActionTypeRow[]> {
+  const cached = getCached(CACHE_KEYS.LOG_ACTION_TYPES);
+  if (cached !== undefined) {
+    return cached;
+  }
+
   const logActionTypeRows = await databaseQuery<LogActionTypeRow[]>(
     databaseConnection,
     `SELECT ${logActionTypeColumns}
          FROM logActionType lat`,
   );
 
+  setCached(CACHE_KEYS.LOG_ACTION_TYPES, logActionTypeRows);
   return logActionTypeRows;
 }
 
 async function getAllLogActionTypesWithMappings(
   databaseConnection: Queryable,
 ): Promise<LogActionTypeRowWithMapping[]> {
+  const cached = getCached(CACHE_KEYS.LOG_ACTION_TYPE_WITH_MAPPING);
+  if (cached !== undefined) {
+    return cached;
+  }
+
   const logActionTypeRows = await getAllLogActionTypes(databaseConnection);
 
   const mappings = await getAllMappingLogActionTypeReminderActionType(databaseConnection);
@@ -53,7 +44,9 @@ async function getAllLogActionTypesWithMappings(
     };
   });
 
+  setCached(CACHE_KEYS.LOG_ACTION_TYPE_WITH_MAPPING, logActionTypeRowsWithMappings);
+
   return logActionTypeRowsWithMappings;
 }
 
-export { getLogActionTypeMap, getAllLogActionTypes, getAllLogActionTypesWithMappings };
+export { getAllLogActionTypes, getAllLogActionTypesWithMappings };

@@ -33,6 +33,7 @@ const SERVER = {
   // How many entries to keep in the previousRequests and previousResponses tables
   DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES: 10000000,
   APP_BUNDLE_ID: 'com.example.Pupotty',
+  DATABASE_TYPE_CACHE_TTL_MS: 1000 * 60 * 5,
 };
 
 const LIMIT = {

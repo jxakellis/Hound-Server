@@ -23,7 +23,7 @@ async function createLogForLog(databaseConnection: Queryable, log: NotYetCreated
       (
         logUUID,
         dogUUID, userId,
-        logStartDate, logEndDate, logNote, logAction, logCustomActionName,
+        logStartDate, logEndDate, logNote, logActionTypeId, logCustomActionName,
         logUnit, logNumberOfLogUnits,
         logLastModified, logIsDeleted,
         )
@@ -37,7 +37,7 @@ async function createLogForLog(databaseConnection: Queryable, log: NotYetCreated
     [
       formatKnownString(log.logUUID, 36),
       log.dogUUID, log.userId,
-      log.logStartDate, log.logEndDate, formatKnownString(log.logNote, 500), log.logAction, formatKnownString(log.logCustomActionName, 32),
+      log.logStartDate, log.logEndDate, formatKnownString(log.logNote, 500), log.logActionTypeId, formatKnownString(log.logCustomActionName, 32),
       log.logUnit, log.logNumberOfLogUnits,
       // none, default values
     ],

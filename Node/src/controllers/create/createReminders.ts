@@ -26,7 +26,7 @@ async function createReminderForReminder(
     `INSERT INTO dogReminders(
           dogUUID,
           reminderUUID,
-          reminderAction, reminderCustomActionName, reminderType, reminderIsEnabled,
+          reminderActionTypeId, reminderCustomActionName, reminderType, reminderIsEnabled,
           reminderExecutionBasis, reminderExecutionDate,
           reminderLastModified, reminderIsDeleted,
           snoozeExecutionInterval,
@@ -56,7 +56,7 @@ async function createReminderForReminder(
     [
       reminder.dogUUID,
       reminder.reminderUUID,
-      reminder.reminderAction, formatKnownString(reminder.reminderCustomActionName, 32), reminder.reminderType, reminder.reminderIsEnabled,
+      reminder.reminderActionTypeId, formatKnownString(reminder.reminderCustomActionName, 32), reminder.reminderType, reminder.reminderIsEnabled,
       reminder.reminderExecutionBasis, reminder.reminderExecutionDate,
       // none, default values
       reminder.snoozeExecutionInterval,

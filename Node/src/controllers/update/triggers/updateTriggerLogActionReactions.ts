@@ -1,7 +1,6 @@
 import { createTriggerLogActionReaction } from '../../../controllers/create/triggers/createTriggerLogActionReactions.js';
 import { type NotYetUpdatedDogTriggersRow } from '../../../main/types/rows/DogTriggersRow.js';
 import { type Queryable, databaseQuery } from '../../../main/database/databaseQuery.js';
-import { getLogActionTypeMap } from '../../get/types/getLogActionType.js';
 import { getTriggerLogActionReactionsForTriggerUUID } from '../../get/triggers/getTriggerLogActionReaction.js';
 
 /**
@@ -12,10 +11,9 @@ async function updateTriggerLogActionReactionForTrigger(
   databaseConnection: Queryable,
   trigger: NotYetUpdatedDogTriggersRow,
 ): Promise<void> {
-  const logActionTypeMap = await getLogActionTypeMap(databaseConnection, trigger.logActionReactions ?? []);
   const existingLogActionTypes = await getTriggerLogActionReactionsForTriggerUUID(databaseConnection, trigger.triggerUUID);
 
-  const newLogActionTypeIds = (trigger.logActionReactions ?? []).map((internal) => logActionTypeMap.get(internal)).filter((id): id is number => id !== undefined);
+  const newLogActionTypeIds = trigger.reactionLogActionTypeIds;
   const existingLogActionTypeIds = existingLogActionTypes.map((r) => r.logActionTypeId);
 
   const promises: Promise<unknown>[] = [];

@@ -19,17 +19,20 @@ type DogsRow = {
     dogName: string
     dogLastModified: Date
     dogIsDeleted: number
-    // TODO separate this into 2 diff types
-    logs?: DogLogsRow[]
-    reminders?: DogRemindersRow[]
-    dogTriggers?: DogTriggersRow[]
 };
+
+type DogsRowWithRemindersLogsTriggers = DogsRow & {
+  logs: DogLogsRow[]
+  reminders: DogRemindersRow[]
+  dogTriggers: DogTriggersRow[]
+}
 
 type NotYetCreatedDogsRow = Omit<DogsRow, 'dogId' | 'dogIsDeleted' | 'dogLastModified'>;
 type NotYetUpdatedDogsRow = Omit<DogsRow, 'dogIsDeleted' | 'dogLastModified'>;
 
 export {
   type DogsRow,
+  type DogsRowWithRemindersLogsTriggers,
   type NotYetCreatedDogsRow,
   type NotYetUpdatedDogsRow,
   dogsColumns,

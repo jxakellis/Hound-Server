@@ -14,7 +14,7 @@ async function updateReminderForReminder(
   await databaseQuery(
     databaseConnection,
     `UPDATE dogReminders
-    SET reminderAction = ?, reminderCustomActionName = ?, reminderType = ?, reminderIsEnabled = ?,
+    SET reminderActionTypeId = ?, reminderCustomActionName = ?, reminderType = ?, reminderIsEnabled = ?,
     reminderExecutionBasis = ?, reminderExecutionDate = ?,
     reminderLastModified = CURRENT_TIMESTAMP(),
     snoozeExecutionInterval = ?, countdownExecutionInterval = ?,
@@ -24,7 +24,7 @@ async function updateReminderForReminder(
     oneTimeDate = ?
     WHERE reminderUUID = ?`,
     [
-      reminder.reminderAction, formatKnownString(reminder.reminderCustomActionName, 32), reminder.reminderType, reminder.reminderIsEnabled,
+      reminder.reminderActionTypeId, formatKnownString(reminder.reminderCustomActionName, 32), reminder.reminderType, reminder.reminderIsEnabled,
       reminder.reminderExecutionBasis, reminder.reminderExecutionDate,
       reminder.snoozeExecutionInterval, reminder.countdownExecutionInterval,
       reminder.weeklyUTCHour, reminder.weeklyUTCMinute,

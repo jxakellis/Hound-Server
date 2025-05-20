@@ -1,3 +1,4 @@
+import { getAllReminderActionTypes } from '../../../../controllers/get/types/getReminderActionType.js';
 import { alarmLogger } from '../../../logging/loggers.js';
 import { DatabasePools, getPoolConnection } from '../../../database/databaseConnections.js';
 import { databaseQuery } from '../../../database/databaseQuery.js';
@@ -8,7 +9,7 @@ import { sendNotificationForFamily } from '../apn/sendNotification.js';
 
 import { logServerError } from '../../../logging/logServerError.js';
 import { deleteAlarmNotificationsForReminder } from './deleteAlarmNotification.js';
-import { formatReminderActionToReadableValue } from '../../../format/formatReminderAction.js';
+import { convertActionTypeToFinalReadable } from '../../../format/formatActionType.js';
 import { type DogsRow, dogsColumns } from '../../../types/rows/DogsRow.js';
 import { type DogRemindersRow, dogRemindersColumns } from '../../../types/rows/DogRemindersRow.js';
 import { NOTIFICATION } from '../../../server/globalConstants.js';
@@ -24,22 +25,25 @@ async function sendAPNNotificationForFamily(familyId: string, reminderUUID: stri
     // Therefore, we need to be careful in our usage of this pool connection, as if errors get thrown, then it could escape the block and be unused
     const generalPoolConnection = await getPoolConnection(DatabasePools.general);
 
-    // get the dogName, reminderAction, and reminderCustomActionName for the given reminderUUID
-    // the reminderUUID has to exist to search and we check to make sure the dogUUID isn't null (to make sure the dog still exists too)
-    const result = await databaseQuery<(
-DogsRow & DogRemindersRow)[]>(
-      generalPoolConnection,
-      `SELECT ${dogsColumns}, ${dogRemindersColumns}
-      FROM dogReminders dr
-      JOIN dogs d ON dr.dogUUID = d.dogUUID
-      WHERE d.dogUUID IS NOT NULL AND dr.reminderUUID = ? AND d.dogIsDeleted = 0 AND dr.reminderIsDeleted = 0 AND dr.reminderExecutionDate IS NOT NULL 
-      LIMIT 1`,
-      [reminderUUID],
-      ).finally(() => {
-        generalPoolConnection.release();
-      });
+    const [reminderActionTypes, reminders] = await Promise.all([
+      getAllReminderActionTypes(generalPoolConnection),
+      // get the dogName, reminderAction, and reminderCustomActionName for the given reminderUUID
+      // the reminderUUID has to exist to search and we check to make sure the dogUUID isn't null (to make sure the dog still exists too)
+      databaseQuery<(
+        DogsRow & DogRemindersRow)[]>(
+        generalPoolConnection,
+        `SELECT ${dogsColumns}, ${dogRemindersColumns}
+              FROM dogReminders dr
+              JOIN dogs d ON dr.dogUUID = d.dogUUID
+              WHERE d.dogUUID IS NOT NULL AND dr.reminderUUID = ? AND d.dogIsDeleted = 0 AND dr.reminderIsDeleted = 0 AND dr.reminderExecutionDate IS NOT NULL 
+              LIMIT 1`,
+        [reminderUUID],
+        ),
+    ]).finally(() => {
+      generalPoolConnection.release();
+    });
 
-    const reminder = result.safeIndex(0);
+    const reminder = reminders.safeIndex(0);
 
     // Check to make sure the required information of the reminder exists
     if (reminder === undefined || reminder === null) {
@@ -48,14 +52,19 @@ DogsRow & DogRemindersRow)[]>(
 
     // Maximum possible length of message: 2 (raw) + 32 (variable) = 34 (> ALERT_TITLE_LIMIT)
     const alertTitle = `⏱ ${reminder.dogName}`;
-    // `Reminder for ${reminder.dogName}`;
+
+    const reminderAction = reminderActionTypes.find((rat) => rat.reminderActionTypeId === reminder.reminderActionTypeId);
+
+    if (reminderAction === undefined) {
+      throw new Error(`Reminder action type ${reminder.reminderActionTypeId} not found`);
+    }
 
     // Maximum possible length of message: 17 (raw) + 32 (variable) = 49 (<= ALERT_BODY_LIMIT)
-    let alertBody = `Lend a hand with ${formatReminderActionToReadableValue(true, reminder.reminderAction, reminder.reminderCustomActionName)}`;
+    let alertBody = `Lend a hand with ${convertActionTypeToFinalReadable(reminderAction, true, reminder.reminderCustomActionName)}`;
 
     if (reminder.snoozeExecutionInterval !== undefined && reminder.snoozeExecutionInterval !== null) {
       // Maximum possible length of message: 45 (raw) + 32 (variable) = 77 (<= ALERT_BODY_LIMIT)
-      alertBody = `It's been a bit, remember to lend a hand with ${formatReminderActionToReadableValue(true, reminder.reminderAction, reminder.reminderCustomActionName)}`;
+      alertBody = `It's been a bit, remember to lend a hand with ${convertActionTypeToFinalReadable(reminderAction, true, reminder.reminderCustomActionName)}`;
     }
 
     // send immediate APN notification for family

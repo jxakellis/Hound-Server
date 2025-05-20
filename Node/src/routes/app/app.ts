@@ -15,6 +15,6 @@ appRouter.use(['/user'], userRouter);
 
 appRouter.use(['/types'], typesRouter);
 
-// TODO NOW check FK constraints for all the tables. if tables reference each other, we should have FK in place
+// TODO FUTURE IMPORTANTcheck FK constraints for all the tables. if tables reference each other, we should have FK in place
 
 export { appRouter };

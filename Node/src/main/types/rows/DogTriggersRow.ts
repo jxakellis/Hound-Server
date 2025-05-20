@@ -13,18 +13,15 @@ dt.triggerLastModified,
 dt.triggerIsDeleted
 `;
 
-// TODO add reminderActionResultId column
-// TODO add table for ReminderActionType
-
 type DogTriggersRow = {
     // NOTE: database booleans (tinyint(1)) are returned as 0 or 1 numbers, not booleans. therefore, we have to use number instead of boolean
     triggerId: number
     triggerUUID: string
     dogUUID: string
     triggerCustomName: string
-    // TODO separate this into 2 diff types
-    logActionReactions?: string[]
-    logCustomActionNameReactions?: string[]
+    reactionLogActionTypeIds: number[]
+    reactionLogCustomActionNames: string[]
+    resultReminderActionTypeId: number
     triggerType: string
     triggerTimeDelay: number
     triggerFixedTimeType: string

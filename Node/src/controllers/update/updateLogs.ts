@@ -12,13 +12,13 @@ async function updateLogForLog(databaseConnection: Queryable, log: NotYetUpdated
     `UPDATE dogLogs
     SET 
     logStartDate = ?, logEndDate = ?,
-    logAction = ?, logCustomActionName = ?,
+    logActionTypeId = ?, logCustomActionName = ?,
     logNote = ?, logUnit = ?, logNumberOfLogUnits = ?,
     logLastModified = CURRENT_TIMESTAMP()
     WHERE logUUID = ?`,
     [
       log.logStartDate, log.logEndDate,
-      log.logAction, formatKnownString(log.logCustomActionName, 32),
+      log.logActionTypeId, formatKnownString(log.logCustomActionName, 32),
       formatKnownString(log.logNote, 500), log.logUnit, log.logNumberOfLogUnits,
       // none, default values
       log.logUUID,

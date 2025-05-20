@@ -2,7 +2,7 @@ const dogRemindersColumns = `
 dr.reminderId,
 dr.reminderUUID,
 dr.dogUUID,
-dr.reminderAction,
+dr.reminderActionTypeId,
 dr.reminderCustomActionName,
 dr.reminderType,
 dr.reminderIsEnabled,
@@ -34,7 +34,7 @@ type DogRemindersRow = {
     reminderId: number
     reminderUUID: string
     dogUUID: string
-    reminderAction: string
+    reminderActionTypeId: number
     reminderCustomActionName: string
     reminderType: string
     reminderIsEnabled: number

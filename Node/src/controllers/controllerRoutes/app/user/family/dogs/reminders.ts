@@ -13,8 +13,8 @@ import { ERROR_CODES, HoundError } from '../../../../../../main/server/globalErr
 import {
   formatDate, formatNumber, formatUnknownString,
 } from '../../../../../../main/format/formatObject.js';
-import { formatReminderActionToInternalValue } from '../../../../../../main/format/formatReminderAction.js';
 import { type NotYetCreatedDogRemindersRow, type NotYetUpdatedDogRemindersRow } from '../../../../../../main/types/rows/DogRemindersRow.js';
+import { getAllReminderActionTypes } from '../../../../../../controllers/get/types/getReminderActionType.js';
 
 async function getReminders(req: express.Request, res: express.Response): Promise<void> {
   try {
@@ -76,9 +76,13 @@ async function createReminder(req: express.Request, res: express.Response): Prom
     }
 
     const reminders: NotYetCreatedDogRemindersRow[] = [];
+    const reminderActionTypes = await getAllReminderActionTypes(databaseConnection);
     unvalidatedRemindersDictionary.forEach((unvalidatedReminderDictionary) => {
       const reminderUUID = formatUnknownString(unvalidatedReminderDictionary['reminderUUID'], 36);
-      const reminderAction = formatReminderActionToInternalValue(formatUnknownString(unvalidatedReminderDictionary['reminderAction']));
+      // TODO FUTURE DEPRECIATE this is compatibility for <= 3.5.0
+      const depreciatedReminderAction = formatUnknownString(unvalidatedReminderDictionary['reminderAction']);
+      const reminderActionTypeId = formatNumber(unvalidatedReminderDictionary['reminderActionTypeId'])
+      ?? reminderActionTypes.find((rat) => rat.internalValue === depreciatedReminderAction)?.reminderActionTypeId;
       const reminderCustomActionName = formatUnknownString(unvalidatedReminderDictionary['reminderCustomActionName']);
       const reminderType = formatUnknownString(unvalidatedReminderDictionary['reminderType']);
       const reminderIsEnabled = formatNumber(unvalidatedReminderDictionary['reminderIsEnabled']);
@@ -107,8 +111,8 @@ async function createReminder(req: express.Request, res: express.Response): Prom
       if (reminderUUID === undefined || reminderUUID === null) {
         throw new HoundError('reminderUUID missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (reminderAction === undefined || reminderAction === null) {
-        throw new HoundError('reminderAction missing', createReminder, ERROR_CODES.VALUE.MISSING);
+      if (reminderActionTypeId === undefined || reminderActionTypeId === null) {
+        throw new HoundError('reminderActionTypeId missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
       if (reminderCustomActionName === undefined || reminderCustomActionName === null) {
         throw new HoundError('reminderCustomActionName missing', createReminder, ERROR_CODES.VALUE.MISSING);
@@ -172,7 +176,7 @@ async function createReminder(req: express.Request, res: express.Response): Prom
       reminders.push({
         dogUUID: validatedDog.validatedDogUUID,
         reminderUUID,
-        reminderAction,
+        reminderActionTypeId,
         reminderCustomActionName,
         reminderType,
         reminderIsEnabled,
@@ -233,12 +237,16 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
     }
 
     const reminders: NotYetUpdatedDogRemindersRow[] = [];
+    const reminderActionTypes = await getAllReminderActionTypes(databaseConnection);
     validatedReminders.forEach((validatedReminder) => {
       // validate reminder id against validatedReminders
       const reminderId = validatedReminder.validatedReminderId;
       const reminderUUID = validatedReminder.validatedReminderUUID;
       const dogUUID = validatedReminder.validatedDogUUID;
-      const reminderAction = formatReminderActionToInternalValue(formatUnknownString(validatedReminder.unvalidatedReminderDictionary?.['reminderAction']));
+      // TODO FUTURE DEPRECIATE this is compatibility for <= 3.5.0
+      const depreciatedReminderAction = formatUnknownString(validatedReminder.unvalidatedReminderDictionary?.['reminderAction']);
+      const reminderActionTypeId = formatNumber(validatedReminder.unvalidatedReminderDictionary?.['reminderActionTypeId'])
+      ?? reminderActionTypes.find((rat) => rat.internalValue === depreciatedReminderAction)?.reminderActionTypeId;
       const reminderCustomActionName = formatUnknownString(validatedReminder.unvalidatedReminderDictionary?.['reminderCustomActionName']);
       const reminderType = formatUnknownString(validatedReminder.unvalidatedReminderDictionary?.['reminderType']);
       const reminderIsEnabled = formatNumber(validatedReminder.unvalidatedReminderDictionary?.['reminderIsEnabled']);
@@ -264,8 +272,8 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
 
       const oneTimeDate = formatDate(validatedReminder.unvalidatedReminderDictionary?.['oneTimeDate']);
 
-      if (reminderAction === undefined || reminderAction === null) {
-        throw new HoundError('reminderAction missing', updateReminder, ERROR_CODES.VALUE.MISSING);
+      if (reminderActionTypeId === undefined || reminderActionTypeId === null) {
+        throw new HoundError('reminderActionTypeId missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
       if (reminderCustomActionName === undefined || reminderCustomActionName === null) {
         throw new HoundError('reminderCustomActionName missing', updateReminder, ERROR_CODES.VALUE.MISSING);
@@ -330,7 +338,7 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
         reminderId,
         reminderUUID,
         dogUUID,
-        reminderAction,
+        reminderActionTypeId,
         reminderCustomActionName,
         reminderType,
         reminderIsEnabled,

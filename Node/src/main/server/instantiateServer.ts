@@ -13,7 +13,7 @@ import { schedule } from '../tools/notifications/alarm/schedule.js';
 import { endDatabasePools } from '../database/databaseConnections.js';
 import { HoundError } from './globalErrors.js';
 
-// TODO FUTURE add a maintaince server entry point for the server. This will run when main server is down for changes
+// TODO FUTURE NICE-TO-HAVE add a maintaince server entry point for the server. This will run when main server is down for changes
 
 let httpsServer: https.Server<typeof IncomingMessage, typeof ServerResponse> | null = null;
 let testDatabaseConnectionInterval: NodeJS.Timeout | null;

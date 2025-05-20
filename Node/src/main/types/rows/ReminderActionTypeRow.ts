@@ -4,7 +4,8 @@ rat.internalValue,
 rat.readableValue,
 rat.emoji,
 rat.sortOrder,
-rat.isDefault
+rat.isDefault,
+rat.allowsCustom
 `;
 
 type ReminderActionTypeRow = {
@@ -15,6 +16,7 @@ type ReminderActionTypeRow = {
     emoji: string
     sortOrder: number
     isDefault: number
+    allowsCustom: number
 };
 
 export {

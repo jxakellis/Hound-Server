@@ -11,7 +11,7 @@ async function updateTriggerLogCustomNameActionReactionForTrigger(
   databaseConnection: Queryable,
   trigger: NotYetUpdatedDogTriggersRow,
 ): Promise<void> {
-  const newLogCustomActionNames = trigger.logCustomActionNameReactions ?? [];
+  const newLogCustomActionNames = trigger.reactionLogCustomActionNames ?? [];
   const existingLogCustomActionRows = await getTriggerLogCustomActionNameReactionsForTriggerUUID(databaseConnection, trigger.triggerUUID);
   const existingLogCustomActionNames = existingLogCustomActionRows.map((r) => r.logCustomActionName);
 
