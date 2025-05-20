@@ -2,8 +2,8 @@ import express from 'express';
 
 import {
   getReminders, createReminder, updateReminder, deleteReminder,
-} from '../controllers/controllerRoutes/reminders.js';
-import { validateReminderUUID } from '../main/tools/validate/validateDogRelatedId.js';
+} from '../../../../../controllers/controllerRoutes/app/user/family/dogs/reminders.js';
+import { validateReminderUUID } from '../../../../../main/tools/validate/validateDogRelatedId.js';
 
 const remindersRouter = express.Router({ mergeParams: true });
 

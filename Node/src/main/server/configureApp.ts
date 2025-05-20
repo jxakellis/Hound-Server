@@ -7,7 +7,7 @@ import { watchdogRouter } from '../../routes/watchdog.js';
 import { appStoreServerNotificationsRouter } from '../../routes/appStoreServerNotifications.js';
 import { affiliateTransactionsRouter } from '../../routes/affiliateTransactions.js';
 import { HoundError, ERROR_CODES } from './globalErrors.js';
-import { appRouter } from '../../routes/app.js';
+import { appRouter } from '../../routes/app/app.js';
 
 function parseFormData(req: express.Request, res: express.Response, next: express.NextFunction): void {
   bodyParser.urlencoded({

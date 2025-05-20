@@ -1,9 +1,9 @@
 import express from 'express';
-import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
+import { ERROR_CODES, HoundError } from '../../../../../main/server/globalErrors.js';
 
-import { formatUnknownString, formatNumber } from '../../main/format/formatObject.js';
-import { createSurveyFeedbackForSurveyFeedback } from '../create/createSurveyFeedback.js';
-import { SurveyFeedbackType } from '../../main/enums/SurveyFeedbackType.js';
+import { formatUnknownString, formatNumber } from '../../../../../main/format/formatObject.js';
+import { createSurveyFeedbackForSurveyFeedback } from '../../../../create/createSurveyFeedback.js';
+import { SurveyFeedbackType } from '../../../../../main/enums/SurveyFeedbackType.js';
 
 async function createSurveyFeedback(req: express.Request, res: express.Response): Promise<void> {
   try {

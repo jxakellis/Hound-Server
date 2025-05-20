@@ -1,7 +1,7 @@
 import express from 'express';
 
-import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
-import { createTerminateNotification } from '../../main/tools/notifications/alert/createTerminateNotification.js';
+import { ERROR_CODES, HoundError } from '../../../../main/server/globalErrors.js';
+import { createTerminateNotification } from '../../../../main/tools/notifications/alert/createTerminateNotification.js';
 
 async function createTerminateAlert(req: express.Request, res: express.Response): Promise<void> {
   try {

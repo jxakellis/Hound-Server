@@ -2,7 +2,7 @@ import express from 'express';
 
 import {
   createTerminateAlert,
-} from '../controllers/controllerRoutes/alert.js';
+} from '../../../controllers/controllerRoutes/app/user/alert.js';
 
 const alertRouter = express.Router({ mergeParams: true });
 

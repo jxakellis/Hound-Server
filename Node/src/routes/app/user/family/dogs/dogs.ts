@@ -1,11 +1,11 @@
 import express from 'express';
 
-import { validateSubscription } from '../main/tools/validate/validateSubscription.js';
+import { validateSubscription } from '../../../../../main/tools/validate/validateSubscription.js';
 
 import {
   getDogs, createDog, updateDog, deleteDog,
-} from '../controllers/controllerRoutes/dogs.js';
-import { validateDogUUID } from '../main/tools/validate/validateDogRelatedId.js';
+} from '../../../../../controllers/controllerRoutes/app/user/family/dogs/dogs.js';
+import { validateDogUUID } from '../../../../../main/tools/validate/validateDogRelatedId.js';
 
 import { logsRouter } from './logs.js';
 import { remindersRouter } from './reminders.js';

@@ -1,20 +1,20 @@
 import express from 'express';
-import { createAlarmNotificationForFamily } from '../../main/tools/notifications/alarm/createAlarmNotification.js';
+import { createAlarmNotificationForFamily } from '../../../../../../main/tools/notifications/alarm/createAlarmNotification.js';
 
-import { getReminderForReminderUUID, getAllRemindersForDogUUID } from '../get/getReminders.js';
+import { getReminderForReminderUUID, getAllRemindersForDogUUID } from '../../../../../get/getReminders.js';
 
-import { createRemindersForReminders } from '../create/createReminders.js';
+import { createRemindersForReminders } from '../../../../../create/createReminders.js';
 
-import { updateRemindersForReminders } from '../update/updateReminders.js';
+import { updateRemindersForReminders } from '../../../../../update/updateReminders.js';
 
-import { deleteRemindersForFamilyIdReminderUUIDs } from '../delete/deleteReminders.js';
-import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
+import { deleteRemindersForFamilyIdReminderUUIDs } from '../../../../../delete/deleteReminders.js';
+import { ERROR_CODES, HoundError } from '../../../../../../main/server/globalErrors.js';
 
 import {
   formatDate, formatNumber, formatUnknownString,
-} from '../../main/format/formatObject.js';
-import { formatReminderActionToInternalValue } from '../../main/format/formatReminderAction.js';
-import { type NotYetCreatedDogRemindersRow, type NotYetUpdatedDogRemindersRow } from '../../main/types/rows/DogRemindersRow.js';
+} from '../../../../../../main/format/formatObject.js';
+import { formatReminderActionToInternalValue } from '../../../../../../main/format/formatReminderAction.js';
+import { type NotYetCreatedDogRemindersRow, type NotYetUpdatedDogRemindersRow } from '../../../../../../main/types/rows/DogRemindersRow.js';
 
 async function getReminders(req: express.Request, res: express.Response): Promise<void> {
   try {

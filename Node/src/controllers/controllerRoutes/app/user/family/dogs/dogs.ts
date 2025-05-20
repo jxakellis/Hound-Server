@@ -1,15 +1,15 @@
 import express from 'express';
 
-import { getDogForDogUUID, getAllDogsForFamilyId } from '../get/getDogs.js';
+import { getDogForDogUUID, getAllDogsForFamilyId } from '../../../../../get/getDogs.js';
 
-import { createDogForFamilyId } from '../create/createDogs.js';
+import { createDogForFamilyId } from '../../../../../create/createDogs.js';
 
-import { updateDogForDog } from '../update/updateDogs.js';
+import { updateDogForDog } from '../../../../../update/updateDogs.js';
 
-import { deleteDogForFamilyIdDogUUID } from '../delete/deleteDogs.js';
-import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
+import { deleteDogForFamilyIdDogUUID } from '../../../../../delete/deleteDogs.js';
+import { ERROR_CODES, HoundError } from '../../../../../../main/server/globalErrors.js';
 
-import { formatDate, formatUnknownString } from '../../main/format/formatObject.js';
+import { formatDate, formatUnknownString } from '../../../../../../main/format/formatObject.js';
 
 async function getDogs(req: express.Request, res: express.Response): Promise<void> {
   try {

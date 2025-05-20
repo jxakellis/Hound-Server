@@ -1,15 +1,15 @@
 import express from 'express';
 
-import { getAllFamilyInformationForFamilyId } from '../get/getFamily.js';
+import { getAllFamilyInformationForFamilyId } from '../../../../get/getFamily.js';
 
-import { createFamilyForUserId } from '../create/createFamily.js';
+import { createFamilyForUserId } from '../../../../create/createFamily.js';
 
-import { updateFamilyForUserIdFamilyId } from '../update/updateFamily.js';
+import { updateFamilyForUserIdFamilyId } from '../../../../update/updateFamily.js';
 
-import { deleteFamilyLeaveFamilyForUserIdFamilyId, kickFamilyMemberForUserIdFamilyId } from '../delete/deleteFamily.js';
-import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
+import { deleteFamilyLeaveFamilyForUserIdFamilyId, kickFamilyMemberForUserIdFamilyId } from '../../../../delete/deleteFamily.js';
+import { ERROR_CODES, HoundError } from '../../../../../main/server/globalErrors.js';
 
-import { formatBoolean, formatUnknownString } from '../../main/format/formatObject.js';
+import { formatBoolean, formatUnknownString } from '../../../../../main/format/formatObject.js';
 
 async function getFamily(req: express.Request, res: express.Response): Promise<void> {
   try {

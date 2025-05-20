@@ -1,8 +1,9 @@
 import express from 'express';
 
-import { validateAppVersion } from '../main/tools/validate/validateAppVersion.js';
+import { validateAppVersion } from '../../main/tools/validate/validateAppVersion.js';
 
-import { userRouter } from './user.js';
+import { userRouter } from './user/user.js';
+import { typesRouter } from './user/types.js';
 
 const appRouter = express.Router({ mergeParams: true });
 
@@ -12,7 +13,7 @@ appRouter.use(['/'], validateAppVersion);
 // Route the request to the userRouter
 appRouter.use(['/user'], userRouter);
 
-// TODO NOW add a types route that that allows for retrieval of all the types or only partial ones
+appRouter.use(['/types'], typesRouter);
 
 // TODO NOW check FK constraints for all the tables. if tables reference each other, we should have FK in place
 

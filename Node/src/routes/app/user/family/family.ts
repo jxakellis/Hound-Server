@@ -2,14 +2,14 @@ import express from 'express';
 
 import {
   getFamily, createFamily, updateFamily, deleteFamily,
-} from '../controllers/controllerRoutes/family.js';
+} from '../../../../controllers/controllerRoutes/app/user/family/family.js';
 
-import { validateFamilyId } from '../main/tools/validate/validateUserRelatedId.js';
+import { validateFamilyId } from '../../../../main/tools/validate/validateUserRelatedId.js';
 
-import { attachActiveSubscription } from '../main/tools/validate/attachActiveSubscription.js';
+import { attachActiveSubscription } from '../../../../main/tools/validate/attachActiveSubscription.js';
 
 // route to dogs (or nested) related things
-import { dogsRouter } from './dogs.js';
+import { dogsRouter } from './dogs/dogs.js';
 
 // route to subscription related things
 import { transactionsRouter } from './transactions.js';

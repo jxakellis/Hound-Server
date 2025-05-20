@@ -2,8 +2,8 @@ import express from 'express';
 
 import {
   getTriggers, createTrigger, updateTrigger, deleteTrigger,
-} from '../controllers/controllerRoutes/triggers.js';
-import { validateTriggerUUID } from '../main/tools/validate/validateDogRelatedId.js';
+} from '../../../../../controllers/controllerRoutes/app/user/family/dogs/triggers.js';
+import { validateTriggerUUID } from '../../../../../main/tools/validate/validateDogRelatedId.js';
 
 const triggersRouter = express.Router({ mergeParams: true });
 
