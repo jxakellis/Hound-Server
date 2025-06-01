@@ -5,6 +5,7 @@ import { LIMIT } from '../../main/server/globalConstants.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 import { getAllRemindersForDogUUID } from '../get/getReminders.js';
 import { formatKnownString } from '../../main/format/formatObject.js';
+import { getReminderActionTypeForId } from '../get/types/getReminderActionType.js';
 
 /**
 *  Queries the database to create a single reminder. If the query is successful, then returns the reminder with created reminderId added to it.
@@ -21,11 +22,15 @@ async function createReminderForReminder(
     throw new HoundError(`Dog reminder limit of ${LIMIT.NUMBER_OF_REMINDERS_PER_DOG} exceeded`, createReminderForReminder, ERROR_CODES.FAMILY.LIMIT.REMINDER_TOO_LOW);
   }
 
+  // TODO FUTURE DEPRECIATE this reminderAction is compatibility for <= 3.5.0
+  const reminderAction = await getReminderActionTypeForId(databaseConnection, reminder.reminderActionTypeId);
+
   const result = await databaseQuery<ResultSetHeader>(
     databaseConnection,
     `INSERT INTO dogReminders(
           dogUUID,
           reminderUUID,
+          DEPRECIATED_reminderAction,
           reminderActionTypeId, reminderCustomActionName, reminderType, reminderIsEnabled,
           reminderExecutionBasis, reminderExecutionDate,
           reminderLastModified, reminderIsDeleted,
@@ -39,6 +44,7 @@ async function createReminderForReminder(
           oneTimeDate
           )
           VALUES (
+            ?,
             ?,
             ?,
             ?, ?, ?, ?,
@@ -56,6 +62,7 @@ async function createReminderForReminder(
     [
       reminder.dogUUID,
       reminder.reminderUUID,
+      reminderAction?.internalValue,
       reminder.reminderActionTypeId, formatKnownString(reminder.reminderCustomActionName, 32), reminder.reminderType, reminder.reminderIsEnabled,
       reminder.reminderExecutionBasis, reminder.reminderExecutionDate,
       // none, default values

@@ -21,4 +21,15 @@ async function getAllReminderActionTypes(
   return reminderActionTypeRows;
 }
 
-export { getAllReminderActionTypes };
+async function getReminderActionTypeForId(
+  databaseConnection: Queryable,
+  reminderActionTypeId: number,
+): Promise<ReminderActionTypeRow | undefined> {
+  const reminderActions = await getAllReminderActionTypes(databaseConnection);
+
+  const reminderAction = reminderActions.find((ra) => ra.reminderActionTypeId === reminderActionTypeId);
+
+  return reminderAction;
+}
+
+export { getAllReminderActionTypes, getReminderActionTypeForId };

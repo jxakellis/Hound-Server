@@ -2,6 +2,7 @@ import { type NotYetUpdatedDogRemindersRow } from '../../main/types/rows/DogRemi
 
 import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
 import { formatKnownString } from '../../main/format/formatObject.js';
+import { getReminderActionTypeForId } from '../get/types/getReminderActionType.js';
 
 /**
  *  Queries the database to create a update reminder. If the query is successful, then returns the provided reminder
@@ -11,10 +12,14 @@ async function updateReminderForReminder(
   databaseConnection: Queryable,
   reminder: NotYetUpdatedDogRemindersRow,
 ): Promise<void> {
+  // TODO FUTURE DEPRECIATE this reminderAction is compatibility for <= 3.5.0
+  const reminderAction = await getReminderActionTypeForId(databaseConnection, reminder.reminderActionTypeId);
+
   await databaseQuery(
     databaseConnection,
     `UPDATE dogReminders
-    SET reminderActionTypeId = ?, reminderCustomActionName = ?, reminderType = ?, reminderIsEnabled = ?,
+    SET DEPRECIATED_reminderAction = ?,
+    reminderActionTypeId = ?, reminderCustomActionName = ?, reminderType = ?, reminderIsEnabled = ?,
     reminderExecutionBasis = ?, reminderExecutionDate = ?,
     reminderLastModified = CURRENT_TIMESTAMP(),
     snoozeExecutionInterval = ?, countdownExecutionInterval = ?,
@@ -24,6 +29,7 @@ async function updateReminderForReminder(
     oneTimeDate = ?
     WHERE reminderUUID = ?`,
     [
+      reminderAction?.internalValue,
       reminder.reminderActionTypeId, formatKnownString(reminder.reminderCustomActionName, 32), reminder.reminderType, reminder.reminderIsEnabled,
       reminder.reminderExecutionBasis, reminder.reminderExecutionDate,
       reminder.snoozeExecutionInterval, reminder.countdownExecutionInterval,

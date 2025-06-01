@@ -32,7 +32,10 @@ function getCached<K extends CacheKey>(
     cache.delete(key);
     return undefined;
   }
-  return entry.value as CacheValue<K>;
+
+  const valueCopy = structuredClone(entry.value);
+
+  return valueCopy as CacheValue<K>;
 }
 
 // Store `value` in cache under `key` for `ttlMS`. Enforces that `value` matches the type for that key.
@@ -43,8 +46,13 @@ function setCached<K extends CacheKey>(
   cache.set(key, { value, expiresAt: Date.now() + SERVER.DATABASE_TYPE_CACHE_TTL_MS });
 }
 
+function invalidateCached(key: CacheKey): void {
+  cache.delete(key);
+}
+
 export {
   CACHE_KEYS,
   getCached,
   setCached,
+  invalidateCached,
 };

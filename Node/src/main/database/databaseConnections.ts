@@ -188,7 +188,6 @@ async function endDatabasePools(): Promise<void> {
     databasePoolForGeneral.end((error) => {
       if (error !== undefined && error !== null) {
         serverLogger.error(new HoundError('Unable to end databasePoolForGeneral', endDatabasePools, undefined, error).toJSON());
-        databasePoolForGeneral.destroy();
       }
       else {
         serverLogger.info('Successfully ended databasePoolForGeneral');
@@ -201,7 +200,6 @@ async function endDatabasePools(): Promise<void> {
     databasePoolForRequests.end((error) => {
       if (error !== undefined && error !== null) {
         serverLogger.error(new HoundError('Unable to end databasePoolForRequests', endDatabasePools, undefined, error).toJSON());
-        databasePoolForRequests.destroy();
       }
       else {
         serverLogger.info('Successfully ended databasePoolForRequests');

@@ -3,7 +3,7 @@ import express from 'express';
 import { validateAppVersion } from '../../main/tools/validate/validateAppVersion.js';
 
 import { userRouter } from './user/user.js';
-import { typesRouter } from './user/types.js';
+import { globalTypesRouter } from './user/globalTypes.js';
 
 const appRouter = express.Router({ mergeParams: true });
 
@@ -13,8 +13,8 @@ appRouter.use(['/'], validateAppVersion);
 // Route the request to the userRouter
 appRouter.use(['/user'], userRouter);
 
-appRouter.use(['/types'], typesRouter);
+appRouter.use(['/globalTypes'], globalTypesRouter);
 
-// TODO FUTURE IMPORTANTcheck FK constraints for all the tables. if tables reference each other, we should have FK in place
+// TODO FUTURE IMPORTANT check FK constraints for all the tables. if tables reference each other, we should have FK in place
 
 export { appRouter };

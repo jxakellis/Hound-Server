@@ -21,6 +21,17 @@ async function getAllLogActionTypes(
   return logActionTypeRows;
 }
 
+async function getLogActionTypeForId(
+  databaseConnection: Queryable,
+  logActionTypeId: number,
+): Promise<LogActionTypeRow | undefined> {
+  const logActions = await getAllLogActionTypes(databaseConnection);
+
+  const logAction = logActions.find((ra) => ra.logActionTypeId === logActionTypeId);
+
+  return logAction;
+}
+
 async function getAllLogActionTypesWithMappings(
   databaseConnection: Queryable,
 ): Promise<LogActionTypeRowWithMapping[]> {
@@ -49,4 +60,4 @@ async function getAllLogActionTypesWithMappings(
   return logActionTypeRowsWithMappings;
 }
 
-export { getAllLogActionTypes, getAllLogActionTypesWithMappings };
+export { getAllLogActionTypes, getLogActionTypeForId, getAllLogActionTypesWithMappings };

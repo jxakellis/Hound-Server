@@ -1,4 +1,3 @@
-import { getLogActionTypeMap } from '../../get/types/getLogActionType.js';
 import { type DogTriggersRow, type NotYetCreatedDogTriggersRow } from '../../../main/types/rows/DogTriggersRow.js';
 
 import { type Queryable, type ResultSetHeader, databaseQuery } from '../../../main/database/databaseQuery.js';
@@ -54,27 +53,24 @@ async function createTriggerForTrigger(
     ],
   );
 
-  const logActionTypeMap = await getLogActionTypeMap(databaseConnection, trigger.logActionReactions ?? []);
-
   const promises: Promise<unknown>[] = [];
 
-  trigger.logActionReactions?.forEach((logActionType) => {
-    const logActionTypeId = logActionTypeMap.get(logActionType);
+  trigger.reactionLogActionTypeIds?.forEach((reactionLogActionTypeId) => {
+    if (reactionLogActionTypeId === undefined) return;
 
-    if (logActionTypeId === undefined) return;
     promises.push(createTriggerLogActionReaction(
       databaseConnection,
       {
         triggerUUID: trigger.triggerUUID,
-        logActionTypeId,
+        logActionTypeId: reactionLogActionTypeId,
       },
     ));
   });
 
-  trigger.logCustomActionNameReactions?.forEach((logCustomActionNameReaction) => {
+  trigger.reactionLogCustomActionNames?.forEach((reactionLogCustomActionName) => {
     promises.push(createTriggerLogCustomActionNameReaction(databaseConnection, {
       triggerUUID: trigger.triggerUUID,
-      logCustomActionName: logCustomActionNameReaction,
+      logCustomActionName: reactionLogCustomActionName,
     }));
   });
 

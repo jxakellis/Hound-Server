@@ -12,8 +12,6 @@
     "outDir": "./built",
     // keep imports resolving from here in Node as the base:
     "baseUrl": ".",
-    // this is the key—tell TS that all source lives here in Node
-    "rootDir": ".",
     // Enable all strict type checking options.
     "strict": true,
     // Allow default imports from modules with no default export.

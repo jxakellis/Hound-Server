@@ -36,8 +36,6 @@ const SERVER = {
   DATABASE_TYPE_CACHE_TTL_MS: 1000 * 60 * 5,
 };
 
-// TODO NOW have relevant constants passed to frontend w/ /constants path
-
 const LIMIT = {
   /// If we have too many jobs scheduled at once, it could slow performance.
   // Additionally, there could be uncaught jobs getting duplicated that won't get noticed with a high limit
