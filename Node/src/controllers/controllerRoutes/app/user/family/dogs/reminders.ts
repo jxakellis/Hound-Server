@@ -85,6 +85,7 @@ async function createReminder(req: express.Request, res: express.Response): Prom
       ?? reminderActionTypes.find((rat) => rat.internalValue === depreciatedReminderAction)?.reminderActionTypeId;
       const reminderCustomActionName = formatUnknownString(unvalidatedReminderDict['reminderCustomActionName']);
       const reminderType = formatUnknownString(unvalidatedReminderDict['reminderType']);
+      const reminderIsTriggerResult = formatNumber(unvalidatedReminderDict['reminderIsTriggerResult']);
       const reminderIsEnabled = formatNumber(unvalidatedReminderDict['reminderIsEnabled']);
       const reminderExecutionBasis = formatDate(unvalidatedReminderDict['reminderExecutionBasis']);
       const reminderExecutionDate = formatDate(unvalidatedReminderDict['reminderExecutionDate']);
@@ -119,6 +120,9 @@ async function createReminder(req: express.Request, res: express.Response): Prom
       }
       if (reminderType === undefined || reminderType === null) {
         throw new HoundError('reminderType missing', createReminder, ERROR_CODES.VALUE.MISSING);
+      }
+      if (reminderIsTriggerResult === undefined || reminderIsTriggerResult === null) {
+        throw new HoundError('reminderIsTriggerResult missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
       if (reminderIsEnabled === undefined || reminderIsEnabled === null) {
         throw new HoundError('reminderIsEnabled missing', createReminder, ERROR_CODES.VALUE.MISSING);
@@ -179,6 +183,7 @@ async function createReminder(req: express.Request, res: express.Response): Prom
         reminderActionTypeId,
         reminderCustomActionName,
         reminderType,
+        reminderIsTriggerResult,
         reminderIsEnabled,
         reminderExecutionBasis,
         reminderExecutionDate,
@@ -249,6 +254,7 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
       ?? reminderActionTypes.find((rat) => rat.internalValue === depreciatedReminderAction)?.reminderActionTypeId;
       const reminderCustomActionName = formatUnknownString(validatedReminder.unvalidatedReminderDict?.['reminderCustomActionName']);
       const reminderType = formatUnknownString(validatedReminder.unvalidatedReminderDict?.['reminderType']);
+      const reminderIsTriggerResult = formatNumber(validatedReminder.unvalidatedReminderDict?.['reminderIsTriggerResult']);
       const reminderIsEnabled = formatNumber(validatedReminder.unvalidatedReminderDict?.['reminderIsEnabled']);
       const reminderExecutionBasis = formatDate(validatedReminder.unvalidatedReminderDict?.['reminderExecutionBasis']);
       const reminderExecutionDate = formatDate(validatedReminder.unvalidatedReminderDict?.['reminderExecutionDate']);
@@ -280,6 +286,9 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
       }
       if (reminderType === undefined || reminderType === null) {
         throw new HoundError('reminderType missing', updateReminder, ERROR_CODES.VALUE.MISSING);
+      }
+      if (reminderIsTriggerResult === undefined || reminderIsTriggerResult === null) {
+        throw new HoundError('reminderIsTriggerResult missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
       if (reminderIsEnabled === undefined || reminderIsEnabled === null) {
         throw new HoundError('reminderIsEnabled missing', updateReminder, ERROR_CODES.VALUE.MISSING);
@@ -341,6 +350,7 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
         reminderActionTypeId,
         reminderCustomActionName,
         reminderType,
+        reminderIsTriggerResult,
         reminderIsEnabled,
         reminderExecutionBasis,
         reminderExecutionDate,

@@ -5,6 +5,7 @@ dr.dogUUID,
 dr.reminderActionTypeId,
 dr.reminderCustomActionName,
 dr.reminderType,
+dr.reminderIsTriggerResult
 dr.reminderIsEnabled,
 dr.reminderExecutionBasis,
 dr.reminderExecutionDate,
@@ -37,6 +38,7 @@ type DogRemindersRow = {
     reminderActionTypeId: number
     reminderCustomActionName: string
     reminderType: string
+    reminderIsTriggerResult: number
     reminderIsEnabled: number
     reminderExecutionBasis: Date
     reminderExecutionDate?: Date

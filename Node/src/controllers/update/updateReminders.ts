@@ -3,6 +3,8 @@ import { type NotYetUpdatedDogRemindersRow } from '../../main/types/rows/DogRemi
 import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
 import { formatKnownString } from '../../main/format/formatObject.js';
 import { getReminderActionTypeForId } from '../get/types/getReminderActionType.js';
+import { getReminderForReminderUUID } from '../get/getReminders.js';
+import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 
 /**
  *  Queries the database to create a update reminder. If the query is successful, then returns the provided reminder
@@ -12,6 +14,15 @@ async function updateReminderForReminder(
   databaseConnection: Queryable,
   reminder: NotYetUpdatedDogRemindersRow,
 ): Promise<void> {
+  const existingReminder = await getReminderForReminderUUID(databaseConnection, reminder.reminderUUID, false);
+
+  if (existingReminder === undefined) {
+    throw new HoundError('No reminder found or invalid permissions', updateReminderForReminder, ERROR_CODES.VALUE.MISSING);
+  }
+  if (existingReminder.reminderIsTriggerResult === 1) {
+    throw new HoundError('Unable to modify a reminder that was created by a trigger', updateReminderForReminder, ERROR_CODES.VALUE.MISSING);
+  }
+
   // TODO FUTURE DEPRECIATE this reminderAction is compatibility for <= 3.5.0
   const reminderAction = await getReminderActionTypeForId(databaseConnection, reminder.reminderActionTypeId);
 
@@ -19,7 +30,7 @@ async function updateReminderForReminder(
     databaseConnection,
     `UPDATE dogReminders
     SET DEPRECIATED_reminderAction = ?,
-    reminderActionTypeId = ?, reminderCustomActionName = ?, reminderType = ?, reminderIsEnabled = ?,
+    reminderActionTypeId = ?, reminderCustomActionName = ?, reminderType = ?, reminderIsTriggerResult = ?, reminderIsEnabled = ?,
     reminderExecutionBasis = ?, reminderExecutionDate = ?,
     reminderLastModified = CURRENT_TIMESTAMP(),
     snoozeExecutionInterval = ?, countdownExecutionInterval = ?,
@@ -30,7 +41,7 @@ async function updateReminderForReminder(
     WHERE reminderUUID = ?`,
     [
       reminderAction?.internalValue,
-      reminder.reminderActionTypeId, formatKnownString(reminder.reminderCustomActionName, 32), reminder.reminderType, reminder.reminderIsEnabled,
+      reminder.reminderActionTypeId, formatKnownString(reminder.reminderCustomActionName, 32), reminder.reminderType, reminder.reminderIsTriggerResult, reminder.reminderIsEnabled,
       reminder.reminderExecutionBasis, reminder.reminderExecutionDate,
       reminder.snoozeExecutionInterval, reminder.countdownExecutionInterval,
       reminder.weeklyUTCHour, reminder.weeklyUTCMinute,

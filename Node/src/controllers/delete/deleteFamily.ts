@@ -71,15 +71,10 @@ async function deleteFamily(databaseConnection: Queryable, familyId: string, fam
   promises = [
     databaseQuery(
       databaseConnection,
-      `DELETE FROM families
-                  WHERE familyId = ?`,
-      [familyId],
-    ),
-    // deletes all users from the family (should only be one)
-    databaseQuery(
-      databaseConnection,
-      `DELETE FROM familyMembers
-                    WHERE familyId = ?`,
+      `DELETE f, fm
+        FROM families f
+        LEFT JOIN familyMembers fm ON f.familyId = fm.familyId
+                  WHERE f.familyId = ?`,
       [familyId],
     ),
     // delete all the corresponding dog, reminder, and log data

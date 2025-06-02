@@ -62,14 +62,10 @@ async function deleteUserForUserId(databaseConnection: Queryable, userId: string
 
   await databaseQuery(
     databaseConnection,
-    `DELETE FROM users
-        WHERE userId = ?`,
-    [userId],
-  );
-  await databaseQuery(
-    databaseConnection,
-    `DELETE FROM userConfiguration
-          WHERE userId = ?`,
+    `DELETE u, uc
+        FROM users u
+        LEFT JOIN userConfiguration uc ON u.userId = uc.userId
+        WHERE u.userId = ?`,
     [userId],
   );
 }
