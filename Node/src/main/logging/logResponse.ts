@@ -19,10 +19,10 @@ async function logResponse(req: express.Request, res: express.Response, response
   \n${responseBody}
   `);
 
-  if (req.houndDeclarationExtendedProperties.requestId === undefined || req.houndDeclarationExtendedProperties.requestId === null) {
+  if (req.houndProperties.requestId === undefined || req.houndProperties.requestId === null) {
     return;
   }
-  if (res.houndDeclarationExtendedProperties.responseId !== undefined && res.houndDeclarationExtendedProperties.responseId !== null) {
+  if (res.houndProperties.responseId !== undefined && res.houndProperties.responseId !== null) {
     return;
   }
 
@@ -46,7 +46,7 @@ async function logResponse(req: express.Request, res: express.Response, response
           CURRENT_TIMESTAMP(), 
           ?)`,
       [
-        req.houndDeclarationExtendedProperties.requestId,
+        req.houndProperties.requestId,
         responseStatus,
         // none, default value
         responseBody,
@@ -54,7 +54,7 @@ async function logResponse(req: express.Request, res: express.Response, response
     ).finally(() => {
       generalPoolConnection.release();
     });
-    res.houndDeclarationExtendedProperties.responseId = result.insertId;
+    res.houndProperties.responseId = result.insertId;
   }
   catch (error) {
     logServerError(

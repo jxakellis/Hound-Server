@@ -15,8 +15,8 @@ async function getFamily(req: express.Request, res: express.Response): Promise<v
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedFamilyId } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndProperties;
+    const { validatedFamilyId } = req.houndProperties.validatedVars;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', getFamily, ERROR_CODES.VALUE.MISSING);
     }
@@ -24,7 +24,7 @@ async function getFamily(req: express.Request, res: express.Response): Promise<v
       throw new HoundError('No family found or invalid permissions', getFamily, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
 
-    const { familyActiveSubscription } = req.houndDeclarationExtendedProperties;
+    const { familyActiveSubscription } = req.houndProperties;
     if (familyActiveSubscription === undefined || familyActiveSubscription === null) {
       throw new HoundError('familyActiveSubscription missing', getFamily, ERROR_CODES.VALUE.MISSING);
     }
@@ -35,10 +35,10 @@ async function getFamily(req: express.Request, res: express.Response): Promise<v
       throw new HoundError('result missing', getFamily, ERROR_CODES.VALUE.MISSING);
     }
 
-    return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
+    return res.houndProperties.sendSuccessResponse(result);
   }
   catch (error) {
-    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
+    return res.houndProperties.sendFailureResponse(error);
   }
 }
 
@@ -46,8 +46,8 @@ async function createFamily(req: express.Request, res: express.Response): Promis
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndProperties;
+    const { validatedUserId } = req.houndProperties.validatedVars;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', createFamily, ERROR_CODES.VALUE.MISSING);
     }
@@ -57,10 +57,10 @@ async function createFamily(req: express.Request, res: express.Response): Promis
 
     const result = await createFamilyForUserId(databaseConnection, validatedUserId);
 
-    return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
+    return res.houndProperties.sendSuccessResponse(result);
   }
   catch (error) {
-    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
+    return res.houndProperties.sendFailureResponse(error);
   }
 }
 
@@ -68,8 +68,8 @@ async function updateFamily(req: express.Request, res: express.Response): Promis
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndProperties;
+    const { validatedUserId } = req.houndProperties.validatedVars;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', updateFamily, ERROR_CODES.VALUE.MISSING);
     }
@@ -77,17 +77,17 @@ async function updateFamily(req: express.Request, res: express.Response): Promis
       throw new HoundError('No user found or invalid permissions', updateFamily, ERROR_CODES.PERMISSION.NO.USER);
     }
 
-    const { validatedFamilyId } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { validatedFamilyId } = req.houndProperties.validatedVars;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const familyCode = formatUnknownString(req.body['familyCode']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const familyIsLocked = formatBoolean(req.body['familyIsLocked']);
 
     await updateFamilyForUserIdFamilyId(databaseConnection, validatedUserId, validatedFamilyId, familyCode, familyIsLocked);
-    return res.houndDeclarationExtendedProperties.sendSuccessResponse('');
+    return res.houndProperties.sendSuccessResponse('');
   }
   catch (error) {
-    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
+    return res.houndProperties.sendFailureResponse(error);
   }
 }
 
@@ -95,8 +95,8 @@ async function deleteFamily(req: express.Request, res: express.Response): Promis
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedUserId, validatedFamilyId } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndProperties;
+    const { validatedUserId, validatedFamilyId } = req.houndProperties.validatedVars;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', deleteFamily, ERROR_CODES.VALUE.MISSING);
     }
@@ -109,7 +109,7 @@ async function deleteFamily(req: express.Request, res: express.Response): Promis
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const familyKickUserId = formatUnknownString(req.body['familyKickUserId']);
-    const { familyActiveSubscription } = req.houndDeclarationExtendedProperties;
+    const { familyActiveSubscription } = req.houndProperties;
     if (familyActiveSubscription === undefined || familyActiveSubscription === null) {
       throw new HoundError('familyActiveSubscription missing', deleteFamily, ERROR_CODES.VALUE.MISSING);
     }
@@ -121,10 +121,10 @@ async function deleteFamily(req: express.Request, res: express.Response): Promis
       await deleteFamilyLeaveFamilyForUserIdFamilyId(databaseConnection, validatedUserId, validatedFamilyId, familyActiveSubscription);
     }
 
-    return res.houndDeclarationExtendedProperties.sendSuccessResponse('');
+    return res.houndProperties.sendSuccessResponse('');
   }
   catch (error) {
-    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
+    return res.houndProperties.sendFailureResponse(error);
   }
 }
 

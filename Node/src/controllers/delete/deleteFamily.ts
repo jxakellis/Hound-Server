@@ -85,10 +85,13 @@ async function deleteFamily(databaseConnection: Queryable, familyId: string, fam
     // delete all the corresponding dog, reminder, and log data
     databaseQuery(
       databaseConnection,
-      `DELETE d, dr, dl
+      `DELETE d, dr, dl, dr, dt, dtlar, dtlcanr
                       FROM dogs d
                       LEFT JOIN dogLogs dl ON d.dogUUID = dl.dogUUID
                       LEFT JOIN dogReminders dr ON d.dogUUID = dr.dogUUID
+                      LEFT JOIN dogTriggers dt ON d.dogUUID = dt.dogUUID
+                      LEFT JOIN dogTriggerLogActionReaction dtlar ON dt.triggerUUID = dtlar.triggerUUID
+                      LEFT JOIN dogTriggerLogCustomActionNameReaction dtlcanr ON dt.triggerUUID = dtlcanr.triggerUUID
                       WHERE d.familyId = ?`,
       [familyId],
     ),

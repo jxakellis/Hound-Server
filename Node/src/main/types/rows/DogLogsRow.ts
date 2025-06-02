@@ -31,7 +31,7 @@ type DogLogsRow = {
     logNote: string
     logActionTypeId: number
     logCustomActionName: string
-    logUnit?: string
+    logUnitTypeId?: number,
     logNumberOfLogUnits?: number
     logLastModified: Date
     logIsDeleted: number

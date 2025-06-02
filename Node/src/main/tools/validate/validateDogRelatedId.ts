@@ -7,7 +7,7 @@ import { HoundError, ERROR_CODES } from '../../server/globalErrors.js';
 import { type DogsRow } from '../../types/rows/DogsRow.js';
 import { type DogLogsRow } from '../../types/rows/DogLogsRow.js';
 import { type DogRemindersRow } from '../../types/rows/DogRemindersRow.js';
-import { type StringKeyDictionary } from '../../types/StringKeyDictionary.js';
+import { type StringKeyDict } from '../../types/StringKeyDict.js';
 import { getDogForDogUUID } from '../../../controllers/get/getDogs.js';
 import { getLogForLogUUID } from '../../../controllers/get/getLogs.js';
 import { getReminderForReminderUUID } from '../../../controllers/get/getReminders.js';
@@ -18,8 +18,8 @@ async function validateDogUUID(req: express.Request, res: express.Response, next
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedFamilyId } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndProperties;
+    const { validatedFamilyId } = req.houndProperties.validatedVars;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', validateDogUUID, ERROR_CODES.VALUE.MISSING);
     }
@@ -28,40 +28,40 @@ async function validateDogUUID(req: express.Request, res: express.Response, next
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const masterUnvalidatedDogsDictionary = formatArray(req.body['dogs'] ?? req.body['reminders'] ?? req.body['logs'] ?? [req.body]) as (StringKeyDictionary[] | undefined);
+    const masterUnvalidatedDogsDict = formatArray(req.body['dogs'] ?? req.body['reminders'] ?? req.body['logs'] ?? [req.body]) as (StringKeyDict[] | undefined);
 
-    if (masterUnvalidatedDogsDictionary === undefined || masterUnvalidatedDogsDictionary === null) {
+    if (masterUnvalidatedDogsDict === undefined || masterUnvalidatedDogsDict === null) {
       // We have no dogUUIDs to validate
       return next();
     }
 
-    // 1:1 arrays of unvalidatedDogsDictionary and getDogForDogUUID promise.
+    // 1:1 arrays of unvalidatedDogsDict and getDogForDogUUID promise.
     const dogPromises: Promise<DogsRow | undefined>[] = [];
-    const unvalidatedDogDictionariesForPromises: StringKeyDictionary[] = [];
+    const unvalidatedDogDictsForPromises: StringKeyDict[] = [];
 
     // query for all dogs provided
-    masterUnvalidatedDogsDictionary.forEach((unvalidatedDogDictionary) => {
-      const dogUUID = formatUnknownString(unvalidatedDogDictionary['dogUUID']);
+    masterUnvalidatedDogsDict.forEach((unvalidatedDogDict) => {
+      const dogUUID = formatUnknownString(unvalidatedDogDict['dogUUID']);
 
       if (dogUUID === undefined || dogUUID === null) {
         // If dogUUID is missing, the dog body wasn't provided
-        req.houndDeclarationExtendedProperties.unvalidatedVariables.unvalidatedDogsDictionary.push(unvalidatedDogDictionary);
+        req.houndProperties.unvalidatedVars.unvalidatedDogsDict.push(unvalidatedDogDict);
         return;
       }
 
-      // Add these objects to verify to an array. We resolve the promise and use unvalidatedDogDictionary if the promise resolved to nothing.
+      // Add these objects to verify to an array. We resolve the promise and use unvalidatedDogDict if the promise resolved to nothing.
       dogPromises.push(getDogForDogUUID(databaseConnection, dogUUID, true, false, undefined));
-      unvalidatedDogDictionariesForPromises.push(unvalidatedDogDictionary);
+      unvalidatedDogDictsForPromises.push(unvalidatedDogDict);
     });
 
     const queriedDogs = await Promise.all(dogPromises);
 
     queriedDogs.forEach((queriedDog, index) => {
-      const unvalidatedDogDictionaryForQueriedDog = unvalidatedDogDictionariesForPromises[index];
+      const unvalidatedDogDictForQueriedDog = unvalidatedDogDictsForPromises[index];
 
       if (queriedDog === undefined || queriedDog === null) {
         // If queriedDog doesn't exist, then a dog corresponding to that dogUUID doesn't exist yet.
-        req.houndDeclarationExtendedProperties.unvalidatedVariables.unvalidatedDogsDictionary.push(unvalidatedDogDictionaryForQueriedDog);
+        req.houndProperties.unvalidatedVars.unvalidatedDogsDict.push(unvalidatedDogDictForQueriedDog);
         return;
       }
 
@@ -77,18 +77,18 @@ async function validateDogUUID(req: express.Request, res: express.Response, next
         throw new HoundError('Dog has been deleted', validateDogUUID, ERROR_CODES.FAMILY.DELETED.DOG);
       }
 
-      // dogUUID has been validated. Save it to validatedVariables
-      req.houndDeclarationExtendedProperties.validatedVariables.validatedDogs.push(
+      // dogUUID has been validated. Save it to validatedVars
+      req.houndProperties.validatedVars.validatedDogs.push(
         {
           validatedDogId: queriedDog.dogId,
           validatedDogUUID: queriedDog.dogUUID,
-          unvalidatedDogDictionary: unvalidatedDogDictionaryForQueriedDog,
+          unvalidatedDogDict: unvalidatedDogDictForQueriedDog,
         },
       );
     });
   }
   catch (error) {
-    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
+    return res.houndProperties.sendFailureResponse(error);
   }
 
   return next();
@@ -98,8 +98,8 @@ async function validateLogUUID(req: express.Request, res: express.Response, next
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedDogs } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndProperties;
+    const { validatedDogs } = req.houndProperties.validatedVars;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', validateLogUUID, ERROR_CODES.VALUE.MISSING);
     }
@@ -108,38 +108,38 @@ async function validateLogUUID(req: express.Request, res: express.Response, next
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const masterUnvalidatedLogsDictionary = formatArray(req.body['logs'] ?? [req.body]) as (StringKeyDictionary[] | undefined);
+    const masterUnvalidatedLogsDict = formatArray(req.body['logs'] ?? [req.body]) as (StringKeyDict[] | undefined);
 
-    if (masterUnvalidatedLogsDictionary === undefined || masterUnvalidatedLogsDictionary === null) {
+    if (masterUnvalidatedLogsDict === undefined || masterUnvalidatedLogsDict === null) {
       return next();
     }
 
-    // 1:1 arrays of unvalidatedLogsDictionary and getLogForLogUUID promise.
+    // 1:1 arrays of unvalidatedLogsDict and getLogForLogUUID promise.
     const logPromises: Promise<DogLogsRow | undefined>[] = [];
-    const unvalidatedLogDictionariesForPromises: StringKeyDictionary[] = [];
+    const unvalidatedLogDictsForPromises: StringKeyDict[] = [];
 
     // query for all logs provided
-    masterUnvalidatedLogsDictionary.forEach((unvalidatedLogDictionary) => {
-      const logUUID = formatUnknownString(unvalidatedLogDictionary['logUUID']);
+    masterUnvalidatedLogsDict.forEach((unvalidatedLogDict) => {
+      const logUUID = formatUnknownString(unvalidatedLogDict['logUUID']);
 
       if (logUUID === undefined || logUUID == null) {
         // If logUUID is missing, the log body wasn't provided
-        req.houndDeclarationExtendedProperties.unvalidatedVariables.unvalidatedLogsDictionary.push(unvalidatedLogDictionary);
+        req.houndProperties.unvalidatedVars.unvalidatedLogsDict.push(unvalidatedLogDict);
         return;
       }
 
       logPromises.push(getLogForLogUUID(databaseConnection, logUUID, true));
-      unvalidatedLogDictionariesForPromises.push(unvalidatedLogDictionary);
+      unvalidatedLogDictsForPromises.push(unvalidatedLogDict);
     });
 
     const queriedLogs = await Promise.all(logPromises);
 
     queriedLogs.forEach((queriedLog, index) => {
-      const unvalidatedLogDictionaryForQueriedLog = unvalidatedLogDictionariesForPromises[index];
+      const unvalidatedLogDictForQueriedLog = unvalidatedLogDictsForPromises[index];
 
       if (queriedLog === undefined || queriedLog === null) {
         // If queriedLog doesn't exist, then a log corresponding to that logUUID doesn't exist yet.
-        req.houndDeclarationExtendedProperties.unvalidatedVariables.unvalidatedLogsDictionary.push(unvalidatedLogDictionaryForQueriedLog);
+        req.houndProperties.unvalidatedVars.unvalidatedLogsDict.push(unvalidatedLogDictForQueriedLog);
         return;
       }
 
@@ -151,19 +151,19 @@ async function validateLogUUID(req: express.Request, res: express.Response, next
         throw new HoundError('Log has been deleted', validateLogUUID, ERROR_CODES.FAMILY.DELETED.LOG);
       }
 
-      // logUUID has been validated. Save it to validatedVariables
-      req.houndDeclarationExtendedProperties.validatedVariables.validatedLogs.push(
+      // logUUID has been validated. Save it to validatedVars
+      req.houndProperties.validatedVars.validatedLogs.push(
         {
           validatedDogUUID: queriedLog.dogUUID,
           validatedLogId: queriedLog.logId,
           validatedLogUUID: queriedLog.logUUID,
-          unvalidatedLogDictionary: unvalidatedLogDictionaryForQueriedLog,
+          unvalidatedLogDict: unvalidatedLogDictForQueriedLog,
         },
       );
     });
   }
   catch (error) {
-    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
+    return res.houndProperties.sendFailureResponse(error);
   }
 
   return next();
@@ -173,8 +173,8 @@ async function validateReminderUUID(req: express.Request, res: express.Response,
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedDogs } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndProperties;
+    const { validatedDogs } = req.houndProperties.validatedVars;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', validateReminderUUID, ERROR_CODES.VALUE.MISSING);
     }
@@ -183,38 +183,38 @@ async function validateReminderUUID(req: express.Request, res: express.Response,
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const masterUnvalidatedRemindersDictionary = formatArray(req.body['reminders'] ?? [req.body]) as (StringKeyDictionary[] | undefined);
+    const masterUnvalidatedRemindersDict = formatArray(req.body['reminders'] ?? [req.body]) as (StringKeyDict[] | undefined);
 
-    if (masterUnvalidatedRemindersDictionary === undefined || masterUnvalidatedRemindersDictionary === null) {
+    if (masterUnvalidatedRemindersDict === undefined || masterUnvalidatedRemindersDict === null) {
       return next();
     }
 
-    // 1:1 arrays of unvalidatedRemindersDictionary and getReminderForReminderUUID promise.
+    // 1:1 arrays of unvalidatedRemindersDict and getReminderForReminderUUID promise.
     const reminderPromises: Promise<DogRemindersRow | undefined>[] = [];
-    const unvalidatedReminderDictionariesForPromises: StringKeyDictionary[] = [];
+    const unvalidatedReminderDictsForPromises: StringKeyDict[] = [];
 
     // query for all reminders provided
-    masterUnvalidatedRemindersDictionary.forEach((unvalidatedReminderDictionary) => {
-      const reminderUUID = formatUnknownString(unvalidatedReminderDictionary['reminderUUID']);
+    masterUnvalidatedRemindersDict.forEach((unvalidatedReminderDict) => {
+      const reminderUUID = formatUnknownString(unvalidatedReminderDict['reminderUUID']);
 
       if (reminderUUID === undefined || reminderUUID === null) {
         // If reminderUUID is missing, the reminder body wasn't provided
-        req.houndDeclarationExtendedProperties.unvalidatedVariables.unvalidatedRemindersDictionary.push(unvalidatedReminderDictionary);
+        req.houndProperties.unvalidatedVars.unvalidatedRemindersDict.push(unvalidatedReminderDict);
         return;
       }
 
       reminderPromises.push(getReminderForReminderUUID(databaseConnection, reminderUUID, true));
-      unvalidatedReminderDictionariesForPromises.push(unvalidatedReminderDictionary);
+      unvalidatedReminderDictsForPromises.push(unvalidatedReminderDict);
     });
 
     const queriedReminders = await Promise.all(reminderPromises);
 
     queriedReminders.forEach((queriedReminder, index) => {
-      const unvalidatedReminderDictionaryForQueriedReminder = unvalidatedReminderDictionariesForPromises[index];
+      const unvalidatedReminderDictForQueriedReminder = unvalidatedReminderDictsForPromises[index];
 
       if (queriedReminder === undefined || queriedReminder === null) {
         // If queriedReminder doesn't exist, then a reminder corresponding to that reminderUUID doesn't exist yet.
-        req.houndDeclarationExtendedProperties.unvalidatedVariables.unvalidatedRemindersDictionary.push(unvalidatedReminderDictionaryForQueriedReminder);
+        req.houndProperties.unvalidatedVars.unvalidatedRemindersDict.push(unvalidatedReminderDictForQueriedReminder);
         return;
       }
 
@@ -226,9 +226,9 @@ async function validateReminderUUID(req: express.Request, res: express.Response,
           undefined,
           `
           index ${index};
-          validatedDogs.length ${validatedDogs.length}; masterUnvalidatedRemindersDictionary.length ${masterUnvalidatedRemindersDictionary.length};
-          reminderPromises.length ${reminderPromises.length}; unvalidatedReminderDictionariesForPromises.length ${unvalidatedReminderDictionariesForPromises};
-          unvalidatedReminderDictionaryForQueriedReminder.reminderUUID ${unvalidatedReminderDictionaryForQueriedReminder['reminderUUID']};
+          validatedDogs.length ${validatedDogs.length}; masterUnvalidatedRemindersDict.length ${masterUnvalidatedRemindersDict.length};
+          reminderPromises.length ${reminderPromises.length}; unvalidatedReminderDictsForPromises.length ${unvalidatedReminderDictsForPromises};
+          unvalidatedReminderDictForQueriedReminder.reminderUUID ${unvalidatedReminderDictForQueriedReminder['reminderUUID']};
           queriedReminder.reminderId ${queriedReminder.reminderId}; queriedReminder.reminderUUID ${queriedReminder.reminderUUID}; queriedReminder.dogUUID ${queriedReminder.dogUUID}
           `,
         );
@@ -239,19 +239,19 @@ async function validateReminderUUID(req: express.Request, res: express.Response,
         throw new HoundError('Reminder has been deleted', validateReminderUUID, ERROR_CODES.FAMILY.DELETED.REMINDER);
       }
 
-      // reminderUUID has been validated. Save it to validatedVariables
-      req.houndDeclarationExtendedProperties.validatedVariables.validatedReminders.push(
+      // reminderUUID has been validated. Save it to validatedVars
+      req.houndProperties.validatedVars.validatedReminders.push(
         {
           validatedDogUUID: queriedReminder.dogUUID,
           validatedReminderId: queriedReminder.reminderId,
           validatedReminderUUID: queriedReminder.reminderUUID,
-          unvalidatedReminderDictionary: unvalidatedReminderDictionaryForQueriedReminder,
+          unvalidatedReminderDict: unvalidatedReminderDictForQueriedReminder,
         },
       );
     });
   }
   catch (error) {
-    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
+    return res.houndProperties.sendFailureResponse(error);
   }
 
   return next();
@@ -261,8 +261,8 @@ async function validateTriggerUUID(req: express.Request, res: express.Response, 
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedDogs } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndProperties;
+    const { validatedDogs } = req.houndProperties.validatedVars;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', validateTriggerUUID, ERROR_CODES.VALUE.MISSING);
     }
@@ -271,38 +271,38 @@ async function validateTriggerUUID(req: express.Request, res: express.Response, 
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const masterUnvalidatedTriggersDictionary = formatArray(req.body['dogTriggers'] ?? [req.body]) as (StringKeyDictionary[] | undefined);
+    const masterUnvalidatedTriggersDict = formatArray(req.body['dogTriggers'] ?? [req.body]) as (StringKeyDict[] | undefined);
 
-    if (masterUnvalidatedTriggersDictionary === undefined || masterUnvalidatedTriggersDictionary === null) {
+    if (masterUnvalidatedTriggersDict === undefined || masterUnvalidatedTriggersDict === null) {
       return next();
     }
 
-    // 1:1 arrays of unvalidatedTriggersDictionary and getTriggerForTriggerUUID promise.
+    // 1:1 arrays of unvalidatedTriggersDict and getTriggerForTriggerUUID promise.
     const triggerPromises: Promise<DogTriggersRow | undefined>[] = [];
-    const unvalidatedTriggerDictionariesForPromises: StringKeyDictionary[] = [];
+    const unvalidatedTriggerDictsForPromises: StringKeyDict[] = [];
 
     // query for all triggers provided
-    masterUnvalidatedTriggersDictionary.forEach((unvalidatedTriggerDictionary) => {
-      const triggerUUID = formatUnknownString(unvalidatedTriggerDictionary['triggerUUID']);
+    masterUnvalidatedTriggersDict.forEach((unvalidatedTriggerDict) => {
+      const triggerUUID = formatUnknownString(unvalidatedTriggerDict['triggerUUID']);
 
       if (triggerUUID === undefined || triggerUUID === null) {
         // If triggerUUID is missing, the trigger body wasn't provided
-        req.houndDeclarationExtendedProperties.unvalidatedVariables.unvalidatedTriggersDictionary.push(unvalidatedTriggerDictionary);
+        req.houndProperties.unvalidatedVars.unvalidatedTriggersDict.push(unvalidatedTriggerDict);
         return;
       }
 
       triggerPromises.push(getTriggerForTriggerUUID(databaseConnection, triggerUUID, true));
-      unvalidatedTriggerDictionariesForPromises.push(unvalidatedTriggerDictionary);
+      unvalidatedTriggerDictsForPromises.push(unvalidatedTriggerDict);
     });
 
     const queriedTriggers = await Promise.all(triggerPromises);
 
     queriedTriggers.forEach((queriedTrigger, index) => {
-      const unvalidatedTriggerDictionaryForQueriedTrigger = unvalidatedTriggerDictionariesForPromises[index];
+      const unvalidatedTriggerDictForQueriedTrigger = unvalidatedTriggerDictsForPromises[index];
 
       if (queriedTrigger === undefined || queriedTrigger === null) {
         // If queriedTrigger doesn't exist, then a trigger corresponding to that triggerUUID doesn't exist yet.
-        req.houndDeclarationExtendedProperties.unvalidatedVariables.unvalidatedTriggersDictionary.push(unvalidatedTriggerDictionaryForQueriedTrigger);
+        req.houndProperties.unvalidatedVars.unvalidatedTriggersDict.push(unvalidatedTriggerDictForQueriedTrigger);
         return;
       }
 
@@ -314,9 +314,9 @@ async function validateTriggerUUID(req: express.Request, res: express.Response, 
           undefined,
           `
           index ${index};
-          validatedDogs.length ${validatedDogs.length}; masterUnvalidatedTriggersDictionary.length ${masterUnvalidatedTriggersDictionary.length};
-          triggerPromises.length ${triggerPromises.length}; unvalidatedTriggerDictionariesForPromises.length ${unvalidatedTriggerDictionariesForPromises};
-          unvalidatedTriggerDictionaryForQueriedTrigger.triggerUUID ${unvalidatedTriggerDictionaryForQueriedTrigger['triggerUUID']};
+          validatedDogs.length ${validatedDogs.length}; masterUnvalidatedTriggersDict.length ${masterUnvalidatedTriggersDict.length};
+          triggerPromises.length ${triggerPromises.length}; unvalidatedTriggerDictsForPromises.length ${unvalidatedTriggerDictsForPromises};
+          unvalidatedTriggerDictForQueriedTrigger.triggerUUID ${unvalidatedTriggerDictForQueriedTrigger['triggerUUID']};
           queriedTrigger.triggerId ${queriedTrigger.triggerId}; queriedTrigger.triggerUUID ${queriedTrigger.triggerUUID}; queriedTrigger.dogUUID ${queriedTrigger.dogUUID}
           `,
         );
@@ -327,19 +327,19 @@ async function validateTriggerUUID(req: express.Request, res: express.Response, 
         throw new HoundError('Trigger has been deleted', validateTriggerUUID, ERROR_CODES.FAMILY.DELETED.TRIGGER);
       }
 
-      // triggerUUID has been validated. Save it to validatedVariables
-      req.houndDeclarationExtendedProperties.validatedVariables.validatedTriggers.push(
+      // triggerUUID has been validated. Save it to validatedVars
+      req.houndProperties.validatedVars.validatedTriggers.push(
         {
           validatedDogUUID: queriedTrigger.dogUUID,
           validatedTriggerId: queriedTrigger.triggerId,
           validatedTriggerUUID: queriedTrigger.triggerUUID,
-          unvalidatedTriggerDictionary: unvalidatedTriggerDictionaryForQueriedTrigger,
+          unvalidatedTriggerDict: unvalidatedTriggerDictForQueriedTrigger,
         },
       );
     });
   }
   catch (error) {
-    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
+    return res.houndProperties.sendFailureResponse(error);
   }
 
   return next();

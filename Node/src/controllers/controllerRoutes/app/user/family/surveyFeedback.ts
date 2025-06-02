@@ -9,9 +9,9 @@ async function createSurveyFeedback(req: express.Request, res: express.Response)
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedUserId, validatedFamilyId } = req.houndDeclarationExtendedProperties.validatedVariables;
-    const { unvalidatedSurveyFeedbackDictionary } = req.houndDeclarationExtendedProperties.unvalidatedVariables;
+    const { databaseConnection } = req.houndProperties;
+    const { validatedUserId, validatedFamilyId } = req.houndProperties.validatedVars;
+    const { unvalidatedSurveyFeedbackDict } = req.houndProperties.unvalidatedVars;
 
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', createSurveyFeedback, ERROR_CODES.VALUE.MISSING);
@@ -22,11 +22,11 @@ async function createSurveyFeedback(req: express.Request, res: express.Response)
     if (validatedFamilyId === undefined || validatedFamilyId === null) {
       throw new HoundError('No family found or invalid permissions', createSurveyFeedback, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
-    if (unvalidatedSurveyFeedbackDictionary === undefined || unvalidatedSurveyFeedbackDictionary === null) {
-      throw new HoundError('unvalidatedSurveyFeedbackDictionary missing', createSurveyFeedback, ERROR_CODES.VALUE.MISSING);
+    if (unvalidatedSurveyFeedbackDict === undefined || unvalidatedSurveyFeedbackDict === null) {
+      throw new HoundError('unvalidatedSurveyFeedbackDict missing', createSurveyFeedback, ERROR_CODES.VALUE.MISSING);
     }
 
-    const surveyFeedbackType = formatUnknownString(unvalidatedSurveyFeedbackDictionary?.['surveyFeedbackType']);
+    const surveyFeedbackType = formatUnknownString(unvalidatedSurveyFeedbackDict?.['surveyFeedbackType']);
 
     if (surveyFeedbackType === undefined || surveyFeedbackType === null) {
       throw new HoundError('surveyFeedbackType missing', createSurveyFeedback, ERROR_CODES.VALUE.MISSING);
@@ -41,10 +41,10 @@ async function createSurveyFeedback(req: express.Request, res: express.Response)
     }
 
     // Survey Feedback Device Metrics
-    const surveyFeedbackDeviceMetricModel = formatUnknownString(unvalidatedSurveyFeedbackDictionary?.['surveyFeedbackDeviceMetricModel']);
-    const surveyFeedbackDeviceMetricSystemVersion = formatUnknownString(unvalidatedSurveyFeedbackDictionary?.['surveyFeedbackDeviceMetricSystemVersion']);
-    const surveyFeedbackDeviceMetricAppVersion = formatUnknownString(unvalidatedSurveyFeedbackDictionary?.['surveyFeedbackDeviceMetricAppVersion']);
-    const surveyFeedbackDeviceMetricLocale = formatUnknownString(unvalidatedSurveyFeedbackDictionary?.['surveyFeedbackDeviceMetricLocale']);
+    const surveyFeedbackDeviceMetricModel = formatUnknownString(unvalidatedSurveyFeedbackDict?.['surveyFeedbackDeviceMetricModel']);
+    const surveyFeedbackDeviceMetricSystemVersion = formatUnknownString(unvalidatedSurveyFeedbackDict?.['surveyFeedbackDeviceMetricSystemVersion']);
+    const surveyFeedbackDeviceMetricAppVersion = formatUnknownString(unvalidatedSurveyFeedbackDict?.['surveyFeedbackDeviceMetricAppVersion']);
+    const surveyFeedbackDeviceMetricLocale = formatUnknownString(unvalidatedSurveyFeedbackDict?.['surveyFeedbackDeviceMetricLocale']);
 
     if (surveyFeedbackDeviceMetricModel === undefined || surveyFeedbackDeviceMetricModel === null) {
       throw new HoundError('surveyFeedbackDeviceMetricModel missing', createSurveyFeedback, ERROR_CODES.VALUE.MISSING);
@@ -60,13 +60,13 @@ async function createSurveyFeedback(req: express.Request, res: express.Response)
     }
 
     // Survey Feedback User Cancellation Specifics
-    const activeSubscriptionTransactionId = req.houndDeclarationExtendedProperties.familyActiveSubscription?.transactionId;
-    const surveyFeedbackUserCancellationReason = formatUnknownString(unvalidatedSurveyFeedbackDictionary?.['surveyFeedbackUserCancellationReason']);
-    const surveyFeedbackUserCancellationFeedback = formatUnknownString(unvalidatedSurveyFeedbackDictionary?.['surveyFeedbackUserCancellationFeedback']) ?? '';
+    const activeSubscriptionTransactionId = req.houndProperties.familyActiveSubscription?.transactionId;
+    const surveyFeedbackUserCancellationReason = formatUnknownString(unvalidatedSurveyFeedbackDict?.['surveyFeedbackUserCancellationReason']);
+    const surveyFeedbackUserCancellationFeedback = formatUnknownString(unvalidatedSurveyFeedbackDict?.['surveyFeedbackUserCancellationFeedback']) ?? '';
 
     // Survey Feedback App Experience Specifics
-    const surveyFeedbackAppExperienceNumberOfStars = formatNumber(unvalidatedSurveyFeedbackDictionary?.['surveyFeedbackAppExperienceNumberOfStars']);
-    const surveyFeedbackAppExperienceFeedback = formatUnknownString(unvalidatedSurveyFeedbackDictionary?.['surveyFeedbackAppExperienceFeedback']) ?? '';
+    const surveyFeedbackAppExperienceNumberOfStars = formatNumber(unvalidatedSurveyFeedbackDict?.['surveyFeedbackAppExperienceNumberOfStars']);
+    const surveyFeedbackAppExperienceFeedback = formatUnknownString(unvalidatedSurveyFeedbackDict?.['surveyFeedbackAppExperienceFeedback']) ?? '';
 
     await createSurveyFeedbackForSurveyFeedback(
       databaseConnection,
@@ -86,10 +86,10 @@ async function createSurveyFeedback(req: express.Request, res: express.Response)
       },
     );
 
-    return res.houndDeclarationExtendedProperties.sendSuccessResponse('');
+    return res.houndProperties.sendSuccessResponse('');
   }
   catch (error) {
-    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
+    return res.houndProperties.sendFailureResponse(error);
   }
 }
 

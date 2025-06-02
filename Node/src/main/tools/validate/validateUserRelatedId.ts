@@ -13,7 +13,7 @@ import { type FamilyMembersRow, familyMembersColumns } from '../../types/rows/Fa
 
 async function validateUserIdentifier(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   try {
-    const { databaseConnection } = req.houndDeclarationExtendedProperties;
+    const { databaseConnection } = req.houndProperties;
     // unhashedUserIdentifier: unhashed, 44-length apple identifier or 64-length sha-256 hash of apple identifier
     /* cspell: disable-next-line */
     const userIdentifier = formatUnknownString(req.headers['houndheader-useridentifier']);
@@ -65,11 +65,11 @@ async function validateUserIdentifier(req: express.Request, res: express.Respons
 
     // Its acceptable for user to be undefined. This is because the request could be creating a user.
 
-    req.houndDeclarationExtendedProperties.validatedVariables.validatedUserIdentifier = userIdentifier;
+    req.houndProperties.validatedVars.validatedUserIdentifier = userIdentifier;
   }
   catch (error) {
     // couldn't query database to find userId
-    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
+    return res.houndProperties.sendFailureResponse(error);
   }
 
   return next();
@@ -79,8 +79,8 @@ async function validateUserId(req: express.Request, res: express.Response, next:
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedUserIdentifier } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndProperties;
+    const { validatedUserIdentifier } = req.houndProperties.validatedVars;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', validateUserId, ERROR_CODES.VALUE.MISSING);
     }
@@ -105,8 +105,8 @@ async function validateUserId(req: express.Request, res: express.Response, next:
       return next();
     }
 
-    req.houndDeclarationExtendedProperties.validatedVariables.validatedUserId = userId;
-    const requestId = formatNumber(req.houndDeclarationExtendedProperties.requestId);
+    req.houndProperties.validatedVars.validatedUserId = userId;
+    const requestId = formatNumber(req.houndProperties.requestId);
     if (requestId !== undefined && requestId !== null) {
       addUserActivityToLatestRequestDate(requestId, userId);
       addUserIdToLogRequest(requestId, userId);
@@ -114,7 +114,7 @@ async function validateUserId(req: express.Request, res: express.Response, next:
   }
   catch (error) {
     // couldn't query database to find userId
-    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
+    return res.houndProperties.sendFailureResponse(error);
   }
 
   return next();
@@ -124,8 +124,8 @@ async function validateFamilyId(req: express.Request, res: express.Response, nex
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndProperties;
+    const { validatedUserId } = req.houndProperties.validatedVars;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', validateFamilyId, ERROR_CODES.VALUE.MISSING);
     }
@@ -150,15 +150,15 @@ async function validateFamilyId(req: express.Request, res: express.Response, nex
       return next();
     }
 
-    req.houndDeclarationExtendedProperties.validatedVariables.validatedFamilyId = familyId;
-    const requestId = formatNumber(req.houndDeclarationExtendedProperties.requestId);
+    req.houndProperties.validatedVars.validatedFamilyId = familyId;
+    const requestId = formatNumber(req.houndProperties.requestId);
     if (requestId !== undefined && requestId !== null) {
       addFamilyIdToLogRequest(requestId, familyId);
     }
   }
   catch (error) {
     // couldn't query database to find familyId
-    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
+    return res.houndProperties.sendFailureResponse(error);
   }
 
   return next();

@@ -14,14 +14,14 @@ export type SQLVariableType = SQLPrimitive | SQLPrimitive[]
 const databaseQuery = <T>(
   databaseConnection: Queryable,
   forSQLString: string,
-  forSQLVariables: SQLVariableType[] = [],
+  forSQLVars: SQLVariableType[] = [],
 ): Promise<T> => {
   // Remove all newlines remove all carriage returns
   // Then makes all >1 length spaces into 1 length spaces
   // Then if it find a common SQL syntax error ( a comma before a closing parenthesis "  ..., reminderUUID, ) VALUES (...  " ), it fixes it
   const SQLString = forSQLString.replace(/\r?\n|\r/g, '').replace(/\s+/g, ' ').replace(/,\s*\)/g, ')');
 
-  const SQLVariables = forSQLVariables.map((variable) => {
+  const SQLVars = forSQLVars.map((variable) => {
     if (variable === undefined || variable === null) {
       return null;
     }
@@ -31,7 +31,7 @@ const databaseQuery = <T>(
   return new Promise<T>((resolve, reject) => {
     databaseConnection.query(
       SQLString,
-      SQLVariables,
+      SQLVars,
       (error, result) => {
         if (result === undefined || result === null) {
           // error when trying to do query to database

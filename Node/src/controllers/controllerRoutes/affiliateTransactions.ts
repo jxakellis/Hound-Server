@@ -6,7 +6,7 @@ import { formatUnknownString } from '../../main/format/formatObject.js';
 
 async function getAffiliateTransactions(req: express.Request, res: express.Response): Promise<void> {
   try {
-    const { databaseConnection } = req.houndDeclarationExtendedProperties;
+    const { databaseConnection } = req.houndProperties;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', getAffiliateTransactions, ERROR_CODES.VALUE.MISSING);
     }
@@ -22,10 +22,10 @@ async function getAffiliateTransactions(req: express.Request, res: express.Respo
       throw new HoundError('result missing', getAffiliateTransactions, ERROR_CODES.VALUE.MISSING);
     }
 
-    return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
+    return res.houndProperties.sendSuccessResponse(result);
   }
   catch (error) {
-    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
+    return res.houndProperties.sendFailureResponse(error);
   }
 }
 

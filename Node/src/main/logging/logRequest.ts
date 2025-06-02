@@ -32,7 +32,7 @@ async function logRequest(req: express.Request, res: express.Response, next: exp
     }
 
     // Inserts request information into the previousRequests table.
-    if (req.houndDeclarationExtendedProperties.requestId !== undefined && req.houndDeclarationExtendedProperties.requestId !== null) {
+    if (req.houndProperties.requestId !== undefined && req.houndProperties.requestId !== null) {
       return next();
     }
 
@@ -67,7 +67,7 @@ async function logRequest(req: express.Request, res: express.Response, next: exp
     ).finally(() => {
       generalPoolConnection.release();
     });
-    req.houndDeclarationExtendedProperties.requestId = result.insertId;
+    req.houndProperties.requestId = result.insertId;
   }
   catch (error) {
     logServerError(
@@ -78,7 +78,7 @@ async function logRequest(req: express.Request, res: express.Response, next: exp
         error,
       ),
     );
-    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
+    return res.houndProperties.sendFailureResponse(error);
   }
 
   return next();

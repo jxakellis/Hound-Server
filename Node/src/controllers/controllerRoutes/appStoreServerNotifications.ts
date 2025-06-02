@@ -8,7 +8,7 @@ import { formatUnknownString } from '../../main/format/formatObject.js';
 
 async function createAppStoreServerNotification(req: express.Request, res: express.Response): Promise<void> {
   try {
-    const { databaseConnection } = req.houndDeclarationExtendedProperties;
+    const { databaseConnection } = req.houndProperties;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const signedPayload = formatUnknownString(req.body['signedPayload']);
 
@@ -21,7 +21,7 @@ async function createAppStoreServerNotification(req: express.Request, res: expre
 
     await createASSNForSignedPayload(databaseConnection, signedPayload);
 
-    return res.houndDeclarationExtendedProperties.sendSuccessResponse('');
+    return res.houndProperties.sendSuccessResponse('');
   }
   catch (error) {
     // Errors shouldn't occur when dealing with App Store Server Notifications
@@ -33,7 +33,7 @@ async function createAppStoreServerNotification(req: express.Request, res: expre
         error,
       ),
     );
-    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
+    return res.houndProperties.sendFailureResponse(error);
   }
 }
 

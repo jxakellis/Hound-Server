@@ -1,6 +1,6 @@
 import { type PoolConnection } from 'mysql2';
 import { type TransactionsRow } from '../types/rows/TransactionsRow.js';
-import type { StringKeyDictionary as HoundDictionary } from '../types/StringKeyDictionary.js';
+import type { StringKeyDict as HoundDict } from '../types/StringKeyDict.js';
 
 declare global {
     interface Error {
@@ -10,13 +10,13 @@ declare global {
 
 declare module 'express-serve-static-core' {
     export interface Request {
-        houndDeclarationExtendedProperties: {
+        houndProperties: {
             requestId?: number,
             databaseConnection?: PoolConnection,
             hasActiveDatabaseTransaction: boolean,
             familyActiveSubscription?: TransactionsRow,
             // ids that have been verified with correct permission
-            validatedVariables: {
+            validatedVars: {
                 // userId of the request that has been verified with correct permissions
                 validatedUserId?: string
                 // userIdentifier of the request that has been verified with correct permissions
@@ -24,26 +24,26 @@ declare module 'express-serve-static-core' {
                 // familyId of the request that has been verified with correct permissions
                 validatedFamilyId?: string
                 // Each element in validatedDogs has a validatedDogId which corresponds to an existing dog
-                validatedDogs: { validatedDogId: number, validatedDogUUID: string, unvalidatedDogDictionary: (HoundDictionary | undefined) }[]
+                validatedDogs: { validatedDogId: number, validatedDogUUID: string, unvalidatedDogDict: (HoundDict | undefined) }[]
                 // Each element in validatedLogs has a validatedDogId and validatedLogId which corresponds to an existing log
-                validatedLogs: { validatedDogUUID: string, validatedLogId: number, validatedLogUUID: string, unvalidatedLogDictionary: (HoundDictionary | undefined) }[]
+                validatedLogs: { validatedDogUUID: string, validatedLogId: number, validatedLogUUID: string, unvalidatedLogDict: (HoundDict | undefined) }[]
                 // Each element in validatedReminders has a validatedDogId and validatedReminderId which corresponds to an existing reminder
-                validatedReminders: { validatedDogUUID: string, validatedReminderId: number, validatedReminderUUID: string, unvalidatedReminderDictionary: (HoundDictionary | undefined) }[]
+                validatedReminders: { validatedDogUUID: string, validatedReminderId: number, validatedReminderUUID: string, unvalidatedReminderDict: (HoundDict | undefined) }[]
                 // Each element in validatedTriggers has a validatedDogId and validatedTriggerId which corresponds to an existing reminder
-                validatedTriggers: { validatedDogUUID: string, validatedTriggerId: number, validatedTriggerUUID: string, unvalidatedTriggerDictionary: (HoundDictionary | undefined) }[]
+                validatedTriggers: { validatedDogUUID: string, validatedTriggerId: number, validatedTriggerUUID: string, unvalidatedTriggerDict: (HoundDict | undefined) }[]
             },
-            unvalidatedVariables: {
-                unvalidatedDogsDictionary: HoundDictionary[]
-                unvalidatedLogsDictionary: HoundDictionary[]
-                unvalidatedRemindersDictionary: HoundDictionary[]
-                unvalidatedTriggersDictionary: HoundDictionary[]
-                unvalidatedSurveyFeedbackDictionary: HoundDictionary
+            unvalidatedVars: {
+                unvalidatedDogsDict: HoundDict[]
+                unvalidatedLogsDict: HoundDict[]
+                unvalidatedRemindersDict: HoundDict[]
+                unvalidatedTriggersDict: HoundDict[]
+                unvalidatedSurveyFeedbackDict: HoundDict
             }
         }
     }
 
     export interface Response {
-        houndDeclarationExtendedProperties: {
+        houndProperties: {
             responseId?: number;
 
             hasSentResponse: boolean;

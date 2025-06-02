@@ -12,13 +12,14 @@ import { ERROR_CODES, HoundError } from '../../../../../../main/server/globalErr
 
 import { formatDate, formatNumber, formatUnknownString } from '../../../../../../main/format/formatObject.js';
 import { getAllLogActionTypes } from '../../../../../../controllers/get/types/getLogActionType.js';
+import { getAllLogUnitTypes } from '../../../../../../controllers/get/types/getLogUnitType.js';
 
 async function getLogs(req: express.Request, res: express.Response): Promise<void> {
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedDogs, validatedLogs } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndProperties;
+    const { validatedDogs, validatedLogs } = req.houndProperties.validatedVars;
     const validatedDog = validatedDogs.safeIndex(0);
     const validatedLog = validatedLogs.safeIndex(0);
     if (databaseConnection === undefined || databaseConnection === null) {
@@ -35,17 +36,17 @@ async function getLogs(req: express.Request, res: express.Response): Promise<voi
         throw new HoundError('getLogForLogUUID possiblyDeletedLog missing', getLogs, ERROR_CODES.VALUE.MISSING);
       }
 
-      return res.houndDeclarationExtendedProperties.sendSuccessResponse(possiblyDeletedLog);
+      return res.houndProperties.sendSuccessResponse(possiblyDeletedLog);
     }
 
     const previousDogManagerSynchronization = formatDate(req.query['previousDogManagerSynchronization'] ?? req.query['userConfigurationPreviousDogManagerSynchronization']);
 
     const possibleDeletedLogs = await getAllLogsForDogUUID(databaseConnection, validatedDog.validatedDogUUID, true, previousDogManagerSynchronization);
 
-    return res.houndDeclarationExtendedProperties.sendSuccessResponse(possibleDeletedLogs);
+    return res.houndProperties.sendSuccessResponse(possibleDeletedLogs);
   }
   catch (error) {
-    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
+    return res.houndProperties.sendFailureResponse(error);
   }
 }
 
@@ -53,11 +54,11 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedUserId, validatedFamilyId, validatedDogs } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndProperties;
+    const { validatedUserId, validatedFamilyId, validatedDogs } = req.houndProperties.validatedVars;
     const validatedDog = validatedDogs.safeIndex(0);
-    const { unvalidatedLogsDictionary } = req.houndDeclarationExtendedProperties.unvalidatedVariables;
-    const unvalidatedLogDictionary = unvalidatedLogsDictionary.safeIndex(0);
+    const { unvalidatedLogsDict } = req.houndProperties.unvalidatedVars;
+    const unvalidatedLogDict = unvalidatedLogsDict.safeIndex(0);
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', createLog, ERROR_CODES.VALUE.MISSING);
     }
@@ -70,23 +71,26 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
     if (validatedDog === undefined || validatedDog === null) {
       throw new HoundError('validatedDog missing', createLog, ERROR_CODES.VALUE.MISSING);
     }
-    if (unvalidatedLogDictionary === undefined || unvalidatedLogDictionary === null) {
-      throw new HoundError('unvalidatedLogDictionary missing', createLog, ERROR_CODES.VALUE.MISSING);
+    if (unvalidatedLogDict === undefined || unvalidatedLogDict === null) {
+      throw new HoundError('unvalidatedLogDict missing', createLog, ERROR_CODES.VALUE.MISSING);
     }
 
     const logActionTypes = await getAllLogActionTypes(databaseConnection);
+    const logUnitTypes = await getAllLogUnitTypes(databaseConnection);
 
-    const logUUID = formatUnknownString(unvalidatedLogDictionary['logUUID'], 36);
-    const logStartDate = formatDate(unvalidatedLogDictionary?.['logStartDate']);
-    const logEndDate = formatDate(unvalidatedLogDictionary?.['logEndDate']);
+    const logUUID = formatUnknownString(unvalidatedLogDict['logUUID'], 36);
+    const logStartDate = formatDate(unvalidatedLogDict?.['logStartDate']);
+    const logEndDate = formatDate(unvalidatedLogDict?.['logEndDate']);
     // TODO FUTURE DEPRECIATE this is compatibility for <= 3.5.0
-    const depreciatedLogAction = formatUnknownString(unvalidatedLogDictionary?.['logAction']);
-    const logActionTypeId = formatNumber(unvalidatedLogDictionary?.['logActionTypeId'])
-    ?? logActionTypes.find((rat) => rat.internalValue === depreciatedLogAction)?.logActionTypeId;
-    const logCustomActionName = formatUnknownString(unvalidatedLogDictionary?.['logCustomActionName']);
-    const logNote = formatUnknownString(unvalidatedLogDictionary?.['logNote']);
-    const logUnit = formatUnknownString(unvalidatedLogDictionary?.['logUnit']);
-    const logNumberOfLogUnits = formatNumber(unvalidatedLogDictionary?.['logNumberOfLogUnits']);
+    const depreciatedLogAction = formatUnknownString(unvalidatedLogDict?.['logAction']);
+    const logActionTypeId = formatNumber(unvalidatedLogDict?.['logActionTypeId'])
+    ?? logActionTypes.find((lat) => lat.internalValue === depreciatedLogAction)?.logActionTypeId;
+    const logCustomActionName = formatUnknownString(unvalidatedLogDict?.['logCustomActionName']);
+    const logNote = formatUnknownString(unvalidatedLogDict?.['logNote']);
+    // TODO FUTURE DEPRECIATE this is compatibility for <= 3.5.0
+    const depreciatedLogUnit = formatUnknownString(unvalidatedLogDict?.['logUnit']);
+    const logUnitTypeId = formatNumber(unvalidatedLogDict?.['logUnitTypeId']) ?? logUnitTypes.find((lut) => lut.readableValue === depreciatedLogUnit)?.logUnitTypeId;
+    const logNumberOfLogUnits = formatNumber(unvalidatedLogDict?.['logNumberOfLogUnits']);
 
     if (logUUID === undefined || logUUID === null) {
       throw new HoundError('logUUID missing', createLog, ERROR_CODES.VALUE.MISSING);
@@ -115,7 +119,7 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
         logActionTypeId,
         logCustomActionName,
         logNote,
-        logUnit,
+        logUnitTypeId,
         logNumberOfLogUnits,
       },
     );
@@ -127,17 +131,17 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
       logCustomActionName,
     );
 
-    return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
+    return res.houndProperties.sendSuccessResponse(result);
   }
   catch (error) {
-    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
+    return res.houndProperties.sendFailureResponse(error);
   }
 }
 
 async function updateLog(req: express.Request, res: express.Response): Promise<void> {
   try {
-    const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedUserId, validatedLogs } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndProperties;
+    const { validatedUserId, validatedLogs } = req.houndProperties.validatedVars;
     const validatedLog = validatedLogs.safeIndex(0);
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', updateLog, ERROR_CODES.VALUE.MISSING);
@@ -150,17 +154,20 @@ async function updateLog(req: express.Request, res: express.Response): Promise<v
     }
 
     const logActionTypes = await getAllLogActionTypes(databaseConnection);
+    const logUnitTypes = await getAllLogUnitTypes(databaseConnection);
 
-    const logStartDate = formatDate(validatedLog.unvalidatedLogDictionary?.['logStartDate']);
-    const logEndDate = formatDate(validatedLog.unvalidatedLogDictionary?.['logEndDate']);
+    const logStartDate = formatDate(validatedLog.unvalidatedLogDict?.['logStartDate']);
+    const logEndDate = formatDate(validatedLog.unvalidatedLogDict?.['logEndDate']);
     // TODO FUTURE DEPRECIATE this is compatibility for <= 3.5.0
-    const depreciatedLogAction = formatUnknownString(validatedLog.unvalidatedLogDictionary?.['logAction']);
-    const logActionTypeId = formatNumber(validatedLog.unvalidatedLogDictionary?.['logActionTypeId'])
+    const depreciatedLogAction = formatUnknownString(validatedLog.unvalidatedLogDict?.['logAction']);
+    const logActionTypeId = formatNumber(validatedLog.unvalidatedLogDict?.['logActionTypeId'])
     ?? logActionTypes.find((rat) => rat.internalValue === depreciatedLogAction)?.logActionTypeId;
-    const logCustomActionName = formatUnknownString(validatedLog.unvalidatedLogDictionary?.['logCustomActionName']);
-    const logNote = formatUnknownString(validatedLog.unvalidatedLogDictionary?.['logNote']);
-    const logUnit = formatUnknownString(validatedLog.unvalidatedLogDictionary?.['logUnit']);
-    const logNumberOfLogUnits = formatNumber(validatedLog.unvalidatedLogDictionary?.['logNumberOfLogUnits']);
+    const logCustomActionName = formatUnknownString(validatedLog.unvalidatedLogDict?.['logCustomActionName']);
+    const logNote = formatUnknownString(validatedLog.unvalidatedLogDict?.['logNote']);
+    // TODO FUTURE DEPRECIATE this is compatibility for <= 3.5.0
+    const depreciatedLogUnit = formatUnknownString(validatedLog.unvalidatedLogDict?.['logUnit']);
+    const logUnitTypeId = formatNumber(validatedLog.unvalidatedLogDict?.['logUnitTypeId']) ?? logUnitTypes.find((lut) => lut.readableValue === depreciatedLogUnit)?.logUnitTypeId;
+    const logNumberOfLogUnits = formatNumber(validatedLog.unvalidatedLogDict?.['logNumberOfLogUnits']);
 
     if (logStartDate === undefined || logStartDate === null) {
       throw new HoundError('logStartDate missing', updateLog, ERROR_CODES.VALUE.MISSING);
@@ -187,14 +194,14 @@ async function updateLog(req: express.Request, res: express.Response): Promise<v
         logActionTypeId,
         logCustomActionName,
         logNote,
-        logUnit,
+        logUnitTypeId,
         logNumberOfLogUnits,
       },
     );
-    return res.houndDeclarationExtendedProperties.sendSuccessResponse('');
+    return res.houndProperties.sendSuccessResponse('');
   }
   catch (error) {
-    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
+    return res.houndProperties.sendFailureResponse(error);
   }
 }
 
@@ -202,8 +209,8 @@ async function deleteLog(req: express.Request, res: express.Response): Promise<v
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedLogs } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndProperties;
+    const { validatedLogs } = req.houndProperties.validatedVars;
     const validatedLog = validatedLogs.safeIndex(0);
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', deleteLog, ERROR_CODES.VALUE.MISSING);
@@ -214,10 +221,10 @@ async function deleteLog(req: express.Request, res: express.Response): Promise<v
 
     await deleteLogForLogUUID(databaseConnection, validatedLog.validatedLogUUID);
 
-    return res.houndDeclarationExtendedProperties.sendSuccessResponse('');
+    return res.houndProperties.sendSuccessResponse('');
   }
   catch (error) {
-    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
+    return res.houndProperties.sendFailureResponse(error);
   }
 }
 

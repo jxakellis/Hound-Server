@@ -5,6 +5,8 @@ import { type NotYetCreatedDogLogsRow } from '../../main/types/rows/DogLogsRow.j
 import { getAllLogsForDogUUID } from '../get/getLogs.js';
 import { formatKnownString } from '../../main/format/formatObject.js';
 import { getLogActionTypeForId } from '../get/types/getLogActionType.js';
+import { getLogUnitTypeForId } from '../get/types/getLogUnitType.js';
+import type { LogUnitTypeRow } from '../../main/types/rows/LogUnitTypeRow.js';
 
 /**
 *  Queries the database to create a log. If the query is successful, then returns the logId.
@@ -20,6 +22,10 @@ async function createLogForLog(databaseConnection: Queryable, log: NotYetCreated
 
   // TODO FUTURE DEPRECIATE this logAction is compatibility for <= 3.5.0
   const logAction = await getLogActionTypeForId(databaseConnection, log.logActionTypeId);
+  let logUnit: LogUnitTypeRow | undefined;
+  if (log.logUnitTypeId !== undefined) {
+    logUnit = await getLogUnitTypeForId(databaseConnection, log.logUnitTypeId);
+  }
 
   const result = await databaseQuery<ResultSetHeader>(
     databaseConnection,
@@ -29,6 +35,7 @@ async function createLogForLog(databaseConnection: Queryable, log: NotYetCreated
         dogUUID, userId,
         DEPRECIATED_logAction,
         logStartDate, logEndDate, logNote, logActionTypeId, logCustomActionName,
+        DEPRECIATED_logUnit
         logUnit, logNumberOfLogUnits,
         logLastModified, logIsDeleted,
         )
@@ -36,6 +43,7 @@ async function createLogForLog(databaseConnection: Queryable, log: NotYetCreated
           ?,
           ?, ?, 
           ?, ?, ?, ?, ?,
+          ?,
           ?, ?,
           CURRENT_TIMESTAMP(), 0,
           )`,
@@ -44,7 +52,8 @@ async function createLogForLog(databaseConnection: Queryable, log: NotYetCreated
       log.dogUUID, log.userId,
       logAction?.internalValue,
       log.logStartDate, log.logEndDate, formatKnownString(log.logNote, 500), log.logActionTypeId, formatKnownString(log.logCustomActionName, 32),
-      log.logUnit, log.logNumberOfLogUnits,
+      logUnit?.readableValue,
+      log.logActionTypeId, log.logNumberOfLogUnits,
       // none, default values
     ],
   );

@@ -16,7 +16,7 @@ function parseFormData(req: express.Request, res: express.Response, next: expres
   })(req, res, (error) => {
     if (error !== undefined && error !== null) {
       const houndError = new HoundError('Unable to parse form data', parseFormData, ERROR_CODES.GENERAL.PARSE_FORM_DATA_FAILED, error);
-      return res.houndDeclarationExtendedProperties.sendFailureResponse(houndError);
+      return res.houndProperties.sendFailureResponse(houndError);
     }
 
     return next();
@@ -29,7 +29,7 @@ function parseJSON(req: express.Request, res: express.Response, next: express.Ne
   })(req, res, (error) => {
     if (error !== undefined && error !== null) {
       const houndError = new HoundError('Unable to parse json', parseJSON, ERROR_CODES.GENERAL.PARSE_JSON_FAILED, error);
-      return res.houndDeclarationExtendedProperties.sendFailureResponse(houndError);
+      return res.houndProperties.sendFailureResponse(houndError);
     }
 
     return next();
@@ -37,7 +37,7 @@ function parseJSON(req: express.Request, res: express.Response, next: express.Ne
 }
 
 function configureApp(app: express.Application): void {
-  // Setup houndDeclarationExtendedProperties
+  // Setup houndProperties
   app.use(configureRequestAndResponse);
 
   // Parse data
@@ -57,7 +57,7 @@ function configureApp(app: express.Application): void {
   // Throw back the request if an unknown path is used
   app.use(
     '*',
-    async (req: express.Request, res: express.Response) => (res.houndDeclarationExtendedProperties.sendFailureResponse(
+    async (req: express.Request, res: express.Response) => (res.houndProperties.sendFailureResponse(
       new HoundError('Path not found', app.use, ERROR_CODES.VALUE.INVALID),
     )),
   );

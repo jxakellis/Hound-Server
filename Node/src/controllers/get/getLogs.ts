@@ -10,12 +10,13 @@ async function getLogForLogUUID(
   logUUID: string,
   includeDeletedLogs: boolean,
 ): Promise<DogLogsRow | undefined> {
-  // TODO FUTURE DEPRECIATE this logAction is compatibility for <= 3.5.0
+  // TODO FUTURE DEPRECIATE this logAction & logUnit  is compatibility for <= 3.5.0
   let logs = await databaseQuery<DogLogsRow[]>(
     databaseConnection,
-    `SELECT ${dogLogsColumns}, lat.internalValue AS logAction
+    `SELECT ${dogLogsColumns}, lat.internalValue AS logAction, lut.readableValue as logUnit
       FROM dogLogs dl
       JOIN logActionTypes lat ON dl.logActionTypeId = lat.logActionTypeId
+      JOIN logUnitType lut ON dl.logUnitTypeId = lut.logUnitTypeId
       WHERE logUUID = ?
       LIMIT 1`,
     [logUUID],
@@ -33,22 +34,24 @@ async function getLogForLogUUID(
  * We don't always want to fetch all the elements as it could be a lot of unnecessary data.
  */
 async function getAllLogsForDogUUID(databaseConnection: Queryable, dogUUID: string, includeDeletedLogs: boolean, previousDogManagerSynchronization?: Date): Promise<DogLogsRow[]> {
-  // TODO FUTURE DEPRECIATE this logAction is compatibility for <= 3.5.0
+  // TODO FUTURE DEPRECIATE this logAction & logUnit  is compatibility for <= 3.5.0
   let logs = previousDogManagerSynchronization !== undefined
     ? await databaseQuery<DogLogsRow[]>(
       databaseConnection,
-      `SELECT ${dogLogsColumns}, lat.internalValue AS logAction
+      `SELECT ${dogLogsColumns}, lat.internalValue AS logAction, lut.readableValue as logUnit
       FROM dogLogs dl
       JOIN logActionTypes lat ON dl.logActionTypeId = lat.logActionTypeId
+      JOIN logUnitType lut ON dl.logUnitTypeId = lut.logUnitTypeId
       WHERE dogUUID = ? AND TIMESTAMPDIFF(MICROSECOND, logLastModified, ?) <= 0
       LIMIT 18446744073709551615`,
       [dogUUID, previousDogManagerSynchronization],
     )
     : await databaseQuery<DogLogsRow[]>(
       databaseConnection,
-      `SELECT ${dogLogsColumns}, lat.internalValue AS logAction
+      `SELECT ${dogLogsColumns}, lat.internalValue AS logAction, lut.readableValue as logUnit
       FROM dogLogs dl
       JOIN logActionTypes lat ON dl.logActionTypeId = lat.logActionTypeId
+      JOIN logUnitType lut ON dl.logUnitTypeId = lut.logUnitTypeId
       WHERE dogUUID = ?
       LIMIT 18446744073709551615`,
       [dogUUID],

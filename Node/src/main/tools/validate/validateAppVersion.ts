@@ -20,7 +20,7 @@ async function validateAppVersion(req: express.Request, res: express.Response, n
       );
     }
 
-    const requestId = formatNumber(req.houndDeclarationExtendedProperties.requestId);
+    const requestId = formatNumber(req.houndProperties.requestId);
 
     // We want to add app version even before its validated
     if (requestId !== undefined && requestId !== null) {
@@ -37,7 +37,7 @@ async function validateAppVersion(req: express.Request, res: express.Response, n
     }
   }
   catch (error) {
-    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
+    return res.houndProperties.sendFailureResponse(error);
   }
 
   return next();

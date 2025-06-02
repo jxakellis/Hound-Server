@@ -7,20 +7,20 @@ import { DatabasePools, getPoolConnection } from '../database/databaseConnection
 import { type ResponseBodyType } from '../types/ResponseBodyType.js';
 
 function releaseDatabaseConnection(req: express.Request): void {
-  if (req.houndDeclarationExtendedProperties.databaseConnection === undefined || req.houndDeclarationExtendedProperties.databaseConnection === null) {
+  if (req.houndProperties.databaseConnection === undefined || req.houndProperties.databaseConnection === null) {
     return;
   }
 
-  req.houndDeclarationExtendedProperties.databaseConnection.release();
-  req.houndDeclarationExtendedProperties.databaseConnection = undefined;
+  req.houndProperties.databaseConnection.release();
+  req.houndProperties.databaseConnection = undefined;
 }
 
 async function commitTransaction(req: express.Request): Promise<void> {
-  if (req.houndDeclarationExtendedProperties.databaseConnection !== undefined && req.houndDeclarationExtendedProperties.hasActiveDatabaseTransaction === true) {
+  if (req.houndProperties.databaseConnection !== undefined && req.houndProperties.hasActiveDatabaseTransaction === true) {
     try {
       // Attempt to COMMIT the transaction
-      await databaseQuery(req.houndDeclarationExtendedProperties.databaseConnection, 'COMMIT');
-      req.houndDeclarationExtendedProperties.hasActiveDatabaseTransaction = false;
+      await databaseQuery(req.houndProperties.databaseConnection, 'COMMIT');
+      req.houndProperties.hasActiveDatabaseTransaction = false;
     }
     catch (commitError) {
       // COMMIT failed, attempt to rollback
@@ -33,8 +33,8 @@ async function commitTransaction(req: express.Request): Promise<void> {
         ),
       );
       try {
-        await databaseQuery(req.houndDeclarationExtendedProperties.databaseConnection, 'ROLLBACK');
-        req.houndDeclarationExtendedProperties.hasActiveDatabaseTransaction = false;
+        await databaseQuery(req.houndProperties.databaseConnection, 'ROLLBACK');
+        req.houndProperties.hasActiveDatabaseTransaction = false;
         // Backup Rollback succeeded
       }
       catch (rollbackError) {
@@ -55,10 +55,10 @@ async function commitTransaction(req: express.Request): Promise<void> {
 }
 
 async function rollbackTransaction(req: express.Request): Promise<void> {
-  if (req.houndDeclarationExtendedProperties.databaseConnection !== undefined && req.houndDeclarationExtendedProperties.hasActiveDatabaseTransaction === true) {
+  if (req.houndProperties.databaseConnection !== undefined && req.houndProperties.hasActiveDatabaseTransaction === true) {
     try {
-      await databaseQuery(req.houndDeclarationExtendedProperties.databaseConnection, 'ROLLBACK');
-      req.houndDeclarationExtendedProperties.hasActiveDatabaseTransaction = false;
+      await databaseQuery(req.houndProperties.databaseConnection, 'ROLLBACK');
+      req.houndProperties.hasActiveDatabaseTransaction = false;
     }
     catch (rollbackError) {
       // ROLLBACK failed, continue as there is nothing we can do
@@ -77,12 +77,12 @@ async function rollbackTransaction(req: express.Request): Promise<void> {
 }
 
 function configureRequestAndResponseExtendedProperties(req: express.Request, res: express.Response): void {
-  req.houndDeclarationExtendedProperties = {
+  req.houndProperties = {
     requestId: undefined,
     databaseConnection: undefined,
     hasActiveDatabaseTransaction: false,
     familyActiveSubscription: undefined,
-    validatedVariables: {
+    validatedVars: {
       validatedUserId: undefined,
       validatedUserIdentifier: undefined,
       validatedFamilyId: undefined,
@@ -91,15 +91,15 @@ function configureRequestAndResponseExtendedProperties(req: express.Request, res
       validatedReminders: [],
       validatedTriggers: [],
     },
-    unvalidatedVariables: {
-      unvalidatedDogsDictionary: [],
-      unvalidatedLogsDictionary: [],
-      unvalidatedRemindersDictionary: [],
-      unvalidatedTriggersDictionary: [],
-      unvalidatedSurveyFeedbackDictionary: {},
+    unvalidatedVars: {
+      unvalidatedDogsDict: [],
+      unvalidatedLogsDict: [],
+      unvalidatedRemindersDict: [],
+      unvalidatedTriggersDict: [],
+      unvalidatedSurveyFeedbackDict: {},
     },
   };
-  res.houndDeclarationExtendedProperties = {
+  res.houndProperties = {
     responseId: undefined,
     hasSentResponse: false,
     sendSuccessResponse: async function sendSuccessResponse(body: NonNullable<unknown>): Promise<void> {
@@ -107,8 +107,8 @@ function configureRequestAndResponseExtendedProperties(req: express.Request, res
       // Check to see if the request has an active databaseConnection
       // If it does, then we attempt to COMMIT or ROLLBACK (and if they fail, the functions release() anyways)
       // if there is no active transaction, then we attempt to release the databaseConnection
-      if (req.houndDeclarationExtendedProperties.databaseConnection !== undefined && req.houndDeclarationExtendedProperties.databaseConnection !== null) {
-        if (req.houndDeclarationExtendedProperties.hasActiveDatabaseTransaction === false) {
+      if (req.houndProperties.databaseConnection !== undefined && req.houndProperties.databaseConnection !== null) {
+        if (req.houndProperties.hasActiveDatabaseTransaction === false) {
           releaseDatabaseConnection(req);
         }
         else {
@@ -118,7 +118,7 @@ function configureRequestAndResponseExtendedProperties(req: express.Request, res
       }
 
       // Check to see if a response has been sent yet
-      if (res.houndDeclarationExtendedProperties.hasSentResponse === true) {
+      if (res.houndProperties.hasSentResponse === true) {
         return;
       }
 
@@ -136,11 +136,11 @@ function configureRequestAndResponseExtendedProperties(req: express.Request, res
 
       if (req.originalUrl !== '/watchdog') {
         // need to update watchdog so it recognizes pattern of requestId and responseId. currently can only recognize {"result":""} as success
-        response.requestId = req.houndDeclarationExtendedProperties.requestId ?? -1;
-        response.responseId = res.houndDeclarationExtendedProperties.responseId ?? -1;
+        response.requestId = req.houndProperties.requestId ?? -1;
+        response.responseId = res.houndProperties.responseId ?? -1;
       }
 
-      res.houndDeclarationExtendedProperties.hasSentResponse = true;
+      res.houndProperties.hasSentResponse = true;
       res.status(status).json(response);
     },
     sendFailureResponse: async function sendFailureResponse(error?: unknown): Promise<void> {
@@ -148,8 +148,8 @@ function configureRequestAndResponseExtendedProperties(req: express.Request, res
       // Check to see if the request has an active databaseConnection
       // If it does, then we attempt to COMMIT or ROLLBACK (and if they fail, the functions release() anyways)
       // if there is no active transaction, then we attempt to release the databaseConnection
-      if (req.houndDeclarationExtendedProperties.databaseConnection !== undefined && req.houndDeclarationExtendedProperties.databaseConnection !== null) {
-        if (req.houndDeclarationExtendedProperties.hasActiveDatabaseTransaction === false) {
+      if (req.houndProperties.databaseConnection !== undefined && req.houndProperties.databaseConnection !== null) {
+        if (req.houndProperties.hasActiveDatabaseTransaction === false) {
           releaseDatabaseConnection(req);
         }
         else {
@@ -159,7 +159,7 @@ function configureRequestAndResponseExtendedProperties(req: express.Request, res
       }
 
       // Check to see if a response has been sent yet
-      if (res.houndDeclarationExtendedProperties.hasSentResponse === true) {
+      if (res.houndProperties.hasSentResponse === true) {
         return;
       }
 
@@ -193,11 +193,11 @@ function configureRequestAndResponseExtendedProperties(req: express.Request, res
 
       if (req.originalUrl !== '/watchdog') {
         // need to update watchdog so it recognizes pattern of requestId and responseId. currently can only recognize {"result":""} as success
-        safeResponse.requestId = req.houndDeclarationExtendedProperties.requestId ?? -1;
-        safeResponse.responseId = res.houndDeclarationExtendedProperties.responseId ?? -1;
+        safeResponse.requestId = req.houndProperties.requestId ?? -1;
+        safeResponse.responseId = res.houndProperties.responseId ?? -1;
       }
 
-      res.houndDeclarationExtendedProperties.hasSentResponse = true;
+      res.houndProperties.hasSentResponse = true;
       res.status(status).json(safeResponse);
     },
   };
@@ -206,10 +206,10 @@ function configureRequestAndResponseExtendedProperties(req: express.Request, res
 async function configureRequestAndResponse(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
   configureRequestAndResponseExtendedProperties(req, res);
 
-  if (req.houndDeclarationExtendedProperties.databaseConnection !== undefined && req.houndDeclarationExtendedProperties.databaseConnection !== null) {
+  if (req.houndProperties.databaseConnection !== undefined && req.houndProperties.databaseConnection !== null) {
     return next();
   }
-  if (req.houndDeclarationExtendedProperties.hasActiveDatabaseTransaction === true) {
+  if (req.houndProperties.hasActiveDatabaseTransaction === true) {
     return next();
   }
 
@@ -217,17 +217,17 @@ async function configureRequestAndResponse(req: express.Request, res: express.Re
     const requestPoolConnection = await getPoolConnection(DatabasePools.request);
     try {
       await requestPoolConnection.promise().beginTransaction();
-      req.houndDeclarationExtendedProperties.databaseConnection = requestPoolConnection;
-      req.houndDeclarationExtendedProperties.hasActiveDatabaseTransaction = true;
+      req.houndProperties.databaseConnection = requestPoolConnection;
+      req.houndProperties.hasActiveDatabaseTransaction = true;
     }
     catch (transactionError) {
-      return res.houndDeclarationExtendedProperties.sendFailureResponse(
+      return res.houndProperties.sendFailureResponse(
         new HoundError("Couldn't begin a transaction with databaseConnection", configureRequestAndResponse, ERROR_CODES.GENERAL.POOL_TRANSACTION_FAILED, transactionError),
       );
     }
   }
   catch (databaseConnectionError) {
-    return res.houndDeclarationExtendedProperties.sendFailureResponse(
+    return res.houndProperties.sendFailureResponse(
       new HoundError("Couldn't get a connection from databasePoolForRequests", configureRequestAndResponse, ERROR_CODES.GENERAL.POOL_CONNECTION_FAILED, databaseConnectionError),
     );
   }

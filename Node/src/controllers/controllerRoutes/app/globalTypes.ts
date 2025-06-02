@@ -12,7 +12,7 @@ async function getGlobalTypes(req: express.Request, res: express.Response): Prom
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    const { databaseConnection } = req.houndDeclarationExtendedProperties;
+    const { databaseConnection } = req.houndProperties;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', getGlobalTypes, ERROR_CODES.VALUE.MISSING);
     }
@@ -39,10 +39,10 @@ async function getGlobalTypes(req: express.Request, res: express.Response): Prom
       mappingLogActionTypeLogUnitType,
     };
 
-    return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
+    return res.houndProperties.sendSuccessResponse(result);
   }
   catch (error) {
-    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
+    return res.houndProperties.sendFailureResponse(error);
   }
 }
 

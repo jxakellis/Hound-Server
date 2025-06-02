@@ -5,13 +5,13 @@ import { logServerError } from '../../../logging/logServerError.js';
 import { sendAPN } from './sendAPN.js';
 import { getUserToken, getAllFamilyMemberTokens, getOtherFamilyMemberTokens } from './apnTokens.js';
 import { HoundError } from '../../../server/globalErrors.js';
-import { type StringKeyDictionary } from '../../../types/StringKeyDictionary.js';
+import { type StringKeyDict } from '../../../types/StringKeyDict.js';
 
 /**
 * Takes a userId and retrieves the userNotificationToken for the user
 * Invokes sendAPN with the tokens, alertTitle, and alertBody
 */
-async function sendNotificationForUser(userId: string, category: string, alertTitle: string, alertBody: string, customPayload: StringKeyDictionary): Promise<void> {
+async function sendNotificationForUser(userId: string, category: string, alertTitle: string, alertBody: string, customPayload: StringKeyDict): Promise<void> {
   apnLogger.debug(`sendNotificationForUser ${userId}, ${category}, ${alertTitle}, ${alertBody}`);
 
   try {
@@ -40,7 +40,7 @@ async function sendNotificationForUser(userId: string, category: string, alertTi
  * Takes a familyId and retrieves the userNotificationToken for all familyMembers
  * Invokes sendAPN with the tokens, alertTitle, and alertBody
  */
-async function sendNotificationForFamily(familyId: string, category: string, alertTitle: string, alertBody: string, customPayload: StringKeyDictionary): Promise<void> {
+async function sendNotificationForFamily(familyId: string, category: string, alertTitle: string, alertBody: string, customPayload: StringKeyDict): Promise<void> {
   apnLogger.debug(`sendNotificationForFamily ${familyId}, ${category}, ${alertTitle}, ${alertBody}, ${customPayload}`);
 
   try {
@@ -76,7 +76,7 @@ async function sendNotificationForFamilyExcludingUser(
   category: string,
   alertTitle: string,
   alertBody: string,
-  customPayload: StringKeyDictionary,
+  customPayload: StringKeyDict,
 ): Promise<void> {
   apnLogger.debug(`sendNotificationForFamilyExcludingUser ${userId}, ${familyId}, ${category}, ${alertTitle}, ${alertBody}, ${customPayload}`);
 

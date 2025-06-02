@@ -10,8 +10,8 @@ async function validateSubscription(req: express.Request, res: express.Response,
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedUserId, validatedFamilyId } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndProperties;
+    const { validatedUserId, validatedFamilyId } = req.houndProperties.validatedVars;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', validateSubscription, ERROR_CODES.VALUE.MISSING);
     }
@@ -22,7 +22,7 @@ async function validateSubscription(req: express.Request, res: express.Response,
       throw new HoundError('No family found or invalid permissions', validateSubscription, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
 
-    const numberOfFamilyMembers = req.houndDeclarationExtendedProperties.familyActiveSubscription?.numberOfFamilyMembers;
+    const numberOfFamilyMembers = req.houndProperties.familyActiveSubscription?.numberOfFamilyMembers;
 
     if (numberOfFamilyMembers === undefined || numberOfFamilyMembers === null) {
       throw new HoundError('numberOfFamilyMembers missing', validateSubscription, ERROR_CODES.VALUE.MISSING);
@@ -41,7 +41,7 @@ async function validateSubscription(req: express.Request, res: express.Response,
     }
   }
   catch (error) {
-    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
+    return res.houndProperties.sendFailureResponse(error);
   }
 
   return next();

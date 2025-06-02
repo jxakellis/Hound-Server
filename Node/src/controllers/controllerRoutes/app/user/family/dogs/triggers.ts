@@ -19,8 +19,8 @@ async function getTriggers(req: express.Request, res: express.Response): Promise
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedDogs } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndProperties;
+    const { validatedDogs } = req.houndProperties.validatedVars;
     const validatedDog = validatedDogs.safeIndex(0);
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', getTriggers, ERROR_CODES.VALUE.MISSING);
@@ -29,7 +29,7 @@ async function getTriggers(req: express.Request, res: express.Response): Promise
       throw new HoundError('validatedDog missing', getTriggers, ERROR_CODES.VALUE.MISSING);
     }
 
-    const { validatedTriggers } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { validatedTriggers } = req.houndProperties.validatedVars;
     const validatedTrigger = validatedTriggers.safeIndex(0);
 
     if (validatedTrigger !== undefined && validatedTrigger !== null) {
@@ -39,17 +39,17 @@ async function getTriggers(req: express.Request, res: express.Response): Promise
         throw new HoundError('getTriggerForTriggerUUID possibleDeletedTrigger missing', getTriggers, ERROR_CODES.VALUE.MISSING);
       }
 
-      return res.houndDeclarationExtendedProperties.sendSuccessResponse(possibleDeletedTrigger);
+      return res.houndProperties.sendSuccessResponse(possibleDeletedTrigger);
     }
 
     const previousDogManagerSynchronization = formatDate(req.query['previousDogManagerSynchronization'] ?? req.query['userConfigurationPreviousDogManagerSynchronization']);
 
     const possibleDeletedTriggers = await getAllTriggersForDogUUID(databaseConnection, validatedDog.validatedDogUUID, true, previousDogManagerSynchronization);
 
-    return res.houndDeclarationExtendedProperties.sendSuccessResponse(possibleDeletedTriggers);
+    return res.houndProperties.sendSuccessResponse(possibleDeletedTriggers);
   }
   catch (error) {
-    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
+    return res.houndProperties.sendFailureResponse(error);
   }
 }
 
@@ -57,10 +57,10 @@ async function createTrigger(req: express.Request, res: express.Response): Promi
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedFamilyId, validatedDogs } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndProperties;
+    const { validatedFamilyId, validatedDogs } = req.houndProperties.validatedVars;
     const validatedDog = validatedDogs.safeIndex(0);
-    const { unvalidatedTriggersDictionary } = req.houndDeclarationExtendedProperties.unvalidatedVariables;
+    const { unvalidatedTriggersDict } = req.houndProperties.unvalidatedVars;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', createTrigger, ERROR_CODES.VALUE.MISSING);
     }
@@ -70,27 +70,27 @@ async function createTrigger(req: express.Request, res: express.Response): Promi
     if (validatedDog === undefined || validatedDog === null) {
       throw new HoundError('validatedDog missing', createTrigger, ERROR_CODES.VALUE.MISSING);
     }
-    if (unvalidatedTriggersDictionary === undefined || unvalidatedTriggersDictionary === null) {
-      throw new HoundError('unvalidatedTriggersDictionary missing', createTrigger, ERROR_CODES.VALUE.MISSING);
+    if (unvalidatedTriggersDict === undefined || unvalidatedTriggersDict === null) {
+      throw new HoundError('unvalidatedTriggersDict missing', createTrigger, ERROR_CODES.VALUE.MISSING);
     }
 
     const triggers: NotYetCreatedDogTriggersRow[] = [];
-    unvalidatedTriggersDictionary.forEach((unvalidatedTriggerDictionary) => {
-      const triggerUUID = formatUnknownString(unvalidatedTriggerDictionary['triggerUUID'], 36);
-      const triggerCustomName = formatUnknownString(unvalidatedTriggerDictionary['triggerCustomName']);
-      const reactionLogActionTypeIds = formatArray(unvalidatedTriggerDictionary['reactionLogActionTypeIds'])
+    unvalidatedTriggersDict.forEach((unvalidatedTriggerDict) => {
+      const triggerUUID = formatUnknownString(unvalidatedTriggerDict['triggerUUID'], 36);
+      const triggerCustomName = formatUnknownString(unvalidatedTriggerDict['triggerCustomName']);
+      const reactionLogActionTypeIds = formatArray(unvalidatedTriggerDict['reactionLogActionTypeIds'])
         ?.map((rlati) => formatNumber(rlati))
         .filter((rlati): rlati is number => rlati !== undefined);
-      const reactionLogCustomActionNames = formatArray(unvalidatedTriggerDictionary['reactionLogCustomActionNames'])
+      const reactionLogCustomActionNames = formatArray(unvalidatedTriggerDict['reactionLogCustomActionNames'])
         ?.map((rlcan) => formatUnknownString(rlcan))
         .filter((rlcan): rlcan is string => rlcan !== undefined);
-      const resultReminderActionTypeId = formatNumber(unvalidatedTriggerDictionary['resultReminderActionTypeId']);
-      const triggerType = formatUnknownString(unvalidatedTriggerDictionary['triggerType']);
-      const triggerTimeDelay = formatNumber(unvalidatedTriggerDictionary['triggerTimeDelay']);
-      const triggerFixedTimeType = formatUnknownString(unvalidatedTriggerDictionary['triggerFixedTimeType']);
-      const triggerFixedTimeTypeAmount = formatNumber(unvalidatedTriggerDictionary['triggerFixedTimeTypeAmount']);
-      const triggerFixedTimeUTCHour = formatNumber(unvalidatedTriggerDictionary['triggerFixedTimeUTCHour']);
-      const triggerFixedTimeUTCMinute = formatNumber(unvalidatedTriggerDictionary['triggerFixedTimeUTCMinute']);
+      const resultReminderActionTypeId = formatNumber(unvalidatedTriggerDict['resultReminderActionTypeId']);
+      const triggerType = formatUnknownString(unvalidatedTriggerDict['triggerType']);
+      const triggerTimeDelay = formatNumber(unvalidatedTriggerDict['triggerTimeDelay']);
+      const triggerFixedTimeType = formatUnknownString(unvalidatedTriggerDict['triggerFixedTimeType']);
+      const triggerFixedTimeTypeAmount = formatNumber(unvalidatedTriggerDict['triggerFixedTimeTypeAmount']);
+      const triggerFixedTimeUTCHour = formatNumber(unvalidatedTriggerDict['triggerFixedTimeUTCHour']);
+      const triggerFixedTimeUTCMinute = formatNumber(unvalidatedTriggerDict['triggerFixedTimeUTCMinute']);
 
       if (triggerUUID === undefined || triggerUUID === null) {
         throw new HoundError('triggerUUID missing', createTrigger, ERROR_CODES.VALUE.MISSING);
@@ -144,10 +144,10 @@ async function createTrigger(req: express.Request, res: express.Response): Promi
 
     const results = await createTriggersForTriggers(databaseConnection, triggers);
 
-    return res.houndDeclarationExtendedProperties.sendSuccessResponse(results);
+    return res.houndProperties.sendSuccessResponse(results);
   }
   catch (error) {
-    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
+    return res.houndProperties.sendFailureResponse(error);
   }
 }
 
@@ -155,8 +155,8 @@ async function updateTrigger(req: express.Request, res: express.Response): Promi
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedFamilyId, validatedTriggers } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndProperties;
+    const { validatedFamilyId, validatedTriggers } = req.houndProperties.validatedVars;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', updateTrigger, ERROR_CODES.VALUE.MISSING);
     }
@@ -173,20 +173,20 @@ async function updateTrigger(req: express.Request, res: express.Response): Promi
       const triggerId = validatedTrigger.validatedTriggerId;
       const triggerUUID = validatedTrigger.validatedTriggerUUID;
       const dogUUID = validatedTrigger.validatedDogUUID;
-      const triggerCustomName = formatUnknownString(validatedTrigger.unvalidatedTriggerDictionary?.['triggerCustomName']);
-      const reactionLogActionTypeIds = formatArray(validatedTrigger.unvalidatedTriggerDictionary?.['reactionLogActionTypeIds'])
+      const triggerCustomName = formatUnknownString(validatedTrigger.unvalidatedTriggerDict?.['triggerCustomName']);
+      const reactionLogActionTypeIds = formatArray(validatedTrigger.unvalidatedTriggerDict?.['reactionLogActionTypeIds'])
         ?.map((rlati) => formatNumber(rlati))
         .filter((rlati): rlati is number => rlati !== undefined);
-      const reactionLogCustomActionNames = formatArray(validatedTrigger.unvalidatedTriggerDictionary?.['reactionLogCustomActionNames'])
+      const reactionLogCustomActionNames = formatArray(validatedTrigger.unvalidatedTriggerDict?.['reactionLogCustomActionNames'])
         ?.map((rlcan) => formatUnknownString(rlcan))
         .filter((rlcan): rlcan is string => rlcan !== undefined);
-      const resultReminderActionTypeId = formatNumber(validatedTrigger.unvalidatedTriggerDictionary?.['resultReminderActionTypeId']);
-      const triggerType = formatUnknownString(validatedTrigger.unvalidatedTriggerDictionary?.['triggerType']);
-      const triggerTimeDelay = formatNumber(validatedTrigger.unvalidatedTriggerDictionary?.['triggerTimeDelay']);
-      const triggerFixedTimeType = formatUnknownString(validatedTrigger.unvalidatedTriggerDictionary?.['triggerFixedTimeType']);
-      const triggerFixedTimeTypeAmount = formatNumber(validatedTrigger.unvalidatedTriggerDictionary?.['triggerFixedTimeTypeAmount']);
-      const triggerFixedTimeUTCHour = formatNumber(validatedTrigger.unvalidatedTriggerDictionary?.['triggerFixedTimeUTCHour']);
-      const triggerFixedTimeUTCMinute = formatNumber(validatedTrigger.unvalidatedTriggerDictionary?.['triggerFixedTimeUTCMinute']);
+      const resultReminderActionTypeId = formatNumber(validatedTrigger.unvalidatedTriggerDict?.['resultReminderActionTypeId']);
+      const triggerType = formatUnknownString(validatedTrigger.unvalidatedTriggerDict?.['triggerType']);
+      const triggerTimeDelay = formatNumber(validatedTrigger.unvalidatedTriggerDict?.['triggerTimeDelay']);
+      const triggerFixedTimeType = formatUnknownString(validatedTrigger.unvalidatedTriggerDict?.['triggerFixedTimeType']);
+      const triggerFixedTimeTypeAmount = formatNumber(validatedTrigger.unvalidatedTriggerDict?.['triggerFixedTimeTypeAmount']);
+      const triggerFixedTimeUTCHour = formatNumber(validatedTrigger.unvalidatedTriggerDict?.['triggerFixedTimeUTCHour']);
+      const triggerFixedTimeUTCMinute = formatNumber(validatedTrigger.unvalidatedTriggerDict?.['triggerFixedTimeUTCMinute']);
 
       if (triggerUUID === undefined || triggerUUID === null) {
         throw new HoundError('triggerUUID missing', createTrigger, ERROR_CODES.VALUE.MISSING);
@@ -241,10 +241,10 @@ async function updateTrigger(req: express.Request, res: express.Response): Promi
 
     await updateTriggersForTriggers(databaseConnection, triggers);
 
-    return res.houndDeclarationExtendedProperties.sendSuccessResponse('');
+    return res.houndProperties.sendSuccessResponse('');
   }
   catch (error) {
-    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
+    return res.houndProperties.sendFailureResponse(error);
   }
 }
 
@@ -252,8 +252,8 @@ async function deleteTrigger(req: express.Request, res: express.Response): Promi
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedFamilyId, validatedTriggers } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndProperties;
+    const { validatedFamilyId, validatedTriggers } = req.houndProperties.validatedVars;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', deleteTrigger, ERROR_CODES.VALUE.MISSING);
     }
@@ -266,10 +266,10 @@ async function deleteTrigger(req: express.Request, res: express.Response): Promi
 
     await deleteTriggersTriggerUUIDs(databaseConnection, validatedTriggers.map((validatedTrigger) => validatedTrigger.validatedTriggerUUID));
 
-    return res.houndDeclarationExtendedProperties.sendSuccessResponse('');
+    return res.houndProperties.sendSuccessResponse('');
   }
   catch (error) {
-    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
+    return res.houndProperties.sendFailureResponse(error);
   }
 }
 

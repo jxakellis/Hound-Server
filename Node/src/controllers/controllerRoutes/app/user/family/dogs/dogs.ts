@@ -15,8 +15,8 @@ async function getDogs(req: express.Request, res: express.Response): Promise<voi
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedUserId, validatedFamilyId } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndProperties;
+    const { validatedUserId, validatedFamilyId } = req.houndProperties.validatedVars;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', getDogs, ERROR_CODES.VALUE.MISSING);
     }
@@ -30,7 +30,7 @@ async function getDogs(req: express.Request, res: express.Response): Promise<voi
     const previousDogManagerSynchronization = formatDate(req.query['previousDogManagerSynchronization'] ?? req.query['userConfigurationPreviousDogManagerSynchronization']);
 
     // See if the user wants a specific dog. If there is no specific dog, then they want them all
-    const { validatedDogs } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { validatedDogs } = req.houndProperties.validatedVars;
     const validatedDog = validatedDogs.safeIndex(0);
     if (validatedDog !== undefined && validatedDog !== null) {
       const possiblyDeletedDog = await getDogForDogUUID(
@@ -45,7 +45,7 @@ async function getDogs(req: express.Request, res: express.Response): Promise<voi
         throw new HoundError('getDogForDogUUID possiblyDeletedDog missing', getDogs, ERROR_CODES.VALUE.MISSING);
       }
 
-      return res.houndDeclarationExtendedProperties.sendSuccessResponse(possiblyDeletedDog);
+      return res.houndProperties.sendSuccessResponse(possiblyDeletedDog);
     }
 
     const possiblyDeletedDogs = await getAllDogsForFamilyId(
@@ -56,10 +56,10 @@ async function getDogs(req: express.Request, res: express.Response): Promise<voi
       previousDogManagerSynchronization,
     );
 
-    return res.houndDeclarationExtendedProperties.sendSuccessResponse(possiblyDeletedDogs);
+    return res.houndProperties.sendSuccessResponse(possiblyDeletedDogs);
   }
   catch (error) {
-    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
+    return res.houndProperties.sendFailureResponse(error);
   }
 }
 
@@ -67,24 +67,24 @@ async function createDog(req: express.Request, res: express.Response): Promise<v
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedFamilyId } = req.houndDeclarationExtendedProperties.validatedVariables;
-    const { unvalidatedDogsDictionary } = req.houndDeclarationExtendedProperties.unvalidatedVariables;
-    const unvalidatedDogDictionary = unvalidatedDogsDictionary.safeIndex(0);
+    const { databaseConnection } = req.houndProperties;
+    const { validatedFamilyId } = req.houndProperties.validatedVars;
+    const { unvalidatedDogsDict } = req.houndProperties.unvalidatedVars;
+    const unvalidatedDogDict = unvalidatedDogsDict.safeIndex(0);
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', createDog, ERROR_CODES.VALUE.MISSING);
     }
     if (validatedFamilyId === undefined || validatedFamilyId === null) {
       throw new HoundError('No family found or invalid permissions', createDog, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
-    if (unvalidatedDogDictionary === undefined || unvalidatedDogDictionary === null) {
-      throw new HoundError('unvalidatedDogDictionary missing', createDog, ERROR_CODES.VALUE.MISSING);
+    if (unvalidatedDogDict === undefined || unvalidatedDogDict === null) {
+      throw new HoundError('unvalidatedDogDict missing', createDog, ERROR_CODES.VALUE.MISSING);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const dogUUID = formatUnknownString(unvalidatedDogDictionary?.['dogUUID'], 36);
+    const dogUUID = formatUnknownString(unvalidatedDogDict?.['dogUUID'], 36);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const dogName = formatUnknownString(unvalidatedDogDictionary?.['dogName']);
+    const dogName = formatUnknownString(unvalidatedDogDict?.['dogName']);
     if (dogUUID === undefined || dogUUID === null) {
       throw new HoundError('dogUUID missing', createDog, ERROR_CODES.VALUE.MISSING);
     }
@@ -94,10 +94,10 @@ async function createDog(req: express.Request, res: express.Response): Promise<v
 
     const result = await createDogForFamilyId(databaseConnection, { familyId: validatedFamilyId, dogUUID, dogName });
 
-    return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
+    return res.houndProperties.sendSuccessResponse(result);
   }
   catch (error) {
-    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
+    return res.houndProperties.sendFailureResponse(error);
   }
 }
 
@@ -105,8 +105,8 @@ async function updateDog(req: express.Request, res: express.Response): Promise<v
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedFamilyId, validatedDogs } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndProperties;
+    const { validatedFamilyId, validatedDogs } = req.houndProperties.validatedVars;
     const validatedDog = validatedDogs.safeIndex(0);
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', updateDog, ERROR_CODES.VALUE.MISSING);
@@ -119,7 +119,7 @@ async function updateDog(req: express.Request, res: express.Response): Promise<v
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const dogName = formatUnknownString(validatedDog.unvalidatedDogDictionary?.['dogName']);
+    const dogName = formatUnknownString(validatedDog.unvalidatedDogDict?.['dogName']);
     if (dogName === undefined || dogName === null) {
       throw new HoundError('dogName missing', updateDog, ERROR_CODES.VALUE.MISSING);
     }
@@ -131,10 +131,10 @@ async function updateDog(req: express.Request, res: express.Response): Promise<v
       dogName,
     });
 
-    return res.houndDeclarationExtendedProperties.sendSuccessResponse('');
+    return res.houndProperties.sendSuccessResponse('');
   }
   catch (error) {
-    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
+    return res.houndProperties.sendFailureResponse(error);
   }
 }
 
@@ -142,8 +142,8 @@ async function deleteDog(req: express.Request, res: express.Response): Promise<v
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedFamilyId, validatedDogs } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndProperties;
+    const { validatedFamilyId, validatedDogs } = req.houndProperties.validatedVars;
     const validatedDog = validatedDogs.safeIndex(0);
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', deleteDog, ERROR_CODES.VALUE.MISSING);
@@ -157,10 +157,10 @@ async function deleteDog(req: express.Request, res: express.Response): Promise<v
 
     await deleteDogForFamilyIdDogUUID(databaseConnection, validatedFamilyId, validatedDog.validatedDogUUID);
 
-    return res.houndDeclarationExtendedProperties.sendSuccessResponse('');
+    return res.houndProperties.sendSuccessResponse('');
   }
   catch (error) {
-    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
+    return res.houndProperties.sendFailureResponse(error);
   }
 }
 

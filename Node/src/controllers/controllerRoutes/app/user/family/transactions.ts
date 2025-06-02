@@ -10,8 +10,8 @@ async function getTransactions(req: express.Request, res: express.Response): Pro
   try {
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
-    const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndProperties;
+    const { validatedUserId } = req.houndProperties.validatedVars;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', getTransactions, ERROR_CODES.VALUE.MISSING);
     }
@@ -25,17 +25,17 @@ async function getTransactions(req: express.Request, res: express.Response): Pro
       throw new HoundError('result missing', getTransactions, ERROR_CODES.VALUE.MISSING);
     }
 
-    return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
+    return res.houndProperties.sendSuccessResponse(result);
   }
   catch (error) {
-    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
+    return res.houndProperties.sendFailureResponse(error);
   }
 }
 
 async function createTransactions(req: express.Request, res: express.Response): Promise<void> {
   try {
-    const { databaseConnection } = req.houndDeclarationExtendedProperties;
-    const { validatedUserId } = req.houndDeclarationExtendedProperties.validatedVariables;
+    const { databaseConnection } = req.houndProperties;
+    const { validatedUserId } = req.houndProperties.validatedVars;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', createTransactions, ERROR_CODES.VALUE.MISSING);
     }
@@ -58,10 +58,10 @@ async function createTransactions(req: express.Request, res: express.Response): 
       throw new HoundError('result missing', createTransactions, ERROR_CODES.VALUE.MISSING);
     }
 
-    return res.houndDeclarationExtendedProperties.sendSuccessResponse(result);
+    return res.houndProperties.sendSuccessResponse(result);
   }
   catch (error) {
-    return res.houndDeclarationExtendedProperties.sendFailureResponse(error);
+    return res.houndProperties.sendFailureResponse(error);
   }
 }
 
