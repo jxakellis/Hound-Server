@@ -14,6 +14,12 @@ dl.logLastModified,
 dl.logIsDeleted
 `;
 
+// TODO NOW make logUnit row into depreciated
+// 1. modify column in db to change val
+// 2. still select its value here
+// 3. in the controller route, map the logUnit passed by legacy users to the logUnitTypeId (if no logUnitTypeId)
+// 4. in create/update route, retrieve the logUnit readable value using logUnitTypeId, then insert into depreciated column
+
 type DogLogsRow = {
     // NOTE: database booleans (tinyint(1)) are returned as 0 or 1 numbers, not booleans. therefore, we have to use number instead of boolean
     logId: number

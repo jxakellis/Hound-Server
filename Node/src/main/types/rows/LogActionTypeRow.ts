@@ -19,12 +19,7 @@ type LogActionTypeRow = {
     allowsCustom: number
 };
 
-type LogActionTypeRowWithMapping = LogActionTypeRow & {
-  linkedReminderActionTypeIds: number[]
-}
-
 export {
   type LogActionTypeRow,
-  type LogActionTypeRowWithMapping,
   logActionTypeColumns,
 };

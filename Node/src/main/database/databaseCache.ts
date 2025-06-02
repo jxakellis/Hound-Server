@@ -1,21 +1,25 @@
 import { SERVER } from '../server/globalConstants.js';
-import type { LogActionTypeRow, LogActionTypeRowWithMapping } from '../types/rows/LogActionTypeRow.js';
+import type { LogActionTypeRow } from '../types/rows/LogActionTypeRow.js';
+import type { LogUnitTypeRow } from '../types/rows/LogUnitTypeRow.js';
+import type { MappingLogActionTypeLogUnitTypeRow } from '../types/rows/MappingLogActionTypeLogUnitTypeRow.js';
 import type { MappingLogActionTypeReminderActionTypeRow } from '../types/rows/MappingLogActionTypeReminderActionTypeRow.js';
 import type { ReminderActionTypeRow } from '../types/rows/ReminderActionTypeRow.js';
 
 const CACHE_KEYS = {
   LOG_ACTION_TYPES: 'LOG_ACTION_TYPES',
-  LOG_ACTION_TYPE_WITH_MAPPING: 'LOG_ACTION_TYPE_WITH_MAPPING',
   REMINDER_ACTION_TYPES: 'REMINDER_ACTION_TYPES',
   MAPPING_LOG_ACTION_REMINDER_ACTION_TYPES: 'MAPPING_LOG_ACTION_REMINDER_ACTION_TYPES',
+  LOG_UNIT_TYPES: 'LOG_UNIT_TYPES',
+  MAPPING_LOG_ACTION_LOG_UNIT_TYPES: 'MAPPING_LOG_ACTION_LOG_UNIT_TYPES',
 } as const;
 
 type CacheKey = typeof CACHE_KEYS[keyof typeof CACHE_KEYS];
 interface CacheStore {
     [CACHE_KEYS.LOG_ACTION_TYPES]: LogActionTypeRow[];
-    [CACHE_KEYS.LOG_ACTION_TYPE_WITH_MAPPING]: LogActionTypeRowWithMapping[];
     [CACHE_KEYS.REMINDER_ACTION_TYPES]: ReminderActionTypeRow[];
     [CACHE_KEYS.MAPPING_LOG_ACTION_REMINDER_ACTION_TYPES]: MappingLogActionTypeReminderActionTypeRow[];
+    [CACHE_KEYS.LOG_UNIT_TYPES]: LogUnitTypeRow[];
+    [CACHE_KEYS.MAPPING_LOG_ACTION_LOG_UNIT_TYPES]: MappingLogActionTypeLogUnitTypeRow[];
 }
 type CacheValue<K extends CacheKey> = CacheStore[K];
 
