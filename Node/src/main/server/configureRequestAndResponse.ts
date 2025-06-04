@@ -230,7 +230,7 @@ async function configureRequestAndResponse(req: express.Request, res: express.Re
     return res.houndProperties.sendFailureResponse(
       new HoundError('Couldn\'t get a connection from databasePoolForRequests', configureRequestAndResponse, ERROR_CODES.GENERAL.POOL_CONNECTION_FAILED, databaseConnectionError),
     );
- }
+  }
 
   return next();
 }

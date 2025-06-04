@@ -13,7 +13,7 @@ async function getAllReminderActionTypes(
   const reminderActionTypeRows = await databaseQuery<ReminderActionTypeRow[]>(
     databaseConnection,
     `SELECT ${reminderActionTypeColumns}
-         FROM reminderActionType lat`,
+         FROM reminderActionType rat`,
   );
 
   setCached(CACHE_KEYS.REMINDER_ACTION_TYPES, reminderActionTypeRows);
