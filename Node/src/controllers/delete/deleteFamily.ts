@@ -39,7 +39,7 @@ async function deleteFamily(databaseConnection: Queryable, familyId: string, fam
   //  They will forfeit the rest of their active subscription (if it exists) by deleting their family.
   //  However, they are safe from an accidental renewal
 
-  // Copy the current, up-to-date records into the "previous" tables. This keeps a record in case we need to reference it later, but in a table that isn't used much
+  // Copy the current, up-to-date records into the 'previous' tables. This keeps a record in case we need to reference it later, but in a table that isn't used much
   let promises = [
     databaseQuery(
       databaseConnection,
@@ -67,7 +67,7 @@ async function deleteFamily(databaseConnection: Queryable, familyId: string, fam
   ];
   await Promise.all(promises);
 
-  // Family copied into "previous" tables, delete the actual family now
+  // Family copied into 'previous' tables, delete the actual family now
   promises = [
     databaseQuery(
       databaseConnection,
@@ -127,7 +127,7 @@ async function leaveFamily(databaseConnection: Queryable, userId: string): Promi
 async function kickFamilyMemberForUserIdFamilyId(databaseConnection: Queryable, userId: string, familyId: string, kickedUserId: string): Promise<void> {
   // a user cannot kick themselves
   if (userId === kickedUserId) {
-    throw new HoundError("You can't kick yourself from your own family", kickFamilyMemberForUserIdFamilyId, ERROR_CODES.VALUE.INVALID);
+    throw new HoundError('You can\'t kick yourself from your own family', kickFamilyMemberForUserIdFamilyId, ERROR_CODES.VALUE.INVALID);
   }
 
   const family = await getFamilyForUserId(databaseConnection, userId);

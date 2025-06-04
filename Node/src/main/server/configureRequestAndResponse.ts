@@ -135,7 +135,7 @@ function configureRequestAndResponseExtendedProperties(req: express.Request, res
       await logResponse(req, res, status, JSON.stringify(response));
 
       if (req.originalUrl !== '/watchdog') {
-        // need to update watchdog so it recognizes pattern of requestId and responseId. currently can only recognize {"result":""} as success
+        // need to update watchdog so it recognizes pattern of requestId and responseId. currently can only recognize {'result':''} as success
         response.requestId = req.houndProperties.requestId ?? -1;
         response.responseId = res.houndProperties.responseId ?? -1;
       }
@@ -192,7 +192,7 @@ function configureRequestAndResponseExtendedProperties(req: express.Request, res
       };
 
       if (req.originalUrl !== '/watchdog') {
-        // need to update watchdog so it recognizes pattern of requestId and responseId. currently can only recognize {"result":""} as success
+        // need to update watchdog so it recognizes pattern of requestId and responseId. currently can only recognize {'result':''} as success
         safeResponse.requestId = req.houndProperties.requestId ?? -1;
         safeResponse.responseId = res.houndProperties.responseId ?? -1;
       }
@@ -222,13 +222,13 @@ async function configureRequestAndResponse(req: express.Request, res: express.Re
     }
     catch (transactionError) {
       return res.houndProperties.sendFailureResponse(
-        new HoundError("Couldn't begin a transaction with databaseConnection", configureRequestAndResponse, ERROR_CODES.GENERAL.POOL_TRANSACTION_FAILED, transactionError),
+        new HoundError('Couldn't begin a transaction with databaseConnection', configureRequestAndResponse, ERROR_CODES.GENERAL.POOL_TRANSACTION_FAILED, transactionError),
       );
     }
   }
   catch (databaseConnectionError) {
     return res.houndProperties.sendFailureResponse(
-      new HoundError("Couldn't get a connection from databasePoolForRequests", configureRequestAndResponse, ERROR_CODES.GENERAL.POOL_CONNECTION_FAILED, databaseConnectionError),
+      new HoundError('Couldn't get a connection from databasePoolForRequests', configureRequestAndResponse, ERROR_CODES.GENERAL.POOL_CONNECTION_FAILED, databaseConnectionError),
     );
   }
 

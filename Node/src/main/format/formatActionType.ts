@@ -3,7 +3,7 @@ import type { ReminderActionTypeRow } from '../types/rows/ReminderActionTypeRow.
 
 /**
  * If you exclude includeMatchingEmoji and reminderCustomActionName, then the raw readable value is returned e.g. 'Feed' or 'Custom'
- * If you include includeMatchingEmoji and reminderCustomActionName, then a customized fully readable value is returned 'Feed 🍗' or 'Custom Name 1 📝"
+ * If you include includeMatchingEmoji and reminderCustomActionName, then a customized fully readable value is returned 'Feed 🍗' or 'Custom Name 1 📝'
  */
 function convertActionTypeToFinalReadable(actionType: (ReminderActionTypeRow | LogActionTypeRow), includeMatchingEmoji: boolean, customActionName?: string): string | undefined {
   let string = '';

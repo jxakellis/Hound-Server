@@ -2,7 +2,7 @@ import { type ResultSetHeader, type RowDataPacket } from 'mysql2';
 import { HoundError } from '../server/globalErrors.js';
 import { type Queryable } from '../types/Queryable.js';
 
-// Define the "impossible" type to force callers to specify a type parameter for the function.
+// Define the 'impossible' type to force callers to specify a type parameter for the function.
 // type MustSpecifyType<T> = T & { __mustSpecifyType__: void };
 type SQLPrimitive = (string | number | boolean | Date | null | undefined);
 export type SQLVariableType = SQLPrimitive | SQLPrimitive[]
@@ -18,7 +18,7 @@ const databaseQuery = <T>(
 ): Promise<T> => {
   // Remove all newlines remove all carriage returns
   // Then makes all >1 length spaces into 1 length spaces
-  // Then if it find a common SQL syntax error ( a comma before a closing parenthesis "  ..., reminderUUID, ) VALUES (...  " ), it fixes it
+  // Then if it find a common SQL syntax error ( a comma before a closing parenthesis '  ..., reminderUUID, ) VALUES (...  ' ), it fixes it
   const SQLString = forSQLString.replace(/\r?\n|\r/g, '').replace(/\s+/g, ' ').replace(/,\s*\)/g, ')');
 
   const SQLVars = forSQLVars.map((variable) => {
@@ -39,7 +39,7 @@ const databaseQuery = <T>(
         }
         else {
           // database queried successfully
-          resolve(result as T); // Cast to our "impossible" type
+          resolve(result as T); // Cast to our 'impossible' type
         }
       },
     );

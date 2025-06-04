@@ -66,6 +66,9 @@ async function getDogForDogUUID(
 
     (dog as DogsRowWithRemindersLogsTriggers).reminders = reminders;
     (dog as DogsRowWithRemindersLogsTriggers).logs = logs;
+
+    (dog as DogsRowWithRemindersLogsTriggers).dogReminders = reminders;
+    (dog as DogsRowWithRemindersLogsTriggers).dogLogs = logs;
     (dog as DogsRowWithRemindersLogsTriggers).dogTriggers = triggers;
   }
 
@@ -142,6 +145,7 @@ async function getAllDogsForFamilyId(
     // since reminderPromises is 1:1 and index the same as dogs, we can take the resolved reminderPromises and assign to the dogs in the dogs array
     remindersForDogs.forEach((remindersForDog, index) => {
       (dogs[index] as DogsRowWithRemindersLogsTriggers).reminders = remindersForDog;
+      (dogs[index] as DogsRowWithRemindersLogsTriggers).dogReminders = remindersForDog;
     });
 
     const logPromises: Promise<DogLogsRow[]>[] = [];
@@ -153,6 +157,7 @@ async function getAllDogsForFamilyId(
     // since logPromises is 1:1 and index the same as dogs, we can take the resolved logPromises and assign to the dogs in the dogs array
     logsForDogs.forEach((logsForDog, index) => {
       (dogs[index] as DogsRowWithRemindersLogsTriggers).logs = logsForDog;
+      (dogs[index] as DogsRowWithRemindersLogsTriggers).dogLogs = logsForDog;
     });
 
     const triggerPromises: Promise<DogTriggersRow[]>[] = [];

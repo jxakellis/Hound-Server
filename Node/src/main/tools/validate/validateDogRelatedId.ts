@@ -27,8 +27,16 @@ async function validateDogUUID(req: express.Request, res: express.Response, next
       throw new HoundError('No family found or invalid permissions', validateDogUUID, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
 
+    // TODO DEPRECIATE <= 3.5.0 switched to dogReminders/dogLogs
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const masterUnvalidatedDogsDict = formatArray(req.body['dogs'] ?? req.body['reminders'] ?? req.body['logs'] ?? [req.body]) as (StringKeyDict[] | undefined);
+    const masterUnvalidatedDogsDict = formatArray(req.body['dogs']
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      ?? req.body['dogReminders'] ?? req.body['reminders']
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      ?? req.body['dogLogs'] ?? req.body['logs']
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      ?? req.body['dogTriggers']
+      ?? [req.body]) as (StringKeyDict[] | undefined);
 
     if (masterUnvalidatedDogsDict === undefined || masterUnvalidatedDogsDict === null) {
       // We have no dogUUIDs to validate
@@ -107,8 +115,9 @@ async function validateLogUUID(req: express.Request, res: express.Response, next
       throw new HoundError('validatedDogs missing', validateLogUUID, ERROR_CODES.VALUE.MISSING);
     }
 
+    // TODO DEPRECIATE <= 3.5.0 switched to dogReminders/dogLogs
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const masterUnvalidatedLogsDict = formatArray(req.body['logs'] ?? [req.body]) as (StringKeyDict[] | undefined);
+    const masterUnvalidatedLogsDict = formatArray(req.body['dogLogs'] ?? req.body['logs'] ?? [req.body]) as (StringKeyDict[] | undefined);
 
     if (masterUnvalidatedLogsDict === undefined || masterUnvalidatedLogsDict === null) {
       return next();
@@ -182,8 +191,9 @@ async function validateReminderUUID(req: express.Request, res: express.Response,
       throw new HoundError('validatedDogs missing', validateReminderUUID, ERROR_CODES.VALUE.MISSING);
     }
 
+    // TODO DEPRECIATE <= 3.5.0 switched to dogReminders/dogLogs
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const masterUnvalidatedRemindersDict = formatArray(req.body['reminders'] ?? [req.body]) as (StringKeyDict[] | undefined);
+    const masterUnvalidatedRemindersDict = formatArray(req.body['dogReminders'] ?? req.body['reminders'] ?? [req.body]) as (StringKeyDict[] | undefined);
 
     if (masterUnvalidatedRemindersDict === undefined || masterUnvalidatedRemindersDict === null) {
       return next();

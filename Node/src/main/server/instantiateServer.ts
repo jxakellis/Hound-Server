@@ -61,10 +61,10 @@ async function shutdown(): Promise<void> {
 
     schedule.gracefulShutdown()
       .then(() => {
-        serverLogger.info("'schedule' Gracefully Shutdown");
+        serverLogger.info('\'schedule\' Gracefully Shutdown');
       })
       .catch((error) => {
-        serverLogger.error("'schedule' Couldn't Be Shutdown", error);
+        serverLogger.error('\'schedule\' Couldn\'t Be Shutdown', error);
       })
       .finally(() => {
         numberOfShutdownsCompleted += 1;
@@ -73,17 +73,17 @@ async function shutdown(): Promise<void> {
 
     httpsServer?.close((error) => {
       if (error !== undefined && error !== null) {
-        serverLogger.info("'httpsServer' Couldn't Be Closed", error);
+        serverLogger.info('\'httpsServer\' Couldn\'t Be Closed', error);
       }
       else {
-        serverLogger.info("'httpsServer' Gracefully Closed");
+        serverLogger.info('\'httpsServer\' Gracefully Closed');
       }
       numberOfShutdownsCompleted += 1;
       checkForShutdownCompletion();
     });
 
     endDatabasePools().finally(() => {
-      serverLogger.info("'endDatabasePools' Completed (either successfully or unsuccessfully)");
+      serverLogger.info('\'endDatabasePools\' Completed (either successfully or unsuccessfully)');
       numberOfShutdownsCompleted += 1;
       checkForShutdownCompletion();
     });

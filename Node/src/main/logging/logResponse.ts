@@ -15,7 +15,7 @@ async function logResponse(req: express.Request, res: express.Response, response
   responseLogger.debug(`
   \n RESPONSE FOR ${req.method}
   \n AT URL ${originalUrl}
-  \n WITH BODY (if error, "stack" has been omitted for body sent to user, but not for debug message):
+  \n WITH BODY (if error, 'stack' has been omitted for body sent to user, but not for debug message):
   \n${responseBody}
   `);
 
