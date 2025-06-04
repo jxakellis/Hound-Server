@@ -1,4 +1,4 @@
-import { mappingLogActionTypeLogUnitTypeColumns, type MappingLogActionTypeLogUnitTypeRow } from 'src/main/types/rows/MappingLogActionTypeLogUnitTypeRow.js';
+import { mappingLogActionTypeLogUnitTypeColumns, type MappingLogActionTypeLogUnitTypeRow } from '../../../main/types/rows/MappingLogActionTypeLogUnitTypeRow.js';
 import { CACHE_KEYS, getCached, setCached } from '../../../main/database/databaseCache.js';
 import { type Queryable, databaseQuery } from '../../../main/database/databaseQuery.js';
 

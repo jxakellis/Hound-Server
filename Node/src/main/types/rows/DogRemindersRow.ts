@@ -5,7 +5,7 @@ dr.dogUUID,
 dr.reminderActionTypeId,
 dr.reminderCustomActionName,
 dr.reminderType,
-dr.reminderIsTriggerResult
+dr.reminderIsTriggerResult,
 dr.reminderIsEnabled,
 dr.reminderExecutionBasis,
 dr.reminderExecutionDate,

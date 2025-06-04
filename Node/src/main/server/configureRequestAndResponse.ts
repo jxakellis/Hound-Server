@@ -222,15 +222,15 @@ async function configureRequestAndResponse(req: express.Request, res: express.Re
     }
     catch (transactionError) {
       return res.houndProperties.sendFailureResponse(
-        new HoundError('Couldn't begin a transaction with databaseConnection', configureRequestAndResponse, ERROR_CODES.GENERAL.POOL_TRANSACTION_FAILED, transactionError),
+        new HoundError('Couldn\'t begin a transaction with databaseConnection', configureRequestAndResponse, ERROR_CODES.GENERAL.POOL_TRANSACTION_FAILED, transactionError),
       );
     }
   }
   catch (databaseConnectionError) {
     return res.houndProperties.sendFailureResponse(
-      new HoundError('Couldn't get a connection from databasePoolForRequests', configureRequestAndResponse, ERROR_CODES.GENERAL.POOL_CONNECTION_FAILED, databaseConnectionError),
+      new HoundError('Couldn\'t get a connection from databasePoolForRequests', configureRequestAndResponse, ERROR_CODES.GENERAL.POOL_CONNECTION_FAILED, databaseConnectionError),
     );
-  }
+ }
 
   return next();
 }
