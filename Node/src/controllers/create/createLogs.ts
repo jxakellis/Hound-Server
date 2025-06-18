@@ -36,7 +36,7 @@ async function createLogForLog(databaseConnection: Queryable, log: NotYetCreated
         DEPRECIATED_logAction,
         logStartDate, logEndDate, logNote, logActionTypeId, logCustomActionName,
         DEPRECIATED_logUnit,
-        logUnit, logNumberOfLogUnits,
+        logUnitTypeId, logNumberOfLogUnits,
         logLastModified, logIsDeleted,
         )
         VALUES (
@@ -54,7 +54,7 @@ async function createLogForLog(databaseConnection: Queryable, log: NotYetCreated
       logAction?.internalValue,
       log.logStartDate, log.logEndDate, formatKnownString(log.logNote, 500), log.logActionTypeId, formatKnownString(log.logCustomActionName, 32),
       logUnit?.readableValue,
-      log.logActionTypeId, log.logNumberOfLogUnits,
+      log.logUnitTypeId, log.logNumberOfLogUnits,
       // none, default values
     ],
   );
