@@ -10,9 +10,11 @@ import { deleteDogForFamilyIdDogUUID } from '../../../../../delete/deleteDogs.js
 import { ERROR_CODES, HoundError } from '../../../../../../main/server/globalErrors.js';
 
 import { formatDate, formatUnknownString } from '../../../../../../main/format/formatObject.js';
+import { requestLogger } from '../../../../../../main/logging/loggers.js';
 
 async function getDogs(req: express.Request, res: express.Response): Promise<void> {
   try {
+    requestLogger.debug('getDogs');
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     const { databaseConnection } = req.houndProperties;

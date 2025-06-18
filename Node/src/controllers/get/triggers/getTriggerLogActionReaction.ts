@@ -10,7 +10,7 @@ async function getTriggerLogActionReactionsForTriggerUUID(
     databaseConnection,
     `SELECT ${logActionTypeColumns}
            FROM dogTriggerLogActionReaction dtlar
-           JOIN logActionType lat ON dtlar.logActionTypeId = lat.logActionTypeId
+           LEFT JOIN logActionType lat ON dtlar.logActionTypeId = lat.logActionTypeId
           WHERE dtlar.triggerUUID = ?
           LIMIT 18446744073709551615`,
     [triggerUUID],
@@ -27,7 +27,7 @@ async function getTriggerLogActionReactionsForTriggerUUIDs(
     databaseConnection,
     `SELECT ${dogTriggerLogActionReactionColumns}, ${logActionTypeColumns}
              FROM dogTriggerLogActionReaction dtlar
-             JOIN logActionType lat ON dtlar.logActionTypeId = lat.logActionTypeId
+             LEFT JOIN logActionType lat ON dtlar.logActionTypeId = lat.logActionTypeId
             WHERE dtlar.triggerUUID IN (?)
             LIMIT 18446744073709551615`,
     [triggerUUIDs],

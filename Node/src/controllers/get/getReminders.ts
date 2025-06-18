@@ -15,7 +15,7 @@ async function getReminderForReminderUUID(
     databaseConnection,
     `SELECT ${dogRemindersColumns}, rat.internalValue AS reminderAction
       FROM dogReminders dr
-      JOIN reminderActionType rat ON dr.reminderActionTypeId = rat.reminderActionTypeId
+      LEFT JOIN reminderActionType rat ON dr.reminderActionTypeId = rat.reminderActionTypeId
       WHERE reminderUUID = ?
       LIMIT 1`,
     [reminderUUID],
@@ -39,7 +39,7 @@ async function getAllRemindersForDogUUID(databaseConnection: Queryable, dogUUID:
       databaseConnection,
       `SELECT ${dogRemindersColumns}, rat.internalValue AS reminderAction
       FROM dogReminders dr
-      JOIN reminderActionType rat ON dr.reminderActionTypeId = rat.reminderActionTypeId
+      LEFT JOIN reminderActionType rat ON dr.reminderActionTypeId = rat.reminderActionTypeId
       WHERE dogUUID = ? AND TIMESTAMPDIFF(MICROSECOND, reminderLastModified, ?) <= 0
       LIMIT 18446744073709551615`,
       [dogUUID, previousDogManagerSynchronization],
@@ -48,7 +48,7 @@ async function getAllRemindersForDogUUID(databaseConnection: Queryable, dogUUID:
       databaseConnection,
       `SELECT ${dogRemindersColumns}, rat.internalValue AS reminderAction
       FROM dogReminders dr
-      JOIN reminderActionType rat ON dr.reminderActionTypeId = rat.reminderActionTypeId
+      LEFT JOIN reminderActionType rat ON dr.reminderActionTypeId = rat.reminderActionTypeId
       WHERE dogUUID = ?
       LIMIT 18446744073709551615`,
       [dogUUID],

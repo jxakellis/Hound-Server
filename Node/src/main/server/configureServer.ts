@@ -1,12 +1,12 @@
-import https from 'https';
-import { IncomingMessage, ServerResponse } from 'http';
+import type { Server as HTTPServer } from 'http';
+import type { Server as HTTPSServer } from 'https';
 
 import { serverLogger } from '../logging/loggers.js';
 import { restoreAlarmNotificationsForAllFamilies } from '../tools/notifications/alarm/restoreAlarmNotification.js';
 import { SERVER } from './globalConstants.js';
 import { verifyDatabasePools } from '../database/databaseConnections.js';
 
-async function configureServer(server: https.Server<typeof IncomingMessage, typeof ServerResponse>): Promise<NodeJS.Timeout> {
+async function configureServer(server: HTTPServer | HTTPSServer): Promise<NodeJS.Timeout> {
   return new Promise((resolve) => {
     // We can only create an HTTPS server on the AWS instance. Otherwise we create a HTTP server.
     server.listen(SERVER.SERVER_PORT, async () => {

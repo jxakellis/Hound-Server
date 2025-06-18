@@ -2,7 +2,12 @@ import * as Pino from 'pino';
 
 import { SERVER } from '../server/globalConstants.js';
 
-const parentLogger = Pino.pino();
+const parentLogger = Pino.pino({
+  transport: {
+    target: 'pino-pretty',
+    options: { colorize: true, translateTime: 'SYS:standard' },
+  },
+});
 
 // Important server state information. This should always be logged to the console as it indicates critical functions
 const serverLogger = parentLogger.child({ name: 'Server' });

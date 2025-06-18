@@ -1,6 +1,8 @@
 import { exec } from 'child_process';
 import https from 'https';
-import { IncomingMessage, ServerResponse } from 'http';
+import http from 'http';
+import type { Server as HTTPServer } from 'http';
+import type { Server as HTTPSServer } from 'https';
 import express from 'express';
 import { SERVER } from './globalConstants.js';
 import './globalDeclare.js';
@@ -15,7 +17,7 @@ import { HoundError } from './globalErrors.js';
 
 // TODO FUTURE NICE-TO-HAVE add a maintaince server entry point for the server. This will run when main server is down for changes
 
-let httpsServer: https.Server<typeof IncomingMessage, typeof ServerResponse> | null = null;
+let httpsServer: HTTPServer | HTTPSServer | null = null;
 let testDatabaseConnectionInterval: NodeJS.Timeout | null;
 
 // This prevents multiple shutdowns from occurring at once
@@ -131,11 +133,12 @@ process.on('uncaughtRejection', async (reason, promise) => {
 const app: express.Application = express();
 
 // Create a NodeJS HTTPS listener on port that points to the Express app
-https.createServer();
-httpsServer = https.createServer({
-  key,
-  cert,
-}, app);
+httpsServer = false
+  ? http.createServer(app)
+  : https.createServer({
+    key,
+    cert,
+  }, app);
 
 httpsServer.on('error', async (error: NodeJS.ErrnoException) => {
   if (error.code === 'EADDRINUSE') {

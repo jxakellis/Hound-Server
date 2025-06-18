@@ -110,14 +110,16 @@ async function getAllDogsForFamilyId(
       FROM dogs d
       LEFT JOIN dogReminders dr ON d.dogUUID = dr.dogUUID
       LEFT JOIN dogLogs dl ON d.dogUUID = dl.dogUUID
+      LEFT JOIN dogTriggers dt ON d.dogUUID = dt.dogUUID
       WHERE d.familyId = ? AND (
         TIMESTAMPDIFF(MICROSECOND, d.dogLastModified, ?) <= 0
         OR TIMESTAMPDIFF(MICROSECOND, dr.reminderLastModified, ?) <= 0
         OR TIMESTAMPDIFF(MICROSECOND, dl.logLastModified, ?) <= 0
+        OR TIMESTAMPDIFF(MICROSECOND, dt.triggerLastModified, ?) <= 0
       )
       GROUP BY d.dogUUID
       LIMIT 18446744073709551615`,
-      [familyId, previousDogManagerSynchronization, previousDogManagerSynchronization, previousDogManagerSynchronization],
+      [familyId, previousDogManagerSynchronization, previousDogManagerSynchronization, previousDogManagerSynchronization, previousDogManagerSynchronization],
     )
     // User is requesting a complete copy of dogs, therefore we can assume they have a blank copy
     // If they have a blank copy, no need to include deleted dogs that indicate whether to delete their local dog store
