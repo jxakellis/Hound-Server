@@ -35,7 +35,7 @@ async function createLogForLog(databaseConnection: Queryable, log: NotYetCreated
         dogUUID, userId,
         DEPRECIATED_logAction,
         logStartDate, logEndDate, logNote, logActionTypeId, logCustomActionName,
-        DEPRECIATED_logUnit
+        DEPRECIATED_logUnit,
         logUnit, logNumberOfLogUnits,
         logLastModified, logIsDeleted,
         )
