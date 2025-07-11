@@ -19,7 +19,7 @@ async function updateReminderForReminder(
   if (existingReminder === undefined) {
     throw new HoundError('No reminder found or invalid permissions', updateReminderForReminder, ERROR_CODES.VALUE.MISSING);
   }
-  if (existingReminder.reminderIsTriggerResult === 1) {
+  if (existingReminder.reminderIsTriggerResult === 1 || reminder.reminderIsTriggerResult === 1) {
     throw new HoundError('Unable to modify a reminder that was created by a trigger', updateReminderForReminder, ERROR_CODES.VALUE.MISSING);
   }
 
