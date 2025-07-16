@@ -1,7 +1,8 @@
+import type { DogTriggerReminderResultRow } from 'src/main/types/rows/DogTriggerReminderResultRow.js';
 import { type Queryable, databaseQuery } from '../../../main/database/databaseQuery.js';
 import { type DogTriggersRow, dogTriggersColumns } from '../../../main/types/rows/DogTriggersRow.js';
-import { getTriggerLogActionReactionsForTriggerUUID, getTriggerLogActionReactionsForTriggerUUIDs } from './getTriggerLogActionReaction.js';
-import { getTriggerLogCustomActionNameReactionsForTriggerUUID, getTriggerLogCustomActionNameReactionsForTriggerUUIDs } from './getTriggerLogCustomActionNameReaction.js';
+import { getTriggerLogReactionsForTriggerUUID, getTriggerLogReactionsForTriggerUUIDs } from './getTriggerLogReaction.js';
+import { getTriggerReminderResultForTriggerUUID, getTriggerReminderResultForTriggerUUIDs } from './getTriggerReminderResult.js';
 
 /**
  * If you are querying a single element from the database, previousTriggerManagerSynchronization is not taken.
@@ -31,11 +32,8 @@ async function getTriggerForTriggerUUID(
     return undefined;
   }
 
-  const logActionReactionsRows = await getTriggerLogActionReactionsForTriggerUUID(databaseConnection, trigger.triggerUUID);
-  const logCustomActionNameRows = await getTriggerLogCustomActionNameReactionsForTriggerUUID(databaseConnection, trigger.triggerUUID);
-
-  trigger.reactionLogActionTypeIds = logActionReactionsRows.map((r) => r.logActionTypeId);
-  trigger.reactionLogCustomActionNames = logCustomActionNameRows.map((r) => r.logCustomActionName);
+  trigger.triggerLogReactions = await getTriggerLogReactionsForTriggerUUID(databaseConnection, trigger.triggerUUID);
+  trigger.triggerReminderResult = await getTriggerReminderResultForTriggerUUID(databaseConnection, trigger.triggerUUID) as DogTriggerReminderResultRow;
 
   return trigger;
 }
@@ -78,13 +76,13 @@ async function getAllTriggersForDogUUID(
     return triggers;
   }
 
-  const logActionReactionsRows = await getTriggerLogActionReactionsForTriggerUUIDs(databaseConnection, triggerUUIDs);
-  const logCustomActionNameRows = await getTriggerLogCustomActionNameReactionsForTriggerUUIDs(databaseConnection, triggerUUIDs);
+  const logReactions = await getTriggerLogReactionsForTriggerUUIDs(databaseConnection, triggerUUIDs);
+  const reminderResults = await getTriggerReminderResultForTriggerUUIDs(databaseConnection, triggerUUIDs);
 
   triggers.forEach((trigger) => {
     const updatedTrigger = { ...trigger };
-    updatedTrigger.reactionLogActionTypeIds = logActionReactionsRows.filter((r) => r.triggerUUID === trigger.triggerUUID).map((r) => r.logActionTypeId);
-    updatedTrigger.reactionLogCustomActionNames = logCustomActionNameRows.filter((r) => r.triggerUUID === trigger.triggerUUID).map((r) => r.logCustomActionName);
+    updatedTrigger.triggerLogReactions = logReactions.filter((r) => r.triggerUUID === trigger.triggerUUID);
+    [updatedTrigger.triggerReminderResult] = reminderResults.filter((r) => r.triggerUUID === trigger.triggerUUID);
     Object.assign(trigger, updatedTrigger);
   });
 

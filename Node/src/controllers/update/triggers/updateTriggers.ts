@@ -1,8 +1,7 @@
 import { type NotYetUpdatedDogTriggersRow } from '../../../main/types/rows/DogTriggersRow.js';
 import { type Queryable, databaseQuery } from '../../../main/database/databaseQuery.js';
-import { formatKnownString } from '../../../main/format/formatObject.js';
-import { updateTriggerLogCustomNameActionReactionForTrigger } from './updateTriggerLogCustomActionNameReactions.js';
-import { updateTriggerLogActionReactionForTrigger } from './updateTriggerLogActionReactions.js';
+import { updateTriggerLogReactionForTrigger } from './updateTriggerLogReaction.js';
+import { updateTriggerReminderResultForTrigger } from './updateTriggerReminderResult.js';
 
 /**
  *  Queries the database to update a single trigger and its reactions.
@@ -18,8 +17,7 @@ async function updateTriggerForTrigger(
     databaseQuery(
       databaseConnection,
       `UPDATE dogTriggers
-           SET triggerCustomName         = ?,
-               triggerType               = ?,
+           SET triggerType               = ?,
                triggerTimeDelay          = ?,
                triggerFixedTimeType      = ?,
                triggerFixedTimeTypeAmount= ?,
@@ -28,7 +26,6 @@ async function updateTriggerForTrigger(
                triggerLastModified       = CURRENT_TIMESTAMP()
          WHERE triggerUUID = ?`,
       [
-        formatKnownString(trigger.triggerCustomName, 32),
         trigger.triggerType,
         trigger.triggerTimeDelay,
         trigger.triggerFixedTimeType,
@@ -38,8 +35,8 @@ async function updateTriggerForTrigger(
         trigger.triggerUUID,
       ],
     ),
-    updateTriggerLogCustomNameActionReactionForTrigger(databaseConnection, trigger),
-    updateTriggerLogActionReactionForTrigger(databaseConnection, trigger),
+    updateTriggerLogReactionForTrigger(databaseConnection, trigger),
+    updateTriggerReminderResultForTrigger(databaseConnection, trigger),
   );
 
   Promise.all(promises);

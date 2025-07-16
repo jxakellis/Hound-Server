@@ -45,7 +45,7 @@ const LIMIT = {
   NUMBER_OF_LOGS_PER_DOG: 100000,
   // A user can have <= the number listed below of reminders for each dog. E.g. if 10 then the family can have <= 10 reminders per dog
   // IMPORTANT: If you modify this value, change the value on Hound app's DogConstant
-  NUMBER_OF_REMINDERS_PER_DOG: 10,
+  NUMBER_OF_REMINDERS_PER_DOG: 25,
   // A user can have <= the number listed below of triggers for each dog. E.g. if 10 then the family can have <= 10 triggers per dog
   // IMPORTANT: If you modify this value, change the value on Hound app's DogConstant
   NUMBER_OF_TRIGGERS_PER_DOG: 25,

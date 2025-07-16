@@ -1,8 +1,10 @@
+import type { DogTriggerLogReactionRow, NotYetCreatedDogTriggerLogReactionRow } from './DogTriggerLogReactionRow.js';
+import type { DogTriggerReminderResultRow, NotYetCreatedDogTriggerReminderResultRow } from './DogTriggerReminderResultRow.js';
+
 const dogTriggersColumns = `
 dt.triggerId,
 dt.triggerUUID,
 dt.dogUUID,
-dt.triggerCustomName,
 dt.triggerType,
 dt.triggerTimeDelay,
 dt.triggerFixedTimeType,
@@ -18,10 +20,8 @@ type DogTriggersRow = {
     triggerId: number
     triggerUUID: string
     dogUUID: string
-    triggerCustomName: string
-    reactionLogActionTypeIds: number[]
-    reactionLogCustomActionNames: string[]
-    resultReminderActionTypeId: number
+    triggerLogReactions: DogTriggerLogReactionRow[]
+    triggerReminderResult: DogTriggerReminderResultRow
     triggerType: string
     triggerTimeDelay: number
     triggerFixedTimeType: string
@@ -32,8 +32,15 @@ type DogTriggersRow = {
     triggerIsDeleted: number
 };
 
-type NotYetCreatedDogTriggersRow = Omit<DogTriggersRow, 'triggerId' | 'triggerIsDeleted' | 'triggerLastModified'>;
-type NotYetUpdatedDogTriggersRow = Omit<DogTriggersRow, 'triggerIsDeleted' | 'triggerLastModified'>;
+type NotYetCreatedDogTriggersRow = Omit<DogTriggersRow, 'triggerId' | 'triggerIsDeleted' | 'triggerLastModified' | 'triggerLogReactions' | 'triggerReminderResult'> & {
+  triggerLogReactions: NotYetCreatedDogTriggerLogReactionRow[];
+  triggerReminderResult: NotYetCreatedDogTriggerReminderResultRow;
+};
+
+type NotYetUpdatedDogTriggersRow = Omit<DogTriggersRow, 'triggerIsDeleted' | 'triggerLastModified' | 'triggerLogReactions' | 'triggerReminderResult'> & {
+  triggerLogReactions: NotYetCreatedDogTriggerLogReactionRow[];
+  triggerReminderResult: NotYetCreatedDogTriggerReminderResultRow;
+};
 
 export {
   type DogTriggersRow,

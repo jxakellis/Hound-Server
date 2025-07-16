@@ -3,10 +3,9 @@ import { type DogTriggersRow, type NotYetCreatedDogTriggersRow } from '../../../
 import { type Queryable, type ResultSetHeader, databaseQuery } from '../../../main/database/databaseQuery.js';
 import { LIMIT } from '../../../main/server/globalConstants.js';
 import { ERROR_CODES, HoundError } from '../../../main/server/globalErrors.js';
-import { formatKnownString } from '../../../main/format/formatObject.js';
 import { getAllTriggersForDogUUID } from '../../../controllers/get/triggers/getTriggers.js';
-import { createTriggerLogActionReaction } from './createTriggerLogActionReactions.js';
-import { createTriggerLogCustomActionNameReaction } from './createTriggerLogCustomActionNameReactions.js';
+import { createTriggerReminderResult } from './createTriggerReminderResult.js';
+import { createTriggerLogReaction } from './createTriggerLogReaction.js';
 
 /**
 *  Queries the database to create a single trigger. If the query is successful, then returns the trigger with created triggerId added to it.
@@ -28,7 +27,6 @@ async function createTriggerForTrigger(
     `INSERT INTO dogTriggers(
           dogUUID,
           triggerUUID,
-          triggerCustomName,
           triggerType,
           triggerTimeDelay,
           triggerFixedTimeType, triggerFixedTimeTypeAmount, triggerFixedTimeUTCHour, triggerFixedTimeUTCMinute,
@@ -39,14 +37,12 @@ async function createTriggerForTrigger(
             ?,
             ?,
             ?,
-            ?,
             ?, ?, ?, ?,
             CURRENT_TIMESTAMP(), 0
             )`,
     [
       trigger.dogUUID,
       trigger.triggerUUID,
-      formatKnownString(trigger.triggerCustomName, 32),
       trigger.triggerType,
       trigger.triggerTimeDelay,
       trigger.triggerFixedTimeType, trigger.triggerFixedTimeTypeAmount, trigger.triggerFixedTimeUTCHour, trigger.triggerFixedTimeUTCMinute,
@@ -55,24 +51,22 @@ async function createTriggerForTrigger(
 
   const promises: Promise<unknown>[] = [];
 
-  trigger.reactionLogActionTypeIds?.forEach((reactionLogActionTypeId) => {
-    if (reactionLogActionTypeId === undefined) return;
-
-    promises.push(createTriggerLogActionReaction(
+  trigger.triggerLogReactions?.forEach((triggerLogReaction) => {
+    promises.push(createTriggerLogReaction(
       databaseConnection,
       {
         triggerUUID: trigger.triggerUUID,
-        logActionTypeId: reactionLogActionTypeId,
+        logActionTypeId: triggerLogReaction.logActionTypeId,
+        logCustomActionName: triggerLogReaction.logCustomActionName,
       },
     ));
   });
 
-  trigger.reactionLogCustomActionNames?.forEach((reactionLogCustomActionName) => {
-    promises.push(createTriggerLogCustomActionNameReaction(databaseConnection, {
-      triggerUUID: trigger.triggerUUID,
-      logCustomActionName: reactionLogCustomActionName,
-    }));
-  });
+  promises.push(createTriggerReminderResult(databaseConnection, {
+    triggerUUID: trigger.triggerUUID,
+    reminderActionTypeId: trigger.triggerReminderResult.reminderActionTypeId,
+    reminderCustomActionName: trigger.triggerReminderResult.reminderCustomActionName,
+  }));
 
   await Promise.all(promises);
 

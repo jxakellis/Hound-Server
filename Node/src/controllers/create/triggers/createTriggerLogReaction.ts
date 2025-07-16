@@ -1,22 +1,22 @@
+import { getTriggerLogReactionsForTriggerUUIDs } from 'src/controllers/get/triggers/getTriggerLogReaction.js';
 import { type Queryable, type ResultSetHeader, databaseQuery } from '../../../main/database/databaseQuery.js';
-import { getTriggerLogActionReactionsForTriggerUUIDs } from '../../get/triggers/getTriggerLogActionReaction.js';
-import { type LogActionTypeRow } from '../../../main/types/rows/LogActionTypeRow.js';
-import type { DogTriggerLogActionReactionRow, NotYetCreatedDogTriggerLogActionReactionRow } from '../../../main/types/rows/DogTriggerLogActionReactionRow.js';
+import type { DogTriggerLogReactionRow, NotYetCreatedDogTriggerLogReactionRow } from '../../../main/types/rows/DogTriggerLogReactionRow.js';
 
 /**
 *  Queries the database to create a single trigger. If the query is successful, then returns the trigger with created triggerId added to it.
 *  If a problem is encountered, creates and throws custom error
 */
-async function createTriggerLogActionReaction(
+async function createTriggerLogReaction(
   databaseConnection: Queryable,
-  reaction: NotYetCreatedDogTriggerLogActionReactionRow,
+  reaction: NotYetCreatedDogTriggerLogReactionRow,
 ): Promise<number> {
   const result = await databaseQuery<ResultSetHeader>(
     databaseConnection,
-    'INSERT INTO dogTriggerLogActionReaction(triggerUUID, logActionTypeId) VALUES (?, ?)',
+    'INSERT INTO dogTriggerLogReaction(triggerUUID, logActionTypeId, logCustomActionName) VALUES (?, ?, ?)',
     [
       reaction.triggerUUID,
       reaction.logActionTypeId,
+      reaction.logCustomActionName,
     ],
   );
 
@@ -27,14 +27,14 @@ async function createTriggerLogActionReaction(
           * Queries the database to create a multiple triggers. If the query is successful, then returns the triggers with their created triggerIds added to them.
           *  If a problem is encountered, creates and throws custom error
           */
-async function createTriggerLogActionReactions(
+async function createTriggerLogReactions(
   databaseConnection: Queryable,
-  reactions: NotYetCreatedDogTriggerLogActionReactionRow[],
-): Promise<(DogTriggerLogActionReactionRow & LogActionTypeRow)[]> {
+  reactions: NotYetCreatedDogTriggerLogReactionRow[],
+): Promise<DogTriggerLogReactionRow []> {
   const promises: Promise<number>[] = [];
   reactions.forEach((reaction) => {
     // retrieve the original provided body AND the created id
-    promises.push(createTriggerLogActionReaction(
+    promises.push(createTriggerLogReaction(
       databaseConnection,
       reaction,
     ));
@@ -51,7 +51,7 @@ async function createTriggerLogActionReactions(
 
   const uniqueReactionUUIDs = [...new Set(reactions.map((reaction) => reaction.triggerUUID))];
 
-  const notDeletedReactions = await getTriggerLogActionReactionsForTriggerUUIDs(databaseConnection, uniqueReactionUUIDs);
+  const notDeletedReactions = await getTriggerLogReactionsForTriggerUUIDs(databaseConnection, uniqueReactionUUIDs);
 
   // Once we have created all of the reactions, we need to return them to the user. Its hard to link the omit and non-omit types, so just use the triggerUUID to query the triggers, and only include the ones we just created
   const notDeletedReturnReactions = notDeletedReactions.filter((reactionFromDatabase) => reactionIds.includes(reactionFromDatabase.reactionId));
@@ -59,4 +59,4 @@ async function createTriggerLogActionReactions(
   return notDeletedReturnReactions;
 }
 
-export { createTriggerLogActionReaction, createTriggerLogActionReactions };
+export { createTriggerLogReaction, createTriggerLogReactions };
