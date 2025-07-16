@@ -545,3 +545,49 @@ ALTER TABLE developmentHound.userConfiguration ADD CONSTRAINT uc_FK_users FOREIG
 
 ALTER TABLE developmentHound.surveyFeedbackAppExperience ADD CONSTRAINT sfae_FK_surveyFeedback FOREIGN KEY (surveyFeedbackId) REFERENCES surveyFeedback (surveyFeedbackId) ON UPDATE RESTRICT ON DELETE RESTRICT;
 ALTER TABLE developmentHound.surveyFeedbackCancelSubscription ADD CONSTRAINT sfcs_FK_surveyFeedback FOREIGN KEY (surveyFeedbackId) REFERENCES surveyFeedback (surveyFeedbackId) ON UPDATE RESTRICT ON DELETE RESTRICT;
+
+ALTER TABLE developmentHound.dogReminders ADD COLUMN reminderIsTriggerResult tinyint(1) NULL AFTER reminderType;
+DROP TRIGGER BEFORE_UPDATE_dogReminders_CHECK_reminderIsDeleted;
+UPDATE developmentHound.dogReminders SET reminderIsTriggerResult = 0 WHERE reminderIsTriggerResult IS NULL;
+CREATE TRIGGER BEFORE_UPDATE_dogReminders_CHECK_reminderIsDeleted
+BEFORE UPDATE ON dogReminders
+FOR EACH ROW
+BEGIN
+  IF OLD.reminderIsDeleted = 1 THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Unable to update reminder marked as deleted';
+  END IF;
+END;
+ALTER TABLE developmentHound.dogReminders MODIFY COLUMN reminderIsTriggerResult tinyint(1) NOT NULL AFTER reminderType;
+
+RENAME TABLE developmentHound.mappingLogActionTypesLogUnitType TO mappingLogActionTypeLogUnitType;
+
+-- dogTriggersLogActionReactions -> dogTriggerLogReactions
+RENAME TABLE developmentHound.dogTriggerLogActionReaction TO developmentHound.dogTriggerLogReaction;
+
+ALTER TABLE developmentHound.dogTriggerLogReaction DROP CONSTRAINT dtlar_FK_dogTriggers;
+ALTER TABLE developmentHound.dogTriggerLogReaction DROP FOREIGN KEY dtlar_FK_logActionType;
+ALTER TABLE developmentHound.dogTriggerLogReaction DROP INDEX dtlar_FK_logActionType;
+ALTER TABLE developmentHound.dogTriggerLogReaction DROP CONSTRAINT dtlar_UN_triggerUUID_logActionTypeId;
+ALTER TABLE developmentHound.dogTriggerLogReaction ADD COLUMN logCustomActionName VARCHAR(32) NOT NULL AFTER logActionTypeId;
+
+ALTER TABLE developmentHound.dogTriggerLogReaction ADD CONSTRAINT dtlr_UN_triggerUUID_logActionTypeId_logCustomActionName UNIQUE KEY (triggerUUID, logActionTypeId, logCustomActionName);
+ALTER TABLE developmentHound.dogTriggerLogReaction ADD CONSTRAINT dtlr_FK_dogTriggers FOREIGN KEY (triggerUUID) REFERENCES dogTriggers (triggerUUID) ON UPDATE RESTRICT ON DELETE RESTRICT;
+ALTER TABLE developmentHound.dogTriggerLogReaction ADD CONSTRAINT dtlr_FK_logActionType FOREIGN KEY (logActionTypeId) REFERENCES logActionType (logActionTypeId) ON UPDATE RESTRICT ON DELETE RESTRICT;
+DROP TABLE developmentHound.dogTriggerLogCustomActionNameReaction;
+
+-- dogTriggerReminderResult
+CREATE TABLE developmentHound.dogTriggerReminderResult (
+  resultId                BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  triggerUUID             CHAR(36) NOT NULL,
+  reminderActionTypeId    BIGINT(20) UNSIGNED NOT NULL,
+  reminderCustomActionName VARCHAR(32) NOT NULL,
+  PRIMARY KEY (resultId),
+  CONSTRAINT dtrr_UN_tUUID_rActionTypeId_rCustomActionName UNIQUE KEY (triggerUUID, reminderActionTypeId, reminderCustomActionName),
+  CONSTRAINT dtrr_FK_dogTriggers FOREIGN KEY (triggerUUID) REFERENCES dogTriggers (triggerUUID) ON UPDATE RESTRICT ON DELETE RESTRICT,
+  CONSTRAINT dtrr_FK_reminderActionType FOREIGN KEY (reminderActionTypeId) REFERENCES reminderActionType (reminderActionTypeId) ON UPDATE RESTRICT ON DELETE RESTRICT
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_general_ci;
+ 
+ ALTER TABLE developmentHound.dogTriggers DROP COLUMN triggerCustomName;
+
