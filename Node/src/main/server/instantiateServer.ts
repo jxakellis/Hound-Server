@@ -133,7 +133,7 @@ process.on('uncaughtRejection', async (reason, promise) => {
 const app: express.Application = express();
 
 // Create a NodeJS HTTPS listener on port that points to the Express app
-httpsServer = false
+httpsServer = true
   ? http.createServer(app)
   : https.createServer({
     key,

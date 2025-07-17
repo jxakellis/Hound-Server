@@ -22,6 +22,10 @@ const maximumUsernameLength = 64;
  * @returns The string if valid, truncated if necessary, undefined otherwise.
  */
 function formatUnknownString(string?: unknown, maximumLength?: number): string | undefined {
+  if (string === undefined || string === null) {
+    return undefined;
+  }
+
   if (typeof string !== 'string') {
     return undefined;
   }
@@ -48,6 +52,10 @@ function formatKnownString(string: string, maximumLength?: number): string {
  * @returns The array if valid, undefined otherwise.
  */
 function formatArray(array?: unknown): unknown[] | undefined {
+  if (array === undefined || array === null) {
+    return undefined;
+  }
+
   if (!Array.isArray(array)) {
     return undefined;
   }
@@ -62,6 +70,10 @@ function formatArray(array?: unknown): unknown[] | undefined {
  * @returns Formatted email if valid, undefined otherwise.
  */
 function formatEmail(email?: string): string | undefined {
+  if (email === undefined || email === null) {
+    return undefined;
+  }
+
   let userEmail = formatUnknownString(email, maximumEmailLengthWithAngleBrackets);
 
   if (userEmail === undefined || userEmail == null) {
@@ -98,6 +110,10 @@ function formatEmail(email?: string): string | undefined {
  * @returns Date object if valid, undefined otherwise.
  */
 function formatDate(forDate?: unknown): Date | undefined {
+  if (forDate === undefined || forDate === null) {
+    return undefined;
+  }
+
   let date: Date;
   if (typeof forDate === 'string' || typeof forDate === 'number') {
     date = new Date(forDate);
@@ -123,6 +139,10 @@ function formatDate(forDate?: unknown): Date | undefined {
  * @returns Boolean value if valid, undefined otherwise.
  */
 function formatBoolean(boolean?: unknown): boolean | undefined {
+  if (boolean === undefined || boolean === null) {
+    return undefined;
+  }
+
   if (typeof boolean === 'boolean') {
     return boolean;
   }
@@ -150,6 +170,10 @@ function formatBoolean(boolean?: unknown): boolean | undefined {
  * @returns Number if valid, undefined otherwise.
  */
 function formatNumber(forNumber?: unknown): number | undefined {
+  if (forNumber === undefined || forNumber === null) {
+    return undefined;
+  }
+
   const trueValues = new Set(['true', 'True', 'TRUE', '1', 'yes', 'Yes', 'YES']);
   const falseValues = new Set(['false', 'False', 'FALSE', '0', 'no', 'No', 'NO']);
 
@@ -177,6 +201,10 @@ function formatNumber(forNumber?: unknown): number | undefined {
  * @returns Formatted Base64 string if valid, undefined otherwise.
  */
 function formatBase64EncodedString(forString?: unknown): string | undefined {
+  if (forString === undefined || forString === null) {
+    return undefined;
+  }
+
   const string = formatUnknownString(forString);
 
   if (string === undefined || string === null) {
@@ -198,10 +226,11 @@ function formatBase64EncodedString(forString?: unknown): string | undefined {
  * @returns The dict if valid, undefined otherwise.
  */
 function formatDict(dict?: unknown): StringKeyDict | undefined {
-  if (
-    dict !== null
-    && dict !== undefined
-    && typeof dict === 'object'
+  if (dict === undefined || dict === null) {
+    return undefined;
+  }
+
+  if (typeof dict === 'object'
     && !Array.isArray(dict)
     && Object.getPrototypeOf(dict) === Object.prototype
   ) {

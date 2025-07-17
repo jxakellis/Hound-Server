@@ -1,4 +1,4 @@
-import { getTriggerReminderResultForTriggerUUIDs } from 'src/controllers/get/triggers/getTriggerReminderResult.js';
+import { getTriggerReminderResultForTriggerUUIDs } from '../../../controllers/get/triggers/getTriggerReminderResult.js';
 import { type Queryable, type ResultSetHeader, databaseQuery } from '../../../main/database/databaseQuery.js';
 import type { DogTriggerReminderResultRow, NotYetCreatedDogTriggerReminderResultRow } from '../../../main/types/rows/DogTriggerReminderResultRow.js';
 

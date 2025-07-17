@@ -1,4 +1,4 @@
-import { getTriggerLogReactionsForTriggerUUIDs } from 'src/controllers/get/triggers/getTriggerLogReaction.js';
+import { getTriggerLogReactionsForTriggerUUIDs } from '../../../controllers/get/triggers/getTriggerLogReaction.js';
 import { type Queryable, type ResultSetHeader, databaseQuery } from '../../../main/database/databaseQuery.js';
 import type { DogTriggerLogReactionRow, NotYetCreatedDogTriggerLogReactionRow } from '../../../main/types/rows/DogTriggerLogReactionRow.js';
 

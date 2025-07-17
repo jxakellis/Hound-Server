@@ -1,8 +1,8 @@
 const dogTriggerReminderResultColumns = `
 dtrr.reactionId,
 dtrr.triggerUUID,
-dtrr.logActionTypeId,
-dtrr.logCustomActionName
+dtrr.reminderActionTypeId,
+dtrr.reminderCustomActionName
 `;
 
 type DogTriggerReminderResultRow = {
