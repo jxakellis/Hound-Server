@@ -316,7 +316,7 @@ async function validateTriggerUUID(req: express.Request, res: express.Response, 
         return;
       }
 
-      if (validatedDogs.findIndex((dog) => dog.validatedDogUUID === queriedTrigger.triggerUUID) <= -1) {
+      if (validatedDogs.findIndex((dog) => dog.validatedDogUUID === queriedTrigger.dogUUID) <= -1) {
         throw new HoundError(
           'Trigger has invalid permissions',
           validateTriggerUUID,
