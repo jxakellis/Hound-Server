@@ -17,13 +17,15 @@ async function updateTriggerForTrigger(
     databaseQuery(
       databaseConnection,
       `UPDATE dogTriggers
-           SET triggerType               = ?,
-               triggerTimeDelay          = ?,
-               triggerFixedTimeType      = ?,
-               triggerFixedTimeTypeAmount= ?,
-               triggerFixedTimeUTCHour   = ?,
-               triggerFixedTimeUTCMinute = ?,
-               triggerLastModified       = CURRENT_TIMESTAMP()
+           SET triggerType                  = ?,
+               triggerTimeDelay             = ?,
+               triggerFixedTimeType         = ?,
+               triggerFixedTimeTypeAmount   = ?,
+               triggerFixedTimeUTCHour      = ?,
+               triggerFixedTimeUTCMinute    = ?,
+               triggerManualCondition       = ?,
+               triggerAlarmCreatedCondition = ?,
+               triggerLastModified          = CURRENT_TIMESTAMP()
          WHERE triggerUUID = ?`,
       [
         trigger.triggerType,
@@ -32,6 +34,8 @@ async function updateTriggerForTrigger(
         trigger.triggerFixedTimeTypeAmount,
         trigger.triggerFixedTimeUTCHour,
         trigger.triggerFixedTimeUTCMinute,
+        trigger.triggerManualCondition,
+        trigger.triggerAlarmCreatedCondition,
         trigger.triggerUUID,
       ],
     ),

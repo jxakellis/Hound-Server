@@ -30,6 +30,7 @@ async function createTriggerForTrigger(
           triggerType,
           triggerTimeDelay,
           triggerFixedTimeType, triggerFixedTimeTypeAmount, triggerFixedTimeUTCHour, triggerFixedTimeUTCMinute,
+          triggerManualCondition, triggerAlarmCreatedCondition,
           triggerLastModified, triggerIsDeleted
           )
           VALUES (
@@ -38,6 +39,7 @@ async function createTriggerForTrigger(
             ?,
             ?,
             ?, ?, ?, ?,
+            ?, ?,
             CURRENT_TIMESTAMP(), 0
             )`,
     [
@@ -46,6 +48,7 @@ async function createTriggerForTrigger(
       trigger.triggerType,
       trigger.triggerTimeDelay,
       trigger.triggerFixedTimeType, trigger.triggerFixedTimeTypeAmount, trigger.triggerFixedTimeUTCHour, trigger.triggerFixedTimeUTCMinute,
+      trigger.triggerManualCondition, trigger.triggerAlarmCreatedCondition,
     ],
   );
 

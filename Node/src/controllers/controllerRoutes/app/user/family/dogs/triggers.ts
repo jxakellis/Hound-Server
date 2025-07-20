@@ -119,6 +119,8 @@ async function createTrigger(req: express.Request, res: express.Response): Promi
       const triggerFixedTimeTypeAmount = formatNumber(unvalidatedTriggerDict['triggerFixedTimeTypeAmount']);
       const triggerFixedTimeUTCHour = formatNumber(unvalidatedTriggerDict['triggerFixedTimeUTCHour']);
       const triggerFixedTimeUTCMinute = formatNumber(unvalidatedTriggerDict['triggerFixedTimeUTCMinute']);
+      const triggerManualCondition = formatNumber(unvalidatedTriggerDict['triggerManualCondition']);
+      const triggerAlarmCreatedCondition = formatNumber(unvalidatedTriggerDict['triggerAlarmCreatedCondition']);
 
       if (triggerType === undefined || triggerType === null) {
         throw new HoundError('triggerType missing', createTrigger, ERROR_CODES.VALUE.MISSING);
@@ -138,6 +140,12 @@ async function createTrigger(req: express.Request, res: express.Response): Promi
       if (triggerFixedTimeUTCMinute === undefined || triggerFixedTimeUTCMinute === null) {
         throw new HoundError('triggerFixedTimeUTCMinute missing', createTrigger, ERROR_CODES.VALUE.MISSING);
       }
+      if (triggerManualCondition === undefined || triggerManualCondition === null) {
+        throw new HoundError('triggerManualCondition missing', createTrigger, ERROR_CODES.VALUE.MISSING);
+      }
+      if (triggerAlarmCreatedCondition === undefined || triggerAlarmCreatedCondition === null) {
+        throw new HoundError('triggerAlarmCreatedCondition missing', createTrigger, ERROR_CODES.VALUE.MISSING);
+      }
 
       triggers.push({
         dogUUID: validatedDog.validatedDogUUID,
@@ -150,6 +158,8 @@ async function createTrigger(req: express.Request, res: express.Response): Promi
         triggerFixedTimeTypeAmount,
         triggerFixedTimeUTCHour,
         triggerFixedTimeUTCMinute,
+        triggerManualCondition,
+        triggerAlarmCreatedCondition,
       });
     });
 
@@ -186,39 +196,39 @@ async function updateTrigger(req: express.Request, res: express.Response): Promi
       const dogUUID = validatedTrigger.validatedDogUUID;
 
       if (triggerUUID === undefined || triggerUUID === null) {
-        throw new HoundError('triggerUUID missing', createTrigger, ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('triggerUUID missing', updateTrigger, ERROR_CODES.VALUE.MISSING);
       }
 
       const logReactionsRaw = formatArray(validatedTrigger.unvalidatedTriggerDict?.['triggerLogReactions']);
       if (logReactionsRaw === undefined) {
-        throw new HoundError('triggerLogReactions missing', createTrigger, ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('triggerLogReactions missing', updateTrigger, ERROR_CODES.VALUE.MISSING);
       }
       const triggerLogReactions = logReactionsRaw.map((raw) => {
         const rawTriggerLogReaction = formatDict(raw);
         if (rawTriggerLogReaction === undefined) {
-          throw new HoundError('triggerLogReaction missing in triggerLogReactions', createTrigger, ERROR_CODES.VALUE.MISSING);
+          throw new HoundError('triggerLogReaction missing in triggerLogReactions', updateTrigger, ERROR_CODES.VALUE.MISSING);
         }
         const logActionTypeId = formatNumber(rawTriggerLogReaction['logActionTypeId']);
         const logCustomActionName = formatUnknownString(rawTriggerLogReaction['logCustomActionName']);
         if (logActionTypeId === undefined) {
-          throw new HoundError('logActionTypeId missing in triggerLogReactions', createTrigger, ERROR_CODES.VALUE.MISSING);
+          throw new HoundError('logActionTypeId missing in triggerLogReactions', updateTrigger, ERROR_CODES.VALUE.MISSING);
         }
         if (logCustomActionName === undefined) {
-          throw new HoundError('logCustomActionName missing in triggerLogReactions', createTrigger, ERROR_CODES.VALUE.MISSING);
+          throw new HoundError('logCustomActionName missing in triggerLogReactions', updateTrigger, ERROR_CODES.VALUE.MISSING);
         }
         return { triggerUUID, logActionTypeId, logCustomActionName };
       });
       const rawTriggerReminderResult = formatDict(validatedTrigger.unvalidatedTriggerDict?.['triggerReminderResult']);
       if (rawTriggerReminderResult === undefined || rawTriggerReminderResult === null) {
-        throw new HoundError('triggerReminderResult missing', createTrigger, ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('triggerReminderResult missing', updateTrigger, ERROR_CODES.VALUE.MISSING);
       }
       const reminderActionTypeId = formatNumber(rawTriggerReminderResult['reminderActionTypeId']);
       const reminderCustomActionName = formatUnknownString(rawTriggerReminderResult['reminderCustomActionName']);
       if (reminderActionTypeId === undefined) {
-        throw new HoundError('reminderActionTypeId missing in triggerReminderResult', createTrigger, ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('reminderActionTypeId missing in triggerReminderResult', updateTrigger, ERROR_CODES.VALUE.MISSING);
       }
       if (reminderCustomActionName === undefined) {
-        throw new HoundError('reminderCustomActionName missing in triggerReminderResult', createTrigger, ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('reminderCustomActionName missing in triggerReminderResult', updateTrigger, ERROR_CODES.VALUE.MISSING);
       }
       const triggerReminderResult = { triggerUUID, reminderActionTypeId, reminderCustomActionName };
 
@@ -228,24 +238,32 @@ async function updateTrigger(req: express.Request, res: express.Response): Promi
       const triggerFixedTimeTypeAmount = formatNumber(validatedTrigger.unvalidatedTriggerDict?.['triggerFixedTimeTypeAmount']);
       const triggerFixedTimeUTCHour = formatNumber(validatedTrigger.unvalidatedTriggerDict?.['triggerFixedTimeUTCHour']);
       const triggerFixedTimeUTCMinute = formatNumber(validatedTrigger.unvalidatedTriggerDict?.['triggerFixedTimeUTCMinute']);
+      const triggerManualCondition = formatNumber(validatedTrigger.unvalidatedTriggerDict?.['triggerManualCondition']);
+      const triggerAlarmCreatedCondition = formatNumber(validatedTrigger.unvalidatedTriggerDict?.['triggerAlarmCreatedCondition']);
 
       if (triggerType === undefined || triggerType === null) {
-        throw new HoundError('triggerType missing', createTrigger, ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('triggerType missing', updateTrigger, ERROR_CODES.VALUE.MISSING);
       }
       if (triggerTimeDelay === undefined || triggerTimeDelay === null) {
-        throw new HoundError('triggerTimeDelay missing', createTrigger, ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('triggerTimeDelay missing', updateTrigger, ERROR_CODES.VALUE.MISSING);
       }
       if (triggerFixedTimeType === undefined || triggerFixedTimeType === null) {
-        throw new HoundError('triggerFixedTimeType missing', createTrigger, ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('triggerFixedTimeType missing', updateTrigger, ERROR_CODES.VALUE.MISSING);
       }
       if (triggerFixedTimeTypeAmount === undefined || triggerFixedTimeTypeAmount === null) {
-        throw new HoundError('triggerFixedTimeTypeAmount missing', createTrigger, ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('triggerFixedTimeTypeAmount missing', updateTrigger, ERROR_CODES.VALUE.MISSING);
       }
       if (triggerFixedTimeUTCHour === undefined || triggerFixedTimeUTCHour === null) {
-        throw new HoundError('triggerFixedTimeUTCHour missing', createTrigger, ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('triggerFixedTimeUTCHour missing', updateTrigger, ERROR_CODES.VALUE.MISSING);
       }
       if (triggerFixedTimeUTCMinute === undefined || triggerFixedTimeUTCMinute === null) {
-        throw new HoundError('triggerFixedTimeUTCMinute missing', createTrigger, ERROR_CODES.VALUE.MISSING);
+        throw new HoundError('triggerFixedTimeUTCMinute missing', updateTrigger, ERROR_CODES.VALUE.MISSING);
+      }
+      if (triggerManualCondition === undefined || triggerManualCondition === null) {
+        throw new HoundError('triggerManualCondition missing', updateTrigger, ERROR_CODES.VALUE.MISSING);
+      }
+      if (triggerAlarmCreatedCondition === undefined || triggerAlarmCreatedCondition === null) {
+        throw new HoundError('triggerAlarmCreatedCondition missing', updateTrigger, ERROR_CODES.VALUE.MISSING);
       }
 
       triggers.push({
@@ -260,6 +278,8 @@ async function updateTrigger(req: express.Request, res: express.Response): Promi
         triggerFixedTimeTypeAmount,
         triggerFixedTimeUTCHour,
         triggerFixedTimeUTCMinute,
+        triggerManualCondition,
+        triggerAlarmCreatedCondition,
       });
     });
 

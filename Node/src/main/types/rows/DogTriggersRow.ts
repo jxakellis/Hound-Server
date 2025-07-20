@@ -11,6 +11,8 @@ dt.triggerFixedTimeType,
 dt.triggerFixedTimeTypeAmount,
 dt.triggerFixedTimeUTCHour,
 dt.triggerFixedTimeUTCMinute,
+dt.triggerManualCondition,
+dt.triggerAlarmCreatedCondition,
 dt.triggerLastModified,
 dt.triggerIsDeleted
 `;
@@ -28,6 +30,8 @@ type DogTriggersRow = {
     triggerFixedTimeTypeAmount: number
     triggerFixedTimeUTCHour: number
     triggerFixedTimeUTCMinute: number
+    triggerManualCondition: number
+    triggerAlarmCreatedCondition: number
     triggerLastModified: Date
     triggerIsDeleted: number
 };
