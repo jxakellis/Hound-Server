@@ -14,10 +14,13 @@ const IS_PRODUCTION_DATABASE = fs.existsSync(`${dirName}/../../../../../producti
 && fs.existsSync(`${dirName}/../../../../../Hound-Server`)
 && fs.existsSync(`${dirName}/../../../../../../parent_dir`);
 
+// Set to false if running dev server on local computer instead of AWS
+const devEnvironmentUseHTTPSs = true;
 const SERVER = {
   // True if we are using the production database that houses real users, false if we are launching a development server for testing
   IS_PRODUCTION_DATABASE,
   ENVIRONMENT: IS_PRODUCTION_DATABASE ? 'Production' : 'Sandbox',
+  USE_HTTPS: IS_PRODUCTION_DATABASE ? true : devEnvironmentUseHTTPSs,
   // HTTPS uses port 443
   SERVER_PORT: 443,
   // True if we are using a development database, false if we are using a production database as we don't want lots of console logs from users (note: serverLogger logs regardless of this settings)

@@ -133,12 +133,12 @@ process.on('uncaughtRejection', async (reason, promise) => {
 const app: express.Application = express();
 
 // Create a NodeJS HTTPS listener on port that points to the Express app
-httpsServer = false
-  ? http.createServer(app)
-  : https.createServer({
+httpsServer = SERVER.USE_HTTPS
+  ? https.createServer({
     key,
     cert,
-  }, app);
+  }, app)
+  : http.createServer(app);
 
 httpsServer.on('error', async (error: NodeJS.ErrnoException) => {
   if (error.code === 'EADDRINUSE') {
