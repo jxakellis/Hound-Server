@@ -22,7 +22,7 @@ type DogsRow = {
 };
 
 type DogsRowWithRemindersLogsTriggers = DogsRow & {
-   // TODO DEPRECIATE <= 3.5.0, we use dogLogs & dogReminders now, drop the short logs/reminders
+   // TODO FUTURE DEPRECIATE <= 3.5.0, we use dogLogs & dogReminders now, drop the short logs/reminders
   logs: DogLogsRow[]
   reminders: DogRemindersRow[]
   dogLogs: DogLogsRow[]

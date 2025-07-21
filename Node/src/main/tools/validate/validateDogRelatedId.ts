@@ -27,7 +27,7 @@ async function validateDogUUID(req: express.Request, res: express.Response, next
       throw new HoundError('No family found or invalid permissions', validateDogUUID, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
 
-    // TODO DEPRECIATE <= 3.5.0 switched to dogReminders/dogLogs
+    // TODO FUTURE DEPRECIATE <= 3.5.0 switched to dogReminders/dogLogs
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const masterUnvalidatedDogsDict = formatArray(req.body['dogs']
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -115,7 +115,7 @@ async function validateLogUUID(req: express.Request, res: express.Response, next
       throw new HoundError('validatedDogs missing', validateLogUUID, ERROR_CODES.VALUE.MISSING);
     }
 
-    // TODO DEPRECIATE <= 3.5.0 switched to dogReminders/dogLogs
+    // TODO FUTURE DEPRECIATE <= 3.5.0 switched to dogReminders/dogLogs
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const masterUnvalidatedLogsDict = formatArray(req.body['dogLogs'] ?? req.body['logs'] ?? [req.body]) as (StringKeyDict[] | undefined);
 
@@ -191,7 +191,7 @@ async function validateReminderUUID(req: express.Request, res: express.Response,
       throw new HoundError('validatedDogs missing', validateReminderUUID, ERROR_CODES.VALUE.MISSING);
     }
 
-    // TODO DEPRECIATE <= 3.5.0 switched to dogReminders/dogLogs
+    // TODO FUTURE DEPRECIATE <= 3.5.0 switched to dogReminders/dogLogs
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const masterUnvalidatedRemindersDict = formatArray(req.body['dogReminders'] ?? req.body['reminders'] ?? [req.body]) as (StringKeyDict[] | undefined);
 
