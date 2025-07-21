@@ -91,6 +91,7 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
     const depreciatedLogUnit = formatUnknownString(unvalidatedLogDict?.['logUnit']);
     const logUnitTypeId = formatNumber(unvalidatedLogDict?.['logUnitTypeId']) ?? logUnitTypes.find((lut) => lut.readableValue === depreciatedLogUnit)?.logUnitTypeId;
     const logNumberOfLogUnits = formatNumber(unvalidatedLogDict?.['logNumberOfLogUnits']);
+    const logCreatedByReminderUUID = formatUnknownString(unvalidatedLogDict?.['logCreatedByReminderUUID']);
 
     if (logUUID === undefined || logUUID === null) {
       throw new HoundError('logUUID missing', createLog, ERROR_CODES.VALUE.MISSING);
@@ -121,6 +122,7 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
         logNote,
         logUnitTypeId,
         logNumberOfLogUnits,
+        logCreatedByReminderUUID,
       },
     );
     createLogNotification(
@@ -168,6 +170,7 @@ async function updateLog(req: express.Request, res: express.Response): Promise<v
     const depreciatedLogUnit = formatUnknownString(validatedLog.unvalidatedLogDict?.['logUnit']);
     const logUnitTypeId = formatNumber(validatedLog.unvalidatedLogDict?.['logUnitTypeId']) ?? logUnitTypes.find((lut) => lut.readableValue === depreciatedLogUnit)?.logUnitTypeId;
     const logNumberOfLogUnits = formatNumber(validatedLog.unvalidatedLogDict?.['logNumberOfLogUnits']);
+    const logCreatedByReminderUUID = formatUnknownString(validatedLog.unvalidatedLogDict?.['logCreatedByReminderUUID']);
 
     if (logStartDate === undefined || logStartDate === null) {
       throw new HoundError('logStartDate missing', updateLog, ERROR_CODES.VALUE.MISSING);
@@ -196,6 +199,7 @@ async function updateLog(req: express.Request, res: express.Response): Promise<v
         logNote,
         logUnitTypeId,
         logNumberOfLogUnits,
+        logCreatedByReminderUUID,
       },
     );
     return res.houndProperties.sendSuccessResponse('');

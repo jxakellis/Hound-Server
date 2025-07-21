@@ -3,7 +3,7 @@ import { LIMIT } from '../../main/server/globalConstants.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 import { type NotYetCreatedDogLogsRow } from '../../main/types/rows/DogLogsRow.js';
 import { getAllLogsForDogUUID } from '../get/getLogs.js';
-import { formatKnownString } from '../../main/format/formatObject.js';
+import { formatKnownString, formatUnknownString } from '../../main/format/formatObject.js';
 import { getLogActionTypeForId } from '../get/types/getLogActionType.js';
 import { getLogUnitTypeForId } from '../get/types/getLogUnitType.js';
 import type { LogUnitTypeRow } from '../../main/types/rows/LogUnitTypeRow.js';
@@ -37,6 +37,7 @@ async function createLogForLog(databaseConnection: Queryable, log: NotYetCreated
         logStartDate, logEndDate, logNote, logActionTypeId, logCustomActionName,
         DEPRECIATED_logUnit,
         logUnitTypeId, logNumberOfLogUnits,
+        logCreatedByReminderUUID,
         logLastModified, logIsDeleted,
         )
         VALUES (
@@ -46,6 +47,7 @@ async function createLogForLog(databaseConnection: Queryable, log: NotYetCreated
           ?, ?, ?, ?, ?,
           ?,
           ?, ?,
+          ?,
           CURRENT_TIMESTAMP(), 0,
           )`,
     [
@@ -55,6 +57,7 @@ async function createLogForLog(databaseConnection: Queryable, log: NotYetCreated
       log.logStartDate, log.logEndDate, formatKnownString(log.logNote, 500), log.logActionTypeId, formatKnownString(log.logCustomActionName, 32),
       logUnit?.readableValue,
       log.logUnitTypeId, log.logNumberOfLogUnits,
+      formatUnknownString(log.logCreatedByReminderUUID, 36),
       // none, default values
     ],
   );

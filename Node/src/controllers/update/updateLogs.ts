@@ -34,6 +34,7 @@ async function updateLogForLog(databaseConnection: Queryable, log: NotYetUpdated
       log.logActionTypeId, formatKnownString(log.logCustomActionName, 32),
       logUnit?.readableValue,
       formatKnownString(log.logNote, 500), log.logUnitTypeId, log.logNumberOfLogUnits,
+      // logCreatedByReminderUUID can't be updated once the reminder is created
       // none, default values
       log.logUUID,
     ],

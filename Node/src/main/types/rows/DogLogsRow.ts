@@ -10,6 +10,7 @@ dl.logActionTypeId,
 dl.logCustomActionName,
 dl.logUnitTypeId,
 dl.logNumberOfLogUnits,
+dl.logCreatedByReminderUUID,
 dl.logLastModified,
 dl.logIsDeleted
 `;
@@ -27,6 +28,7 @@ type DogLogsRow = {
     logCustomActionName: string
     logUnitTypeId?: number,
     logNumberOfLogUnits?: number
+    logCreatedByReminderUUID?: string
     logLastModified: Date
     logIsDeleted: number
 };
