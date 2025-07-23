@@ -1,4 +1,4 @@
-import { getReminderNotificationUsersForReminderUUID } from 'src/controllers/get/reminders/getReminderNotification.js';
+import { getReminderNotificationUsersForReminderUUID } from '../../../../controllers/get/reminders/getReminderNotification.js';
 import { getAllReminderActionTypes } from '../../../../controllers/get/types/getReminderActionType.js';
 import { alarmLogger } from '../../../logging/loggers.js';
 import { DatabasePools, getPoolConnection } from '../../../database/databaseConnections.js';

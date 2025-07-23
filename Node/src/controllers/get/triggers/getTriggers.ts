@@ -1,4 +1,4 @@
-import type { DogTriggerReminderResultRow } from 'src/main/types/rows/DogTriggerReminderResultRow.js';
+import type { DogTriggerReminderResultRow } from '../../../main/types/rows/DogTriggerReminderResultRow.js';
 import { type Queryable, databaseQuery } from '../../../main/database/databaseQuery.js';
 import { type DogTriggersRow, dogTriggersColumns } from '../../../main/types/rows/DogTriggersRow.js';
 import { getTriggerLogReactionsForTriggerUUID, getTriggerLogReactionsForTriggerUUIDs } from './getTriggerLogReaction.js';
