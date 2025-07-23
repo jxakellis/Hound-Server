@@ -1,4 +1,4 @@
-import { createReminderNotifications } from '../../create/reminders/createReminderNotification.js';
+import { createReminderNotifications } from '../../create/reminders/createReminderRecipient.js';
 import { type Queryable, databaseQuery } from '../../../main/database/databaseQuery.js';
 
 async function addUserToAllReminderNotifications(

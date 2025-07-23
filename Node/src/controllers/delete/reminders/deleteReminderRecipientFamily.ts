@@ -8,11 +8,11 @@ async function removeUserFromAllReminderNotifications(
 ): Promise<void> {
   await databaseQuery(
     databaseConnection,
-    `DELETE drn
-       FROM dogReminderNotification drn
-       JOIN dogReminders dr ON drn.reminderUUID = dr.reminderUUID
+    `DELETE drr
+       FROM dogReminderRecipient drr
+       JOIN dogReminders dr ON drr.reminderUUID = dr.reminderUUID
        JOIN dogs d ON dr.dogUUID = d.dogUUID
-      WHERE d.familyId = ? AND drn.userId = ?`,
+      WHERE d.familyId = ? AND drr.userId = ?`,
     [familyId, userId],
   );
 }

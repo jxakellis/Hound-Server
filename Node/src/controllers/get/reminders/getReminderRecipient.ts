@@ -1,15 +1,15 @@
 import { type Queryable, databaseQuery } from '../../../main/database/databaseQuery.js';
-import { dogReminderNotificationColumns, type DogReminderNotificationRow } from '../../../main/types/rows/DogReminderNotificationRow.js';
+import { dogReminderRecipientColumns, type DogReminderRecipientRow } from '../../../main/types/rows/DogReminderRecipientRow.js';
 
 async function getReminderNotificationUsersForReminderUUID(
   databaseConnection: Queryable,
   reminderUUID: string,
-): Promise<DogReminderNotificationRow[]> {
-  return databaseQuery<DogReminderNotificationRow[]>(
+): Promise<DogReminderRecipientRow[]> {
+  return databaseQuery<DogReminderRecipientRow[]>(
     databaseConnection,
-    `SELECT ${dogReminderNotificationColumns}
-           FROM dogReminderNotification drn
-          WHERE drn.reminderUUID = ?
+    `SELECT ${dogReminderRecipientColumns}
+           FROM dogReminderRecipient drr
+          WHERE drr.reminderUUID = ?
           LIMIT 18446744073709551615`,
     [reminderUUID],
   );
@@ -18,12 +18,12 @@ async function getReminderNotificationUsersForReminderUUID(
 async function getReminderNotificationUsersForReminderUUIDs(
   databaseConnection: Queryable,
   reminderUUIDs: string[],
-): Promise<DogReminderNotificationRow[]> {
-  return databaseQuery<DogReminderNotificationRow[]>(
+): Promise<DogReminderRecipientRow[]> {
+  return databaseQuery<DogReminderRecipientRow[]>(
     databaseConnection,
-    `SELECT ${dogReminderNotificationColumns}
-           FROM dogReminderNotification drn
-          WHERE drn.reminderUUID IN (?)
+    `SELECT ${dogReminderRecipientColumns}
+           FROM dogReminderRecipient drr
+          WHERE drr.reminderUUID IN (?)
           LIMIT 18446744073709551615`,
     [reminderUUIDs],
   );

@@ -1,5 +1,5 @@
-import { createReminderNotification } from '../../create/reminders/createReminderNotification.js';
-import { getReminderNotificationUsersForReminderUUID } from '../../get/reminders/getReminderNotification.js';
+import { createReminderNotification } from '../../create/reminders/createReminderRecipient.js';
+import { getReminderNotificationUsersForReminderUUID } from '../../get/reminders/getReminderRecipient.js';
 import { type NotYetUpdatedDogRemindersRow } from '../../../main/types/rows/DogRemindersRow.js';
 import { type Queryable, databaseQuery } from '../../../main/database/databaseQuery.js';
 
@@ -9,7 +9,7 @@ async function updateReminderNotificationForReminder(
 ): Promise<void> {
   const existing = await getReminderNotificationUsersForReminderUUID(databaseConnection, reminder.reminderUUID);
   const existingUserIds = existing.map((r) => r.userId);
-  const newUserIds = reminder.reminderNotificationUserIds;
+  const newUserIds = reminder.reminderRecipientUserIds;
 
   const toAdd = newUserIds.filter((u) => !existingUserIds.includes(u));
   const toRemove = existingUserIds.filter((u) => !newUserIds.includes(u));
@@ -24,7 +24,7 @@ async function updateReminderNotificationForReminder(
     promises.push(
       databaseQuery(
         databaseConnection,
-        'DELETE FROM dogReminderNotification WHERE reminderUUID = ? AND userId = ?',
+        'DELETE FROM dogReminderRecipient WHERE reminderUUID = ? AND userId = ?',
         [reminder.reminderUUID, userId],
       ),
     );

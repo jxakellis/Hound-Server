@@ -7,7 +7,7 @@ import { createUserKickedNotification } from '../../main/tools/notifications/ale
 import { type TransactionsRow } from '../../main/types/rows/TransactionsRow.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 import { SUBSCRIPTION } from '../../main/server/globalConstants.js';
-import { removeUserFromAllReminderNotifications } from './reminders/deleteReminderNotificationFamily.js';
+import { removeUserFromAllReminderNotifications } from './reminders/deleteReminderRecipientFamily.js';
 
 /**
 * Helper function for deleteFamilyLeaveFamilyForUserIdFamilyId
@@ -81,11 +81,11 @@ async function deleteFamily(databaseConnection: Queryable, familyId: string, fam
     // delete all the corresponding dog, reminder, and log data
     databaseQuery(
       databaseConnection,
-      `DELETE d, dr, dl, dr, drn, dt, dtlr, dtrr
+      `DELETE d, dr, dl, dr, drr, dt, dtlr, dtrr
                       FROM dogs d
                       LEFT JOIN dogLogs dl ON d.dogUUID = dl.dogUUID
                       LEFT JOIN dogReminders dr ON d.dogUUID = dr.dogUUID
-                      LEFT JOIN dogReminderNotification drn ON dr.reminderUUID = drn.reminderUUID
+                      LEFT JOIN dogReminderRecipient drr ON dr.reminderUUID = drr.reminderUUID
                       LEFT JOIN dogTriggers dt ON d.dogUUID = dt.dogUUID
                       LEFT JOIN dogTriggerLogReaction dtlr ON dt.triggerUUID = dtlr.triggerUUID
                       LEFT JOIN dogTriggerReminderResult dtrr ON dt.triggerUUID = dtrr.triggerUUID

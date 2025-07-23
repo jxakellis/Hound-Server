@@ -5,7 +5,7 @@ import { type FamiliesRow, familiesColumns } from '../../main/types/rows/Familie
 
 import { getFamilyMembersForFamilyId, getFamilyForUserId } from '../get/getFamily.js';
 import { getActiveTransaction } from '../get/getTransactions.js';
-import { addUserToAllReminderNotifications } from './reminders/updateReminderNotificationFamily.js';
+import { addUserToAllReminderNotifications } from './reminders/updateReminderRecipientFamily.js';
 
 /**
 * Helper method for createFamilyForUserId, goes through checks to attempt to add user to desired family

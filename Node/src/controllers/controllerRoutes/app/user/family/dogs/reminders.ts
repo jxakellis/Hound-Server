@@ -113,8 +113,8 @@ async function createReminder(req: express.Request, res: express.Response): Prom
 
       const oneTimeDate = formatDate(unvalidatedReminderDict['oneTimeDate']);
 
-      const notifUsersRaw = formatArray(unvalidatedReminderDict['reminderNotificationUserIds']);
-      const reminderNotificationUserIds = notifUsersRaw !== undefined
+      const notifUsersRaw = formatArray(unvalidatedReminderDict['reminderRecipientUserIds']);
+      const reminderRecipientUserIds = notifUsersRaw !== undefined
         ? notifUsersRaw.map((id) => formatUnknownString(id) ?? '').filter((id) => id !== '')
         : defaultUserIds;
 
@@ -185,8 +185,8 @@ async function createReminder(req: express.Request, res: express.Response): Prom
       if (oneTimeDate === undefined || oneTimeDate === null) {
         throw new HoundError('oneTimeDate missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (reminderNotificationUserIds === undefined || reminderNotificationUserIds === null) {
-        throw new HoundError('reminderNotificationUserIds missing', createReminder, ERROR_CODES.VALUE.MISSING);
+      if (reminderRecipientUserIds === undefined || reminderRecipientUserIds === null) {
+        throw new HoundError('reminderRecipientUserIds missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
 
       reminders.push({
@@ -216,7 +216,7 @@ async function createReminder(req: express.Request, res: express.Response): Prom
         monthlyUTCMinute,
         monthlySkippedDate,
         oneTimeDate,
-        reminderNotificationUserIds,
+        reminderRecipientUserIds,
       });
     });
 
@@ -294,8 +294,8 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
 
       const oneTimeDate = formatDate(validatedReminder.unvalidatedReminderDict?.['oneTimeDate']);
 
-      const notifUsersRaw = formatArray(validatedReminder.unvalidatedReminderDict?.['reminderNotificationUserIds']);
-      const reminderNotificationUserIds = notifUsersRaw !== undefined
+      const notifUsersRaw = formatArray(validatedReminder.unvalidatedReminderDict?.['reminderRecipientUserIds']);
+      const reminderRecipientUserIds = notifUsersRaw !== undefined
         ? notifUsersRaw.map((id) => formatUnknownString(id) ?? '').filter((id) => id !== '')
         : defaultUserIds;
 
@@ -363,8 +363,8 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
       if (oneTimeDate === undefined || oneTimeDate === null) {
         throw new HoundError('oneTimeDate missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (reminderNotificationUserIds === undefined || reminderNotificationUserIds === null) {
-        throw new HoundError('reminderNotificationUserIds missing', updateReminder, ERROR_CODES.VALUE.MISSING);
+      if (reminderRecipientUserIds === undefined || reminderRecipientUserIds === null) {
+        throw new HoundError('reminderRecipientUserIds missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
 
       reminders.push({
@@ -395,7 +395,7 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
         monthlyUTCMinute,
         monthlySkippedDate,
         oneTimeDate,
-        reminderNotificationUserIds,
+        reminderRecipientUserIds,
       });
     });
 

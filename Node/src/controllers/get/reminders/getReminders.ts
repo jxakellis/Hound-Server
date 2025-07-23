@@ -1,6 +1,6 @@
 import { type Queryable, databaseQuery } from '../../../main/database/databaseQuery.js';
 import { type DogRemindersRow, dogRemindersColumns } from '../../../main/types/rows/DogRemindersRow.js';
-import { getReminderNotificationUsersForReminderUUID, getReminderNotificationUsersForReminderUUIDs } from './getReminderNotification.js';
+import { getReminderNotificationUsersForReminderUUID, getReminderNotificationUsersForReminderUUIDs } from './getReminderRecipient.js';
 
 /**
  * If you are querying a single elements from the database, previousDogManagerSynchronization is not taken.
@@ -31,7 +31,7 @@ async function getReminderForReminderUUID(
     return undefined;
   }
   const notificationUsers = await getReminderNotificationUsersForReminderUUID(databaseConnection, reminder.reminderUUID);
-  reminder.reminderNotificationUserIds = notificationUsers.map((n) => n.userId);
+  reminder.reminderRecipientUserIds = notificationUsers.map((n) => n.userId);
 
   return reminder;
 }
@@ -70,7 +70,7 @@ async function getAllRemindersForDogUUID(databaseConnection: Queryable, dogUUID:
   if (reminderUUIDs.length > 0) {
     const notificationRows = await getReminderNotificationUsersForReminderUUIDs(databaseConnection, reminderUUIDs);
     reminders.forEach((reminder, index) => {
-      reminders[index].reminderNotificationUserIds = notificationRows
+      reminders[index].reminderRecipientUserIds = notificationRows
         .filter((n) => n.reminderUUID === reminder.reminderUUID)
         .map((n) => n.userId);
     });
