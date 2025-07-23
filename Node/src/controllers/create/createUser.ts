@@ -77,6 +77,7 @@ async function createUserForUserIdentifier(
                 userConfigurationIsReminderNotificationEnabled,
                 userConfigurationMeasurementSystem,
                 userConfigurationInterfaceStyle,
+                userConfigurationIsHapticsEnabled,
                 userConfigurationSnoozeLength,
                 userConfigurationNotificationSound,
                 userConfigurationIsSilentModeEnabled,
@@ -86,6 +87,7 @@ async function createUserForUserIdentifier(
                 userConfigurationSilentModeEndUTCMinute,
                 ) 
                 VALUES (
+                  ?,
                   ?,
                   ?,
                   ?,
@@ -109,6 +111,7 @@ async function createUserForUserIdentifier(
         userConfiguration.userConfigurationIsReminderNotificationEnabled, // ?? 0,
         userConfiguration.userConfigurationMeasurementSystem,
         userConfiguration.userConfigurationInterfaceStyle, // ?? 0,
+        userConfiguration.userConfigurationIsHapticsEnabled, // ?? 0,
         userConfiguration.userConfigurationSnoozeLength, // ?? 300,
         userConfiguration.userConfigurationNotificationSound, // ?? 'Radar',
         userConfiguration.userConfigurationIsSilentModeEnabled, // ?? false,

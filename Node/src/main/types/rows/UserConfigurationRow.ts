@@ -3,6 +3,7 @@ uc.userConfigurationIsNotificationEnabled,
 uc.userConfigurationIsLoudNotificationEnabled, 
 uc.userConfigurationIsLogNotificationEnabled,
 uc.userConfigurationInterfaceStyle,
+uc.userConfigurationIsHapticsEnabled,
 uc.userConfigurationMeasurementSystem,
 uc.userConfigurationSnoozeLength, 
 uc.userConfigurationNotificationSound,
@@ -21,6 +22,7 @@ type UserConfigurationRow = {
     userConfigurationIsLogNotificationEnabled: number
     userConfigurationIsReminderNotificationEnabled: number
     userConfigurationInterfaceStyle: number
+    userConfigurationIsHapticsEnabled: number
     userConfigurationMeasurementSystem: number
     userConfigurationSnoozeLength: number
     userConfigurationNotificationSound: string

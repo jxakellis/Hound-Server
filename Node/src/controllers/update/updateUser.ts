@@ -19,6 +19,7 @@ async function updateUserForUserId(
     userConfigurationIsReminderNotificationEnabled,
     userConfigurationMeasurementSystem,
     userConfigurationInterfaceStyle,
+    userConfigurationIsHapticsEnabled,
     userConfigurationSnoozeLength,
     userConfigurationNotificationSound,
     userConfigurationIsSilentModeEnabled,
@@ -90,6 +91,15 @@ async function updateUserForUserId(
       SET userConfigurationInterfaceStyle = ?
       WHERE userId = ?`,
       [userConfigurationInterfaceStyle, userId],
+    ));
+  }
+  if (userConfigurationIsHapticsEnabled !== undefined && userConfigurationIsHapticsEnabled !== null) {
+    promises.push(databaseQuery(
+      databaseConnection,
+      `UPDATE userConfiguration
+      SET userConfigurationIsHapticsEnabled = ?
+      WHERE userId = ?`,
+      [userConfigurationIsHapticsEnabled, userId],
     ));
   }
   if (userConfigurationSnoozeLength !== undefined && userConfigurationSnoozeLength !== null) {
