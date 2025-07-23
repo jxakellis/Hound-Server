@@ -3,7 +3,7 @@ import { DatabasePools, getPoolConnection } from '../../../database/databaseConn
 
 import { logServerError } from '../../../logging/logServerError.js';
 import { getPublicUser } from '../../../../controllers/get/getUser.js';
-import { sendNotificationForFamilyExcludingUser } from '../apn/sendNotification.js';
+import { sendNotificationForAllFamilyExcludingUser } from '../apn/sendNotification.js';
 import { formatFirstLastName } from '../../../format/formatFirstLastName.js';
 import { NOTIFICATION } from '../../../server/globalConstants.js';
 import { HoundError } from '../../../server/globalErrors.js';
@@ -40,7 +40,7 @@ async function createFamilyMemberJoinNotification(userId: string, familyId: stri
     const alertBody = `Welcome ${abbreviatedFullName} into your Hound family`;
 
     // we now have the messages and can send our APN
-    sendNotificationForFamilyExcludingUser(userId, familyId, NOTIFICATION.CATEGORY.FAMILY.JOIN, alertTitle, alertBody, {});
+    sendNotificationForAllFamilyExcludingUser(userId, familyId, NOTIFICATION.CATEGORY.FAMILY.JOIN, alertTitle, alertBody, {});
   }
   catch (error) {
     logServerError(
@@ -71,7 +71,7 @@ async function createFamilyMemberLeaveNotification(userId: string, familyId: str
     const alertBody = `${abbreviatedFullName} has parted ways with your Hound family`;
 
     // we now have the messages and can send our APN
-    sendNotificationForFamilyExcludingUser(userId, familyId, NOTIFICATION.CATEGORY.FAMILY.LEAVE, alertTitle, alertBody, {});
+    sendNotificationForAllFamilyExcludingUser(userId, familyId, NOTIFICATION.CATEGORY.FAMILY.LEAVE, alertTitle, alertBody, {});
   }
   catch (error) {
     logServerError(
@@ -106,7 +106,7 @@ async function createFamilyLockedNotification(userId: string, familyId: string, 
       : `${abbreviatedFullName} has updated your family settings to allow new users to join`;
 
     // we now have the messages and can send our APN
-    sendNotificationForFamilyExcludingUser(userId, familyId, NOTIFICATION.CATEGORY.FAMILY.LOCK, alertTitle, alertBody, {});
+    sendNotificationForAllFamilyExcludingUser(userId, familyId, NOTIFICATION.CATEGORY.FAMILY.LOCK, alertTitle, alertBody, {});
   }
   catch (error) {
     logServerError(

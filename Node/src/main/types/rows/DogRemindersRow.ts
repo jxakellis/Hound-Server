@@ -61,6 +61,7 @@ type DogRemindersRow = {
     monthlyUTCMinute: number
     monthlySkippedDate?: Date
     oneTimeDate: Date
+    reminderNotificationUserIds: string[]
 };
 
 type NotYetCreatedDogRemindersRow = Omit<DogRemindersRow, 'reminderId' | 'reminderIsDeleted' | 'reminderLastModified'>;

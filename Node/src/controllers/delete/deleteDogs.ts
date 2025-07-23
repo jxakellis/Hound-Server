@@ -2,7 +2,7 @@ import { type Queryable, databaseQuery } from '../../main/database/databaseQuery
 import { getAllDogsForFamilyId } from '../get/getDogs.js';
 
 import { deleteAllLogsForDogUUID } from './deleteLogs.js';
-import { deleteAllRemindersForFamilyIdDogUUID } from './deleteReminders.js';
+import { deleteAllRemindersForFamilyIdDogUUID } from './reminders/deleteReminders.js';
 import { deleteAllTriggersForDogUUID } from './deleteTriggers.js';
 
 /**

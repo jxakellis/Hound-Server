@@ -1,11 +1,12 @@
-import { type DogRemindersRow, type NotYetCreatedDogRemindersRow } from '../../main/types/rows/DogRemindersRow.js';
+import { type DogRemindersRow, type NotYetCreatedDogRemindersRow } from '../../../main/types/rows/DogRemindersRow.js';
 
-import { type Queryable, type ResultSetHeader, databaseQuery } from '../../main/database/databaseQuery.js';
-import { LIMIT } from '../../main/server/globalConstants.js';
-import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
-import { getAllRemindersForDogUUID } from '../get/getReminders.js';
-import { formatKnownString } from '../../main/format/formatObject.js';
-import { getReminderActionTypeForId } from '../get/types/getReminderActionType.js';
+import { type Queryable, type ResultSetHeader, databaseQuery } from '../../../main/database/databaseQuery.js';
+import { LIMIT } from '../../../main/server/globalConstants.js';
+import { ERROR_CODES, HoundError } from '../../../main/server/globalErrors.js';
+import { getAllRemindersForDogUUID } from '../../get/reminders/getReminders.js';
+import { createReminderNotifications } from './createReminderNotification.js';
+import { formatKnownString } from '../../../main/format/formatObject.js';
+import { getReminderActionTypeForId } from '../../get/types/getReminderActionType.js';
 
 /**
 *  Queries the database to create a single reminder. If the query is successful, then returns the reminder with created reminderId added to it.
@@ -75,6 +76,11 @@ async function createReminderForReminder(
       reminder.monthlySkippedDate,
       reminder.oneTimeDate,
     ],
+  );
+
+  await createReminderNotifications(
+    databaseConnection,
+    reminder.reminderNotificationUserIds.map((userId) => ({ reminderUUID: reminder.reminderUUID, userId })),
   );
 
   return result.insertId;

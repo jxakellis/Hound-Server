@@ -7,6 +7,7 @@ import { createUserKickedNotification } from '../../main/tools/notifications/ale
 import { type TransactionsRow } from '../../main/types/rows/TransactionsRow.js';
 import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 import { SUBSCRIPTION } from '../../main/server/globalConstants.js';
+import { removeUserFromAllReminderNotifications } from './reminders/deleteReminderNotificationFamily.js';
 
 /**
 * Helper function for deleteFamilyLeaveFamilyForUserIdFamilyId
@@ -80,10 +81,11 @@ async function deleteFamily(databaseConnection: Queryable, familyId: string, fam
     // delete all the corresponding dog, reminder, and log data
     databaseQuery(
       databaseConnection,
-      `DELETE d, dr, dl, dr, dt, dtlr, dtrr
+      `DELETE d, dr, dl, dr, drn, dt, dtlr, dtrr
                       FROM dogs d
                       LEFT JOIN dogLogs dl ON d.dogUUID = dl.dogUUID
                       LEFT JOIN dogReminders dr ON d.dogUUID = dr.dogUUID
+                      LEFT JOIN dogReminderNotification drn ON dr.reminderUUID = drn.reminderUUID
                       LEFT JOIN dogTriggers dt ON d.dogUUID = dt.dogUUID
                       LEFT JOIN dogTriggerLogReaction dtlr ON dt.triggerUUID = dtlr.triggerUUID
                       LEFT JOIN dogTriggerReminderResult dtrr ON dt.triggerUUID = dtrr.triggerUUID
@@ -99,6 +101,7 @@ async function deleteFamily(databaseConnection: Queryable, familyId: string, fam
                   * User is a member of a family. Therefore, they don't have an obligation to it and can leave.
                   */
 async function leaveFamily(databaseConnection: Queryable, userId: string): Promise<void> {
+  const family = await getFamilyForUserId(databaseConnection, userId);
   await databaseQuery(
     databaseConnection,
     `INSERT INTO previousFamilyMembers
@@ -119,6 +122,9 @@ async function leaveFamily(databaseConnection: Queryable, userId: string): Promi
                           WHERE userId = ?`,
     [userId],
   );
+  if (family !== undefined) {
+    await removeUserFromAllReminderNotifications(databaseConnection, family.familyId, userId);
+  }
 }
 
 /**
@@ -161,6 +167,8 @@ async function kickFamilyMemberForUserIdFamilyId(databaseConnection: Queryable, 
                                 WHERE userId = ?`,
     [kickedUserId],
   );
+
+  await removeUserFromAllReminderNotifications(databaseConnection, familyId, userId);
 
   // The alarm notifications retrieve the notification tokens of familyMembers right as they fire, so the user will not be included
   createFamilyMemberLeaveNotification(kickedUserId, familyId);

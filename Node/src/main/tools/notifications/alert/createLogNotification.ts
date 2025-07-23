@@ -4,7 +4,7 @@ import { DatabasePools, getPoolConnection } from '../../../database/databaseConn
 import { logServerError } from '../../../logging/logServerError.js';
 import { getDogForDogUUID } from '../../../../controllers/get/getDogs.js';
 import { getPublicUser } from '../../../../controllers/get/getUser.js';
-import { sendNotificationForFamilyExcludingUser } from '../apn/sendNotification.js';
+import { sendNotificationForAllFamilyExcludingUser } from '../apn/sendNotification.js';
 import { formatFirstLastName } from '../../../format/formatFirstLastName.js';
 import { NOTIFICATION } from '../../../server/globalConstants.js';
 import { HoundError } from '../../../server/globalErrors.js';
@@ -46,7 +46,7 @@ async function createLogNotification(userId: string, familyId: string, dogUUID: 
     const alertBody = `${abbreviatedFullName} logged ${formattedLogAction}`;
 
     // we now have the messages and can send our APN
-    sendNotificationForFamilyExcludingUser(userId, familyId, NOTIFICATION.CATEGORY.LOG.CREATED, alertTitle, alertBody, {});
+    sendNotificationForAllFamilyExcludingUser(userId, familyId, NOTIFICATION.CATEGORY.LOG.CREATED, alertTitle, alertBody, {});
   }
   catch (error) {
     logServerError(

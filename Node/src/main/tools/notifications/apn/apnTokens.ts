@@ -83,4 +83,24 @@ async function getOtherFamilyMemberTokens(userId: string, familyId: string): Pro
   return result;
 }
 
-export { getUserToken, getAllFamilyMemberTokens, getOtherFamilyMemberTokens };
+async function getFamilyMemberTokensForUserIds(familyId: string, userIds: string[]): Promise<UserConfigurationWithPartialPrivateUsers[]> {
+  const generalPoolConnection = await getPoolConnection(DatabasePools.general);
+  const result = await databaseQuery<UserConfigurationWithPartialPrivateUsers[]>(
+    generalPoolConnection,
+    `SELECT u.userNotificationToken, ${userConfigurationColumns}
+    FROM users u
+    JOIN userConfiguration uc ON u.userId = uc.userId
+    JOIN familyMembers fm ON u.userId = fm.userId
+    WHERE fm.familyId = ? AND u.userId IN (?) AND u.userNotificationToken IS NOT NULL AND uc.userConfigurationIsNotificationEnabled = 1
+    LIMIT 18446744073709551615`,
+    [familyId, userIds],
+  ).finally(() => {
+    generalPoolConnection.release();
+  });
+
+  return result;
+}
+
+export {
+  getUserToken, getAllFamilyMemberTokens, getOtherFamilyMemberTokens, getFamilyMemberTokensForUserIds,
+};

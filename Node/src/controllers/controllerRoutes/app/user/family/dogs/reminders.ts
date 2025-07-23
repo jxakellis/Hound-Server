@@ -1,20 +1,21 @@
 import express from 'express';
 import { createAlarmNotificationForFamily } from '../../../../../../main/tools/notifications/alarm/createAlarmNotification.js';
 
-import { getReminderForReminderUUID, getAllRemindersForDogUUID } from '../../../../../get/getReminders.js';
+import { getReminderForReminderUUID, getAllRemindersForDogUUID } from '../../../../../get/reminders/getReminders.js';
 
-import { createRemindersForReminders } from '../../../../../create/createReminders.js';
+import { createRemindersForReminders } from '../../../../../create/reminders/createReminders.js';
 
-import { updateRemindersForReminders } from '../../../../../update/updateReminders.js';
+import { updateRemindersForReminders } from '../../../../../update/reminders/updateReminders.js';
 
-import { deleteRemindersForFamilyIdReminderUUIDs } from '../../../../../delete/deleteReminders.js';
 import { ERROR_CODES, HoundError } from '../../../../../../main/server/globalErrors.js';
 
 import {
-  formatDate, formatNumber, formatUnknownString,
+  formatDate, formatNumber, formatUnknownString, formatArray,
 } from '../../../../../../main/format/formatObject.js';
 import { type NotYetCreatedDogRemindersRow, type NotYetUpdatedDogRemindersRow } from '../../../../../../main/types/rows/DogRemindersRow.js';
 import { getAllReminderActionTypes } from '../../../../../../controllers/get/types/getReminderActionType.js';
+import { getFamilyMembersForFamilyId } from '../../../../../../controllers/get/getFamily.js';
+import { deleteRemindersForFamilyIdReminderUUIDs } from '../../../../../../controllers/delete/reminders/deleteReminders.js';
 
 async function getReminders(req: express.Request, res: express.Response): Promise<void> {
   try {
@@ -77,6 +78,9 @@ async function createReminder(req: express.Request, res: express.Response): Prom
 
     const reminders: NotYetCreatedDogRemindersRow[] = [];
     const reminderActionTypes = await getAllReminderActionTypes(databaseConnection);
+    const familyMembers = await getFamilyMembersForFamilyId(databaseConnection, validatedFamilyId);
+    const defaultUserIds = familyMembers.map((fm) => fm.userId);
+
     unvalidatedRemindersDict.forEach((unvalidatedReminderDict) => {
       const reminderUUID = formatUnknownString(unvalidatedReminderDict['reminderUUID'], 36);
       // TODO FUTURE DEPRECIATE this is compatibility for <= 3.5.0
@@ -108,6 +112,11 @@ async function createReminder(req: express.Request, res: express.Response): Prom
       const monthlySkippedDate = formatDate(unvalidatedReminderDict['monthlySkippedDate']);
 
       const oneTimeDate = formatDate(unvalidatedReminderDict['oneTimeDate']);
+
+      const notifUsersRaw = formatArray(unvalidatedReminderDict['reminderNotificationUserIds']);
+      const reminderNotificationUserIds = notifUsersRaw !== undefined
+        ? notifUsersRaw.map((id) => formatUnknownString(id) ?? '').filter((id) => id !== '')
+        : defaultUserIds;
 
       if (reminderUUID === undefined || reminderUUID === null) {
         throw new HoundError('reminderUUID missing', createReminder, ERROR_CODES.VALUE.MISSING);
@@ -176,6 +185,9 @@ async function createReminder(req: express.Request, res: express.Response): Prom
       if (oneTimeDate === undefined || oneTimeDate === null) {
         throw new HoundError('oneTimeDate missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
+      if (reminderNotificationUserIds === undefined || reminderNotificationUserIds === null) {
+        throw new HoundError('reminderNotificationUserIds missing', createReminder, ERROR_CODES.VALUE.MISSING);
+      }
 
       reminders.push({
         dogUUID: validatedDog.validatedDogUUID,
@@ -204,6 +216,7 @@ async function createReminder(req: express.Request, res: express.Response): Prom
         monthlyUTCMinute,
         monthlySkippedDate,
         oneTimeDate,
+        reminderNotificationUserIds,
       });
     });
 
@@ -243,6 +256,9 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
 
     const reminders: NotYetUpdatedDogRemindersRow[] = [];
     const reminderActionTypes = await getAllReminderActionTypes(databaseConnection);
+    const familyMembers = await getFamilyMembersForFamilyId(databaseConnection, validatedFamilyId);
+    const defaultUserIds = familyMembers.map((fm) => fm.userId);
+
     validatedReminders.forEach((validatedReminder) => {
       // validate reminder id against validatedReminders
       const reminderId = validatedReminder.validatedReminderId;
@@ -277,6 +293,11 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
       const monthlySkippedDate = formatDate(validatedReminder.unvalidatedReminderDict?.['monthlySkippedDate']);
 
       const oneTimeDate = formatDate(validatedReminder.unvalidatedReminderDict?.['oneTimeDate']);
+
+      const notifUsersRaw = formatArray(validatedReminder.unvalidatedReminderDict?.['reminderNotificationUserIds']);
+      const reminderNotificationUserIds = notifUsersRaw !== undefined
+        ? notifUsersRaw.map((id) => formatUnknownString(id) ?? '').filter((id) => id !== '')
+        : defaultUserIds;
 
       if (reminderActionTypeId === undefined || reminderActionTypeId === null) {
         throw new HoundError('reminderActionTypeId missing', updateReminder, ERROR_CODES.VALUE.MISSING);
@@ -342,6 +363,9 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
       if (oneTimeDate === undefined || oneTimeDate === null) {
         throw new HoundError('oneTimeDate missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
+      if (reminderNotificationUserIds === undefined || reminderNotificationUserIds === null) {
+        throw new HoundError('reminderNotificationUserIds missing', updateReminder, ERROR_CODES.VALUE.MISSING);
+      }
 
       reminders.push({
         reminderId,
@@ -371,6 +395,7 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
         monthlyUTCMinute,
         monthlySkippedDate,
         oneTimeDate,
+        reminderNotificationUserIds,
       });
     });
 

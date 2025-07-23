@@ -1,5 +1,6 @@
-import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
-import { type DogRemindersRow, dogRemindersColumns } from '../../main/types/rows/DogRemindersRow.js';
+import { type Queryable, databaseQuery } from '../../../main/database/databaseQuery.js';
+import { type DogRemindersRow, dogRemindersColumns } from '../../../main/types/rows/DogRemindersRow.js';
+import { getReminderNotificationUsersForReminderUUID, getReminderNotificationUsersForReminderUUIDs } from './getReminderNotification.js';
 
 /**
  * If you are querying a single elements from the database, previousDogManagerSynchronization is not taken.
@@ -25,7 +26,14 @@ async function getReminderForReminderUUID(
     reminders = reminders.filter((possiblyDeletedReminders) => possiblyDeletedReminders.reminderIsDeleted === 0);
   }
 
-  return reminders.safeIndex(0);
+  const reminder = reminders.safeIndex(0);
+  if (reminder === undefined) {
+    return undefined;
+  }
+  const notificationUsers = await getReminderNotificationUsersForReminderUUID(databaseConnection, reminder.reminderUUID);
+  reminder.reminderNotificationUserIds = notificationUsers.map((n) => n.userId);
+
+  return reminder;
 }
 
 /**
@@ -56,6 +64,16 @@ async function getAllRemindersForDogUUID(databaseConnection: Queryable, dogUUID:
 
   if (includeDeletedReminders === false) {
     reminders = reminders.filter((possiblyDeletedReminders) => possiblyDeletedReminders.reminderIsDeleted === 0);
+  }
+
+  const reminderUUIDs = reminders.map((r) => r.reminderUUID);
+  if (reminderUUIDs.length > 0) {
+    const notificationRows = await getReminderNotificationUsersForReminderUUIDs(databaseConnection, reminderUUIDs);
+    reminders.forEach((reminder, index) => {
+      reminders[index].reminderNotificationUserIds = notificationRows
+        .filter((n) => n.reminderUUID === reminder.reminderUUID)
+        .map((n) => n.userId);
+    });
   }
 
   return reminders;

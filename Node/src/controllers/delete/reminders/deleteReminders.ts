@@ -1,6 +1,6 @@
-import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
-import { deleteAlarmNotificationsForReminder } from '../../main/tools/notifications/alarm/deleteAlarmNotification.js';
-import { getAllRemindersForDogUUID } from '../get/getReminders.js';
+import { type Queryable, databaseQuery } from '../../../main/database/databaseQuery.js';
+import { deleteAlarmNotificationsForReminder } from '../../../main/tools/notifications/alarm/deleteAlarmNotification.js';
+import { getAllRemindersForDogUUID } from '../../get/reminders/getReminders.js';
 
 /**
  *  Queries the database to delete a single reminder. If the query is successful, then returns

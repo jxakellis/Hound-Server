@@ -3,7 +3,9 @@ import { apnLogger } from '../../../logging/loggers.js';
 import { logServerError } from '../../../logging/logServerError.js';
 
 import { sendAPN } from './sendAPN.js';
-import { getUserToken, getAllFamilyMemberTokens, getOtherFamilyMemberTokens } from './apnTokens.js';
+import {
+  getUserToken, getAllFamilyMemberTokens, getOtherFamilyMemberTokens, getFamilyMemberTokensForUserIds,
+} from './apnTokens.js';
 import { HoundError } from '../../../server/globalErrors.js';
 import { type StringKeyDict } from '../../../types/StringKeyDict.js';
 
@@ -36,12 +38,43 @@ async function sendNotificationForUser(userId: string, category: string, alertTi
   }
 }
 
+async function sendNotificationForFamilyMembers(
+  familyId: string,
+  userIds: string[],
+  category: string,
+  alertTitle: string,
+  alertBody: string,
+  customPayload: StringKeyDict,
+): Promise<void> {
+  apnLogger.debug(`sendNotificationForFamilyMembers ${familyId}, ${userIds}, ${category}, ${alertTitle}`);
+
+  try {
+    const userNotificationConfigurations = await getFamilyMemberTokensForUserIds(familyId, userIds);
+
+    if (userNotificationConfigurations === undefined || userNotificationConfigurations === null) {
+      return;
+    }
+
+    userNotificationConfigurations.forEach((c) => sendAPN(c, category, alertTitle, alertBody, customPayload));
+  }
+  catch (error) {
+    logServerError(
+      new HoundError(
+        'sendNotificationForFamilyMembers',
+        sendNotificationForFamilyMembers,
+        undefined,
+        error,
+      ),
+    );
+  }
+}
+
 /**
  * Takes a familyId and retrieves the userNotificationToken for all familyMembers
  * Invokes sendAPN with the tokens, alertTitle, and alertBody
  */
-async function sendNotificationForFamily(familyId: string, category: string, alertTitle: string, alertBody: string, customPayload: StringKeyDict): Promise<void> {
-  apnLogger.debug(`sendNotificationForFamily ${familyId}, ${category}, ${alertTitle}, ${alertBody}, ${customPayload}`);
+async function sendNotificationForAllFamily(familyId: string, category: string, alertTitle: string, alertBody: string, customPayload: StringKeyDict): Promise<void> {
+  apnLogger.debug(`sendNotificationForAllFamily ${familyId}, ${category}, ${alertTitle}, ${alertBody}, ${customPayload}`);
 
   try {
     // get notification tokens of all qualifying family members
@@ -57,8 +90,8 @@ async function sendNotificationForFamily(familyId: string, category: string, ale
   catch (error) {
     logServerError(
       new HoundError(
-        'sendNotificationForFamily',
-        sendNotificationForFamily,
+        'sendNotificationForAllFamily',
+        sendNotificationForAllFamily,
         undefined,
         error,
       ),
@@ -70,7 +103,7 @@ async function sendNotificationForFamily(familyId: string, category: string, ale
  * Takes a familyId and retrieves the userNotificationToken for all familyMembers (excluding the userId provided)
  * Invokes sendAPN with the tokens, alertTitle, and alertBody
  */
-async function sendNotificationForFamilyExcludingUser(
+async function sendNotificationForAllFamilyExcludingUser(
   userId: string,
   familyId: string,
   category: string,
@@ -78,7 +111,7 @@ async function sendNotificationForFamilyExcludingUser(
   alertBody: string,
   customPayload: StringKeyDict,
 ): Promise<void> {
-  apnLogger.debug(`sendNotificationForFamilyExcludingUser ${userId}, ${familyId}, ${category}, ${alertTitle}, ${alertBody}, ${customPayload}`);
+  apnLogger.debug(`sendNotificationForAllFamilyExcludingUser ${userId}, ${familyId}, ${category}, ${alertTitle}, ${alertBody}, ${customPayload}`);
 
   try {
     // get tokens of all qualifying family members that aren't the user
@@ -94,8 +127,8 @@ async function sendNotificationForFamilyExcludingUser(
   catch (error) {
     logServerError(
       new HoundError(
-        'sendNotificationForFamilyExcludingUser',
-        sendNotificationForFamilyExcludingUser,
+        'sendNotificationForAllFamilyExcludingUser',
+        sendNotificationForAllFamilyExcludingUser,
         undefined,
         error,
       ),
@@ -104,5 +137,5 @@ async function sendNotificationForFamilyExcludingUser(
 }
 
 export {
-  sendNotificationForUser, sendNotificationForFamily, sendNotificationForFamilyExcludingUser,
+  sendNotificationForUser, sendNotificationForFamilyMembers, sendNotificationForAllFamily, sendNotificationForAllFamilyExcludingUser,
 };

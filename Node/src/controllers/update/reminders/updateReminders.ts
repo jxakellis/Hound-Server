@@ -1,10 +1,10 @@
-import { type NotYetUpdatedDogRemindersRow } from '../../main/types/rows/DogRemindersRow.js';
+import { type NotYetUpdatedDogRemindersRow } from '../../../main/types/rows/DogRemindersRow.js';
 
-import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
-import { formatKnownString } from '../../main/format/formatObject.js';
-import { getReminderActionTypeForId } from '../get/types/getReminderActionType.js';
-import { getReminderForReminderUUID } from '../get/getReminders.js';
-import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
+import { type Queryable, databaseQuery } from '../../../main/database/databaseQuery.js';
+import { formatKnownString } from '../../../main/format/formatObject.js';
+import { getReminderActionTypeForId } from '../../get/types/getReminderActionType.js';
+import { getReminderForReminderUUID } from '../../get/reminders/getReminders.js';
+import { ERROR_CODES, HoundError } from '../../../main/server/globalErrors.js';
 
 /**
  *  Queries the database to create a update reminder. If the query is successful, then returns the provided reminder

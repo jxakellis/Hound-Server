@@ -5,7 +5,7 @@ import { type DogRemindersRow } from '../../main/types/rows/DogRemindersRow.js';
 import { type DogsRow, type DogsRowWithRemindersLogsTriggers, dogsColumns } from '../../main/types/rows/DogsRow.js';
 
 import { getAllLogsForDogUUID } from './getLogs.js';
-import { getAllRemindersForDogUUID } from './getReminders.js';
+import { getAllRemindersForDogUUID } from './reminders/getReminders.js';
 import { getAllTriggersForDogUUID } from './triggers/getTriggers.js';
 
 // Overload the function signatures to return different types depending upon includeRemindersLogsTriggers

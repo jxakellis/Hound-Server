@@ -1,3 +1,4 @@
+import { getReminderNotificationUsersForReminderUUID } from 'src/controllers/get/reminders/getReminderNotification.js';
 import { getAllReminderActionTypes } from '../../../../controllers/get/types/getReminderActionType.js';
 import { alarmLogger } from '../../../logging/loggers.js';
 import { DatabasePools, getPoolConnection } from '../../../database/databaseConnections.js';
@@ -5,7 +6,7 @@ import { databaseQuery } from '../../../database/databaseQuery.js';
 
 import { schedule } from './schedule.js';
 
-import { sendNotificationForFamily } from '../apn/sendNotification.js';
+import { sendNotificationForFamilyMembers } from '../apn/sendNotification.js';
 
 import { logServerError } from '../../../logging/logServerError.js';
 import { deleteAlarmNotificationsForReminder } from './deleteAlarmNotification.js';
@@ -67,9 +68,15 @@ async function sendAPNNotificationForFamily(familyId: string, reminderUUID: stri
       alertBody = `It's been a bit, remember to lend a hand with ${convertActionTypeToFinalReadable(reminderAction, true, reminder.reminderCustomActionName)}`;
     }
 
+    const notificationRows = await getReminderNotificationUsersForReminderUUID(generalPoolConnection, reminderUUID);
+    const userIds = notificationRows.map((n) => n.userId);
+
     // send immediate APN notification for family
     const customPayload = { reminderUUID, reminderLastModified: reminder.reminderLastModified };
-    sendNotificationForFamily(familyId, NOTIFICATION.CATEGORY.REMINDER.ALARM, alertTitle, alertBody, customPayload);
+
+    if (userIds.length > 0) {
+      sendNotificationForFamilyMembers(familyId, userIds, NOTIFICATION.CATEGORY.REMINDER.ALARM, alertTitle, alertBody, customPayload);
+    }
   }
   catch (error) {
     logServerError(
