@@ -1,9 +1,9 @@
-import { createReminderNotification } from '../../create/reminders/createReminderRecipient.js';
+import { createReminderRecipient } from '../../create/reminders/createReminderRecipient.js';
 import { getReminderNotificationUsersForReminderUUID } from '../../get/reminders/getReminderRecipient.js';
 import { type NotYetUpdatedDogRemindersRow } from '../../../main/types/rows/DogRemindersRow.js';
 import { type Queryable, databaseQuery } from '../../../main/database/databaseQuery.js';
 
-async function updateReminderNotificationForReminder(
+async function updateReminderRecipientForReminder(
   databaseConnection: Queryable,
   reminder: NotYetUpdatedDogRemindersRow,
 ): Promise<void> {
@@ -17,7 +17,7 @@ async function updateReminderNotificationForReminder(
   const promises: Promise<unknown>[] = [];
 
   toAdd.forEach((userId) => {
-    promises.push(createReminderNotification(databaseConnection, { reminderUUID: reminder.reminderUUID, userId }));
+    promises.push(createReminderRecipient(databaseConnection, { reminderUUID: reminder.reminderUUID, userId }));
   });
 
   toRemove.forEach((userId) => {
@@ -33,12 +33,12 @@ async function updateReminderNotificationForReminder(
   await Promise.all(promises);
 }
 
-async function updateReminderNotificationForReminders(
+async function updateReminderRecipientForReminders(
   databaseConnection: Queryable,
   reminders: NotYetUpdatedDogRemindersRow[],
 ): Promise<void> {
-  const promises = reminders.map((r) => updateReminderNotificationForReminder(databaseConnection, r));
+  const promises = reminders.map((r) => updateReminderRecipientForReminder(databaseConnection, r));
   await Promise.all(promises);
 }
 
-export { updateReminderNotificationForReminder, updateReminderNotificationForReminders };
+export { updateReminderRecipientForReminder, updateReminderRecipientForReminders };

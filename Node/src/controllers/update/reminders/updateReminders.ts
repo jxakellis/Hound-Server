@@ -5,6 +5,7 @@ import { formatKnownString } from '../../../main/format/formatObject.js';
 import { getReminderActionTypeForId } from '../../get/types/getReminderActionType.js';
 import { getReminderForReminderUUID } from '../../get/reminders/getReminders.js';
 import { ERROR_CODES, HoundError } from '../../../main/server/globalErrors.js';
+import { updateReminderRecipientForReminder } from './updateReminderRecipient.js';
 
 /**
  *  Queries the database to create a update reminder. If the query is successful, then returns the provided reminder
@@ -26,7 +27,9 @@ async function updateReminderForReminder(
   // TODO FUTURE DEPRECIATE this reminderAction is compatibility for <= 3.5.0
   const reminderAction = await getReminderActionTypeForId(databaseConnection, reminder.reminderActionTypeId);
 
-  await databaseQuery(
+  const promises: Promise<unknown>[] = [];
+
+  promises.push(databaseQuery(
     databaseConnection,
     `UPDATE dogReminders
     SET DEPRECIATED_reminderAction = ?,
@@ -51,7 +54,10 @@ async function updateReminderForReminder(
       reminder.oneTimeDate,
       reminder.reminderUUID,
     ],
-  );
+  ));
+
+  promises.push(updateReminderRecipientForReminder(databaseConnection, reminder));
+  await Promise.all(promises);
 }
 
 /**

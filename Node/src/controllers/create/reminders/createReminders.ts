@@ -4,7 +4,7 @@ import { type Queryable, type ResultSetHeader, databaseQuery } from '../../../ma
 import { LIMIT } from '../../../main/server/globalConstants.js';
 import { ERROR_CODES, HoundError } from '../../../main/server/globalErrors.js';
 import { getAllRemindersForDogUUID } from '../../get/reminders/getReminders.js';
-import { createReminderNotifications } from './createReminderRecipient.js';
+import { createReminderRecipients } from './createReminderRecipient.js';
 import { formatKnownString } from '../../../main/format/formatObject.js';
 import { getReminderActionTypeForId } from '../../get/types/getReminderActionType.js';
 
@@ -78,7 +78,7 @@ async function createReminderForReminder(
     ],
   );
 
-  await createReminderNotifications(
+  await createReminderRecipients(
     databaseConnection,
     reminder.reminderRecipientUserIds.map((userId) => ({ reminderUUID: reminder.reminderUUID, userId })),
   );

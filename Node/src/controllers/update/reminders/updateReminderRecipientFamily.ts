@@ -1,4 +1,4 @@
-import { createReminderNotifications } from '../../create/reminders/createReminderRecipient.js';
+import { createReminderRecipients } from '../../create/reminders/createReminderRecipient.js';
 import { type Queryable, databaseQuery } from '../../../main/database/databaseQuery.js';
 
 async function addUserToAllReminderNotifications(
@@ -16,7 +16,7 @@ async function addUserToAllReminderNotifications(
   );
 
   const notifications = reminders.map((r) => ({ reminderUUID: r.reminderUUID, userId }));
-  await createReminderNotifications(databaseConnection, notifications);
+  await createReminderRecipients(databaseConnection, notifications);
 }
 
 export { addUserToAllReminderNotifications };
