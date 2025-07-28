@@ -20,26 +20,29 @@ ALTER TABLE developmentHound.logActionTypes
     UNIQUE (`internalValue`);
 
 INSERT INTO developmentHound.logActionTypes (`internalValue`, `readableValue`, `emoji`, `sortOrder`) VALUES
-  ('feed',             'Feed',             '🍗',  1),
-  ('water',            'Fresh Water',      '🚰',  2),
-  ('treat',            'Treat',            '🦴',  3),
-  ('pee',              'Pee',              '💦',  4),
-  ('poo',              'Poo',              '💩',  5),
-  ('both',             'Pee & Poo',        '🧻',  6),
-  ('neither',          'Didn\'t Go Potty', '🚫',  7),
-  ('accident',         'Accident',         '🚨',  8),
-  ('walk',             'Walk',             '🦮',  9),
-  ('brush',            'Brush',            '💈', 10),
-  ('bathe',            'Bathe',            '🛁', 11),
-  ('medicine',         'Medicine',         '💊', 12),
-  ('vaccine',          'Vaccine',          '💉', 13),
-  ('weight',           'Weight',           '⚖️', 14),
-  ('wakeUp',           'Wake Up',          '☀️', 15),
-  ('sleep',            'Sleep',            '💤', 16),
-  ('crate',            'Crate',            '🏡', 17),
-  ('trainingSession',  'Training Session', '🎓', 18),
-  ('doctor',           'Doctor Visit',     '🩺', 19),
-  ('custom',           'Custom',           '📝', 20);
+  ('feed',             'Feed',             '🍗',  5),
+  ('water',            'Fresh Water',      '🚰',  10),
+  ('treat',            'Treat',            '🦴',  15),
+  ('pee',              'Pee',              '💦',  20),
+  ('poo',              'Poo',              '💩',  25),
+  ('both',             'Pee & Poo',        '🧻',  30),
+  ('neither',          'Didn\'t Go Potty', '🚫',  35),
+  ('accident',         'Accident',         '🚨',  40),
+  ('walk',             'Walk',             '🦮',  45),
+  ('brush',            'Brush',            '💈', 50),
+  ('bathe',            'Bathe',            '🛁', 55),
+  ('medicine',         'Medicine',         '💊', 60),
+  ('vaccine',          'Vaccine',          '💉', 65),
+  ('weight',           'Weight',           '⚖️', 70),
+  ('wakeUp',           'Wake Up',          '☀️', 75),
+  ('sleep',            'Sleep',            '💤', 80),
+  ('crate',            'Crate',            '🏡', 85),
+  ('trainingSession',  'Training Session', '🎓', 90),
+  ('doctor',           'Doctor Visit',     '🩺', 95),
+  ('custom',           'Custom',           '📝', 100);
+ 
+ INSERT INTO developmentHound.logActionTypes (`internalValue`, `readableValue`, `emoji`, `sortOrder`) VALUES
+  ('didNotEat',             'Didn\'t Eat',             '🍽️',  7);
 
 ALTER TABLE developmentHound.dogLogs  ADD COLUMN `logActionTypeId` bigint(20) UNSIGNED NULL AFTER `logAction`;
 
@@ -51,6 +54,7 @@ UPDATE developmentHound.dogLogs AS dl
 	SET dl.logActionTypeId = lat.logActionTypeId;
 
 ALTER TABLE developmentHound.dogLogs RENAME COLUMN logAction to DEPRECIATED_logAction;
+ALTER TABLE developmentHound.dogLogs MODIFY COLUMN DEPRECIATED_logAction varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
 
 CREATE TRIGGER BEFORE_UPDATE_dogLogs_CHECK_logIsDeleted
 BEFORE UPDATE ON dogLogs
@@ -215,7 +219,7 @@ ALTER TABLE developmentHound.reminderActionTypes
 INSERT INTO developmentHound.reminderActionTypes (internalValue, readableValue, emoji, sortOrder, isDefault) VALUES
   ('feed', 'Feed', '🍗',  5, 1),
   ('water', 'Fresh Water', '🚰',  10, 0),
-  ('potty', 'Potty', '🚰',  15, 0),
+  ('potty', 'Potty', '🚽',  15, 0),
   ('walk', 'Walk', '🦮',  20, 0),
   ('brush', 'Brush', '💈',  25, 0),
   ('bathe', 'Bathe', '🛁',  28, 0),
@@ -235,6 +239,8 @@ UPDATE developmentHound.dogReminders AS dr
 	SET dr.reminderActionTypeId = rat.reminderActionTypeId;
 
 ALTER TABLE developmentHound.dogReminders RENAME COLUMN reminderAction to DEPRECIATED_reminderAction;
+ALTER TABLE developmentHound.dogReminders MODIFY COLUMN DEPRECIATED_reminderAction varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
+
 
 CREATE TRIGGER BEFORE_UPDATE_dogReminders_CHECK_reminderIsDeleted
 BEFORE UPDATE ON dogReminders
@@ -327,6 +333,14 @@ SELECT lat.logActionTypeId, rat.reminderActionTypeId
    'trainingSession', 'doctor', 'custom'
  );
 
+INSERT INTO developmentHound.mappingLogActionTypesReminderActionTypes
+  (logActionTypeId, reminderActionTypeId)
+SELECT lat.logActionTypeId, rat.reminderActionTypeId
+  FROM developmentHound.logActionTypes   AS lat
+  JOIN developmentHound.reminderActionTypes AS rat
+    ON rat.internalValue = 'feed'
+ WHERE lat.internalValue IN ('didNotEat');
+
 RENAME TABLE logActionTypes TO logActionType;
 RENAME TABLE reminderActionTypes TO reminderActionType;
 RENAME TABLE mappingLogActionTypesReminderActionTypes TO mappingLogActionTypeReminderActionType;
@@ -348,14 +362,14 @@ ALTER TABLE developmentHound.logActionType
 
 UPDATE developmentHound.logActionType
 SET allowsCustom = 1
-WHERE internalValue IN ('medicine','vaccine','custom');
+WHERE internalValue IN ('medicine','vaccine','custom','trainingSession','doctor');
 
 ALTER TABLE developmentHound.reminderActionType
   ADD COLUMN allowsCustom TINYINT(1) NOT NULL DEFAULT 0 AFTER isDefault;
 
 UPDATE developmentHound.reminderActionType
 SET allowsCustom = 1
-WHERE internalValue IN ('medicine','custom');
+WHERE internalValue IN ('medicine','custom','trainingSession','doctor');
 
 # LOG UNITS
 
@@ -479,6 +493,8 @@ VALUES
  
  ALTER TABLE developmentHound.dogLogs RENAME COLUMN logUnit to DEPRECIATED_logUnit;
 ALTER TABLE developmentHound.dogLogs  ADD COLUMN logUnitTypeId bigint(20) UNSIGNED NULL AFTER DEPRECIATED_logUnit;
+ALTER TABLE developmentHound.dogLogs MODIFY COLUMN DEPRECIATED_logUnit varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL NULL;
+
 
 DROP TRIGGER IF EXISTS BEFORE_UPDATE_dogLogs_CHECK_logIsDeleted;
 
@@ -577,11 +593,11 @@ DROP TABLE developmentHound.dogTriggerLogCustomActionNameReaction;
 
 -- dogTriggerReminderResult
 CREATE TABLE developmentHound.dogTriggerReminderResult (
-  resultId                BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  reactionId                BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   triggerUUID             CHAR(36) NOT NULL,
   reminderActionTypeId    BIGINT(20) UNSIGNED NOT NULL,
   reminderCustomActionName VARCHAR(32) NOT NULL,
-  PRIMARY KEY (resultId),
+  PRIMARY KEY (reactionId),
   CONSTRAINT dtrr_UN_tUUID_rActionTypeId_rCustomActionName UNIQUE KEY (triggerUUID, reminderActionTypeId, reminderCustomActionName),
   CONSTRAINT dtrr_FK_dogTriggers FOREIGN KEY (triggerUUID) REFERENCES dogTriggers (triggerUUID) ON UPDATE RESTRICT ON DELETE RESTRICT,
   CONSTRAINT dtrr_FK_reminderActionType FOREIGN KEY (reminderActionTypeId) REFERENCES reminderActionType (reminderActionTypeId) ON UPDATE RESTRICT ON DELETE RESTRICT
@@ -590,4 +606,100 @@ CREATE TABLE developmentHound.dogTriggerReminderResult (
   COLLATE=utf8mb4_general_ci;
  
  ALTER TABLE developmentHound.dogTriggers DROP COLUMN triggerCustomName;
+
+-- trigger condition columns
+ALTER TABLE developmentHound.dogTriggers ADD COLUMN triggerManualCondition TINYINT(1) NOT NULL;
+ALTER TABLE developmentHound.dogTriggers ADD COLUMN triggerAlarmCreatedCondition TINYINT(1) NOT NULL;
+ALTER TABLE developmentHound.dogLogs ADD COLUMN logCreatedByReminderUUID CHAR(36) NULL;
+
+-- userConfigurationIsHapticsEnabled 
+ALTER TABLE developmentHound.userConfiguration ADD userConfigurationIsHapticsEnabled tinyint(1) DEFAULT 1 NOT NULL;
+ALTER TABLE developmentHound.userConfiguration MODIFY COLUMN userConfigurationIsHapticsEnabled tinyint(1) NOT NULL;
+-- userConfigurationUsesDeviceTimeZone
+ALTER TABLE developmentHound.userConfiguration ADD userConfigurationUsesDeviceTimeZone tinyint(1) DEFAULT 1 NOT NULL;
+ALTER TABLE developmentHound.userConfiguration MODIFY COLUMN userConfigurationUsesDeviceTimeZone tinyint(1) NOT NULL;
+-- userConfigurationUserTimeZone
+ALTER TABLE developmentHound.userConfiguration ADD userConfigurationUserTimeZone varchar(100) NULL;
+
+-- dogReminderRecipient
+CREATE TABLE developmentHound.dogReminderRecipient (
+  recipientId                   BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  reminderUUID                 CHAR(36)             NOT NULL,
+  userId                     CHAR(64)             NOT NULL,
+  PRIMARY KEY (recipientId),
+  UNIQUE KEY drr_UN_reminderUUID_userId (reminderUUID, userId)
+) ENGINE=InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_general_ci;
+ 
+ALTER TABLE developmentHound.dogReminderRecipient
+  ADD CONSTRAINT drr_FK_dogReminders
+    FOREIGN KEY (reminderUUID)
+    REFERENCES developmentHound.dogReminders (reminderUUID)
+    ON UPDATE RESTRICT
+    ON DELETE RESTRICT,
+  ADD CONSTRAINT drr_FK_users
+    FOREIGN KEY (userId)
+    REFERENCES developmentHound.users (userId)
+    ON UPDATE RESTRICT
+    ON DELETE RESTRICT;
+   
+INSERT INTO developmentHound.dogReminderRecipient (reminderUUID, userId)
+SELECT
+    dr.reminderUUID,
+    fm.userId
+FROM developmentHound.dogReminders dr
+JOIN developmentHound.dogs d
+    ON dr.dogUUID = d.dogUUID
+JOIN developmentHound.familyMembers fm
+    ON d.familyId = fm.familyId
+WHERE
+    dr.reminderIsDeleted = 0
+    AND d.dogIsDeleted = 0; 
+   
+-- dogReminder renames
+ALTER TABLE developmentHound.dogReminders DROP CONSTRAINT CHECK_monthly;
+ALTER TABLE developmentHound.dogReminders DROP CONSTRAINT CHECK_weekly;
+   
+ALTER TABLE developmentHound.dogReminders RENAME COLUMN weeklyUTCHour TO weeklyZonedHour;
+ALTER TABLE developmentHound.dogReminders RENAME COLUMN weeklyUTCMinute TO weeklyZonedMinute;
+
+ALTER TABLE developmentHound.dogReminders RENAME COLUMN weeklySunday TO weeklyZonedSunday;
+ALTER TABLE developmentHound.dogReminders RENAME COLUMN weeklyMonday TO weeklyZonedMonday;
+ALTER TABLE developmentHound.dogReminders RENAME COLUMN weeklyTuesday TO weeklyZonedTuesday;
+ALTER TABLE developmentHound.dogReminders RENAME COLUMN weeklyWednesday TO weeklyZonedWednesday;
+ALTER TABLE developmentHound.dogReminders RENAME COLUMN weeklyThursday TO weeklyZonedThursday;
+ALTER TABLE developmentHound.dogReminders RENAME COLUMN weeklyFriday TO weeklyZonedFriday;
+ALTER TABLE developmentHound.dogReminders RENAME COLUMN weeklySaturday TO weeklyZonedSaturday;
+
+ALTER TABLE developmentHound.dogReminders RENAME COLUMN monthlyUTCDay TO monthlyZonedDay;
+ALTER TABLE developmentHound.dogReminders RENAME COLUMN monthlyUTCHour TO monthlyZonedHour;
+ALTER TABLE developmentHound.dogReminders RENAME COLUMN monthlyUTCMinute TO monthlyZonedMinute;
+
+ALTER TABLE developmentHound.dogReminders ADD CONSTRAINT dr_CHECK_monthlyZoned
+  CHECK (
+    monthlyZonedHour >= 0 AND monthlyZonedHour <= 23 AND
+    monthlyZonedMinute >= 0 AND monthlyZonedMinute <= 59 AND
+    monthlyZonedDay >= 0 AND monthlyZonedDay <= 31
+  );
+
+ALTER TABLE developmentHound.dogReminders ADD CONSTRAINT dr_CHECK_weeklyZoned
+  CHECK (
+    weeklyZonedHour >= 0 AND weeklyZonedHour <= 23 AND
+    weeklyZonedMinute >= 0 AND weeklyZonedMinute <= 59 AND
+    (
+      weeklyZonedSunday = 1 OR weeklyZonedMonday = 1 OR weeklyZonedTuesday = 1 OR
+      weeklyZonedWednesday = 1 OR weeklyZonedThursday = 1 OR weeklyZonedFriday = 1 OR
+      weeklyZonedSaturday = 1
+    )
+  );
+ 
+ -- reminderTimeZone
+ ALTER TABLE developmentHound.dogReminders ADD COLUMN reminderTimeZone VARCHAR(100) NOT NULL DEFAULT 'UTC';
+ ALTER TABLE developmentHound.dogReminders MODIFY COLUMN reminderTimeZone VARCHAR(100) NOT NULL;
+ 
+
+ 
+
+
 
