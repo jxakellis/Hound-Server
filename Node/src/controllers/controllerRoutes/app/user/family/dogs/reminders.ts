@@ -93,22 +93,25 @@ async function createReminder(req: express.Request, res: express.Response): Prom
       const reminderIsEnabled = formatNumber(unvalidatedReminderDict['reminderIsEnabled']);
       const reminderExecutionBasis = formatDate(unvalidatedReminderDict['reminderExecutionBasis']);
       const reminderExecutionDate = formatDate(unvalidatedReminderDict['reminderExecutionDate']);
-      const snoozeExecutionInterval = formatNumber(unvalidatedReminderDict['snoozeExecutionInterval']);
-      const countdownExecutionInterval = formatNumber(unvalidatedReminderDict['countdownExecutionInterval']);
-      const weeklyUTCHour = formatNumber(unvalidatedReminderDict['weeklyUTCHour']);
-      const weeklyUTCMinute = formatNumber(unvalidatedReminderDict['weeklyUTCMinute']);
-      const weeklySunday = formatNumber(unvalidatedReminderDict['weeklySunday']);
-      const weeklyMonday = formatNumber(unvalidatedReminderDict['weeklyMonday']);
-      const weeklyTuesday = formatNumber(unvalidatedReminderDict['weeklyTuesday']);
-      const weeklyWednesday = formatNumber(unvalidatedReminderDict['weeklyWednesday']);
-      const weeklyThursday = formatNumber(unvalidatedReminderDict['weeklyThursday']);
-      const weeklyFriday = formatNumber(unvalidatedReminderDict['weeklyFriday']);
-      const weeklySaturday = formatNumber(unvalidatedReminderDict['weeklySaturday']);
-      const weeklySkippedDate = formatDate(unvalidatedReminderDict['weeklySkippedDate']);
 
-      const monthlyUTCDay = formatNumber(unvalidatedReminderDict['monthlyUTCDay']);
-      const monthlyUTCHour = formatNumber(unvalidatedReminderDict['monthlyUTCHour']);
-      const monthlyUTCMinute = formatNumber(unvalidatedReminderDict['monthlyUTCMinute']);
+      const snoozeExecutionInterval = formatNumber(unvalidatedReminderDict['snoozeExecutionInterval']);
+
+      const countdownExecutionInterval = formatNumber(unvalidatedReminderDict['countdownExecutionInterval']);
+      // TODO FUTURE DEPRECIATE this is compatibility for <= 3.5.0
+      const weeklyZonedHour = formatNumber(unvalidatedReminderDict['weeklyZonedHour']) ?? formatNumber(unvalidatedReminderDict['weeklyUTCHour']);
+      const weeklyZonedMinute = formatNumber(unvalidatedReminderDict['weeklyZonedMinute']) ?? formatNumber(unvalidatedReminderDict['weeklyUTCMinute']);
+      const weeklyZonedSunday = formatNumber(unvalidatedReminderDict['weeklyZonedSunday']) ?? formatNumber(unvalidatedReminderDict['weeklySunday']);
+      const weeklyZonedMonday = formatNumber(unvalidatedReminderDict['weeklyZonedMonday']) ?? formatNumber(unvalidatedReminderDict['weeklyMonday']);
+      const weeklyZonedTuesday = formatNumber(unvalidatedReminderDict['weeklyZonedTuesday']) ?? formatNumber(unvalidatedReminderDict['weeklyTuesday']);
+      const weeklyZonedWednesday = formatNumber(unvalidatedReminderDict['weeklyZonedWednesday']) ?? formatNumber(unvalidatedReminderDict['weeklyWednesday']);
+      const weeklyZonedThursday = formatNumber(unvalidatedReminderDict['weeklyZonedThursday']) ?? formatNumber(unvalidatedReminderDict['weeklyThursday']);
+      const weeklyZonedFriday = formatNumber(unvalidatedReminderDict['weeklyZonedFriday']) ?? formatNumber(unvalidatedReminderDict['weeklyFriday']);
+      const weeklyZonedSaturday = formatNumber(unvalidatedReminderDict['weeklyZonedSaturday']) ?? formatNumber(unvalidatedReminderDict['weeklySaturday']);
+      const weeklySkippedDate = formatDate(unvalidatedReminderDict['weeklySkippedDate']);
+      // TODO FUTURE DEPRECIATE this is compatibility for <= 3.5.0
+      const monthlyZonedDay = formatNumber(unvalidatedReminderDict['monthlyZonedDay']) ?? formatNumber(unvalidatedReminderDict['monthlyUTCDay']);
+      const monthlyZonedHour = formatNumber(unvalidatedReminderDict['monthlyZonedHour']) ?? formatNumber(unvalidatedReminderDict['monthlyUTCHour']);
+      const monthlyZonedMinute = formatNumber(unvalidatedReminderDict['monthlyZonedMinute']) ?? formatNumber(unvalidatedReminderDict['monthlyUTCMinute']);
       const monthlySkippedDate = formatDate(unvalidatedReminderDict['monthlySkippedDate']);
 
       const oneTimeDate = formatDate(unvalidatedReminderDict['oneTimeDate']);
@@ -117,6 +120,9 @@ async function createReminder(req: express.Request, res: express.Response): Prom
       const reminderRecipientUserIds = notifUsersRaw !== undefined
         ? notifUsersRaw.map((id) => formatUnknownString(id) ?? '').filter((id) => id !== '')
         : defaultUserIds;
+
+      // TODO FUTURE DEPRECIATE this is compatibility for <= 3.5.0
+      const reminderTimeZone = formatUnknownString(unvalidatedReminderDict['reminderTimeZone'], 100) ?? 'UTC';
 
       if (reminderUUID === undefined || reminderUUID === null) {
         throw new HoundError('reminderUUID missing', createReminder, ERROR_CODES.VALUE.MISSING);
@@ -144,42 +150,42 @@ async function createReminder(req: express.Request, res: express.Response): Prom
       if (countdownExecutionInterval === undefined || countdownExecutionInterval === null) {
         throw new HoundError('countdownExecutionInterval missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (weeklyUTCHour === undefined || weeklyUTCHour === null) {
-        throw new HoundError('weeklyUTCHour missing', createReminder, ERROR_CODES.VALUE.MISSING);
+      if (weeklyZonedHour === undefined || weeklyZonedHour === null) {
+        throw new HoundError('weeklyZonedHour missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (weeklyUTCMinute === undefined || weeklyUTCMinute === null) {
-        throw new HoundError('weeklyUTCMinute missing', createReminder, ERROR_CODES.VALUE.MISSING);
+      if (weeklyZonedMinute === undefined || weeklyZonedMinute === null) {
+        throw new HoundError('weeklyZonedMinute missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (weeklySunday === undefined || weeklySunday === null) {
-        throw new HoundError('weeklySunday missing', createReminder, ERROR_CODES.VALUE.MISSING);
+      if (weeklyZonedSunday === undefined || weeklyZonedSunday === null) {
+        throw new HoundError('weeklyZonedSunday missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (weeklyMonday === undefined || weeklyMonday === null) {
-        throw new HoundError('weeklyMonday missing', createReminder, ERROR_CODES.VALUE.MISSING);
+      if (weeklyZonedMonday === undefined || weeklyZonedMonday === null) {
+        throw new HoundError('weeklyZonedMonday missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (weeklyTuesday === undefined || weeklyTuesday === null) {
-        throw new HoundError('weeklyTuesday missing', createReminder, ERROR_CODES.VALUE.MISSING);
+      if (weeklyZonedTuesday === undefined || weeklyZonedTuesday === null) {
+        throw new HoundError('weeklyZonedTuesday missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (weeklyWednesday === undefined || weeklyWednesday === null) {
-        throw new HoundError('weeklyWednesday missing', createReminder, ERROR_CODES.VALUE.MISSING);
+      if (weeklyZonedWednesday === undefined || weeklyZonedWednesday === null) {
+        throw new HoundError('weeklyZonedWednesday missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (weeklyThursday === undefined || weeklyThursday === null) {
-        throw new HoundError('weeklyThursday missing', createReminder, ERROR_CODES.VALUE.MISSING);
+      if (weeklyZonedThursday === undefined || weeklyZonedThursday === null) {
+        throw new HoundError('weeklyZonedThursday missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (weeklyFriday === undefined || weeklyFriday === null) {
-        throw new HoundError('weeklyFriday missing', createReminder, ERROR_CODES.VALUE.MISSING);
+      if (weeklyZonedFriday === undefined || weeklyZonedFriday === null) {
+        throw new HoundError('weeklyZonedFriday missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (weeklySaturday === undefined || weeklySaturday === null) {
-        throw new HoundError('weeklySaturday missing', createReminder, ERROR_CODES.VALUE.MISSING);
+      if (weeklyZonedSaturday === undefined || weeklyZonedSaturday === null) {
+        throw new HoundError('weeklyZonedSaturday missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
       // weeklySkippedDate optional
-      if (monthlyUTCDay === undefined || monthlyUTCDay === null) {
-        throw new HoundError('monthlyUTCDay missing', createReminder, ERROR_CODES.VALUE.MISSING);
+      if (monthlyZonedDay === undefined || monthlyZonedDay === null) {
+        throw new HoundError('monthlyZonedDay missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (monthlyUTCHour === undefined || monthlyUTCHour === null) {
-        throw new HoundError('monthlyUTCHour missing', createReminder, ERROR_CODES.VALUE.MISSING);
+      if (monthlyZonedHour === undefined || monthlyZonedHour === null) {
+        throw new HoundError('monthlyZonedHour missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (monthlyUTCMinute === undefined || monthlyUTCMinute === null) {
-        throw new HoundError('monthlyUTCMinute missing', createReminder, ERROR_CODES.VALUE.MISSING);
+      if (monthlyZonedMinute === undefined || monthlyZonedMinute === null) {
+        throw new HoundError('monthlyZonedMinute missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
       // monthlySkippedDate optional
       if (oneTimeDate === undefined || oneTimeDate === null) {
@@ -187,6 +193,9 @@ async function createReminder(req: express.Request, res: express.Response): Prom
       }
       if (reminderRecipientUserIds === undefined || reminderRecipientUserIds === null) {
         throw new HoundError('reminderRecipientUserIds missing', createReminder, ERROR_CODES.VALUE.MISSING);
+      }
+      if (reminderTimeZone === undefined || reminderTimeZone === null) {
+        throw new HoundError('reminderTimeZone missing', createReminder, ERROR_CODES.VALUE.MISSING);
       }
 
       reminders.push({
@@ -201,22 +210,23 @@ async function createReminder(req: express.Request, res: express.Response): Prom
         reminderExecutionDate,
         snoozeExecutionInterval,
         countdownExecutionInterval,
-        weeklyUTCHour,
-        weeklyUTCMinute,
-        weeklySunday,
-        weeklyMonday,
-        weeklyTuesday,
-        weeklyWednesday,
-        weeklyThursday,
-        weeklyFriday,
-        weeklySaturday,
+        weeklyZonedHour,
+        weeklyZonedMinute,
+        weeklyZonedSunday,
+        weeklyZonedMonday,
+        weeklyZonedTuesday,
+        weeklyZonedWednesday,
+        weeklyZonedThursday,
+        weeklyZonedFriday,
+        weeklyZonedSaturday,
         weeklySkippedDate,
-        monthlyUTCDay,
-        monthlyUTCHour,
-        monthlyUTCMinute,
+        monthlyZonedDay,
+        monthlyZonedHour,
+        monthlyZonedMinute,
         monthlySkippedDate,
         oneTimeDate,
         reminderRecipientUserIds,
+        reminderTimeZone,
       });
     });
 
@@ -274,22 +284,25 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
       const reminderIsEnabled = formatNumber(validatedReminder.unvalidatedReminderDict?.['reminderIsEnabled']);
       const reminderExecutionBasis = formatDate(validatedReminder.unvalidatedReminderDict?.['reminderExecutionBasis']);
       const reminderExecutionDate = formatDate(validatedReminder.unvalidatedReminderDict?.['reminderExecutionDate']);
-      const snoozeExecutionInterval = formatNumber(validatedReminder.unvalidatedReminderDict?.['snoozeExecutionInterval']);
-      const countdownExecutionInterval = formatNumber(validatedReminder.unvalidatedReminderDict?.['countdownExecutionInterval']);
-      const weeklyUTCHour = formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyUTCHour']);
-      const weeklyUTCMinute = formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyUTCMinute']);
-      const weeklySunday = formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklySunday']);
-      const weeklyMonday = formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyMonday']);
-      const weeklyTuesday = formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyTuesday']);
-      const weeklyWednesday = formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyWednesday']);
-      const weeklyThursday = formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyThursday']);
-      const weeklyFriday = formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyFriday']);
-      const weeklySaturday = formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklySaturday']);
-      const weeklySkippedDate = formatDate(validatedReminder.unvalidatedReminderDict?.['weeklySkippedDate']);
 
-      const monthlyUTCDay = formatNumber(validatedReminder.unvalidatedReminderDict?.['monthlyUTCDay']);
-      const monthlyUTCHour = formatNumber(validatedReminder.unvalidatedReminderDict?.['monthlyUTCHour']);
-      const monthlyUTCMinute = formatNumber(validatedReminder.unvalidatedReminderDict?.['monthlyUTCMinute']);
+      const snoozeExecutionInterval = formatNumber(validatedReminder.unvalidatedReminderDict?.['snoozeExecutionInterval']);
+
+      const countdownExecutionInterval = formatNumber(validatedReminder.unvalidatedReminderDict?.['countdownExecutionInterval']);
+      // TODO FUTURE DEPRECIATE this is compatibility for <= 3.5.0
+      const weeklyZonedHour = formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyZonedHour']) ?? formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyUTCHour']);
+      const weeklyZonedMinute = formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyZonedMinute']) ?? formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyUTCMinute']);
+      const weeklyZonedSunday = formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyZonedSunday']) ?? formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklySunday']);
+      const weeklyZonedMonday = formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyZonedMonday']) ?? formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyMonday']);
+      const weeklyZonedTuesday = formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyZonedTuesday']) ?? formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyTuesday']);
+      const weeklyZonedWednesday = formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyZonedWednesday']) ?? formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyWednesday']);
+      const weeklyZonedThursday = formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyZonedThursday']) ?? formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyThursday']);
+      const weeklyZonedFriday = formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyZonedFriday']) ?? formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyFriday']);
+      const weeklyZonedSaturday = formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyZonedSaturday']) ?? formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklySaturday']);
+      const weeklySkippedDate = formatDate(validatedReminder.unvalidatedReminderDict?.['weeklySkippedDate']);
+      // TODO FUTURE DEPRECIATE this is compatibility for <= 3.5.0
+      const monthlyZonedDay = formatNumber(validatedReminder.unvalidatedReminderDict?.['monthlyZonedDay']) ?? formatNumber(validatedReminder.unvalidatedReminderDict?.['monthlyUTCDay']);
+      const monthlyZonedHour = formatNumber(validatedReminder.unvalidatedReminderDict?.['monthlyZonedHour']) ?? formatNumber(validatedReminder.unvalidatedReminderDict?.['monthlyUTCHour']);
+      const monthlyZonedMinute = formatNumber(validatedReminder.unvalidatedReminderDict?.['monthlyZonedMinute']) ?? formatNumber(validatedReminder.unvalidatedReminderDict?.['monthlyUTCMinute']);
       const monthlySkippedDate = formatDate(validatedReminder.unvalidatedReminderDict?.['monthlySkippedDate']);
 
       const oneTimeDate = formatDate(validatedReminder.unvalidatedReminderDict?.['oneTimeDate']);
@@ -298,6 +311,7 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
       const reminderRecipientUserIds = notifUsersRaw !== undefined
         ? notifUsersRaw.map((id) => formatUnknownString(id) ?? '').filter((id) => id !== '')
         : defaultUserIds;
+      const reminderTimeZone = formatUnknownString(validatedReminder.unvalidatedReminderDict?.['reminderTimeZone'], 100) ?? 'UTC';
 
       if (reminderActionTypeId === undefined || reminderActionTypeId === null) {
         throw new HoundError('reminderActionTypeId missing', updateReminder, ERROR_CODES.VALUE.MISSING);
@@ -322,42 +336,42 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
       if (countdownExecutionInterval === undefined || countdownExecutionInterval === null) {
         throw new HoundError('countdownExecutionInterval missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (weeklyUTCHour === undefined || weeklyUTCHour === null) {
-        throw new HoundError('weeklyUTCHour missing', updateReminder, ERROR_CODES.VALUE.MISSING);
+      if (weeklyZonedHour === undefined || weeklyZonedHour === null) {
+        throw new HoundError('weeklyZonedHour missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (weeklyUTCMinute === undefined || weeklyUTCMinute === null) {
-        throw new HoundError('weeklyUTCMinute missing', updateReminder, ERROR_CODES.VALUE.MISSING);
+      if (weeklyZonedMinute === undefined || weeklyZonedMinute === null) {
+        throw new HoundError('weeklyZonedMinute missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (weeklySunday === undefined || weeklySunday === null) {
-        throw new HoundError('weeklySunday missing', updateReminder, ERROR_CODES.VALUE.MISSING);
+      if (weeklyZonedSunday === undefined || weeklyZonedSunday === null) {
+        throw new HoundError('weeklyZonedSunday missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (weeklyMonday === undefined || weeklyMonday === null) {
-        throw new HoundError('weeklyMonday missing', updateReminder, ERROR_CODES.VALUE.MISSING);
+      if (weeklyZonedMonday === undefined || weeklyZonedMonday === null) {
+        throw new HoundError('weeklyZonedMonday missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (weeklyTuesday === undefined || weeklyTuesday === null) {
-        throw new HoundError('weeklyTuesday missing', updateReminder, ERROR_CODES.VALUE.MISSING);
+      if (weeklyZonedTuesday === undefined || weeklyZonedTuesday === null) {
+        throw new HoundError('weeklyZonedTuesday missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (weeklyWednesday === undefined || weeklyWednesday === null) {
-        throw new HoundError('weeklyWednesday missing', updateReminder, ERROR_CODES.VALUE.MISSING);
+      if (weeklyZonedWednesday === undefined || weeklyZonedWednesday === null) {
+        throw new HoundError('weeklyZonedWednesday missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (weeklyThursday === undefined || weeklyThursday === null) {
-        throw new HoundError('weeklyThursday missing', updateReminder, ERROR_CODES.VALUE.MISSING);
+      if (weeklyZonedThursday === undefined || weeklyZonedThursday === null) {
+        throw new HoundError('weeklyZonedThursday missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (weeklyFriday === undefined || weeklyFriday === null) {
-        throw new HoundError('weeklyFriday missing', updateReminder, ERROR_CODES.VALUE.MISSING);
+      if (weeklyZonedFriday === undefined || weeklyZonedFriday === null) {
+        throw new HoundError('weeklyZonedFriday missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (weeklySaturday === undefined || weeklySaturday === null) {
-        throw new HoundError('weeklySaturday missing', updateReminder, ERROR_CODES.VALUE.MISSING);
+      if (weeklyZonedSaturday === undefined || weeklyZonedSaturday === null) {
+        throw new HoundError('weeklyZonedSaturday missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
       // weeklySkippedDate optional
-      if (monthlyUTCDay === undefined || monthlyUTCDay === null) {
-        throw new HoundError('monthlyUTCDay missing', updateReminder, ERROR_CODES.VALUE.MISSING);
+      if (monthlyZonedDay === undefined || monthlyZonedDay === null) {
+        throw new HoundError('monthlyZonedDay missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (monthlyUTCHour === undefined || monthlyUTCHour === null) {
-        throw new HoundError('monthlyUTCHour missing', updateReminder, ERROR_CODES.VALUE.MISSING);
+      if (monthlyZonedHour === undefined || monthlyZonedHour === null) {
+        throw new HoundError('monthlyZonedHour missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
-      if (monthlyUTCMinute === undefined || monthlyUTCMinute === null) {
-        throw new HoundError('monthlyUTCMinute missing', updateReminder, ERROR_CODES.VALUE.MISSING);
+      if (monthlyZonedMinute === undefined || monthlyZonedMinute === null) {
+        throw new HoundError('monthlyZonedMinute missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
       // monthlySkippedDate optional
       if (oneTimeDate === undefined || oneTimeDate === null) {
@@ -365,6 +379,9 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
       }
       if (reminderRecipientUserIds === undefined || reminderRecipientUserIds === null) {
         throw new HoundError('reminderRecipientUserIds missing', updateReminder, ERROR_CODES.VALUE.MISSING);
+      }
+      if (reminderTimeZone === undefined || reminderTimeZone === null) {
+        throw new HoundError('reminderTimeZone missing', updateReminder, ERROR_CODES.VALUE.MISSING);
       }
 
       reminders.push({
@@ -380,22 +397,23 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
         reminderExecutionDate,
         snoozeExecutionInterval,
         countdownExecutionInterval,
-        weeklyUTCHour,
-        weeklyUTCMinute,
-        weeklySunday,
-        weeklyMonday,
-        weeklyTuesday,
-        weeklyWednesday,
-        weeklyThursday,
-        weeklyFriday,
-        weeklySaturday,
+        weeklyZonedHour,
+        weeklyZonedMinute,
+        weeklyZonedSunday,
+        weeklyZonedMonday,
+        weeklyZonedTuesday,
+        weeklyZonedWednesday,
+        weeklyZonedThursday,
+        weeklyZonedFriday,
+        weeklyZonedSaturday,
         weeklySkippedDate,
-        monthlyUTCDay,
-        monthlyUTCHour,
-        monthlyUTCMinute,
+        monthlyZonedDay,
+        monthlyZonedHour,
+        monthlyZonedMinute,
         monthlySkippedDate,
         oneTimeDate,
         reminderRecipientUserIds,
+        reminderTimeZone,
       });
     });
 

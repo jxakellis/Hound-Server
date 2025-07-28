@@ -9,26 +9,30 @@ dr.reminderIsTriggerResult,
 dr.reminderIsEnabled,
 dr.reminderExecutionBasis,
 dr.reminderExecutionDate,
+dr.reminderTimeZone,
 dr.reminderLastModified,
 dr.reminderIsDeleted,
 dr.snoozeExecutionInterval,
 dr.countdownExecutionInterval,
-dr.weeklyUTCHour,
-dr.weeklyUTCMinute,
-dr.weeklySunday,
-dr.weeklyMonday,
-dr.weeklyTuesday,
-dr.weeklyWednesday,
-dr.weeklyThursday,
-dr.weeklyFriday,
-dr.weeklySaturday,
+dr.weeklyZonedHour,
+dr.weeklyZonedMinute,
+dr.weeklyZonedSunday,
+dr.weeklyZonedMonday,
+dr.weeklyZonedTuesday,
+dr.weeklyZonedWednesday,
+dr.weeklyZonedThursday,
+dr.weeklyZonedFriday,
+dr.weeklyZonedSaturday,
 dr.weeklySkippedDate,
-dr.monthlyUTCDay,
-dr.monthlyUTCHour,
-dr.monthlyUTCMinute,
+dr.monthlyZonedDay,
+dr.monthlyZonedHour,
+dr.monthlyZonedMinute,
 dr.monthlySkippedDate,
 dr.oneTimeDate
 `;
+
+// TODO add reminder TZ column and saving
+// TODO change current columns to new Zoned names
 
 type DogRemindersRow = {
     // NOTE: database booleans (tinyint(1)) are returned as 0 or 1 numbers, not booleans. therefore, we have to use number instead of boolean
@@ -42,23 +46,24 @@ type DogRemindersRow = {
     reminderIsEnabled: number
     reminderExecutionBasis: Date
     reminderExecutionDate?: Date
+    reminderTimeZone: string
     reminderLastModified: Date
     reminderIsDeleted: number
     snoozeExecutionInterval?: number
     countdownExecutionInterval: number
-    weeklyUTCHour: number
-    weeklyUTCMinute: number
-    weeklySunday: number
-    weeklyMonday: number
-    weeklyTuesday: number
-    weeklyWednesday: number
-    weeklyThursday: number
-    weeklyFriday: number
-    weeklySaturday: number
+    weeklyZonedHour: number
+    weeklyZonedMinute: number
+    weeklyZonedSunday: number
+    weeklyZonedMonday: number
+    weeklyZonedTuesday: number
+    weeklyZonedWednesday: number
+    weeklyZonedThursday: number
+    weeklyZonedFriday: number
+    weeklyZonedSaturday: number
     weeklySkippedDate?: Date
-    monthlyUTCDay: number
-    monthlyUTCHour: number
-    monthlyUTCMinute: number
+    monthlyZonedDay: number
+    monthlyZonedHour: number
+    monthlyZonedMinute: number
     monthlySkippedDate?: Date
     oneTimeDate: Date
     reminderRecipientUserIds: string[]

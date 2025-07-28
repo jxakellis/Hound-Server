@@ -70,6 +70,10 @@ async function createUser(req: express.Request, res: express.Response): Promise<
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const userConfigurationIsHapticsEnabled = formatNumber(req.body['userConfigurationIsHapticsEnabled']) ?? 1;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const userConfigurationUsesDeviceTimeZone = formatNumber(req.body['userConfigurationUsesDeviceTimeZone']) ?? 1;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const userConfigurationUserTimeZone = formatUnknownString(req.body['userConfigurationUserTimeZone']);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const userConfigurationSnoozeLength = formatNumber(req.body['userConfigurationSnoozeLength']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const userConfigurationNotificationSound = formatUnknownString(req.body['userConfigurationNotificationSound']);
@@ -105,6 +109,10 @@ async function createUser(req: express.Request, res: express.Response): Promise<
     if (userConfigurationIsHapticsEnabled === undefined || userConfigurationIsHapticsEnabled === null) {
       throw new HoundError('userConfigurationIsHapticsEnabled missing', createUser, ERROR_CODES.VALUE.MISSING);
     }
+    if (userConfigurationUsesDeviceTimeZone === undefined || userConfigurationUsesDeviceTimeZone === null) {
+      throw new HoundError('userConfigurationUsesDeviceTimeZone missing', createUser, ERROR_CODES.VALUE.MISSING);
+    }
+    // userConfigurationUserTimeZone is optional
     if (userConfigurationSnoozeLength === undefined || userConfigurationSnoozeLength === null) {
       throw new HoundError('userConfigurationSnoozeLength missing', createUser, ERROR_CODES.VALUE.MISSING);
     }
@@ -138,6 +146,8 @@ async function createUser(req: express.Request, res: express.Response): Promise<
         userConfigurationMeasurementSystem,
         userConfigurationInterfaceStyle,
         userConfigurationIsHapticsEnabled,
+        userConfigurationUsesDeviceTimeZone,
+        userConfigurationUserTimeZone,
         userConfigurationSnoozeLength,
         userConfigurationNotificationSound,
         userConfigurationIsSilentModeEnabled,
@@ -189,6 +199,10 @@ async function updateUser(req: express.Request, res: express.Response): Promise<
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const userConfigurationIsHapticsEnabled = formatNumber(req.body['userConfigurationIsHapticsEnabled']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const userConfigurationUsesDeviceTimeZone = formatNumber(req.body['userConfigurationUsesDeviceTimeZone']);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const userConfigurationUserTimeZone = formatUnknownString(req.body['userConfigurationUserTimeZone']);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const userConfigurationSnoozeLength = formatNumber(req.body['userConfigurationSnoozeLength']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const userConfigurationNotificationSound = formatUnknownString(req.body['userConfigurationNotificationSound']);
@@ -214,6 +228,8 @@ async function updateUser(req: express.Request, res: express.Response): Promise<
         userConfigurationMeasurementSystem,
         userConfigurationInterfaceStyle,
         userConfigurationIsHapticsEnabled,
+        userConfigurationUsesDeviceTimeZone,
+        userConfigurationUserTimeZone,
         userConfigurationSnoozeLength,
         userConfigurationNotificationSound,
         userConfigurationIsSilentModeEnabled,

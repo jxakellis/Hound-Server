@@ -37,12 +37,12 @@ async function createReminderForReminder(
           reminderLastModified, reminderIsDeleted,
           snoozeExecutionInterval,
           countdownExecutionInterval,
-          weeklyUTCHour, weeklyUTCMinute,
-          weeklySunday, weeklyMonday, weeklyTuesday, weeklyWednesday, weeklyThursday, weeklyFriday, weeklySaturday,
+          weeklyZonedHour, weeklyZonedMinute,
+          weeklyZonedSunday, weeklyZonedMonday, weeklyZonedTuesday, weeklyZonedWednesday, weeklyZonedThursday, weeklyZonedFriday, weeklyZonedSaturday,
           weeklySkippedDate,
-          monthlyUTCDay, monthlyUTCHour, monthlyUTCMinute,
-          monthlySkippedDate,
-          oneTimeDate
+          monthlyZonedDay, monthlyZonedHour, monthlyZonedMinute, monthlySkippedDate,
+          oneTimeDate,
+          reminderTimeZone
           )
           VALUES (
             ?,
@@ -54,9 +54,10 @@ async function createReminderForReminder(
             ?,
             ?,
             ?, ?,
-            ?, ?, ?, ?, ?, ?, ?,
-            ?,
+            ?, ?, ?, ?,
             ?, ?, ?,
+            ?,
+            ?, ?, ?, ?,
             ?,
             ?
             )`,
@@ -69,12 +70,13 @@ async function createReminderForReminder(
       // none, default values
       reminder.snoozeExecutionInterval,
       reminder.countdownExecutionInterval,
-      reminder.weeklyUTCHour, reminder.weeklyUTCMinute,
-      reminder.weeklySunday, reminder.weeklyMonday, reminder.weeklyTuesday, reminder.weeklyWednesday, reminder.weeklyThursday, reminder.weeklyFriday, reminder.weeklySaturday,
+      reminder.weeklyZonedHour, reminder.weeklyZonedMinute,
+      reminder.weeklyZonedSunday, reminder.weeklyZonedMonday, reminder.weeklyZonedTuesday, reminder.weeklyZonedWednesday,
+      reminder.weeklyZonedThursday, reminder.weeklyZonedFriday, reminder.weeklyZonedSaturday,
       reminder.weeklySkippedDate,
-      reminder.monthlyUTCDay, reminder.monthlyUTCHour, reminder.monthlyUTCMinute,
-      reminder.monthlySkippedDate,
+      reminder.monthlyZonedDay, reminder.monthlyZonedHour, reminder.monthlyZonedMinute, reminder.monthlySkippedDate,
       reminder.oneTimeDate,
+      reminder.reminderTimeZone,
     ],
   );
 
