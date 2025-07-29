@@ -84,10 +84,10 @@ async function createUserForUserIdentifier(
                 userConfigurationSnoozeLength,
                 userConfigurationNotificationSound,
                 userConfigurationIsSilentModeEnabled,
-                userConfigurationSilentModeStartUTCHour,
-                userConfigurationSilentModeEndUTCHour,
-                userConfigurationSilentModeStartUTCMinute,
-                userConfigurationSilentModeEndUTCMinute,
+                userConfigurationSilentModeStartHour,
+                userConfigurationSilentModeEndHour,
+                userConfigurationSilentModeStartMinute,
+                userConfigurationSilentModeEndMinute
                 ) 
                 VALUES (
                   ?,
@@ -124,10 +124,10 @@ async function createUserForUserIdentifier(
         userConfiguration.userConfigurationSnoozeLength,
         userConfiguration.userConfigurationNotificationSound,
         userConfiguration.userConfigurationIsSilentModeEnabled,
-        userConfiguration.userConfigurationSilentModeStartUTCHour,
-        userConfiguration.userConfigurationSilentModeEndUTCHour,
-        userConfiguration.userConfigurationSilentModeStartUTCMinute,
-        userConfiguration.userConfigurationSilentModeEndUTCMinute,
+        userConfiguration.userConfigurationSilentModeStartHour,
+        userConfiguration.userConfigurationSilentModeEndHour,
+        userConfiguration.userConfigurationSilentModeStartMinute,
+        userConfiguration.userConfigurationSilentModeEndMinute,
       ],
     )];
 

@@ -26,10 +26,10 @@ async function updateUserForUserId(
     userConfigurationSnoozeLength,
     userConfigurationNotificationSound,
     userConfigurationIsSilentModeEnabled,
-    userConfigurationSilentModeStartUTCHour,
-    userConfigurationSilentModeEndUTCHour,
-    userConfigurationSilentModeStartUTCMinute,
-    userConfigurationSilentModeEndUTCMinute,
+    userConfigurationSilentModeStartHour,
+    userConfigurationSilentModeEndHour,
+    userConfigurationSilentModeStartMinute,
+    userConfigurationSilentModeEndMinute,
   } = userConfiguration;
 
   const promises = [];
@@ -159,40 +159,40 @@ async function updateUserForUserId(
       [userConfigurationIsSilentModeEnabled, userId],
     ));
   }
-  if (userConfigurationSilentModeStartUTCHour !== undefined && userConfigurationSilentModeStartUTCHour !== null) {
+  if (userConfigurationSilentModeStartHour !== undefined && userConfigurationSilentModeStartHour !== null) {
     promises.push(databaseQuery(
       databaseConnection,
       `UPDATE userConfiguration
-      SET userConfigurationSilentModeStartUTCHour = ?
+      SET userConfigurationSilentModeStartHour = ?
       WHERE userId = ?`,
-      [userConfigurationSilentModeStartUTCHour, userId],
+      [userConfigurationSilentModeStartHour, userId],
     ));
   }
-  if (userConfigurationSilentModeEndUTCHour !== undefined && userConfigurationSilentModeEndUTCHour !== null) {
+  if (userConfigurationSilentModeEndHour !== undefined && userConfigurationSilentModeEndHour !== null) {
     promises.push(databaseQuery(
       databaseConnection,
       `UPDATE userConfiguration
-      SET userConfigurationSilentModeEndUTCHour = ?
+      SET userConfigurationSilentModeEndHour = ?
       WHERE userId = ?`,
-      [userConfigurationSilentModeEndUTCHour, userId],
+      [userConfigurationSilentModeEndHour, userId],
     ));
   }
-  if (userConfigurationSilentModeStartUTCMinute !== undefined && userConfigurationSilentModeStartUTCMinute !== null) {
+  if (userConfigurationSilentModeStartMinute !== undefined && userConfigurationSilentModeStartMinute !== null) {
     promises.push(databaseQuery(
       databaseConnection,
       `UPDATE userConfiguration
-      SET userConfigurationSilentModeStartUTCMinute = ?
+      SET userConfigurationSilentModeStartMinute = ?
       WHERE userId = ?`,
-      [userConfigurationSilentModeStartUTCMinute, userId],
+      [userConfigurationSilentModeStartMinute, userId],
     ));
   }
-  if (userConfigurationSilentModeEndUTCMinute !== undefined && userConfigurationSilentModeEndUTCMinute !== null) {
+  if (userConfigurationSilentModeEndMinute !== undefined && userConfigurationSilentModeEndMinute !== null) {
     promises.push(databaseQuery(
       databaseConnection,
       `UPDATE userConfiguration
-      SET userConfigurationSilentModeEndUTCMinute = ?
+      SET userConfigurationSilentModeEndMinute = ?
       WHERE userId = ?`,
-      [userConfigurationSilentModeEndUTCMinute, userId],
+      [userConfigurationSilentModeEndMinute, userId],
     ));
   }
 

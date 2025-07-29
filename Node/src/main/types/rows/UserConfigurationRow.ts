@@ -12,10 +12,14 @@ uc.userConfigurationSnoozeLength,
 uc.userConfigurationNotificationSound,
 uc.userConfigurationIsReminderNotificationEnabled,
 uc.userConfigurationIsSilentModeEnabled,
-uc.userConfigurationSilentModeStartUTCHour, 
-uc.userConfigurationSilentModeEndUTCHour,
-uc.userConfigurationSilentModeStartUTCMinute,
-uc.userConfigurationSilentModeEndUTCMinute
+uc.userConfigurationSilentModeStartHour, 
+uc.userConfigurationSilentModeEndHour,
+uc.userConfigurationSilentModeStartMinute,
+uc.userConfigurationSilentModeEndMinute,
+uc.userConfigurationSilentModeStartHour AS userConfigurationSilentModeStartUTCHour,
+uc.userConfigurationSilentModeEndHour AS userConfigurationSilentModeEndUTCHour,
+uc.userConfigurationSilentModeStartMinute AS userConfigurationSilentModeStartUTCMinute,
+uc.userConfigurationSilentModeEndMinute AS userConfigurationSilentModeEndUTCMinute
 `;
 
 type UserConfigurationRow = {
@@ -33,10 +37,11 @@ type UserConfigurationRow = {
     userConfigurationSnoozeLength: number
     userConfigurationNotificationSound: string
     userConfigurationIsSilentModeEnabled: number
-    userConfigurationSilentModeStartUTCHour: number
-    userConfigurationSilentModeEndUTCHour: number
-    userConfigurationSilentModeStartUTCMinute: number
-    userConfigurationSilentModeEndUTCMinute: number
+    // TODO FUTURE DEPRECIATE any ref to UTCHour/Minute for silent mode <= 4.0.0
+    userConfigurationSilentModeStartHour: number
+    userConfigurationSilentModeEndHour: number
+    userConfigurationSilentModeStartMinute: number
+    userConfigurationSilentModeEndMinute: number
 };
 
 export {

@@ -82,13 +82,13 @@ async function createUser(req: express.Request, res: express.Response): Promise<
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const userConfigurationIsSilentModeEnabled = formatNumber(req.body['userConfigurationIsSilentModeEnabled']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const userConfigurationSilentModeStartUTCHour = formatNumber(req.body['userConfigurationSilentModeStartUTCHour']);
+    const userConfigurationSilentModeStartHour = formatNumber(req.body['userConfigurationSilentModeStartHour']) ?? formatNumber(req.body['userConfigurationSilentModeStartUTCHour']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const userConfigurationSilentModeEndUTCHour = formatNumber(req.body['userConfigurationSilentModeEndUTCHour']);
+    const userConfigurationSilentModeEndHour = formatNumber(req.body['userConfigurationSilentModeEndHour']) ?? formatNumber(req.body['userConfigurationSilentModeEndUTCHour']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const userConfigurationSilentModeStartUTCMinute = formatNumber(req.body['userConfigurationSilentModeStartUTCMinute']);
+    const userConfigurationSilentModeStartMinute = formatNumber(req.body['userConfigurationSilentModeStartMinute']) ?? formatNumber(req.body['userConfigurationSilentModeStartUTCMinute']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const userConfigurationSilentModeEndUTCMinute = formatNumber(req.body['userConfigurationSilentModeEndUTCMinute']);
+    const userConfigurationSilentModeEndMinute = formatNumber(req.body['userConfigurationSilentModeEndMinute']) ?? formatNumber(req.body['userConfigurationSilentModeEndUTCMinute']);
 
     if (userConfigurationIsNotificationEnabled === undefined || userConfigurationIsNotificationEnabled === null) {
       throw new HoundError('userConfigurationIsNotificationEnabled missing', createUser, ERROR_CODES.VALUE.MISSING);
@@ -127,17 +127,17 @@ async function createUser(req: express.Request, res: express.Response): Promise<
     if (userConfigurationIsSilentModeEnabled === undefined || userConfigurationIsSilentModeEnabled === null) {
       throw new HoundError('userConfigurationIsSilentModeEnabled missing', createUser, ERROR_CODES.VALUE.MISSING);
     }
-    if (userConfigurationSilentModeStartUTCHour === undefined || userConfigurationSilentModeStartUTCHour === null) {
-      throw new HoundError('userConfigurationSilentModeStartUTCHour missing', createUser, ERROR_CODES.VALUE.MISSING);
+    if (userConfigurationSilentModeStartHour === undefined || userConfigurationSilentModeStartHour === null) {
+      throw new HoundError('userConfigurationSilentModeStartHour missing', createUser, ERROR_CODES.VALUE.MISSING);
     }
-    if (userConfigurationSilentModeEndUTCHour === undefined || userConfigurationSilentModeEndUTCHour === null) {
-      throw new HoundError('userConfigurationSilentModeEndUTCHour missing', createUser, ERROR_CODES.VALUE.MISSING);
+    if (userConfigurationSilentModeEndHour === undefined || userConfigurationSilentModeEndHour === null) {
+      throw new HoundError('userConfigurationSilentModeEndHour missing', createUser, ERROR_CODES.VALUE.MISSING);
     }
-    if (userConfigurationSilentModeStartUTCMinute === undefined || userConfigurationSilentModeStartUTCMinute === null) {
-      throw new HoundError('userConfigurationSilentModeStartUTCMinute missing', createUser, ERROR_CODES.VALUE.MISSING);
+    if (userConfigurationSilentModeStartMinute === undefined || userConfigurationSilentModeStartMinute === null) {
+      throw new HoundError('userConfigurationSilentModeStartMinute missing', createUser, ERROR_CODES.VALUE.MISSING);
     }
-    if (userConfigurationSilentModeEndUTCMinute === undefined || userConfigurationSilentModeEndUTCMinute === null) {
-      throw new HoundError('userConfigurationSilentModeEndUTCMinute missing', createUser, ERROR_CODES.VALUE.MISSING);
+    if (userConfigurationSilentModeEndMinute === undefined || userConfigurationSilentModeEndMinute === null) {
+      throw new HoundError('userConfigurationSilentModeEndMinute missing', createUser, ERROR_CODES.VALUE.MISSING);
     }
 
     const result = await createUserForUserIdentifier(
@@ -157,10 +157,10 @@ async function createUser(req: express.Request, res: express.Response): Promise<
         userConfigurationSnoozeLength,
         userConfigurationNotificationSound,
         userConfigurationIsSilentModeEnabled,
-        userConfigurationSilentModeStartUTCHour,
-        userConfigurationSilentModeEndUTCHour,
-        userConfigurationSilentModeStartUTCMinute,
-        userConfigurationSilentModeEndUTCMinute,
+        userConfigurationSilentModeStartHour,
+        userConfigurationSilentModeEndHour,
+        userConfigurationSilentModeStartMinute,
+        userConfigurationSilentModeEndMinute,
       },
       userEmail,
       userFirstName,
@@ -217,13 +217,13 @@ async function updateUser(req: express.Request, res: express.Response): Promise<
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const userConfigurationIsSilentModeEnabled = formatNumber(req.body['userConfigurationIsSilentModeEnabled']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const userConfigurationSilentModeStartUTCHour = formatNumber(req.body['userConfigurationSilentModeStartUTCHour']);
+    const userConfigurationSilentModeStartHour = formatNumber(req.body['userConfigurationSilentModeStartHour']) ?? formatNumber(req.body['userConfigurationSilentModeStartUTCHour']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const userConfigurationSilentModeEndUTCHour = formatNumber(req.body['userConfigurationSilentModeEndUTCHour']);
+    const userConfigurationSilentModeEndHour = formatNumber(req.body['userConfigurationSilentModeEndHour']) ?? formatNumber(req.body['userConfigurationSilentModeEndUTCHour']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const userConfigurationSilentModeStartUTCMinute = formatNumber(req.body['userConfigurationSilentModeStartUTCMinute']);
+    const userConfigurationSilentModeStartMinute = formatNumber(req.body['userConfigurationSilentModeStartMinute']) ?? formatNumber(req.body['userConfigurationSilentModeStartUTCMinute']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const userConfigurationSilentModeEndUTCMinute = formatNumber(req.body['userConfigurationSilentModeEndUTCMinute']);
+    const userConfigurationSilentModeEndMinute = formatNumber(req.body['userConfigurationSilentModeEndMinute']) ?? formatNumber(req.body['userConfigurationSilentModeEndUTCMinute']);
 
     await updateUserForUserId(
       databaseConnection,
@@ -242,10 +242,10 @@ async function updateUser(req: express.Request, res: express.Response): Promise<
         userConfigurationSnoozeLength,
         userConfigurationNotificationSound,
         userConfigurationIsSilentModeEnabled,
-        userConfigurationSilentModeStartUTCHour,
-        userConfigurationSilentModeEndUTCHour,
-        userConfigurationSilentModeStartUTCMinute,
-        userConfigurationSilentModeEndUTCMinute,
+        userConfigurationSilentModeStartHour,
+        userConfigurationSilentModeEndHour,
+        userConfigurationSilentModeStartMinute,
+        userConfigurationSilentModeEndMinute,
       },
       userNotificationToken,
     );

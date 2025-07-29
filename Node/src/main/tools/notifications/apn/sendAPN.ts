@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import { apnLogger } from '../../../logging/loggers.js';
 
 import { logServerError } from '../../../logging/logServerError.js';
@@ -74,56 +75,62 @@ function sendProductionAPN(notification: apn.Notification, notificationToken: st
 */
 // (token, category, sound, alertTitle, alertBody)
 function sendAPN(
-  userNotificationConfiguration: UserConfigurationWithPartialPrivateUsers,
+  userConfig: UserConfigurationWithPartialPrivateUsers,
   category: string,
   forAlertTitle: string,
   forAlertBody: string,
   customPayload: StringKeyDict,
 ): void {
-  const { userNotificationToken } = userNotificationConfiguration;
+  const { userNotificationToken } = userConfig;
 
   if (userNotificationToken === undefined || userNotificationToken === null) {
     return;
   }
 
-  const userConfigurationNotificationSound = userNotificationConfiguration.userConfigurationIsLoudNotificationEnabled === 1
+  const userConfigurationNotificationSound = userConfig.userConfigurationIsLoudNotificationEnabled === 1
     // loud notification is enabled therefore the Hound app itself plays an audio file (APN shouldn't specify a notification sound)
     ? undefined
     // loud notification is disabled therefore the notification itself plays a sound (APN needs to specify a notification sound)
-    : userNotificationConfiguration.userConfigurationNotificationSound.toLowerCase();
+    : userConfig.userConfigurationNotificationSound.toLowerCase();
 
   const alertTitle = formatKnownString(forAlertTitle, NOTIFICATION.LENGTH.ALERT_TITLE_LIMIT);
   const alertBody = formatKnownString(forAlertBody, NOTIFICATION.LENGTH.ALERT_BODY_LIMIT);
 
-  apnLogger.debug(`sendAPN ${category}, ${alertTitle}, ${alertBody}`, userNotificationConfiguration);
+  apnLogger.debug(`sendAPN ${category}, ${alertTitle}, ${alertBody}`, userConfig);
 
-  if (category === NOTIFICATION.CATEGORY.LOG.CREATED && userNotificationConfiguration.userConfigurationIsLogNotificationEnabled === 0) {
+  if (category === NOTIFICATION.CATEGORY.LOG.CREATED && userConfig.userConfigurationIsLogNotificationEnabled === 0) {
     return;
   }
 
-  if (category === NOTIFICATION.CATEGORY.REMINDER.ALARM && userNotificationConfiguration.userConfigurationIsReminderNotificationEnabled === 0) {
+  if (category === NOTIFICATION.CATEGORY.REMINDER.ALARM && userConfig.userConfigurationIsReminderNotificationEnabled === 0) {
     return;
   }
 
   // Check that we aren't inside of userConfigurationSilentMode hours. If we are inside the silent mode hours, then return as we don't want to send notifications during silent mode
-  if (userNotificationConfiguration.userConfigurationIsSilentModeEnabled === 1) {
-    const date = new Date();
+  if (userConfig.userConfigurationIsSilentModeEnabled === 1) {
     // 2:30:45 PM -> 14.5125
-    const currentUTCHour = date.getUTCHours() + (date.getUTCMinutes() / 60) + (date.getUTCSeconds() / 3600);
-    const userConfigurationSilentModeStart = userNotificationConfiguration.userConfigurationSilentModeStartUTCHour
-    + (userNotificationConfiguration.userConfigurationSilentModeStartUTCMinute / 60);
-    const userConfigurationSilentModeEnd = userNotificationConfiguration.userConfigurationSilentModeEndUTCHour
-    + (userNotificationConfiguration.userConfigurationSilentModeEndUTCMinute / 60);
+    const userTimeZone = userConfig.userConfigurationUsesDeviceTimeZone === 1
+      ? userConfig.userConfigurationDeviceTimeZone
+      : (userConfig.userConfigurationUserTimeZone ?? userConfig.userConfigurationDeviceTimeZone);
+    const nowInUserTZ = DateTime.utc().setZone(userTimeZone);
+    const userHour = nowInUserTZ.hour; // integer hour 0-23
+    const userMinute = nowInUserTZ.minute; // integer minute 0-59
+    const currentTime = userHour + (userMinute / 60);
+
+    const silentModeStart = userConfig.userConfigurationSilentModeStartHour
+    + (userConfig.userConfigurationSilentModeStartMinute / 60);
+    const silentModeEnd = userConfig.userConfigurationSilentModeEndHour
+    + (userConfig.userConfigurationSilentModeEndMinute / 60);
 
     // Two ways the silent mode start and end could be setup:
     // One the same day: 8.5 -> 20.5 (silent mode during day time)
-    if (userConfigurationSilentModeStart <= userConfigurationSilentModeEnd && (currentUTCHour >= userConfigurationSilentModeStart && currentUTCHour <= userConfigurationSilentModeEnd)) {
+    if (silentModeStart <= silentModeEnd && (currentTime > silentModeStart && currentTime < silentModeEnd)) {
       // WOULD RETURN: silent mode start 8.5 -> 20.5 AND currentUTCHour 14.5125
       // WOULDN'T RETURN: silent mode start 8.5 -> 20.5 AND currentUTCHour 6.0
       return;
     }
     // Overlapping two days: 20.5 -> 8.5 (silent mode during night time)
-    if (userConfigurationSilentModeStart >= userConfigurationSilentModeEnd && (currentUTCHour >= userConfigurationSilentModeStart || currentUTCHour <= userConfigurationSilentModeEnd)) {
+    if (silentModeStart >= silentModeEnd && (currentTime > silentModeStart || currentTime < silentModeEnd)) {
       // WOULD RETURN: silent mode start 20.5 -> 8.5 AND currentUTCHour 6.0
       // WOULDN'T RETURN: silent mode start 20.5 -> 8.5 AND currentUTCHour 14.5125
       return;
