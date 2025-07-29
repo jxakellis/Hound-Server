@@ -6,6 +6,7 @@ uc.userConfigurationInterfaceStyle,
 uc.userConfigurationIsHapticsEnabled,
 uc.userConfigurationUsesDeviceTimeZone,
 uc.userConfigurationUserTimeZone,
+uc.userConfigurationDeviceTimeZone,
 uc.userConfigurationMeasurementSystem,
 uc.userConfigurationSnoozeLength, 
 uc.userConfigurationNotificationSound,
@@ -27,6 +28,7 @@ type UserConfigurationRow = {
     userConfigurationIsHapticsEnabled: number
     userConfigurationUsesDeviceTimeZone: number
     userConfigurationUserTimeZone?: string
+    userConfigurationDeviceTimeZone: string
     userConfigurationMeasurementSystem: number
     userConfigurationSnoozeLength: number
     userConfigurationNotificationSound: string

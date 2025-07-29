@@ -10,7 +10,7 @@ async function getLogForLogUUID(
   logUUID: string,
   includeDeletedLogs: boolean,
 ): Promise<DogLogsRow | undefined> {
-  // TODO FUTURE DEPRECIATE this logAction & logUnit  is compatibility for <= 3.5.0
+  // TODO FUTURE DEPRECIATE this logAction & logUnit  is compatibility for <= 4.0.0
   let logs = await databaseQuery<DogLogsRow[]>(
     databaseConnection,
     `SELECT ${dogLogsColumns}, lat.internalValue AS logAction, lut.readableValue as logUnit
@@ -34,7 +34,7 @@ async function getLogForLogUUID(
  * We don't always want to fetch all the elements as it could be a lot of unnecessary data.
  */
 async function getAllLogsForDogUUID(databaseConnection: Queryable, dogUUID: string, includeDeletedLogs: boolean, previousDogManagerSynchronization?: Date): Promise<DogLogsRow[]> {
-  // TODO FUTURE DEPRECIATE this logAction & logUnit  is compatibility for <= 3.5.0
+  // TODO FUTURE DEPRECIATE this logAction & logUnit  is compatibility for <= 4.0.0
   let logs = previousDogManagerSynchronization !== undefined
     ? await databaseQuery<DogLogsRow[]>(
       databaseConnection,

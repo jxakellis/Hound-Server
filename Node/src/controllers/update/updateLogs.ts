@@ -10,7 +10,7 @@ import { getLogUnitTypeForId } from '../get/types/getLogUnitType.js';
  *  If a problem is encountered, creates and throws custom error
  */
 async function updateLogForLog(databaseConnection: Queryable, log: NotYetUpdatedDogLogsRow): Promise<void> {
-  // TODO FUTURE DEPRECIATE this logAction is compatibility for <= 3.5.0
+  // TODO FUTURE DEPRECIATE this logAction is compatibility for <= 4.0.0
   const logAction = await getLogActionTypeForId(databaseConnection, log.logActionTypeId);
   let logUnit: LogUnitTypeRow | undefined;
   if (log.logUnitTypeId !== undefined) {

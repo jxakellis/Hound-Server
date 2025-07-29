@@ -24,7 +24,7 @@ async function updateReminderForReminder(
     throw new HoundError('Unable to modify a reminder that was created by a trigger', updateReminderForReminder, ERROR_CODES.VALUE.MISSING);
   }
 
-  // TODO FUTURE DEPRECIATE this reminderAction is compatibility for <= 3.5.0
+  // TODO FUTURE DEPRECIATE this reminderAction is compatibility for <= 4.0.0
   const reminderAction = await getReminderActionTypeForId(databaseConnection, reminder.reminderActionTypeId);
 
   const promises: Promise<unknown>[] = [];

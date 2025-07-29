@@ -81,13 +81,13 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
     const logUUID = formatUnknownString(unvalidatedLogDict['logUUID'], 36);
     const logStartDate = formatDate(unvalidatedLogDict?.['logStartDate']);
     const logEndDate = formatDate(unvalidatedLogDict?.['logEndDate']);
-    // TODO FUTURE DEPRECIATE this is compatibility for <= 3.5.0
+    // TODO FUTURE DEPRECIATE this is compatibility for <= 4.0.0
     const depreciatedLogAction = formatUnknownString(unvalidatedLogDict?.['logAction']);
     const logActionTypeId = formatNumber(unvalidatedLogDict?.['logActionTypeId'])
     ?? logActionTypes.find((lat) => lat.internalValue === depreciatedLogAction)?.logActionTypeId;
     const logCustomActionName = formatUnknownString(unvalidatedLogDict?.['logCustomActionName']);
     const logNote = formatUnknownString(unvalidatedLogDict?.['logNote']);
-    // TODO FUTURE DEPRECIATE this is compatibility for <= 3.5.0
+    // TODO FUTURE DEPRECIATE this is compatibility for <= 4.0.0
     const depreciatedLogUnit = formatUnknownString(unvalidatedLogDict?.['logUnit']);
     const logUnitTypeId = formatNumber(unvalidatedLogDict?.['logUnitTypeId']) ?? logUnitTypes.find((lut) => lut.readableValue === depreciatedLogUnit)?.logUnitTypeId;
     const logNumberOfLogUnits = formatNumber(unvalidatedLogDict?.['logNumberOfLogUnits']);
@@ -160,13 +160,13 @@ async function updateLog(req: express.Request, res: express.Response): Promise<v
 
     const logStartDate = formatDate(validatedLog.unvalidatedLogDict?.['logStartDate']);
     const logEndDate = formatDate(validatedLog.unvalidatedLogDict?.['logEndDate']);
-    // TODO FUTURE DEPRECIATE this is compatibility for <= 3.5.0
+    // TODO FUTURE DEPRECIATE this is compatibility for <= 4.0.0
     const depreciatedLogAction = formatUnknownString(validatedLog.unvalidatedLogDict?.['logAction']);
     const logActionTypeId = formatNumber(validatedLog.unvalidatedLogDict?.['logActionTypeId'])
     ?? logActionTypes.find((rat) => rat.internalValue === depreciatedLogAction)?.logActionTypeId;
     const logCustomActionName = formatUnknownString(validatedLog.unvalidatedLogDict?.['logCustomActionName']);
     const logNote = formatUnknownString(validatedLog.unvalidatedLogDict?.['logNote']);
-    // TODO FUTURE DEPRECIATE this is compatibility for <= 3.5.0
+    // TODO FUTURE DEPRECIATE this is compatibility for <= 4.0.0
     const depreciatedLogUnit = formatUnknownString(validatedLog.unvalidatedLogDict?.['logUnit']);
     const logUnitTypeId = formatNumber(validatedLog.unvalidatedLogDict?.['logUnitTypeId']) ?? logUnitTypes.find((lut) => lut.readableValue === depreciatedLogUnit)?.logUnitTypeId;
     const logNumberOfLogUnits = formatNumber(validatedLog.unvalidatedLogDict?.['logNumberOfLogUnits']);

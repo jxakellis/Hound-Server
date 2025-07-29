@@ -23,7 +23,7 @@ async function createReminderForReminder(
     throw new HoundError(`Dog reminder limit of ${LIMIT.NUMBER_OF_REMINDERS_PER_DOG} exceeded`, createReminderForReminder, ERROR_CODES.FAMILY.LIMIT.REMINDER_TOO_LOW);
   }
 
-  // TODO FUTURE DEPRECIATE this reminderAction is compatibility for <= 3.5.0
+  // TODO FUTURE DEPRECIATE this reminderAction is compatibility for <= 4.0.0
   const reminderAction = await getReminderActionTypeForId(databaseConnection, reminder.reminderActionTypeId);
 
   const result = await databaseQuery<ResultSetHeader>(

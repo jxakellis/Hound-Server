@@ -20,7 +20,7 @@ async function createLogForLog(databaseConnection: Queryable, log: NotYetCreated
     throw new HoundError(`Dog log limit of ${LIMIT.NUMBER_OF_LOGS_PER_DOG} exceeded`, createLogForLog, ERROR_CODES.FAMILY.LIMIT.LOG_TOO_LOW);
   }
 
-  // TODO FUTURE DEPRECIATE this logAction is compatibility for <= 3.5.0
+  // TODO FUTURE DEPRECIATE this logAction is compatibility for <= 4.0.0
   const logAction = await getLogActionTypeForId(databaseConnection, log.logActionTypeId);
   let logUnit: LogUnitTypeRow | undefined;
   if (log.logUnitTypeId !== undefined) {

@@ -80,6 +80,7 @@ async function createUserForUserIdentifier(
                 userConfigurationIsHapticsEnabled,
                 userConfigurationUsesDeviceTimeZone,
                 userConfigurationUserTimeZone,
+                userConfigurationDeviceTimeZone,
                 userConfigurationSnoozeLength,
                 userConfigurationNotificationSound,
                 userConfigurationIsSilentModeEnabled,
@@ -89,6 +90,7 @@ async function createUserForUserIdentifier(
                 userConfigurationSilentModeEndUTCMinute,
                 ) 
                 VALUES (
+                  ?,
                   ?,
                   ?,
                   ?,
@@ -118,6 +120,7 @@ async function createUserForUserIdentifier(
         userConfiguration.userConfigurationIsHapticsEnabled,
         userConfiguration.userConfigurationUsesDeviceTimeZone,
         formatUnknownString(userConfiguration.userConfigurationUserTimeZone, 100),
+        formatUnknownString(userConfiguration.userConfigurationDeviceTimeZone, 100),
         userConfiguration.userConfigurationSnoozeLength,
         userConfiguration.userConfigurationNotificationSound,
         userConfiguration.userConfigurationIsSilentModeEnabled,

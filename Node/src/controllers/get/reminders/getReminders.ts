@@ -11,7 +11,7 @@ async function getReminderForReminderUUID(
   reminderUUID: string,
   includeDeletedReminders: boolean,
 ): Promise<DogRemindersRow | undefined> {
-  // TODO FUTURE DEPRECIATE this reminderAction is compatibility for <= 3.5.0
+  // TODO FUTURE DEPRECIATE this reminderAction is compatibility for <= 4.0.0
   let reminders = await databaseQuery<DogRemindersRow[]>(
     databaseConnection,
     `SELECT ${dogRemindersColumns}, rat.internalValue AS reminderAction
@@ -41,7 +41,7 @@ async function getReminderForReminderUUID(
  * We don't always want to fetch all the elements as it could be a lot of unnecessary data.
  */
 async function getAllRemindersForDogUUID(databaseConnection: Queryable, dogUUID: string, includeDeletedReminders: boolean, previousDogManagerSynchronization?: Date): Promise<DogRemindersRow[]> {
-  // TODO FUTURE DEPRECIATE this reminderAction is compatibility for <= 3.5.0
+  // TODO FUTURE DEPRECIATE this reminderAction is compatibility for <= 4.0.0
   let reminders = previousDogManagerSynchronization !== undefined
     ? await databaseQuery<DogRemindersRow[]>(
       databaseConnection,
