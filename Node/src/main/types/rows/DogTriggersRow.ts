@@ -9,8 +9,8 @@ dt.triggerType,
 dt.triggerTimeDelay,
 dt.triggerFixedTimeType,
 dt.triggerFixedTimeTypeAmount,
-dt.triggerFixedTimeUTCHour,
-dt.triggerFixedTimeUTCMinute,
+dt.triggerFixedTimeHour,
+dt.triggerFixedTimeMinute,
 dt.triggerManualCondition,
 dt.triggerAlarmCreatedCondition,
 dt.triggerLastModified,
@@ -28,8 +28,8 @@ type DogTriggersRow = {
     triggerTimeDelay: number
     triggerFixedTimeType: string
     triggerFixedTimeTypeAmount: number
-    triggerFixedTimeUTCHour: number
-    triggerFixedTimeUTCMinute: number
+    triggerFixedTimeHour: number
+    triggerFixedTimeMinute: number
     triggerManualCondition: number
     triggerAlarmCreatedCondition: number
     triggerLastModified: Date
