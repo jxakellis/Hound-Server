@@ -24,15 +24,26 @@ dr.weeklyZonedThursday,
 dr.weeklyZonedFriday,
 dr.weeklyZonedSaturday,
 dr.weeklySkippedDate,
+dr.weeklyZonedHour AS weeklyUTCHour,
+dr.weeklyZonedMinute AS weeklyUTCMinute,
+dr.weeklyZonedSunday AS weeklySunday,
+dr.weeklyZonedMonday AS weeklyMonday,
+dr.weeklyZonedTuesday AS weeklyTuesday,
+dr.weeklyZonedWednesday AS weeklyWednesday,
+dr.weeklyZonedThursday AS weeklyThursday,
+dr.weeklyZonedFriday AS weeklyFriday,
+dr.weeklyZonedSaturday AS weeklySaturday,
 dr.monthlyZonedDay,
 dr.monthlyZonedHour,
 dr.monthlyZonedMinute,
 dr.monthlySkippedDate,
+dr.monthlyZonedDay AS monthlyUTCDay,
+dr.monthlyZonedHour AS monthlyUTCHour,
+dr.monthlyZonedMinute AS monthlyUTCMinute,
 dr.oneTimeDate
 `;
 
-// TODO add reminder TZ column and saving
-// TODO change current columns to new Zoned names
+// TODO FUTURE DEPRECIATE <4.0.0 those AS casts above
 
 type DogRemindersRow = {
     // NOTE: database booleans (tinyint(1)) are returned as 0 or 1 numbers, not booleans. therefore, we have to use number instead of boolean
