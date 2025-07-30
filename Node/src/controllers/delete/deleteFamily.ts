@@ -84,9 +84,17 @@ async function deleteFamily(databaseConnection: Queryable, familyId: string, fam
 
   await databaseQuery(
     databaseConnection,
-    `DELETE f, fm
+    `DELETE fm
+        FROM familyMembers fm
+                  WHERE fm.familyId = ?`,
+    [familyId],
+  );
+
+  // Due to FK constraints, we have to delete the family after deleting the family members
+  await databaseQuery(
+    databaseConnection,
+    `DELETE f
         FROM families f
-        LEFT JOIN familyMembers fm ON f.familyId = fm.familyId
                   WHERE f.familyId = ?`,
     [familyId],
   );
