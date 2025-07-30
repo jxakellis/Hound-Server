@@ -124,7 +124,7 @@ async function leaveFamily(databaseConnection: Queryable, userId: string): Promi
   // deletes user from family
   await databaseQuery(
     databaseConnection,
-    `DELETE FROM familyMembers
+    `DELETE familyMembers
                           WHERE userId = ?`,
     [userId],
   );
@@ -169,7 +169,7 @@ async function kickFamilyMemberForUserIdFamilyId(databaseConnection: Queryable, 
   // deletes user from family
   await databaseQuery(
     databaseConnection,
-    `DELETE FROM familyMembers
+    `DELETE familyMembers
                                 WHERE userId = ?`,
     [kickedUserId],
   );

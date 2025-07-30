@@ -62,9 +62,17 @@ async function deleteUserForUserId(databaseConnection: Queryable, userId: string
 
   await databaseQuery(
     databaseConnection,
-    `DELETE u, uc
+    `DELETE uc
+        FROM userConfiguration uc
+        WHERE uc.userId = ?`,
+    [userId],
+  );
+
+  // this must come second due to FK constraint
+  await databaseQuery(
+    databaseConnection,
+    `DELETE u
         FROM users u
-        LEFT JOIN userConfiguration uc ON u.userId = uc.userId
         WHERE u.userId = ?`,
     [userId],
   );

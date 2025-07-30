@@ -38,7 +38,7 @@ async function updateTriggerLogReactionForTrigger(
     promises.push(
       databaseQuery(
         databaseConnection,
-        `DELETE FROM dogTriggerLogReaction
+        `DELETE dogTriggerLogReaction
               WHERE triggerUUID = ? AND logActionTypeId = ? AND logCustomActionName = ?`,
         [trigger.triggerUUID, toRemoveLogReaction.logActionTypeId, toRemoveLogReaction.logCustomActionName],
       ),

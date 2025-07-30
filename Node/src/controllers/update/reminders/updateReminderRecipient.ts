@@ -24,7 +24,7 @@ async function updateReminderRecipientForReminder(
     promises.push(
       databaseQuery(
         databaseConnection,
-        'DELETE FROM dogReminderRecipient WHERE reminderUUID = ? AND userId = ?',
+        'DELETE dogReminderRecipient WHERE reminderUUID = ? AND userId = ?',
         [reminder.reminderUUID, userId],
       ),
     );

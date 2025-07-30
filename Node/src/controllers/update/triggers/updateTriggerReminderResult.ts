@@ -31,7 +31,7 @@ async function updateTriggerReminderResultForTrigger(
   if (reactionKey(newReminderResult) !== reactionKey(existingReminderResult)) {
     await databaseQuery(
       databaseConnection,
-      'DELETE FROM dogTriggerReminderResult WHERE triggerUUID = ? AND reminderActionTypeId = ? AND reminderCustomActionName = ?',
+      'DELETE dogTriggerReminderResult WHERE triggerUUID = ? AND reminderActionTypeId = ? AND reminderCustomActionName = ?',
       [trigger.triggerUUID, existingReminderResult.reminderActionTypeId, existingReminderResult.reminderCustomActionName],
     );
     await createTriggerReminderResult(databaseConnection, {
