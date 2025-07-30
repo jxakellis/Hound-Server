@@ -117,8 +117,8 @@ async function createTrigger(req: express.Request, res: express.Response): Promi
       const triggerTimeDelay = formatNumber(unvalidatedTriggerDict['triggerTimeDelay']);
       const triggerFixedTimeType = formatUnknownString(unvalidatedTriggerDict['triggerFixedTimeType']);
       const triggerFixedTimeTypeAmount = formatNumber(unvalidatedTriggerDict['triggerFixedTimeTypeAmount']);
-      const triggerFixedTimeUTCHour = formatNumber(unvalidatedTriggerDict['triggerFixedTimeUTCHour']);
-      const triggerFixedTimeUTCMinute = formatNumber(unvalidatedTriggerDict['triggerFixedTimeUTCMinute']);
+      const triggerFixedTimeHour = formatNumber(unvalidatedTriggerDict['triggerFixedTimeHour']);
+      const triggerFixedTimeMinute = formatNumber(unvalidatedTriggerDict['triggerFixedTimeMinute']);
       const triggerManualCondition = formatNumber(unvalidatedTriggerDict['triggerManualCondition']);
       const triggerAlarmCreatedCondition = formatNumber(unvalidatedTriggerDict['triggerAlarmCreatedCondition']);
 
@@ -134,11 +134,11 @@ async function createTrigger(req: express.Request, res: express.Response): Promi
       if (triggerFixedTimeTypeAmount === undefined || triggerFixedTimeTypeAmount === null) {
         throw new HoundError('triggerFixedTimeTypeAmount missing', createTrigger, ERROR_CODES.VALUE.MISSING);
       }
-      if (triggerFixedTimeUTCHour === undefined || triggerFixedTimeUTCHour === null) {
-        throw new HoundError('triggerFixedTimeUTCHour missing', createTrigger, ERROR_CODES.VALUE.MISSING);
+      if (triggerFixedTimeHour === undefined || triggerFixedTimeHour === null) {
+        throw new HoundError('triggerFixedTimeHour missing', createTrigger, ERROR_CODES.VALUE.MISSING);
       }
-      if (triggerFixedTimeUTCMinute === undefined || triggerFixedTimeUTCMinute === null) {
-        throw new HoundError('triggerFixedTimeUTCMinute missing', createTrigger, ERROR_CODES.VALUE.MISSING);
+      if (triggerFixedTimeMinute === undefined || triggerFixedTimeMinute === null) {
+        throw new HoundError('triggerFixedTimeMinute missing', createTrigger, ERROR_CODES.VALUE.MISSING);
       }
       if (triggerManualCondition === undefined || triggerManualCondition === null) {
         throw new HoundError('triggerManualCondition missing', createTrigger, ERROR_CODES.VALUE.MISSING);
@@ -156,8 +156,8 @@ async function createTrigger(req: express.Request, res: express.Response): Promi
         triggerTimeDelay,
         triggerFixedTimeType,
         triggerFixedTimeTypeAmount,
-        triggerFixedTimeUTCHour,
-        triggerFixedTimeUTCMinute,
+        triggerFixedTimeHour,
+        triggerFixedTimeMinute,
         triggerManualCondition,
         triggerAlarmCreatedCondition,
       });
@@ -236,8 +236,8 @@ async function updateTrigger(req: express.Request, res: express.Response): Promi
       const triggerTimeDelay = formatNumber(validatedTrigger.unvalidatedTriggerDict?.['triggerTimeDelay']);
       const triggerFixedTimeType = formatUnknownString(validatedTrigger.unvalidatedTriggerDict?.['triggerFixedTimeType']);
       const triggerFixedTimeTypeAmount = formatNumber(validatedTrigger.unvalidatedTriggerDict?.['triggerFixedTimeTypeAmount']);
-      const triggerFixedTimeUTCHour = formatNumber(validatedTrigger.unvalidatedTriggerDict?.['triggerFixedTimeUTCHour']);
-      const triggerFixedTimeUTCMinute = formatNumber(validatedTrigger.unvalidatedTriggerDict?.['triggerFixedTimeUTCMinute']);
+      const triggerFixedTimeHour = formatNumber(validatedTrigger.unvalidatedTriggerDict?.['triggerFixedTimeHour']);
+      const triggerFixedTimeMinute = formatNumber(validatedTrigger.unvalidatedTriggerDict?.['triggerFixedTimeMinute']);
       const triggerManualCondition = formatNumber(validatedTrigger.unvalidatedTriggerDict?.['triggerManualCondition']);
       const triggerAlarmCreatedCondition = formatNumber(validatedTrigger.unvalidatedTriggerDict?.['triggerAlarmCreatedCondition']);
 
@@ -253,11 +253,11 @@ async function updateTrigger(req: express.Request, res: express.Response): Promi
       if (triggerFixedTimeTypeAmount === undefined || triggerFixedTimeTypeAmount === null) {
         throw new HoundError('triggerFixedTimeTypeAmount missing', updateTrigger, ERROR_CODES.VALUE.MISSING);
       }
-      if (triggerFixedTimeUTCHour === undefined || triggerFixedTimeUTCHour === null) {
-        throw new HoundError('triggerFixedTimeUTCHour missing', updateTrigger, ERROR_CODES.VALUE.MISSING);
+      if (triggerFixedTimeHour === undefined || triggerFixedTimeHour === null) {
+        throw new HoundError('triggerFixedTimeHour missing', updateTrigger, ERROR_CODES.VALUE.MISSING);
       }
-      if (triggerFixedTimeUTCMinute === undefined || triggerFixedTimeUTCMinute === null) {
-        throw new HoundError('triggerFixedTimeUTCMinute missing', updateTrigger, ERROR_CODES.VALUE.MISSING);
+      if (triggerFixedTimeMinute === undefined || triggerFixedTimeMinute === null) {
+        throw new HoundError('triggerFixedTimeMinute missing', updateTrigger, ERROR_CODES.VALUE.MISSING);
       }
       if (triggerManualCondition === undefined || triggerManualCondition === null) {
         throw new HoundError('triggerManualCondition missing', updateTrigger, ERROR_CODES.VALUE.MISSING);
@@ -276,8 +276,8 @@ async function updateTrigger(req: express.Request, res: express.Response): Promi
         triggerTimeDelay,
         triggerFixedTimeType,
         triggerFixedTimeTypeAmount,
-        triggerFixedTimeUTCHour,
-        triggerFixedTimeUTCMinute,
+        triggerFixedTimeHour,
+        triggerFixedTimeMinute,
         triggerManualCondition,
         triggerAlarmCreatedCondition,
       });

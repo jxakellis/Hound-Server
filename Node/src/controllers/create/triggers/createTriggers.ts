@@ -29,7 +29,7 @@ async function createTriggerForTrigger(
           triggerUUID,
           triggerType,
           triggerTimeDelay,
-          triggerFixedTimeType, triggerFixedTimeTypeAmount, triggerFixedTimeUTCHour, triggerFixedTimeUTCMinute,
+          triggerFixedTimeType, triggerFixedTimeTypeAmount, triggerFixedTimeHour, triggerFixedTimeMinute,
           triggerManualCondition, triggerAlarmCreatedCondition,
           triggerLastModified, triggerIsDeleted
           )
@@ -47,7 +47,7 @@ async function createTriggerForTrigger(
       trigger.triggerUUID,
       trigger.triggerType,
       trigger.triggerTimeDelay,
-      trigger.triggerFixedTimeType, trigger.triggerFixedTimeTypeAmount, trigger.triggerFixedTimeUTCHour, trigger.triggerFixedTimeUTCMinute,
+      trigger.triggerFixedTimeType, trigger.triggerFixedTimeTypeAmount, trigger.triggerFixedTimeHour, trigger.triggerFixedTimeMinute,
       trigger.triggerManualCondition, trigger.triggerAlarmCreatedCondition,
     ],
   );
