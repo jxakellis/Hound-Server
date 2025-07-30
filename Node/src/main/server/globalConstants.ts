@@ -16,6 +16,7 @@ const IS_PRODUCTION_DATABASE = fs.existsSync(`${dirName}/../../../../../producti
 
 // Set to false if running dev server on local computer instead of AWS
 const devEnvironmentUseHTTPSs = true;
+
 const SERVER = {
   // True if we are using the production database that houses real users, false if we are launching a development server for testing
   IS_PRODUCTION_DATABASE,
