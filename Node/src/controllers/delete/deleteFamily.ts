@@ -70,7 +70,7 @@ async function deleteFamily(databaseConnection: Queryable, familyId: string, fam
 
   await databaseQuery(
     databaseConnection,
-    `DELETE d, dl, dr, drr, dt, dtlr, dtrr
+    `DELETE dtrr, dtlr, dt, drr, dr, dl, d
                       FROM dogs d
                       LEFT JOIN dogLogs dl ON d.dogUUID = dl.dogUUID
                       LEFT JOIN dogReminders dr ON d.dogUUID = dr.dogUUID
