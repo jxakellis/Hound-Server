@@ -41,7 +41,7 @@ async function deleteFamily(databaseConnection: Queryable, familyId: string, fam
   //  However, they are safe from an accidental renewal
 
   // Copy the current, up-to-date records into the 'previous' tables. This keeps a record in case we need to reference it later, but in a table that isn't used much
-  let promises = [
+  const promises = [
     databaseQuery(
       databaseConnection,
       `INSERT INTO previousFamilies
@@ -68,20 +68,9 @@ async function deleteFamily(databaseConnection: Queryable, familyId: string, fam
   ];
   await Promise.all(promises);
 
-  // Family copied into 'previous' tables, delete the actual family now
-  promises = [
-    databaseQuery(
-      databaseConnection,
-      `DELETE f, fm
-        FROM families f
-        LEFT JOIN familyMembers fm ON f.familyId = fm.familyId
-                  WHERE f.familyId = ?`,
-      [familyId],
-    ),
-    // delete all the corresponding dog, reminder, and log data
-    databaseQuery(
-      databaseConnection,
-      `DELETE d, dr, dl, dr, drr, dt, dtlr, dtrr
+  await databaseQuery(
+    databaseConnection,
+    `DELETE d, dr, dl, dr, drr, dt, dtlr, dtrr
                       FROM dogs d
                       LEFT JOIN dogLogs dl ON d.dogUUID = dl.dogUUID
                       LEFT JOIN dogReminders dr ON d.dogUUID = dr.dogUUID
@@ -90,9 +79,17 @@ async function deleteFamily(databaseConnection: Queryable, familyId: string, fam
                       LEFT JOIN dogTriggerLogReaction dtlr ON dt.triggerUUID = dtlr.triggerUUID
                       LEFT JOIN dogTriggerReminderResult dtrr ON dt.triggerUUID = dtrr.triggerUUID
                       WHERE d.familyId = ?`,
-      [familyId],
-    ),
-  ];
+    [familyId],
+  );
+  await databaseQuery(
+    databaseConnection,
+    `DELETE f, fm
+        FROM families f
+        LEFT JOIN familyMembers fm ON f.familyId = fm.familyId
+                  WHERE f.familyId = ?`,
+    [familyId],
+  );
+
   await Promise.all(promises);
 }
 
