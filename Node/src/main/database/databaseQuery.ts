@@ -22,8 +22,6 @@ const databaseQuery = <T>(
   // Then if it find a common SQL syntax error ( a comma before a closing parenthesis '  ..., reminderUUID, ) VALUES (...  ' ), it fixes it
   const SQLString = forSQLString.replace(/\r?\n|\r/g, '').replace(/\s+/g, ' ').replace(/,\s*\)/g, ')');
 
-  serverLogger.debug(`Querying database: ${SQLString}`);
-
   const SQLVars = forSQLVars.map((variable) => {
     if (variable === undefined || variable === null) {
       return null;

@@ -36,7 +36,7 @@ async function createLogForLog(databaseConnection: Queryable, log: NotYetCreated
           ?, ?,
           ?,
           CURRENT_TIMESTAMP(), ?,
-          0
+          0,
           )`,
     [
       formatKnownString(log.logUUID, 36),
