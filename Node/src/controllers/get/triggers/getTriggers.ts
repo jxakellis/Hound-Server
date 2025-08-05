@@ -55,7 +55,7 @@ async function getAllTriggersForDogUUID(
       `SELECT ${dogTriggersColumns}
              FROM dogTriggers dt
             WHERE dt.dogUUID = ?
-              AND TIMESTAMPDIFF(MICROSECOND, dt.triggerLastModified, ?) <= 0`,
+              AND TIMESTAMPDIFF(MICROSECOND, COALESCE(triggerLastModified, triggerCreated), ?) <= 0`,
       [dogUUID, previousTriggerManagerSynchronization],
     )
     : await databaseQuery<DogTriggersRow[]>(

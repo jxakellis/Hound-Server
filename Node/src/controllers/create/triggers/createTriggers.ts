@@ -31,7 +31,8 @@ async function createTriggerForTrigger(
           triggerTimeDelay,
           triggerFixedTimeType, triggerFixedTimeTypeAmount, triggerFixedTimeHour, triggerFixedTimeMinute,
           triggerManualCondition, triggerAlarmCreatedCondition,
-          triggerLastModified, triggerIsDeleted
+          triggerCreated, triggerCreatedBy,
+          triggerIsDeleted
           )
           VALUES (
             ?,
@@ -40,7 +41,8 @@ async function createTriggerForTrigger(
             ?,
             ?, ?, ?, ?,
             ?, ?,
-            CURRENT_TIMESTAMP(), 0
+            CURRENT_TIMESTAMP(), ?,
+            0
             )`,
     [
       trigger.dogUUID,
@@ -49,6 +51,7 @@ async function createTriggerForTrigger(
       trigger.triggerTimeDelay,
       trigger.triggerFixedTimeType, trigger.triggerFixedTimeTypeAmount, trigger.triggerFixedTimeHour, trigger.triggerFixedTimeMinute,
       trigger.triggerManualCondition, trigger.triggerAlarmCreatedCondition,
+      trigger.triggerCreatedBy,
     ],
   );
 

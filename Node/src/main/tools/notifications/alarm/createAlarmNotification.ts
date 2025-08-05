@@ -72,7 +72,7 @@ async function sendAPNNotificationForFamily(familyId: string, reminderUUID: stri
     const userIds = notificationRows.map((n) => n.userId);
 
     // send immediate APN notification for family
-    const customPayload = { reminderUUID, reminderLastModified: reminder.reminderLastModified };
+    const customPayload = { reminderUUID, reminderLastModified: reminder.reminderLastModified ?? reminder.reminderCreated };
 
     if (userIds.length > 0) {
       sendNotificationForFamilyMembers(familyId, userIds, NOTIFICATION.CATEGORY.REMINDER.ALARM, alertTitle, alertBody, customPayload);

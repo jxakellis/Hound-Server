@@ -10,10 +10,11 @@ async function updateDogForDog(databaseConnection: Queryable, dog: NotYetUpdated
   await databaseQuery(
     databaseConnection,
     `UPDATE dogs
-    SET dogName = ?, dogLastModified = CURRENT_TIMESTAMP()
+    SET dogName = ?, dogLastModified = CURRENT_TIMESTAMP(), dogLastModifiedBy = ?
     WHERE dogUUID = ?`,
     [
       formatKnownString(dog.dogName, 32),
+      dog.dogLastModifiedBy,
       dog.dogUUID,
     ],
   );

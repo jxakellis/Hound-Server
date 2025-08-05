@@ -24,19 +24,21 @@ async function createDogForFamilyId(databaseConnection: Queryable, dog: NotYetCr
         familyId,
         dogUUID,
         dogName,
-        dogLastModified
+        dogCreated,
+        dogCreatedBy
         )
         VALUES (
           ?,
           ?,
           ?,
-          CURRENT_TIMESTAMP()
+          CURRENT_TIMESTAMP(),
+          ?
           )`,
     [
       dog.familyId,
       formatKnownString(dog.dogUUID, 36),
       formatKnownString(dog.dogName, 32),
-      // none, default value
+      dog.dogCreatedBy,
     ],
   );
 

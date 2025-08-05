@@ -7,7 +7,10 @@ d.dogId,
 d.dogUUID,
 d.familyId,
 d.dogName,
+d.dogCreated,
+d.dogCreatedBy,
 d.dogLastModified,
+d.dogLastModifiedBy,
 d.dogIsDeleted
 `;
 
@@ -17,21 +20,21 @@ type DogsRow = {
     dogUUID: string
     familyId: string
     dogName: string
-    dogLastModified: Date
+    dogCreated: Date
+    dogCreatedBy?: string
+    dogLastModified?: Date
+    dogLastModifiedBy?: string
     dogIsDeleted: number
 };
 
 type DogsRowWithRemindersLogsTriggers = DogsRow & {
-   // TODO FUTURE DEPRECIATE <= 4.0.0, we use dogLogs & dogReminders now, drop the short logs/reminders
-  logs: DogLogsRow[]
-  reminders: DogRemindersRow[]
   dogLogs: DogLogsRow[]
   dogReminders: DogRemindersRow[]
   dogTriggers: DogTriggersRow[]
 }
 
-type NotYetCreatedDogsRow = Omit<DogsRow, 'dogId' | 'dogIsDeleted' | 'dogLastModified'>;
-type NotYetUpdatedDogsRow = Omit<DogsRow, 'dogIsDeleted' | 'dogLastModified'>;
+type NotYetCreatedDogsRow = Omit<DogsRow, 'dogId' | 'dogIsDeleted' | 'dogCreated' | 'dogLastModified' | 'dogLastModifiedBy'>;
+type NotYetUpdatedDogsRow = Omit<DogsRow, 'dogIsDeleted' | 'dogCreated' | 'dogCreatedBy' | 'dogLastModified'>;
 
 export {
   type DogsRow,

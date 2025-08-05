@@ -13,7 +13,6 @@ import {
   formatDate, formatNumber, formatUnknownString, formatArray,
 } from '../../../../../../main/format/formatObject.js';
 import { type NotYetCreatedDogRemindersRow, type NotYetUpdatedDogRemindersRow } from '../../../../../../main/types/rows/DogRemindersRow.js';
-import { getAllReminderActionTypes } from '../../../../../../controllers/get/types/getReminderActionType.js';
 import { getFamilyMembersForFamilyId } from '../../../../../../controllers/get/getFamily.js';
 import { deleteRemindersForFamilyIdReminderUUIDs } from '../../../../../../controllers/delete/reminders/deleteReminders.js';
 
@@ -60,7 +59,7 @@ async function createReminder(req: express.Request, res: express.Response): Prom
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     const { databaseConnection } = req.houndProperties;
-    const { validatedFamilyId, validatedDogs } = req.houndProperties.validatedVars;
+    const { validatedFamilyId, validatedDogs, validatedUserId } = req.houndProperties.validatedVars;
     const validatedDog = validatedDogs.safeIndex(0);
     const { unvalidatedRemindersDict } = req.houndProperties.unvalidatedVars;
     if (databaseConnection === undefined || databaseConnection === null) {
@@ -77,20 +76,15 @@ async function createReminder(req: express.Request, res: express.Response): Prom
     }
 
     const reminders: NotYetCreatedDogRemindersRow[] = [];
-    const reminderActionTypes = await getAllReminderActionTypes(databaseConnection);
     const familyMembers = await getFamilyMembersForFamilyId(databaseConnection, validatedFamilyId);
     const defaultUserIds = familyMembers.map((fm) => fm.userId);
 
     unvalidatedRemindersDict.forEach((unvalidatedReminderDict) => {
       const reminderUUID = formatUnknownString(unvalidatedReminderDict['reminderUUID'], 36);
-      // TODO FUTURE DEPRECIATE this is compatibility for <= 4.0.0
-      const depreciatedReminderAction = formatUnknownString(unvalidatedReminderDict['reminderAction']);
-      const reminderActionTypeId = formatNumber(unvalidatedReminderDict['reminderActionTypeId'])
-      ?? reminderActionTypes.find((rat) => rat.internalValue === depreciatedReminderAction)?.reminderActionTypeId;
+      const reminderActionTypeId = formatNumber(unvalidatedReminderDict['reminderActionTypeId']);
       const reminderCustomActionName = formatUnknownString(unvalidatedReminderDict['reminderCustomActionName']);
       const reminderType = formatUnknownString(unvalidatedReminderDict['reminderType']);
-      // TODO FUTURE DEPRECIATE this is compatibility for <= 4.0.0
-      const reminderIsTriggerResult = formatNumber(unvalidatedReminderDict['reminderIsTriggerResult']) ?? 0;
+      const reminderIsTriggerResult = formatNumber(unvalidatedReminderDict['reminderIsTriggerResult']);
       const reminderIsEnabled = formatNumber(unvalidatedReminderDict['reminderIsEnabled']);
       const reminderExecutionBasis = formatDate(unvalidatedReminderDict['reminderExecutionBasis']);
       const reminderExecutionDate = formatDate(unvalidatedReminderDict['reminderExecutionDate']);
@@ -98,21 +92,21 @@ async function createReminder(req: express.Request, res: express.Response): Prom
       const snoozeExecutionInterval = formatNumber(unvalidatedReminderDict['snoozeExecutionInterval']);
 
       const countdownExecutionInterval = formatNumber(unvalidatedReminderDict['countdownExecutionInterval']);
-      // TODO FUTURE DEPRECIATE this is compatibility for <= 4.0.0
-      const weeklyZonedHour = formatNumber(unvalidatedReminderDict['weeklyZonedHour']) ?? formatNumber(unvalidatedReminderDict['weeklyUTCHour']);
-      const weeklyZonedMinute = formatNumber(unvalidatedReminderDict['weeklyZonedMinute']) ?? formatNumber(unvalidatedReminderDict['weeklyUTCMinute']);
-      const weeklyZonedSunday = formatNumber(unvalidatedReminderDict['weeklyZonedSunday']) ?? formatNumber(unvalidatedReminderDict['weeklySunday']);
-      const weeklyZonedMonday = formatNumber(unvalidatedReminderDict['weeklyZonedMonday']) ?? formatNumber(unvalidatedReminderDict['weeklyMonday']);
-      const weeklyZonedTuesday = formatNumber(unvalidatedReminderDict['weeklyZonedTuesday']) ?? formatNumber(unvalidatedReminderDict['weeklyTuesday']);
-      const weeklyZonedWednesday = formatNumber(unvalidatedReminderDict['weeklyZonedWednesday']) ?? formatNumber(unvalidatedReminderDict['weeklyWednesday']);
-      const weeklyZonedThursday = formatNumber(unvalidatedReminderDict['weeklyZonedThursday']) ?? formatNumber(unvalidatedReminderDict['weeklyThursday']);
-      const weeklyZonedFriday = formatNumber(unvalidatedReminderDict['weeklyZonedFriday']) ?? formatNumber(unvalidatedReminderDict['weeklyFriday']);
-      const weeklyZonedSaturday = formatNumber(unvalidatedReminderDict['weeklyZonedSaturday']) ?? formatNumber(unvalidatedReminderDict['weeklySaturday']);
+
+      const weeklyZonedHour = formatNumber(unvalidatedReminderDict['weeklyZonedHour']);
+      const weeklyZonedMinute = formatNumber(unvalidatedReminderDict['weeklyZonedMinute']);
+      const weeklyZonedSunday = formatNumber(unvalidatedReminderDict['weeklyZonedSunday']);
+      const weeklyZonedMonday = formatNumber(unvalidatedReminderDict['weeklyZonedMonday']);
+      const weeklyZonedTuesday = formatNumber(unvalidatedReminderDict['weeklyZonedTuesday']);
+      const weeklyZonedWednesday = formatNumber(unvalidatedReminderDict['weeklyZonedWednesday']);
+      const weeklyZonedThursday = formatNumber(unvalidatedReminderDict['weeklyZonedThursday']);
+      const weeklyZonedFriday = formatNumber(unvalidatedReminderDict['weeklyZonedFriday']);
+      const weeklyZonedSaturday = formatNumber(unvalidatedReminderDict['weeklyZonedSaturday']);
       const weeklySkippedDate = formatDate(unvalidatedReminderDict['weeklySkippedDate']);
-      // TODO FUTURE DEPRECIATE this is compatibility for <= 4.0.0
-      const monthlyZonedDay = formatNumber(unvalidatedReminderDict['monthlyZonedDay']) ?? formatNumber(unvalidatedReminderDict['monthlyUTCDay']);
-      const monthlyZonedHour = formatNumber(unvalidatedReminderDict['monthlyZonedHour']) ?? formatNumber(unvalidatedReminderDict['monthlyUTCHour']);
-      const monthlyZonedMinute = formatNumber(unvalidatedReminderDict['monthlyZonedMinute']) ?? formatNumber(unvalidatedReminderDict['monthlyUTCMinute']);
+
+      const monthlyZonedDay = formatNumber(unvalidatedReminderDict['monthlyZonedDay']);
+      const monthlyZonedHour = formatNumber(unvalidatedReminderDict['monthlyZonedHour']);
+      const monthlyZonedMinute = formatNumber(unvalidatedReminderDict['monthlyZonedMinute']);
       const monthlySkippedDate = formatDate(unvalidatedReminderDict['monthlySkippedDate']);
 
       const oneTimeDate = formatDate(unvalidatedReminderDict['oneTimeDate']);
@@ -122,8 +116,7 @@ async function createReminder(req: express.Request, res: express.Response): Prom
         ? notifUsersRaw.map((id) => formatUnknownString(id) ?? '').filter((id) => id !== '')
         : defaultUserIds;
 
-      // TODO FUTURE DEPRECIATE this is compatibility for <= 4.0.0
-      const reminderTimeZone = formatUnknownString(unvalidatedReminderDict['reminderTimeZone'], 100) ?? 'UTC';
+      const reminderTimeZone = formatUnknownString(unvalidatedReminderDict['reminderTimeZone'], 100);
 
       if (reminderUUID === undefined || reminderUUID === null) {
         throw new HoundError('reminderUUID missing', createReminder, ERROR_CODES.VALUE.MISSING);
@@ -209,6 +202,7 @@ async function createReminder(req: express.Request, res: express.Response): Prom
         reminderIsEnabled,
         reminderExecutionBasis,
         reminderExecutionDate,
+        reminderCreatedBy: validatedUserId,
         snoozeExecutionInterval,
         countdownExecutionInterval,
         weeklyZonedHour,
@@ -254,7 +248,7 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     const { databaseConnection } = req.houndProperties;
-    const { validatedFamilyId, validatedReminders } = req.houndProperties.validatedVars;
+    const { validatedFamilyId, validatedReminders, validatedUserId } = req.houndProperties.validatedVars;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', updateReminder, ERROR_CODES.VALUE.MISSING);
     }
@@ -266,7 +260,6 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
     }
 
     const reminders: NotYetUpdatedDogRemindersRow[] = [];
-    const reminderActionTypes = await getAllReminderActionTypes(databaseConnection);
     const familyMembers = await getFamilyMembersForFamilyId(databaseConnection, validatedFamilyId);
     const defaultUserIds = familyMembers.map((fm) => fm.userId);
 
@@ -275,14 +268,10 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
       const reminderId = validatedReminder.validatedReminderId;
       const reminderUUID = validatedReminder.validatedReminderUUID;
       const dogUUID = validatedReminder.validatedDogUUID;
-      // TODO FUTURE DEPRECIATE this is compatibility for <= 4.0.0
-      const depreciatedReminderAction = formatUnknownString(validatedReminder.unvalidatedReminderDict?.['reminderAction']);
-      const reminderActionTypeId = formatNumber(validatedReminder.unvalidatedReminderDict?.['reminderActionTypeId'])
-      ?? reminderActionTypes.find((rat) => rat.internalValue === depreciatedReminderAction)?.reminderActionTypeId;
+      const reminderActionTypeId = formatNumber(validatedReminder.unvalidatedReminderDict?.['reminderActionTypeId']);
       const reminderCustomActionName = formatUnknownString(validatedReminder.unvalidatedReminderDict?.['reminderCustomActionName']);
       const reminderType = formatUnknownString(validatedReminder.unvalidatedReminderDict?.['reminderType']);
-      // TODO FUTURE DEPRECIATE this is compatibility for <= 4.0.0
-      const reminderIsTriggerResult = formatNumber(validatedReminder.unvalidatedReminderDict?.['reminderIsTriggerResult']) ?? 0;
+      const reminderIsTriggerResult = formatNumber(validatedReminder.unvalidatedReminderDict?.['reminderIsTriggerResult']);
       const reminderIsEnabled = formatNumber(validatedReminder.unvalidatedReminderDict?.['reminderIsEnabled']);
       const reminderExecutionBasis = formatDate(validatedReminder.unvalidatedReminderDict?.['reminderExecutionBasis']);
       const reminderExecutionDate = formatDate(validatedReminder.unvalidatedReminderDict?.['reminderExecutionDate']);
@@ -290,21 +279,21 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
       const snoozeExecutionInterval = formatNumber(validatedReminder.unvalidatedReminderDict?.['snoozeExecutionInterval']);
 
       const countdownExecutionInterval = formatNumber(validatedReminder.unvalidatedReminderDict?.['countdownExecutionInterval']);
-      // TODO FUTURE DEPRECIATE this is compatibility for <= 4.0.0
-      const weeklyZonedHour = formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyZonedHour']) ?? formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyUTCHour']);
-      const weeklyZonedMinute = formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyZonedMinute']) ?? formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyUTCMinute']);
-      const weeklyZonedSunday = formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyZonedSunday']) ?? formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklySunday']);
-      const weeklyZonedMonday = formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyZonedMonday']) ?? formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyMonday']);
-      const weeklyZonedTuesday = formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyZonedTuesday']) ?? formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyTuesday']);
-      const weeklyZonedWednesday = formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyZonedWednesday']) ?? formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyWednesday']);
-      const weeklyZonedThursday = formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyZonedThursday']) ?? formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyThursday']);
-      const weeklyZonedFriday = formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyZonedFriday']) ?? formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyFriday']);
-      const weeklyZonedSaturday = formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyZonedSaturday']) ?? formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklySaturday']);
+
+      const weeklyZonedHour = formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyZonedHour']);
+      const weeklyZonedMinute = formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyZonedMinute']);
+      const weeklyZonedSunday = formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyZonedSunday']);
+      const weeklyZonedMonday = formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyZonedMonday']);
+      const weeklyZonedTuesday = formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyZonedTuesday']);
+      const weeklyZonedWednesday = formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyZonedWednesday']);
+      const weeklyZonedThursday = formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyZonedThursday']);
+      const weeklyZonedFriday = formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyZonedFriday']);
+      const weeklyZonedSaturday = formatNumber(validatedReminder.unvalidatedReminderDict?.['weeklyZonedSaturday']);
       const weeklySkippedDate = formatDate(validatedReminder.unvalidatedReminderDict?.['weeklySkippedDate']);
-      // TODO FUTURE DEPRECIATE this is compatibility for <= 4.0.0
-      const monthlyZonedDay = formatNumber(validatedReminder.unvalidatedReminderDict?.['monthlyZonedDay']) ?? formatNumber(validatedReminder.unvalidatedReminderDict?.['monthlyUTCDay']);
-      const monthlyZonedHour = formatNumber(validatedReminder.unvalidatedReminderDict?.['monthlyZonedHour']) ?? formatNumber(validatedReminder.unvalidatedReminderDict?.['monthlyUTCHour']);
-      const monthlyZonedMinute = formatNumber(validatedReminder.unvalidatedReminderDict?.['monthlyZonedMinute']) ?? formatNumber(validatedReminder.unvalidatedReminderDict?.['monthlyUTCMinute']);
+
+      const monthlyZonedDay = formatNumber(validatedReminder.unvalidatedReminderDict?.['monthlyZonedDay']);
+      const monthlyZonedHour = formatNumber(validatedReminder.unvalidatedReminderDict?.['monthlyZonedHour']);
+      const monthlyZonedMinute = formatNumber(validatedReminder.unvalidatedReminderDict?.['monthlyZonedMinute']);
       const monthlySkippedDate = formatDate(validatedReminder.unvalidatedReminderDict?.['monthlySkippedDate']);
 
       const oneTimeDate = formatDate(validatedReminder.unvalidatedReminderDict?.['oneTimeDate']);
@@ -397,6 +386,7 @@ async function updateReminder(req: express.Request, res: express.Response): Prom
         reminderIsEnabled,
         reminderExecutionBasis,
         reminderExecutionDate,
+        reminderLastModifiedBy: validatedUserId,
         snoozeExecutionInterval,
         countdownExecutionInterval,
         weeklyZonedHour,
@@ -442,9 +432,12 @@ async function deleteReminder(req: express.Request, res: express.Response): Prom
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     const { databaseConnection } = req.houndProperties;
-    const { validatedFamilyId, validatedReminders } = req.houndProperties.validatedVars;
+    const { validatedFamilyId, validatedReminders, validatedUserId } = req.houndProperties.validatedVars;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', deleteReminder, ERROR_CODES.VALUE.MISSING);
+    }
+    if (validatedUserId === undefined || validatedUserId === null) {
+      throw new HoundError('No user found or invalid permissions', deleteReminder, ERROR_CODES.PERMISSION.NO.USER);
     }
     if (validatedFamilyId === undefined || validatedFamilyId === null) {
       throw new HoundError('No family found or invalid permissions', deleteReminder, ERROR_CODES.PERMISSION.NO.FAMILY);
@@ -453,7 +446,12 @@ async function deleteReminder(req: express.Request, res: express.Response): Prom
       throw new HoundError('validatedReminders missing', deleteReminder, ERROR_CODES.VALUE.MISSING);
     }
 
-    await deleteRemindersForFamilyIdReminderUUIDs(databaseConnection, validatedFamilyId, validatedReminders.map((validatedReminder) => validatedReminder.validatedReminderUUID));
+    await deleteRemindersForFamilyIdReminderUUIDs(
+      databaseConnection,
+      validatedFamilyId,
+      validatedReminders.map((validatedReminder) => validatedReminder.validatedReminderUUID),
+      validatedUserId,
+    );
 
     return res.houndProperties.sendSuccessResponse('');
   }

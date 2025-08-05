@@ -6,13 +6,18 @@ import { getAllRemindersForDogUUID } from '../../get/reminders/getReminders.js';
  *  Queries the database to delete a single reminder. If the query is successful, then returns
  *  If an error is encountered, creates and throws custom error
  */
-async function deleteReminderForFamilyIdReminderUUID(databaseConnection: Queryable, familyId: string, reminderUUID: string): Promise<void> {
+async function deleteReminderForFamilyIdReminderUUID(
+  databaseConnection: Queryable,
+  familyId: string,
+  reminderUUID: string,
+  userId: string,
+): Promise<void> {
   await databaseQuery(
     databaseConnection,
     `UPDATE dogReminders
-    SET reminderIsDeleted = 1, reminderLastModified = CURRENT_TIMESTAMP()
+    SET reminderIsDeleted = 1, reminderLastModified = CURRENT_TIMESTAMP(), reminderLastModifiedBy = ?
     WHERE reminderUUID = ? AND reminderIsDeleted = 0`,
-    [reminderUUID],
+    [userId, reminderUUID],
   );
 
   // everything here succeeded so we shoot off a request to delete the alarm notification for the reminder
@@ -23,10 +28,15 @@ async function deleteReminderForFamilyIdReminderUUID(databaseConnection: Queryab
  *  Queries the database to delete multiple reminders. If the query is successful, then returns
  *  If a problem is encountered, creates and throws custom error
  */
-async function deleteRemindersForFamilyIdReminderUUIDs(databaseConnection: Queryable, familyId: string, reminderUUIDs: string[]): Promise<void> {
+async function deleteRemindersForFamilyIdReminderUUIDs(
+  databaseConnection: Queryable,
+  familyId: string,
+  reminderUUIDs: string[],
+  userId: string,
+): Promise<void> {
   const promises = [];
   for (let i = 0; i < reminderUUIDs.length; i += 1) {
-    promises.push(deleteReminderForFamilyIdReminderUUID(databaseConnection, familyId, reminderUUIDs[i]));
+    promises.push(deleteReminderForFamilyIdReminderUUID(databaseConnection, familyId, reminderUUIDs[i], userId));
   }
 
   await Promise.all(promises);
@@ -36,13 +46,18 @@ async function deleteRemindersForFamilyIdReminderUUIDs(databaseConnection: Query
  *  Queries the database to delete all reminders for a dogUUID. If the query is successful, then returns
  *  If an error is encountered, creates and throws custom error
  */
-async function deleteAllRemindersForFamilyIdDogUUID(databaseConnection: Queryable, familyId: string, dogUUID: string): Promise<void> {
+async function deleteAllRemindersForFamilyIdDogUUID(
+  databaseConnection: Queryable,
+  familyId: string,
+  dogUUID: string,
+  userId: string,
+): Promise<void> {
   await databaseQuery(
     databaseConnection,
     `UPDATE dogReminders
-    SET reminderIsDeleted = 1, reminderLastModified = CURRENT_TIMESTAMP()
+    SET reminderIsDeleted = 1, reminderLastModified = CURRENT_TIMESTAMP(), reminderLastModifiedBy = ?
     WHERE dogUUID = ? AND reminderIsDeleted = 0`,
-    [dogUUID],
+    [userId, dogUUID],
   );
 
   const notDeletedReminders = await getAllRemindersForDogUUID(databaseConnection, dogUUID, false);

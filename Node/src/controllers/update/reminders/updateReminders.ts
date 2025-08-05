@@ -2,7 +2,6 @@ import { type NotYetUpdatedDogRemindersRow } from '../../../main/types/rows/DogR
 
 import { type Queryable, databaseQuery } from '../../../main/database/databaseQuery.js';
 import { formatKnownString } from '../../../main/format/formatObject.js';
-import { getReminderActionTypeForId } from '../../get/types/getReminderActionType.js';
 import { getReminderForReminderUUID } from '../../get/reminders/getReminders.js';
 import { ERROR_CODES, HoundError } from '../../../main/server/globalErrors.js';
 import { updateReminderRecipientForReminder } from './updateReminderRecipient.js';
@@ -24,18 +23,16 @@ async function updateReminderForReminder(
     throw new HoundError('Unable to modify a reminder that was created by a trigger', updateReminderForReminder, ERROR_CODES.VALUE.MISSING);
   }
 
-  // TODO FUTURE DEPRECIATE this reminderAction is compatibility for <= 4.0.0
-  const reminderAction = await getReminderActionTypeForId(databaseConnection, reminder.reminderActionTypeId);
-
   const promises: Promise<unknown>[] = [];
 
   promises.push(databaseQuery(
     databaseConnection,
     `UPDATE dogReminders
-    SET DEPRECIATED_reminderAction = ?,
+    SET
     reminderActionTypeId = ?, reminderCustomActionName = ?, reminderType = ?, reminderIsTriggerResult = ?, reminderIsEnabled = ?,
     reminderExecutionBasis = ?, reminderExecutionDate = ?,
     reminderLastModified = CURRENT_TIMESTAMP(),
+    reminderLastModifiedBy = ?,
     snoozeExecutionInterval = ?, countdownExecutionInterval = ?,
     weeklyZonedHour = ?, weeklyZonedMinute = ?,
     weeklyZonedSunday = ?, weeklyZonedMonday = ?, weeklyZonedTuesday = ?, weeklyZonedWednesday = ?, weeklyZonedThursday = ?, weeklyZonedFriday = ?, weeklyZonedSaturday = ?, weeklySkippedDate = ?,
@@ -44,9 +41,9 @@ async function updateReminderForReminder(
     reminderTimeZone = ?
     WHERE reminderUUID = ?`,
     [
-      reminderAction?.internalValue,
       reminder.reminderActionTypeId, formatKnownString(reminder.reminderCustomActionName, 32), reminder.reminderType, reminder.reminderIsTriggerResult, reminder.reminderIsEnabled,
       reminder.reminderExecutionBasis, reminder.reminderExecutionDate,
+      reminder.reminderLastModifiedBy,
       reminder.snoozeExecutionInterval, reminder.countdownExecutionInterval,
       reminder.weeklyZonedHour, reminder.weeklyZonedMinute,
       reminder.weeklyZonedSunday, reminder.weeklyZonedMonday, reminder.weeklyZonedTuesday, reminder.weeklyZonedWednesday,

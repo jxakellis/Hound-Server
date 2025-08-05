@@ -4,13 +4,13 @@ import { type Queryable, databaseQuery } from '../../main/database/databaseQuery
  *  Queries the database to delete a log. If the query is successful, then returns
  *  If an error is encountered, creates and throws custom error
  */
-async function deleteLogForLogUUID(databaseConnection: Queryable, logUUID: string): Promise<void> {
+async function deleteLogForLogUUID(databaseConnection: Queryable, logUUID: string, userId: string): Promise<void> {
   await databaseQuery(
     databaseConnection,
     `UPDATE dogLogs
-    SET logIsDeleted = 1, logLastModified = CURRENT_TIMESTAMP()
+    SET logIsDeleted = 1, logLastModified = CURRENT_TIMESTAMP(), logLastModifiedBy = ?
     WHERE logUUID = ? AND logIsDeleted = 0`,
-    [logUUID],
+    [userId, logUUID],
   );
 }
 
@@ -18,13 +18,13 @@ async function deleteLogForLogUUID(databaseConnection: Queryable, logUUID: strin
  *  Queries the database to delete all logs for a dogUUID. If the query is successful, then returns
  *  If an error is encountered, creates and throws custom error
  */
-async function deleteAllLogsForDogUUID(databaseConnection: Queryable, dogUUID: string): Promise<void> {
+async function deleteAllLogsForDogUUID(databaseConnection: Queryable, dogUUID: string, userId: string): Promise<void> {
   await databaseQuery(
     databaseConnection,
     `UPDATE dogLogs
-    SET logIsDeleted = 1, logLastModified = CURRENT_TIMESTAMP()
+    SET logIsDeleted = 1, logLastModified = CURRENT_TIMESTAMP(), logLastModifiedBy = ?
     WHERE dogUUID = ? AND logIsDeleted = 0`,
-    [dogUUID],
+    [userId, dogUUID],
   );
 }
 

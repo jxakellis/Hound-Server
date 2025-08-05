@@ -13,7 +13,10 @@ dt.triggerFixedTimeHour,
 dt.triggerFixedTimeMinute,
 dt.triggerManualCondition,
 dt.triggerAlarmCreatedCondition,
+dt.triggerCreated,
+dt.triggerCreatedBy,
 dt.triggerLastModified,
+dt.triggerLastModifiedBy,
 dt.triggerIsDeleted
 `;
 
@@ -32,16 +35,24 @@ type DogTriggersRow = {
     triggerFixedTimeMinute: number
     triggerManualCondition: number
     triggerAlarmCreatedCondition: number
-    triggerLastModified: Date
+    triggerCreated: Date
+    triggerCreatedBy?: string
+    triggerLastModified?: Date
+    triggerLastModifiedBy?: string
     triggerIsDeleted: number
 };
 
-type NotYetCreatedDogTriggersRow = Omit<DogTriggersRow, 'triggerId' | 'triggerIsDeleted' | 'triggerLastModified' | 'triggerLogReactions' | 'triggerReminderResult'> & {
+type NotYetCreatedDogTriggersRow = Omit<DogTriggersRow,
+'triggerId'
+| 'triggerIsDeleted' | 'triggerCreated' | 'triggerLastModified' | 'triggerLastModifiedBy'
+| 'triggerLogReactions' | 'triggerReminderResult'> & {
   triggerLogReactions: NotYetCreatedDogTriggerLogReactionRow[];
   triggerReminderResult: NotYetCreatedDogTriggerReminderResultRow;
 };
 
-type NotYetUpdatedDogTriggersRow = Omit<DogTriggersRow, 'triggerIsDeleted' | 'triggerLastModified' | 'triggerLogReactions' | 'triggerReminderResult'> & {
+type NotYetUpdatedDogTriggersRow = Omit<DogTriggersRow,
+'triggerIsDeleted' | 'triggerCreated' | 'triggerCreatedBy' | 'triggerLastModified'
+| 'triggerLogReactions' | 'triggerReminderResult'> & {
   triggerLogReactions: NotYetCreatedDogTriggerLogReactionRow[];
   triggerReminderResult: NotYetCreatedDogTriggerReminderResultRow;
 };

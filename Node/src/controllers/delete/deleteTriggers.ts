@@ -4,15 +4,16 @@ import { type Queryable, databaseQuery } from '../../main/database/databaseQuery
  *  Queries the database to delete a single trigger. If the query is successful, then returns
  *  If an error is encountered, creates and throws custom error
  */
-async function deleteTriggerForTriggerUUID(databaseConnection: Queryable, triggerUUID: string): Promise<void> {
+async function deleteTriggerForTriggerUUID(databaseConnection: Queryable, triggerUUID: string, userId: string): Promise<void> {
   await databaseQuery(
     databaseConnection,
     `UPDATE dogTriggers
              SET triggerIsDeleted    = 1,
-                 triggerLastModified = CURRENT_TIMESTAMP()
+                 triggerLastModified = CURRENT_TIMESTAMP(),
+                 triggerLastModifiedBy = ?
            WHERE triggerUUID = ?
              AND triggerIsDeleted = 0`,
-    [triggerUUID],
+    [userId, triggerUUID],
   );
 }
 
@@ -20,10 +21,10 @@ async function deleteTriggerForTriggerUUID(databaseConnection: Queryable, trigge
  *  Queries the database to delete multiple triggers. If the query is successful, then returns
  *  If a problem is encountered, creates and throws custom error
  */
-async function deleteTriggersTriggerUUIDs(databaseConnection: Queryable, triggerUUIDs: string[]): Promise<void> {
+async function deleteTriggersTriggerUUIDs(databaseConnection: Queryable, triggerUUIDs: string[], userId: string): Promise<void> {
   const promises = [];
   for (let i = 0; i < triggerUUIDs.length; i += 1) {
-    promises.push(deleteTriggerForTriggerUUID(databaseConnection, triggerUUIDs[i]));
+    promises.push(deleteTriggerForTriggerUUID(databaseConnection, triggerUUIDs[i], userId));
   }
 
   await Promise.all(promises);
@@ -33,15 +34,16 @@ async function deleteTriggersTriggerUUIDs(databaseConnection: Queryable, trigger
  *  Queries the database to delete all triggers for a dogUUID. If the query is successful, then returns
  *  If an error is encountered, creates and throws custom error
  */
-async function deleteAllTriggersForDogUUID(databaseConnection: Queryable, dogUUID: string): Promise<void> {
+async function deleteAllTriggersForDogUUID(databaseConnection: Queryable, dogUUID: string, userId: string): Promise<void> {
   await databaseQuery(
     databaseConnection,
     `UPDATE dogTriggers
                      SET triggerIsDeleted    = 1,
-                         triggerLastModified = CURRENT_TIMESTAMP()
+                         triggerLastModified = CURRENT_TIMESTAMP(),
+                         triggerLastModifiedBy = ?
                    WHERE dogUUID = ?
                      AND triggerIsDeleted = 0`,
-    [dogUUID],
+    [userId, dogUUID],
   );
 }
 

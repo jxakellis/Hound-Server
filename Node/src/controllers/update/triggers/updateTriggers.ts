@@ -25,7 +25,8 @@ async function updateTriggerForTrigger(
                triggerFixedTimeMinute    = ?,
                triggerManualCondition       = ?,
                triggerAlarmCreatedCondition = ?,
-               triggerLastModified          = CURRENT_TIMESTAMP()
+               triggerLastModified          = CURRENT_TIMESTAMP(),
+               triggerLastModifiedBy        = ?
          WHERE triggerUUID = ?`,
       [
         trigger.triggerType,
@@ -36,6 +37,7 @@ async function updateTriggerForTrigger(
         trigger.triggerFixedTimeMinute,
         trigger.triggerManualCondition,
         trigger.triggerAlarmCreatedCondition,
+        trigger.triggerLastModifiedBy,
         trigger.triggerUUID,
       ],
     ),

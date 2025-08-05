@@ -58,7 +58,7 @@ async function createTrigger(req: express.Request, res: express.Response): Promi
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     const { databaseConnection } = req.houndProperties;
-    const { validatedFamilyId, validatedDogs } = req.houndProperties.validatedVars;
+    const { validatedFamilyId, validatedDogs, validatedUserId } = req.houndProperties.validatedVars;
     const validatedDog = validatedDogs.safeIndex(0);
     const { unvalidatedTriggersDict } = req.houndProperties.unvalidatedVars;
     if (databaseConnection === undefined || databaseConnection === null) {
@@ -160,6 +160,7 @@ async function createTrigger(req: express.Request, res: express.Response): Promi
         triggerFixedTimeMinute,
         triggerManualCondition,
         triggerAlarmCreatedCondition,
+        triggerCreatedBy: validatedUserId,
       });
     });
 
@@ -177,7 +178,7 @@ async function updateTrigger(req: express.Request, res: express.Response): Promi
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     const { databaseConnection } = req.houndProperties;
-    const { validatedFamilyId, validatedTriggers } = req.houndProperties.validatedVars;
+    const { validatedFamilyId, validatedTriggers, validatedUserId } = req.houndProperties.validatedVars;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', updateTrigger, ERROR_CODES.VALUE.MISSING);
     }
@@ -280,6 +281,7 @@ async function updateTrigger(req: express.Request, res: express.Response): Promi
         triggerFixedTimeMinute,
         triggerManualCondition,
         triggerAlarmCreatedCondition,
+        triggerLastModifiedBy: validatedUserId,
       });
     });
 
@@ -297,9 +299,12 @@ async function deleteTrigger(req: express.Request, res: express.Response): Promi
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     const { databaseConnection } = req.houndProperties;
-    const { validatedFamilyId, validatedTriggers } = req.houndProperties.validatedVars;
+    const { validatedFamilyId, validatedTriggers, validatedUserId } = req.houndProperties.validatedVars;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', deleteTrigger, ERROR_CODES.VALUE.MISSING);
+    }
+    if (validatedUserId === undefined || validatedUserId === null) {
+      throw new HoundError('No user found or invalid permissions', deleteTrigger, ERROR_CODES.PERMISSION.NO.USER);
     }
     if (validatedFamilyId === undefined || validatedFamilyId === null) {
       throw new HoundError('No family found or invalid permissions', deleteTrigger, ERROR_CODES.PERMISSION.NO.FAMILY);
@@ -308,7 +313,11 @@ async function deleteTrigger(req: express.Request, res: express.Response): Promi
       throw new HoundError('validatedTriggers missing', deleteTrigger, ERROR_CODES.VALUE.MISSING);
     }
 
-    await deleteTriggersTriggerUUIDs(databaseConnection, validatedTriggers.map((validatedTrigger) => validatedTrigger.validatedTriggerUUID));
+    await deleteTriggersTriggerUUIDs(
+      databaseConnection,
+      validatedTriggers.map((validatedTrigger) => validatedTrigger.validatedTriggerUUID),
+      validatedUserId,
+    );
 
     return res.houndProperties.sendSuccessResponse('');
   }

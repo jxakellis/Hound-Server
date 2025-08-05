@@ -64,9 +64,6 @@ async function getDogForDogUUID(
       getAllTriggersForDogUUID(databaseConnection, dog.dogUUID, includeDeletedDogs, previousDogManagerSynchronization),
     ]);
 
-    (dog as DogsRowWithRemindersLogsTriggers).reminders = reminders;
-    (dog as DogsRowWithRemindersLogsTriggers).logs = logs;
-
     (dog as DogsRowWithRemindersLogsTriggers).dogReminders = reminders;
     (dog as DogsRowWithRemindersLogsTriggers).dogLogs = logs;
     (dog as DogsRowWithRemindersLogsTriggers).dogTriggers = triggers;
@@ -111,11 +108,12 @@ async function getAllDogsForFamilyId(
       LEFT JOIN dogReminders dr ON d.dogUUID = dr.dogUUID
       LEFT JOIN dogLogs dl ON d.dogUUID = dl.dogUUID
       LEFT JOIN dogTriggers dt ON d.dogUUID = dt.dogUUID
-      WHERE d.familyId = ? AND (
-        TIMESTAMPDIFF(MICROSECOND, d.dogLastModified, ?) <= 0
-        OR TIMESTAMPDIFF(MICROSECOND, dr.reminderLastModified, ?) <= 0
-        OR TIMESTAMPDIFF(MICROSECOND, dl.logLastModified, ?) <= 0
-        OR TIMESTAMPDIFF(MICROSECOND, dt.triggerLastModified, ?) <= 0
+      WHERE d.familyId = ? 
+      AND (
+        TIMESTAMPDIFF(MICROSECOND, COALESCE(d.dogLastModified, d.dogCreated), ?) <= 0
+        OR TIMESTAMPDIFF(MICROSECOND, COALESCE(dr.reminderLastModified, dr.reminderCreated), ?) <= 0
+        OR TIMESTAMPDIFF(MICROSECOND, COALESCE(dl.logLastModified, dl.logCreated), ?) <= 0
+        OR TIMESTAMPDIFF(MICROSECOND, COALESCE(dt.triggerLastModified, dt.triggerCreated), ?) <= 0
       )
       GROUP BY d.dogUUID
       LIMIT 18446744073709551615`,
@@ -146,7 +144,6 @@ async function getAllDogsForFamilyId(
     const remindersForDogs = await Promise.all(reminderPromises);
     // since reminderPromises is 1:1 and index the same as dogs, we can take the resolved reminderPromises and assign to the dogs in the dogs array
     remindersForDogs.forEach((remindersForDog, index) => {
-      (dogs[index] as DogsRowWithRemindersLogsTriggers).reminders = remindersForDog;
       (dogs[index] as DogsRowWithRemindersLogsTriggers).dogReminders = remindersForDog;
     });
 
@@ -158,7 +155,6 @@ async function getAllDogsForFamilyId(
     const logsForDogs = await Promise.all(logPromises);
     // since logPromises is 1:1 and index the same as dogs, we can take the resolved logPromises and assign to the dogs in the dogs array
     logsForDogs.forEach((logsForDog, index) => {
-      (dogs[index] as DogsRowWithRemindersLogsTriggers).logs = logsForDog;
       (dogs[index] as DogsRowWithRemindersLogsTriggers).dogLogs = logsForDog;
     });
 

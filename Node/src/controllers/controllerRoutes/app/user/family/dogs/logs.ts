@@ -11,8 +11,6 @@ import { deleteLogForLogUUID } from '../../../../../delete/deleteLogs.js';
 import { ERROR_CODES, HoundError } from '../../../../../../main/server/globalErrors.js';
 
 import { formatDate, formatNumber, formatUnknownString } from '../../../../../../main/format/formatObject.js';
-import { getAllLogActionTypes } from '../../../../../../controllers/get/types/getLogActionType.js';
-import { getAllLogUnitTypes } from '../../../../../../controllers/get/types/getLogUnitType.js';
 
 async function getLogs(req: express.Request, res: express.Response): Promise<void> {
   try {
@@ -74,22 +72,13 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
     if (unvalidatedLogDict === undefined || unvalidatedLogDict === null) {
       throw new HoundError('unvalidatedLogDict missing', createLog, ERROR_CODES.VALUE.MISSING);
     }
-
-    const logActionTypes = await getAllLogActionTypes(databaseConnection);
-    const logUnitTypes = await getAllLogUnitTypes(databaseConnection);
-
     const logUUID = formatUnknownString(unvalidatedLogDict['logUUID'], 36);
     const logStartDate = formatDate(unvalidatedLogDict?.['logStartDate']);
     const logEndDate = formatDate(unvalidatedLogDict?.['logEndDate']);
-    // TODO FUTURE DEPRECIATE this is compatibility for <= 4.0.0
-    const depreciatedLogAction = formatUnknownString(unvalidatedLogDict?.['logAction']);
-    const logActionTypeId = formatNumber(unvalidatedLogDict?.['logActionTypeId'])
-    ?? logActionTypes.find((lat) => lat.internalValue === depreciatedLogAction)?.logActionTypeId;
+    const logActionTypeId = formatNumber(unvalidatedLogDict?.['logActionTypeId']);
     const logCustomActionName = formatUnknownString(unvalidatedLogDict?.['logCustomActionName']);
     const logNote = formatUnknownString(unvalidatedLogDict?.['logNote']);
-    // TODO FUTURE DEPRECIATE this is compatibility for <= 4.0.0
-    const depreciatedLogUnit = formatUnknownString(unvalidatedLogDict?.['logUnit']);
-    const logUnitTypeId = formatNumber(unvalidatedLogDict?.['logUnitTypeId']) ?? logUnitTypes.find((lut) => lut.readableValue === depreciatedLogUnit)?.logUnitTypeId;
+    const logUnitTypeId = formatNumber(unvalidatedLogDict?.['logUnitTypeId']);
     const logNumberOfLogUnits = formatNumber(unvalidatedLogDict?.['logNumberOfLogUnits']);
     const logCreatedByReminderUUID = formatUnknownString(unvalidatedLogDict?.['logCreatedByReminderUUID']);
 
@@ -112,7 +101,6 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
     const result = await createLogForLog(
       databaseConnection,
       {
-        userId: validatedUserId,
         dogUUID: validatedDog.validatedDogUUID,
         logUUID,
         logStartDate,
@@ -123,6 +111,7 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
         logUnitTypeId,
         logNumberOfLogUnits,
         logCreatedByReminderUUID,
+        logCreatedBy: validatedUserId,
       },
     );
     createLogNotification(
@@ -154,21 +143,12 @@ async function updateLog(req: express.Request, res: express.Response): Promise<v
     if (validatedLog === undefined || validatedLog === null) {
       throw new HoundError('validatedLog missing', updateLog, ERROR_CODES.VALUE.MISSING);
     }
-
-    const logActionTypes = await getAllLogActionTypes(databaseConnection);
-    const logUnitTypes = await getAllLogUnitTypes(databaseConnection);
-
     const logStartDate = formatDate(validatedLog.unvalidatedLogDict?.['logStartDate']);
     const logEndDate = formatDate(validatedLog.unvalidatedLogDict?.['logEndDate']);
-    // TODO FUTURE DEPRECIATE this is compatibility for <= 4.0.0
-    const depreciatedLogAction = formatUnknownString(validatedLog.unvalidatedLogDict?.['logAction']);
-    const logActionTypeId = formatNumber(validatedLog.unvalidatedLogDict?.['logActionTypeId'])
-    ?? logActionTypes.find((rat) => rat.internalValue === depreciatedLogAction)?.logActionTypeId;
+    const logActionTypeId = formatNumber(validatedLog.unvalidatedLogDict?.['logActionTypeId']);
     const logCustomActionName = formatUnknownString(validatedLog.unvalidatedLogDict?.['logCustomActionName']);
     const logNote = formatUnknownString(validatedLog.unvalidatedLogDict?.['logNote']);
-    // TODO FUTURE DEPRECIATE this is compatibility for <= 4.0.0
-    const depreciatedLogUnit = formatUnknownString(validatedLog.unvalidatedLogDict?.['logUnit']);
-    const logUnitTypeId = formatNumber(validatedLog.unvalidatedLogDict?.['logUnitTypeId']) ?? logUnitTypes.find((lut) => lut.readableValue === depreciatedLogUnit)?.logUnitTypeId;
+    const logUnitTypeId = formatNumber(validatedLog.unvalidatedLogDict?.['logUnitTypeId']);
     const logNumberOfLogUnits = formatNumber(validatedLog.unvalidatedLogDict?.['logNumberOfLogUnits']);
     const logCreatedByReminderUUID = formatUnknownString(validatedLog.unvalidatedLogDict?.['logCreatedByReminderUUID']);
 
@@ -188,7 +168,6 @@ async function updateLog(req: express.Request, res: express.Response): Promise<v
     await updateLogForLog(
       databaseConnection,
       {
-        userId: validatedUserId,
         dogUUID: validatedLog.validatedDogUUID,
         logId: validatedLog.validatedLogId,
         logUUID: validatedLog.validatedLogUUID,
@@ -200,6 +179,7 @@ async function updateLog(req: express.Request, res: express.Response): Promise<v
         logUnitTypeId,
         logNumberOfLogUnits,
         logCreatedByReminderUUID,
+        logLastModifiedBy: validatedUserId,
       },
     );
     return res.houndProperties.sendSuccessResponse('');
@@ -214,16 +194,19 @@ async function deleteLog(req: express.Request, res: express.Response): Promise<v
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     const { databaseConnection } = req.houndProperties;
-    const { validatedLogs } = req.houndProperties.validatedVars;
+    const { validatedLogs, validatedUserId } = req.houndProperties.validatedVars;
     const validatedLog = validatedLogs.safeIndex(0);
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', deleteLog, ERROR_CODES.VALUE.MISSING);
+    }
+    if (validatedUserId === undefined || validatedUserId === null) {
+      throw new HoundError('No user found or invalid permissions', deleteLog, ERROR_CODES.PERMISSION.NO.USER);
     }
     if (validatedLog === undefined || validatedLog === null) {
       throw new HoundError('validatedLog missing', deleteLog, ERROR_CODES.VALUE.MISSING);
     }
 
-    await deleteLogForLogUUID(databaseConnection, validatedLog.validatedLogUUID);
+    await deleteLogForLogUUID(databaseConnection, validatedLog.validatedLogUUID, validatedUserId);
 
     return res.houndProperties.sendSuccessResponse('');
   }

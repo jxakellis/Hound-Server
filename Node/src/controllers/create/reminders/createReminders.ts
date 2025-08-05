@@ -6,7 +6,6 @@ import { ERROR_CODES, HoundError } from '../../../main/server/globalErrors.js';
 import { getAllRemindersForDogUUID } from '../../get/reminders/getReminders.js';
 import { createReminderRecipients } from './createReminderRecipient.js';
 import { formatKnownString } from '../../../main/format/formatObject.js';
-import { getReminderActionTypeForId } from '../../get/types/getReminderActionType.js';
 
 /**
 *  Queries the database to create a single reminder. If the query is successful, then returns the reminder with created reminderId added to it.
@@ -23,18 +22,15 @@ async function createReminderForReminder(
     throw new HoundError(`Dog reminder limit of ${LIMIT.NUMBER_OF_REMINDERS_PER_DOG} exceeded`, createReminderForReminder, ERROR_CODES.FAMILY.LIMIT.REMINDER_TOO_LOW);
   }
 
-  // TODO FUTURE DEPRECIATE this reminderAction is compatibility for <= 4.0.0
-  const reminderAction = await getReminderActionTypeForId(databaseConnection, reminder.reminderActionTypeId);
-
   const result = await databaseQuery<ResultSetHeader>(
     databaseConnection,
     `INSERT INTO dogReminders(
           dogUUID,
           reminderUUID,
-          DEPRECIATED_reminderAction,
           reminderActionTypeId, reminderCustomActionName, reminderType, reminderIsTriggerResult, reminderIsEnabled,
           reminderExecutionBasis, reminderExecutionDate,
-          reminderLastModified, reminderIsDeleted,
+          reminderCreated, reminderCreatedBy,
+          reminderIsDeleted,
           snoozeExecutionInterval,
           countdownExecutionInterval,
           weeklyZonedHour, weeklyZonedMinute,
@@ -47,10 +43,10 @@ async function createReminderForReminder(
           VALUES (
             ?,
             ?,
-            ?,
             ?, ?, ?, ?, ?,
             ?, ?,
-            CURRENT_TIMESTAMP(), 0,
+            CURRENT_TIMESTAMP(), ?,
+            0,
             ?,
             ?,
             ?, ?,
@@ -64,10 +60,9 @@ async function createReminderForReminder(
     [
       reminder.dogUUID,
       reminder.reminderUUID,
-      reminderAction?.internalValue,
       reminder.reminderActionTypeId, formatKnownString(reminder.reminderCustomActionName, 32), reminder.reminderType, reminder.reminderIsTriggerResult, reminder.reminderIsEnabled,
       reminder.reminderExecutionBasis, reminder.reminderExecutionDate,
-      // none, default values
+      reminder.reminderCreatedBy,
       reminder.snoozeExecutionInterval,
       reminder.countdownExecutionInterval,
       reminder.weeklyZonedHour, reminder.weeklyZonedMinute,

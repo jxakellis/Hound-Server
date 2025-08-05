@@ -37,7 +37,6 @@ type UserConfigurationRow = {
     userConfigurationSnoozeLength: number
     userConfigurationNotificationSound: string
     userConfigurationIsSilentModeEnabled: number
-    // TODO FUTURE DEPRECIATE any ref to UTCHour/Minute for silent mode <= 4.0.0
     userConfigurationSilentModeStartHour: number
     userConfigurationSilentModeEndHour: number
     userConfigurationSilentModeStartMinute: number

@@ -9,16 +9,21 @@ import { deleteAllTriggersForDogUUID } from './deleteTriggers.js';
  *  Queries the database to delete a dog and everything nested under it. If the query is successful, then returns
  *  If an error is encountered, creates and throws custom error
  */
-async function deleteDogForFamilyIdDogUUID(databaseConnection: Queryable, familyId: string, dogUUID: string): Promise<void> {
-  await deleteAllRemindersForFamilyIdDogUUID(databaseConnection, familyId, dogUUID);
-  await deleteAllLogsForDogUUID(databaseConnection, dogUUID);
-  await deleteAllTriggersForDogUUID(databaseConnection, dogUUID);
+async function deleteDogForFamilyIdDogUUID(
+  databaseConnection: Queryable,
+  familyId: string,
+  dogUUID: string,
+  userId: string,
+): Promise<void> {
+  await deleteAllRemindersForFamilyIdDogUUID(databaseConnection, familyId, dogUUID, userId);
+  await deleteAllLogsForDogUUID(databaseConnection, dogUUID, userId);
+  await deleteAllTriggersForDogUUID(databaseConnection, dogUUID, userId);
   await databaseQuery(
     databaseConnection,
     `UPDATE dogs
-    SET dogIsDeleted = 1, dogLastModified = CURRENT_TIMESTAMP()
+    SET dogIsDeleted = 1, dogLastModified = CURRENT_TIMESTAMP(), dogLastModifiedBy = ?
     WHERE dogUUID = ?`,
-    [dogUUID],
+    [userId, dogUUID],
   );
 }
 
@@ -26,12 +31,12 @@ async function deleteDogForFamilyIdDogUUID(databaseConnection: Queryable, family
  * Queries the database to delete all dog and everything nested under them. If the query is successful, then returns
  *  If an error is encountered, creates and throws custom error
  */
-async function deleteAllDogsForFamilyId(databaseConnection: Queryable, familyId: string): Promise<void> {
+async function deleteAllDogsForFamilyId(databaseConnection: Queryable, familyId: string, userId: string): Promise<void> {
   const notDeletedDogs = await getAllDogsForFamilyId(databaseConnection, familyId, false, false, undefined);
 
   // delete all the dogs
   const promises: Promise<void>[] = [];
-  notDeletedDogs.forEach((notDeletedDog) => promises.push(deleteDogForFamilyIdDogUUID(databaseConnection, familyId, notDeletedDog.dogUUID)));
+  notDeletedDogs.forEach((notDeletedDog) => promises.push(deleteDogForFamilyIdDogUUID(databaseConnection, familyId, notDeletedDog.dogUUID, userId)));
 
   await Promise.all(promises);
 }
