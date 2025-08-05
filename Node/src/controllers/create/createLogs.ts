@@ -27,7 +27,7 @@ async function createLogForLog(databaseConnection: Queryable, log: NotYetCreated
         logUnitTypeId, logNumberOfLogUnits,
         logCreatedByReminderUUID,
         logCreated, logCreatedBy,
-        logIsDeleted,
+        logIsDeleted
         )
         VALUES (
           ?,

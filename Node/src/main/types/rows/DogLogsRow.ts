@@ -12,10 +12,13 @@ dl.logNumberOfLogUnits,
 dl.logCreatedByReminderUUID,
 dl.logCreated,
 dl.logCreatedBy,
+dl.logCreatedBy AS userId,
 dl.logLastModified,
 dl.logLastModifiedBy,
 dl.logIsDeleted
 `;
+
+// TODO FUTURE DEPRECIATE userId <= 4.1.0
 
 type DogLogsRow = {
     // NOTE: database booleans (tinyint(1)) are returned as 0 or 1 numbers, not booleans. therefore, we have to use number instead of boolean

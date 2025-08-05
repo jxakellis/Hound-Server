@@ -45,7 +45,7 @@ async function updateTriggerForTrigger(
     updateTriggerReminderResultForTrigger(databaseConnection, trigger),
   );
 
-  Promise.all(promises);
+  await Promise.all(promises);
 }
 
 /**
