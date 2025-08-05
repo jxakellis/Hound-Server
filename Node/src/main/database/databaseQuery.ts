@@ -1,6 +1,7 @@
 import { type ResultSetHeader, type RowDataPacket } from 'mysql2';
 import { HoundError } from '../server/globalErrors.js';
 import { type Queryable } from '../types/Queryable.js';
+import { serverLogger } from '../logging/loggers.js';
 
 // Define the 'impossible' type to force callers to specify a type parameter for the function.
 // type MustSpecifyType<T> = T & { __mustSpecifyType__: void };
@@ -35,6 +36,7 @@ const databaseQuery = <T>(
       (error, result) => {
         if (result === undefined || result === null) {
           // error when trying to do query to database
+          serverLogger.debug(`Error querying database: ${SQLString}`);
           reject(new HoundError(undefined, databaseQuery, undefined, error));
         }
         else {
