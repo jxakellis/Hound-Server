@@ -31,7 +31,7 @@ async function createLogForLog(databaseConnection: Queryable, log: NotYetCreated
         )
         VALUES (
           ?,
-          ?, ?, 
+          ?,
           ?, ?, ?, ?, ?,
           ?, ?,
           ?,

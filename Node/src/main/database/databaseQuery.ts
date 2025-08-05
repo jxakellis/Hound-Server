@@ -36,7 +36,7 @@ const databaseQuery = <T>(
       (error, result) => {
         if (result === undefined || result === null) {
           // error when trying to do query to database
-          serverLogger.debug(`Error querying database: ${SQLString} for variables: ${JSON.stringify(SQLVars)}`);
+          serverLogger.debug(`Error querying database: ${error}\n\n SQLString: ${SQLString}\n\nSQLVariables: ${JSON.stringify(SQLVars)}`);
           reject(new HoundError(undefined, databaseQuery, undefined, error));
         }
         else {
