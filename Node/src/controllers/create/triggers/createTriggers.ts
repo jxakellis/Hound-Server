@@ -5,7 +5,7 @@ import { LIMIT } from '../../../main/server/globalConstants.js';
 import { ERROR_CODES, HoundError } from '../../../main/server/globalErrors.js';
 import { getAllTriggersForDogUUID } from '../../../controllers/get/triggers/getTriggers.js';
 import { createTriggerReminderResult } from './createTriggerReminderResult.js';
-import { createTriggerLogReaction } from './createTriggerLogReaction.js';
+import { createSingleTriggerLogReaction } from './createTriggerLogReaction.js';
 
 /**
 *  Queries the database to create a single trigger. If the query is successful, then returns the trigger with created triggerId added to it.
@@ -58,7 +58,7 @@ async function createTriggerForTrigger(
   const promises: Promise<unknown>[] = [];
 
   trigger.triggerLogReactions?.forEach((triggerLogReaction) => {
-    promises.push(createTriggerLogReaction(
+    promises.push(createSingleTriggerLogReaction(
       databaseConnection,
       {
         triggerUUID: trigger.triggerUUID,

@@ -4,7 +4,7 @@ import { type DogLogsRow } from '../../main/types/rows/DogLogsRow.js';
 import { type DogRemindersRow } from '../../main/types/rows/DogRemindersRow.js';
 import { type DogsRow, type DogsRowWithRemindersLogsTriggers, dogsColumns } from '../../main/types/rows/DogsRow.js';
 
-import { getAllLogsForDogUUID } from './getLogs.js';
+import { getAllLogsForDogUUID } from './logs/getLogs.js';
 import { getAllRemindersForDogUUID } from './reminders/getReminders.js';
 import { getAllTriggersForDogUUID } from './triggers/getTriggers.js';
 

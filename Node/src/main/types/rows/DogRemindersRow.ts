@@ -69,6 +69,7 @@ type DogRemindersRow = {
     monthlyZonedMinute: number
     monthlySkippedDate?: Date
     oneTimeDate: Date
+    // added w/ separate queries
     reminderRecipientUserIds: string[]
 };
 

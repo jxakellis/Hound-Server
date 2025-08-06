@@ -9,7 +9,7 @@ import { type DogLogsRow } from '../../types/rows/DogLogsRow.js';
 import { type DogRemindersRow } from '../../types/rows/DogRemindersRow.js';
 import { type StringKeyDict } from '../../types/StringKeyDict.js';
 import { getDogForDogUUID } from '../../../controllers/get/getDogs.js';
-import { getLogForLogUUID } from '../../../controllers/get/getLogs.js';
+import { getLogForLogUUID } from '../../../controllers/get/logs/getLogs.js';
 import { getReminderForReminderUUID } from '../../../controllers/get/reminders/getReminders.js';
 import { type DogTriggersRow } from '../../types/rows/DogTriggersRow.js';
 import { getTriggerForTriggerUUID } from '../../../controllers/get/triggers/getTriggers.js';

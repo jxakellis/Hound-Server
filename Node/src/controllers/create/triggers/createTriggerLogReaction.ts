@@ -6,7 +6,7 @@ import type { DogTriggerLogReactionRow, NotYetCreatedDogTriggerLogReactionRow } 
 *  Queries the database to create a single trigger. If the query is successful, then returns the trigger with created triggerId added to it.
 *  If a problem is encountered, creates and throws custom error
 */
-async function createTriggerLogReaction(
+async function createSingleTriggerLogReaction(
   databaseConnection: Queryable,
   reaction: NotYetCreatedDogTriggerLogReactionRow,
 ): Promise<number> {
@@ -27,14 +27,14 @@ async function createTriggerLogReaction(
           * Queries the database to create a multiple triggers. If the query is successful, then returns the triggers with their created triggerIds added to them.
           *  If a problem is encountered, creates and throws custom error
           */
-async function createTriggerLogReactions(
+async function createMultipleTriggerLogReactions(
   databaseConnection: Queryable,
   reactions: NotYetCreatedDogTriggerLogReactionRow[],
 ): Promise<DogTriggerLogReactionRow []> {
   const promises: Promise<number>[] = [];
   reactions.forEach((reaction) => {
     // retrieve the original provided body AND the created id
-    promises.push(createTriggerLogReaction(
+    promises.push(createSingleTriggerLogReaction(
       databaseConnection,
       reaction,
     ));
@@ -59,4 +59,4 @@ async function createTriggerLogReactions(
   return notDeletedReturnReactions;
 }
 
-export { createTriggerLogReaction, createTriggerLogReactions };
+export { createSingleTriggerLogReaction, createMultipleTriggerLogReactions };

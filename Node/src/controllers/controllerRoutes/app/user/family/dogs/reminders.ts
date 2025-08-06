@@ -3,7 +3,7 @@ import { createAlarmNotificationForFamily } from '../../../../../../main/tools/n
 
 import { getReminderForReminderUUID, getAllRemindersForDogUUID } from '../../../../../get/reminders/getReminders.js';
 
-import { createRemindersForReminders } from '../../../../../create/reminders/createReminders.js';
+import { createMultipleReminders } from '../../../../../create/reminders/createReminders.js';
 
 import { updateRemindersForReminders } from '../../../../../update/reminders/updateReminders.js';
 
@@ -228,7 +228,7 @@ async function createReminder(req: express.Request, res: express.Response): Prom
       });
     });
 
-    const results = await createRemindersForReminders(databaseConnection, reminders);
+    const results = await createMultipleReminders(databaseConnection, reminders);
 
     // create was successful, so we can create all the alarm notifications
     results.forEach((result) => {

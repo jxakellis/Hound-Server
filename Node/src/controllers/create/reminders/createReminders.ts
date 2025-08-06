@@ -4,14 +4,14 @@ import { type Queryable, type ResultSetHeader, databaseQuery } from '../../../ma
 import { LIMIT } from '../../../main/server/globalConstants.js';
 import { ERROR_CODES, HoundError } from '../../../main/server/globalErrors.js';
 import { getAllRemindersForDogUUID } from '../../get/reminders/getReminders.js';
-import { createReminderRecipients } from './createReminderRecipient.js';
+import { createMultipleReminderRecipients } from './createReminderRecipient.js';
 import { formatKnownString } from '../../../main/format/formatObject.js';
 
 /**
 *  Queries the database to create a single reminder. If the query is successful, then returns the reminder with created reminderId added to it.
 *  If a problem is encountered, creates and throws custom error
 */
-async function createReminderForReminder(
+async function createSingleReminder(
   databaseConnection: Queryable,
   reminder: NotYetCreatedDogRemindersRow,
 ): Promise<number> {
@@ -19,7 +19,7 @@ async function createReminderForReminder(
 
   // make sure that the user isn't creating too many reminders
   if (notDeletedReminders.length >= LIMIT.NUMBER_OF_REMINDERS_PER_DOG) {
-    throw new HoundError(`Dog reminder limit of ${LIMIT.NUMBER_OF_REMINDERS_PER_DOG} exceeded`, createReminderForReminder, ERROR_CODES.FAMILY.LIMIT.REMINDER_TOO_LOW);
+    throw new HoundError(`Dog reminder limit of ${LIMIT.NUMBER_OF_REMINDERS_PER_DOG} exceeded`, createSingleReminder, ERROR_CODES.FAMILY.LIMIT.REMINDER_TOO_LOW);
   }
 
   const result = await databaseQuery<ResultSetHeader>(
@@ -75,7 +75,7 @@ async function createReminderForReminder(
     ],
   );
 
-  await createReminderRecipients(
+  await createMultipleReminderRecipients(
     databaseConnection,
     reminder.reminderRecipientUserIds.map((userId) => ({ reminderUUID: reminder.reminderUUID, userId })),
   );
@@ -87,14 +87,14 @@ async function createReminderForReminder(
           * Queries the database to create a multiple reminders. If the query is successful, then returns the reminders with their created reminderIds added to them.
           *  If a problem is encountered, creates and throws custom error
           */
-async function createRemindersForReminders(
+async function createMultipleReminders(
   databaseConnection: Queryable,
   reminders: NotYetCreatedDogRemindersRow[],
 ): Promise<DogRemindersRow[]> {
   const promises: Promise<number>[] = [];
   reminders.forEach((reminder) => {
     // retrieve the original provided body AND the created id
-    promises.push(createReminderForReminder(
+    promises.push(createSingleReminder(
       databaseConnection,
       reminder,
     ));
@@ -116,4 +116,4 @@ async function createRemindersForReminders(
   return notDeletedReturnReminders;
 }
 
-export { createRemindersForReminders };
+export { createMultipleReminders };

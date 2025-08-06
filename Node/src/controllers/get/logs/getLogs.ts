@@ -1,5 +1,6 @@
-import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
-import { type DogLogsRow, dogLogsColumns } from '../../main/types/rows/DogLogsRow.js';
+import { type Queryable, databaseQuery } from '../../../main/database/databaseQuery.js';
+import { type DogLogsRow, dogLogsColumns } from '../../../main/types/rows/DogLogsRow.js';
+import { getLogLikesForLogUUID, getLogLikesForLogUUIDs } from './getLogLike.js';
 
 /**
  * If you are querying a single elements from the database, previousDogManagerSynchronization is not taken.
@@ -23,7 +24,13 @@ async function getLogForLogUUID(
     logs = logs.filter((possiblyDeletedLog) => possiblyDeletedLog.logIsDeleted === 0);
   }
 
-  return logs.safeIndex(0);
+  const log = logs.safeIndex(0);
+  if (log === undefined) {
+    return undefined;
+  }
+  const likes = await getLogLikesForLogUUID(databaseConnection, log.logUUID);
+  log.logLikedByUserIds = likes.map((l) => l.userId);
+  return log;
 }
 
 /**
@@ -51,6 +58,16 @@ async function getAllLogsForDogUUID(databaseConnection: Queryable, dogUUID: stri
 
   if (includeDeletedLogs === false) {
     logs = logs.filter((possiblyDeletedLog) => possiblyDeletedLog.logIsDeleted === 0);
+  }
+
+  const logUUIDs = logs.map((l) => l.logUUID);
+  if (logUUIDs.length > 0) {
+    const likeRows = await getLogLikesForLogUUIDs(databaseConnection, logUUIDs);
+    logs.forEach((log, index) => {
+      logs[index].logLikedByUserIds = likeRows
+        .filter((l) => l.logUUID === log.logUUID)
+        .map((l) => l.userId);
+    });
   }
 
   return logs;

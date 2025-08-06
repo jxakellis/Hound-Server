@@ -103,6 +103,8 @@ const NOTIFICATION = {
       */
       // Family member created a log of care
       CREATED: 'NOTIFICATION_CATEGORY_LOG_CREATED',
+      // Family member liked a log
+      LIKED: 'NOTIFICATION_CATEGORY_LOG_LIKED',
     },
     // for notifications about reminder's alarms
     REMINDER: {

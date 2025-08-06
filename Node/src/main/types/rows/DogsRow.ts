@@ -28,6 +28,7 @@ type DogsRow = {
 };
 
 type DogsRowWithRemindersLogsTriggers = DogsRow & {
+  // added w/ separate queries
   dogLogs: DogLogsRow[]
   dogReminders: DogRemindersRow[]
   dogTriggers: DogTriggersRow[]

@@ -6,7 +6,7 @@ import { createTriggersForTriggers } from '../../../../../create/triggers/create
 
 import { updateTriggersForTriggers } from '../../../../../update/triggers/updateTriggers.js';
 
-import { deleteTriggersTriggerUUIDs } from '../../../../../delete/deleteTriggers.js';
+import { deleteTriggersTriggerUUIDs } from '../../../../../delete/triggers/deleteTriggers.js';
 import { ERROR_CODES, HoundError } from '../../../../../../main/server/globalErrors.js';
 
 import {

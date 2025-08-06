@@ -1,16 +1,18 @@
 import express from 'express';
 import { createLogNotification } from '../../../../../../main/tools/notifications/alert/createLogNotification.js';
 
-import { getLogForLogUUID, getAllLogsForDogUUID } from '../../../../../get/getLogs.js';
+import { getLogForLogUUID, getAllLogsForDogUUID } from '../../../../../get/logs/getLogs.js';
 
-import { createLogForLog } from '../../../../../create/createLogs.js';
+import { createSingleLog } from '../../../../../create/logs/createLogs.js';
 
 import { updateLogForLog } from '../../../../../update/updateLogs.js';
 
-import { deleteLogForLogUUID } from '../../../../../delete/deleteLogs.js';
+import { deleteLogForLogUUID } from '../../../../../delete/logs/deleteLogs.js';
 import { ERROR_CODES, HoundError } from '../../../../../../main/server/globalErrors.js';
 
 import { formatDate, formatNumber, formatUnknownString } from '../../../../../../main/format/formatObject.js';
+import { createSingleLogLike } from '../../../../../../controllers/create/logs/createLogLike.js';
+import { deleteSpecificLogLike } from '../../../../../../controllers/delete/logs/deleteLogLike.js';
 
 async function getLogs(req: express.Request, res: express.Response): Promise<void> {
   try {
@@ -98,7 +100,7 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
       throw new HoundError('logNote missing', createLog, ERROR_CODES.VALUE.MISSING);
     }
 
-    const result = await createLogForLog(
+    const result = await createSingleLog(
       databaseConnection,
       {
         dogUUID: validatedDog.validatedDogUUID,
@@ -112,6 +114,7 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
         logNumberOfLogUnits,
         logCreatedByReminderUUID,
         logCreatedBy: validatedUserId,
+        // logLikedByUserIds is none. this is dynamically added when users like log
       },
     );
     createLogNotification(
@@ -123,6 +126,42 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
     );
 
     return res.houndProperties.sendSuccessResponse(result);
+  }
+  catch (error) {
+    return res.houndProperties.sendFailureResponse(error);
+  }
+}
+
+async function createLogLike(req: express.Request, res: express.Response): Promise<void> {
+  try {
+    const { databaseConnection } = req.houndProperties;
+    const { validatedUserId, validatedLogs } = req.houndProperties.validatedVars;
+    const validatedLog = validatedLogs.safeIndex(0);
+    if (databaseConnection === undefined || databaseConnection === null) {
+      throw new HoundError('databaseConnection missing', createLogLike, ERROR_CODES.VALUE.MISSING);
+    }
+    if (validatedUserId === undefined || validatedUserId === null) {
+      throw new HoundError('No user found or invalid permissions', createLogLike, ERROR_CODES.PERMISSION.NO.USER);
+    }
+    if (validatedLog === undefined || validatedLog === null) {
+      throw new HoundError('validatedLog missing', createLogLike, ERROR_CODES.VALUE.MISSING);
+    }
+
+    await createSingleLogLike(
+      databaseConnection,
+      {
+        logUUID: validatedLog.validatedLogUUID,
+        userId: validatedUserId,
+      },
+    );
+
+    const likedLog = await getLogForLogUUID(databaseConnection, validatedLog.validatedLogUUID, false);
+
+    if (likedLog === undefined || likedLog === null) {
+      throw new HoundError('likedLog missing', createLogLike, ERROR_CODES.VALUE.MISSING);
+    }
+
+    return res.houndProperties.sendSuccessResponse(likedLog);
   }
   catch (error) {
     return res.houndProperties.sendFailureResponse(error);
@@ -180,9 +219,44 @@ async function updateLog(req: express.Request, res: express.Response): Promise<v
         logNumberOfLogUnits,
         logCreatedByReminderUUID,
         logLastModifiedBy: validatedUserId,
+        // logLikedByUserIds is none. this is dynamically added when users like log
       },
     );
     return res.houndProperties.sendSuccessResponse('');
+  }
+  catch (error) {
+    return res.houndProperties.sendFailureResponse(error);
+  }
+}
+
+async function deleteLogLike(req: express.Request, res: express.Response): Promise<void> {
+  try {
+    const { databaseConnection } = req.houndProperties;
+    const { validatedUserId, validatedLogs } = req.houndProperties.validatedVars;
+    const validatedLog = validatedLogs.safeIndex(0);
+    if (databaseConnection === undefined || databaseConnection === null) {
+      throw new HoundError('databaseConnection missing', createLogLike, ERROR_CODES.VALUE.MISSING);
+    }
+    if (validatedUserId === undefined || validatedUserId === null) {
+      throw new HoundError('No user found or invalid permissions', createLogLike, ERROR_CODES.PERMISSION.NO.USER);
+    }
+    if (validatedLog === undefined || validatedLog === null) {
+      throw new HoundError('validatedLog missing', createLogLike, ERROR_CODES.VALUE.MISSING);
+    }
+
+    await deleteSpecificLogLike(
+      databaseConnection,
+      validatedLog.validatedLogUUID,
+      validatedUserId,
+    );
+
+    const unlikedLog = await getLogForLogUUID(databaseConnection, validatedLog.validatedLogUUID, false);
+
+    if (unlikedLog === undefined || unlikedLog === null) {
+      throw new HoundError('unlikedLog missing', deleteLogLike, ERROR_CODES.VALUE.MISSING);
+    }
+
+    return res.houndProperties.sendSuccessResponse(unlikedLog);
   }
   catch (error) {
     return res.houndProperties.sendFailureResponse(error);
@@ -216,5 +290,5 @@ async function deleteLog(req: express.Request, res: express.Response): Promise<v
 }
 
 export {
-  getLogs, createLog, updateLog, deleteLog,
+  getLogs, createLog, createLogLike, updateLog, deleteLog, deleteLogLike,
 };

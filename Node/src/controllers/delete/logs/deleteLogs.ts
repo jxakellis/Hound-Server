@@ -1,4 +1,4 @@
-import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
+import { type Queryable, databaseQuery } from '../../../main/database/databaseQuery.js';
 
 /**
  *  Queries the database to delete a log. If the query is successful, then returns

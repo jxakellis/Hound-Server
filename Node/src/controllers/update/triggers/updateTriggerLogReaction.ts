@@ -1,4 +1,4 @@
-import { createTriggerLogReaction } from '../../create/triggers/createTriggerLogReaction.js';
+import { createSingleTriggerLogReaction } from '../../create/triggers/createTriggerLogReaction.js';
 import { type NotYetUpdatedDogTriggersRow } from '../../../main/types/rows/DogTriggersRow.js';
 import { type Queryable, databaseQuery } from '../../../main/database/databaseQuery.js';
 import { getTriggerLogReactionsForTriggerUUID } from '../../get/triggers/getTriggerLogReaction.js';
@@ -27,7 +27,7 @@ async function updateTriggerLogReactionForTrigger(
   const promises: Promise<unknown>[] = [];
 
   toAddLogReactions.forEach((toAddLogReaction) => {
-    promises.push(createTriggerLogReaction(databaseConnection, {
+    promises.push(createSingleTriggerLogReaction(databaseConnection, {
       triggerUUID: trigger.triggerUUID,
       logActionTypeId: toAddLogReaction.logActionTypeId,
       logCustomActionName: toAddLogReaction.logCustomActionName,

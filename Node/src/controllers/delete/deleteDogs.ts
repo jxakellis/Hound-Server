@@ -1,9 +1,9 @@
 import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
 import { getAllDogsForFamilyId } from '../get/getDogs.js';
 
-import { deleteAllLogsForDogUUID } from './deleteLogs.js';
+import { deleteAllLogsForDogUUID } from './logs/deleteLogs.js';
 import { deleteAllRemindersForFamilyIdDogUUID } from './reminders/deleteReminders.js';
-import { deleteAllTriggersForDogUUID } from './deleteTriggers.js';
+import { deleteAllTriggersForDogUUID } from './triggers/deleteTriggers.js';
 
 /**
  *  Queries the database to delete a dog and everything nested under it. If the query is successful, then returns

@@ -1,7 +1,7 @@
 import { type Queryable, type ResultSetHeader, databaseQuery } from '../../../main/database/databaseQuery.js';
 import { type NotYetCreatedDogReminderRecipientRow } from '../../../main/types/rows/DogReminderRecipientRow.js';
 
-async function createReminderRecipient(
+async function createSingleReminderRecipient(
   databaseConnection: Queryable,
   notification: NotYetCreatedDogReminderRecipientRow,
 ): Promise<void> {
@@ -12,12 +12,12 @@ async function createReminderRecipient(
   );
 }
 
-async function createReminderRecipients(
+async function createMultipleReminderRecipients(
   databaseConnection: Queryable,
   notifications: NotYetCreatedDogReminderRecipientRow[],
 ): Promise<void> {
-  const promises = notifications.map((n) => createReminderRecipient(databaseConnection, n));
+  const promises = notifications.map((n) => createSingleReminderRecipient(databaseConnection, n));
   await Promise.all(promises);
 }
 
-export { createReminderRecipient, createReminderRecipients };
+export { createSingleReminderRecipient, createMultipleReminderRecipients };
