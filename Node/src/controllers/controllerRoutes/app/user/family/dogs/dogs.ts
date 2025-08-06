@@ -85,6 +85,9 @@ async function createDog(req: express.Request, res: express.Response): Promise<v
     const dogUUID = formatUnknownString(unvalidatedDogDict?.['dogUUID'], 36);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const dogName = formatUnknownString(unvalidatedDogDict?.['dogName']);
+    if (validatedUserId === undefined || validatedUserId === null) {
+      throw new HoundError('No user found or invalid permissions', createDog, ERROR_CODES.PERMISSION.NO.USER);
+    }
     if (dogUUID === undefined || dogUUID === null) {
       throw new HoundError('dogUUID missing', createDog, ERROR_CODES.VALUE.MISSING);
     }

@@ -48,7 +48,7 @@ type DogRemindersRow = {
     reminderExecutionDate?: Date
     reminderTimeZone: string
     reminderCreated: Date
-    reminderCreatedBy?: string
+    reminderCreatedBy: string
     reminderLastModified?: Date
     reminderLastModifiedBy?: string
     reminderIsDeleted: number

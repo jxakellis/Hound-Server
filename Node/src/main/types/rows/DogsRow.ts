@@ -21,7 +21,7 @@ type DogsRow = {
     familyId: string
     dogName: string
     dogCreated: Date
-    dogCreatedBy?: string
+    dogCreatedBy: string
     dogLastModified?: Date
     dogLastModifiedBy?: string
     dogIsDeleted: number

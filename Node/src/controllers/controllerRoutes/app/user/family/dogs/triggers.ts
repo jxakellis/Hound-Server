@@ -67,6 +67,9 @@ async function createTrigger(req: express.Request, res: express.Response): Promi
     if (validatedFamilyId === undefined || validatedFamilyId === null) {
       throw new HoundError('No family found or invalid permissions', createTrigger, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
+    if (validatedUserId === undefined || validatedUserId === null) {
+      throw new HoundError('No user found or invalid permissions', createTrigger, ERROR_CODES.PERMISSION.NO.USER);
+    }
     if (validatedDog === undefined || validatedDog === null) {
       throw new HoundError('validatedDog missing', createTrigger, ERROR_CODES.VALUE.MISSING);
     }

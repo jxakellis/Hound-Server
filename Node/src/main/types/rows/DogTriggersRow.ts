@@ -36,7 +36,7 @@ type DogTriggersRow = {
     triggerManualCondition: number
     triggerAlarmCreatedCondition: number
     triggerCreated: Date
-    triggerCreatedBy?: string
+    triggerCreatedBy: string
     triggerLastModified?: Date
     triggerLastModifiedBy?: string
     triggerIsDeleted: number
