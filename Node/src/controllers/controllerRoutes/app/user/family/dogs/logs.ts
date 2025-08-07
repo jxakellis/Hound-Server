@@ -96,6 +96,7 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
     if (logStartDate === undefined || logStartDate === null) {
       throw new HoundError('logStartDate missing', createLog, ERROR_CODES.VALUE.MISSING);
     }
+    // logEndDate optinal
     if (logActionTypeId === undefined || logActionTypeId === null) {
       throw new HoundError('logActionTypeId missing', createLog, ERROR_CODES.VALUE.MISSING);
     }
@@ -105,9 +106,9 @@ async function createLog(req: express.Request, res: express.Response): Promise<v
     if (logNote === undefined || logNote === null) {
       throw new HoundError('logNote missing', createLog, ERROR_CODES.VALUE.MISSING);
     }
-    if (logUnitTypeId === undefined || logUnitTypeId === null) {
-      throw new HoundError('logUnitTypeId missing', createLog, ERROR_CODES.VALUE.MISSING);
-    }
+    // logUnitTypeId optional
+    // logNumberOfLogUnits optional
+    // logCreatedByReminderUUID optional
 
     const result = await createSingleLog(
       databaseConnection,
