@@ -34,6 +34,10 @@ const SERVER = {
   DATABASE_MAINTENANCE_INTERVAL: (1000 * 60),
   // How long the database connection can stay idle before being killed (in seconds)
   DATABASE_CONNECTION_WAIT_TIMEOUT: (30),
+  // Maximum number of connections to create in a pool
+  DATABASE_POOL_CONNECTION_LIMIT: 20,
+  // Maximum number of connection requests to queue before returning an error (0 for no limit)
+  DATABASE_POOL_QUEUE_LIMIT: 20,
   // How many entries to keep in the previousRequests and previousResponses tables
   DATABASE_NUMBER_OF_PREVIOUS_REQUESTS_RESPONSES: 10000000,
   APP_BUNDLE_ID: 'com.example.Pupotty',

@@ -8,6 +8,7 @@ import { appStoreServerNotificationsRouter } from '../../routes/appStoreServerNo
 import { affiliateTransactionsRouter } from '../../routes/affiliateTransactions.js';
 import { HoundError, ERROR_CODES } from './globalErrors.js';
 import { appRouter } from '../../routes/app/app.js';
+import { logServerError } from '../logging/logServerError.js';
 
 function parseFormData(req: express.Request, res: express.Response, next: express.NextFunction): void {
   bodyParser.urlencoded({
@@ -60,6 +61,20 @@ function configureApp(app: express.Application): void {
     async (req: express.Request, res: express.Response) => (res.houndProperties.sendFailureResponse(
       new HoundError('Path not found', app.use, ERROR_CODES.VALUE.INVALID),
     )),
+  );
+
+  app.use(
+    async (
+      error: unknown,
+      req: express.Request,
+      res: express.Response,
+    ) => {
+      const houndError = error instanceof HoundError
+        ? error
+        : new HoundError(undefined, configureApp, undefined, error);
+      await logServerError(houndError);
+      return res.houndProperties.sendFailureResponse(houndError);
+    },
   );
 }
 

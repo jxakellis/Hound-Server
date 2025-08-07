@@ -41,9 +41,9 @@ async function createDatabasePool(): Promise<mysql2.Pool> {
       // If true, the pool will queue requests when no connections are available. If false, errors are returned immediately.
       waitForConnections: true,
       // Maximum number of connection requests to queue (0 for no limit).
-      queueLimit: 10,
+      queueLimit: SERVER.DATABASE_POOL_QUEUE_LIMIT,
       // The maximum number of databaseConnections to create at once.
-      connectionLimit: 10,
+      connectionLimit: SERVER.DATABASE_POOL_CONNECTION_LIMIT,
       // Time in milliseconds before a connection attempt is abandoned.
       connectTimeout: 5000,
       // Enables handling of big numbers (larger than Number.MAX_SAFE_INTEGER).
@@ -91,9 +91,13 @@ async function getPoolConnection(forDatabasePool: DatabasePools): Promise<PoolCo
   return new Promise((resolve, reject) => {
     databasePool.getConnection(
       (error, connection) => {
-        if (connection === undefined || connection === null) {
-          // error when trying to do query to database
+        if (error !== undefined && error !== null) {
+          // Error when attempting to get a connection from the pool
           reject(new HoundError(`Unable to get a pool connection for pool ${forDatabasePool}`, getPoolConnection, undefined, error));
+        }
+        else if (connection === undefined || connection === null) {
+          // No error reported but no connection was returned
+          reject(new HoundError(`Unable to get a pool connection for pool ${forDatabasePool}, but did not receive an error`, getPoolConnection, undefined, error));
         }
         else {
           // database queried successfully

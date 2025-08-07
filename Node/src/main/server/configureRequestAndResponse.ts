@@ -1,4 +1,5 @@
 import express from 'express';
+import type { PoolConnection } from 'mysql2';
 import { HoundError, ERROR_CODES } from './globalErrors.js';
 import { logResponse } from '../logging/logResponse.js';
 import { logServerError } from '../logging/logServerError.js';
@@ -11,8 +12,16 @@ function releaseDatabaseConnection(req: express.Request): void {
     return;
   }
 
-  req.houndProperties.databaseConnection.release();
+  if (req.houndProperties.hasActiveDatabaseTransaction === true) {
+    // If a transaction is still open, destroy the connection to avoid returning a "dirty" connection to the pool
+    req.houndProperties.databaseConnection.destroy();
+  }
+  else {
+    req.houndProperties.databaseConnection.release();
+  }
+
   req.houndProperties.databaseConnection = undefined;
+  req.houndProperties.hasActiveDatabaseTransaction = false;
 }
 
 async function commitTransaction(req: express.Request): Promise<void> {
@@ -201,6 +210,17 @@ function configureRequestAndResponseExtendedProperties(req: express.Request, res
       res.status(status).json(safeResponse);
     },
   };
+
+  res.on('close', async () => {
+    if (req.houndProperties.databaseConnection !== undefined && req.houndProperties.databaseConnection !== null) {
+      if (req.houndProperties.hasActiveDatabaseTransaction === true) {
+        await rollbackTransaction(req);
+      }
+      else {
+        releaseDatabaseConnection(req);
+      }
+    }
+  });
 }
 
 async function configureRequestAndResponse(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
@@ -213,24 +233,30 @@ async function configureRequestAndResponse(req: express.Request, res: express.Re
     return next();
   }
 
+  let requestPoolConnection: PoolConnection | undefined;
   try {
-    const requestPoolConnection = await getPoolConnection(DatabasePools.request);
-    try {
-      await requestPoolConnection.promise().beginTransaction();
-      req.houndProperties.databaseConnection = requestPoolConnection;
-      req.houndProperties.hasActiveDatabaseTransaction = true;
-    }
-    catch (transactionError) {
-      return res.houndProperties.sendFailureResponse(
-        new HoundError('Couldn\'t begin a transaction with databaseConnection', configureRequestAndResponse, ERROR_CODES.GENERAL.POOL_TRANSACTION_FAILED, transactionError),
-      );
-    }
+    requestPoolConnection = await getPoolConnection(DatabasePools.request);
   }
   catch (databaseConnectionError) {
     return res.houndProperties.sendFailureResponse(
       new HoundError('Couldn\'t get a connection from databasePoolForRequests', configureRequestAndResponse, ERROR_CODES.GENERAL.POOL_CONNECTION_FAILED, databaseConnectionError),
     );
   }
+
+  try {
+    await requestPoolConnection.promise().beginTransaction();
+  }
+  catch (transactionError) {
+    // If beginTransaction failed, destroy the connection to avoid returning a bad connection to the pool
+    // dont use release releaseDatabaseConnection b/c houndProperties aren't set
+    requestPoolConnection.destroy();
+    return res.houndProperties.sendFailureResponse(
+      new HoundError('Couldn\'t begin a transaction with databaseConnection', configureRequestAndResponse, ERROR_CODES.GENERAL.POOL_TRANSACTION_FAILED, transactionError),
+    );
+  }
+
+  req.houndProperties.databaseConnection = requestPoolConnection;
+  req.houndProperties.hasActiveDatabaseTransaction = true;
 
   return next();
 }
