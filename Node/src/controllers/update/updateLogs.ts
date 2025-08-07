@@ -1,4 +1,4 @@
-import { ERROR_CODES, HoundError } from 'src/main/server/globalErrors.js';
+import { ERROR_CODES, HoundError } from '../../main/server/globalErrors.js';
 import { type Queryable, databaseQuery } from '../../main/database/databaseQuery.js';
 import { type NotYetUpdatedDogLogsRow } from '../../main/types/rows/DogLogsRow.js';
 import { formatKnownString } from '../../main/format/formatObject.js';

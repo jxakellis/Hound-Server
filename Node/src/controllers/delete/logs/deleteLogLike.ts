@@ -1,4 +1,4 @@
-import type { DogLogLikeRow } from 'src/main/types/rows/DogLogLikeRow.js';
+import type { DogLogLikeRow } from '../../../main/types/rows/DogLogLikeRow.js';
 import { databaseQuery, type Queryable } from '../../../main/database/databaseQuery.js';
 
 async function deleteSingleLogLike(databaseConnection: Queryable, logUUID: string, userId: string): Promise<void> {
