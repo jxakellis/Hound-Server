@@ -30,6 +30,7 @@ async function getLogForLogUUID(
   }
   const likes = await getLogLikesForLogUUID(databaseConnection, log.logUUID);
   log.logLikedByUserIds = likes.map((l) => l.userId);
+
   return log;
 }
 

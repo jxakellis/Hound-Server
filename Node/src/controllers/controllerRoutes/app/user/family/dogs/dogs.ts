@@ -16,26 +16,26 @@ async function getDogs(req: express.Request, res: express.Response): Promise<voi
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     const { databaseConnection } = req.houndProperties;
-    const { validatedUserId, validatedFamilyId } = req.houndProperties.validatedVars;
+    const { authUserId, authFamilyId } = req.houndProperties.authenticated;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', getDogs, ERROR_CODES.VALUE.MISSING);
     }
-    if (validatedUserId === undefined || validatedUserId === null) {
+    if (authUserId === undefined || authUserId === null) {
       throw new HoundError('No user found or invalid permissions', getDogs, ERROR_CODES.PERMISSION.NO.USER);
     }
-    if (validatedFamilyId === undefined || validatedFamilyId === null) {
+    if (authFamilyId === undefined || authFamilyId === null) {
       throw new HoundError('No family found or invalid permissions', getDogs, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
 
     const previousDogManagerSynchronization = formatDate(req.query['previousDogManagerSynchronization'] ?? req.query['userConfigurationPreviousDogManagerSynchronization']);
 
     // See if the user wants a specific dog. If there is no specific dog, then they want them all
-    const { validatedDogs } = req.houndProperties.validatedVars;
-    const validatedDog = validatedDogs.safeIndex(0);
-    if (validatedDog !== undefined && validatedDog !== null) {
+    const { authDogs } = req.houndProperties.authenticated;
+    const authDog = authDogs.safeIndex(0);
+    if (authDog !== undefined && authDog !== null) {
       const possiblyDeletedDog = await getDogForDogUUID(
         databaseConnection,
-        validatedDog.validatedDogUUID,
+        authDog.authDog.dogUUID,
         true,
         true,
         previousDogManagerSynchronization,
@@ -50,7 +50,7 @@ async function getDogs(req: express.Request, res: express.Response): Promise<voi
 
     const possiblyDeletedDogs = await getAllDogsForFamilyId(
       databaseConnection,
-      validatedFamilyId,
+      authFamilyId,
       true,
       true,
       previousDogManagerSynchronization,
@@ -68,24 +68,24 @@ async function createDog(req: express.Request, res: express.Response): Promise<v
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     const { databaseConnection } = req.houndProperties;
-    const { validatedFamilyId, validatedUserId } = req.houndProperties.validatedVars;
-    const { unvalidatedDogsDict } = req.houndProperties.unvalidatedVars;
-    const unvalidatedDogDict = unvalidatedDogsDict.safeIndex(0);
+    const { authFamilyId, authUserId } = req.houndProperties.authenticated;
+    const { unauthDogsDict } = req.houndProperties.unauthenticated;
+    const unauthNewDogDict = unauthDogsDict.safeIndex(0);
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', createDog, ERROR_CODES.VALUE.MISSING);
     }
-    if (validatedFamilyId === undefined || validatedFamilyId === null) {
+    if (authFamilyId === undefined || authFamilyId === null) {
       throw new HoundError('No family found or invalid permissions', createDog, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
-    if (unvalidatedDogDict === undefined || unvalidatedDogDict === null) {
-      throw new HoundError('unvalidatedDogDict missing', createDog, ERROR_CODES.VALUE.MISSING);
+    if (unauthNewDogDict === undefined || unauthNewDogDict === null) {
+      throw new HoundError('unauthNewDogDict missing', createDog, ERROR_CODES.VALUE.MISSING);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const dogUUID = formatUnknownString(unvalidatedDogDict?.['dogUUID'], 36);
+    const dogUUID = formatUnknownString(unauthNewDogDict?.['dogUUID'], 36);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const dogName = formatUnknownString(unvalidatedDogDict?.['dogName']);
-    if (validatedUserId === undefined || validatedUserId === null) {
+    const dogName = formatUnknownString(unauthNewDogDict?.['dogName']);
+    if (authUserId === undefined || authUserId === null) {
       throw new HoundError('No user found or invalid permissions', createDog, ERROR_CODES.PERMISSION.NO.USER);
     }
     if (dogUUID === undefined || dogUUID === null) {
@@ -96,10 +96,10 @@ async function createDog(req: express.Request, res: express.Response): Promise<v
     }
 
     const result = await createDogForFamilyId(databaseConnection, {
-      familyId: validatedFamilyId,
+      familyId: authFamilyId,
       dogUUID,
       dogName,
-      dogCreatedBy: validatedUserId,
+      dogCreatedBy: authUserId,
     });
 
     return res.houndProperties.sendSuccessResponse(result);
@@ -114,30 +114,30 @@ async function updateDog(req: express.Request, res: express.Response): Promise<v
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     const { databaseConnection } = req.houndProperties;
-    const { validatedFamilyId, validatedDogs, validatedUserId } = req.houndProperties.validatedVars;
-    const validatedDog = validatedDogs.safeIndex(0);
+    const { authFamilyId, authDogs, authUserId } = req.houndProperties.authenticated;
+    const authDog = authDogs.safeIndex(0);
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', updateDog, ERROR_CODES.VALUE.MISSING);
     }
-    if (validatedFamilyId === undefined || validatedFamilyId === null) {
+    if (authFamilyId === undefined || authFamilyId === null) {
       throw new HoundError('No family found or invalid permissions', updateDog, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
-    if (validatedDog === undefined || validatedDog === null) {
-      throw new HoundError('validatedDog missing', updateDog, ERROR_CODES.VALUE.MISSING);
+    if (authDog === undefined || authDog === null) {
+      throw new HoundError('authDog missing', updateDog, ERROR_CODES.VALUE.MISSING);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const dogName = formatUnknownString(validatedDog.unvalidatedDogDict?.['dogName']);
+    const dogName = formatUnknownString(authDog.unauthNewDogDict?.['dogName']);
     if (dogName === undefined || dogName === null) {
       throw new HoundError('dogName missing', updateDog, ERROR_CODES.VALUE.MISSING);
     }
 
     await updateDogForDog(databaseConnection, {
-      familyId: validatedFamilyId,
-      dogId: validatedDog.validatedDogId,
-      dogUUID: validatedDog.validatedDogUUID,
+      familyId: authFamilyId,
+      dogId: authDog.authDog.dogId,
+      dogUUID: authDog.authDog.dogUUID,
       dogName,
-      dogLastModifiedBy: validatedUserId,
+      dogLastModifiedBy: authUserId,
     });
 
     return res.houndProperties.sendSuccessResponse('');
@@ -152,22 +152,22 @@ async function deleteDog(req: express.Request, res: express.Response): Promise<v
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     const { databaseConnection } = req.houndProperties;
-    const { validatedFamilyId, validatedDogs, validatedUserId } = req.houndProperties.validatedVars;
-    const validatedDog = validatedDogs.safeIndex(0);
+    const { authFamilyId, authDogs, authUserId } = req.houndProperties.authenticated;
+    const authDog = authDogs.safeIndex(0);
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', deleteDog, ERROR_CODES.VALUE.MISSING);
     }
-    if (validatedUserId === undefined || validatedUserId === null) {
+    if (authUserId === undefined || authUserId === null) {
       throw new HoundError('No user found or invalid permissions', deleteDog, ERROR_CODES.PERMISSION.NO.USER);
     }
-    if (validatedFamilyId === undefined || validatedFamilyId === null) {
+    if (authFamilyId === undefined || authFamilyId === null) {
       throw new HoundError('No family found or invalid permissions', deleteDog, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
-    if (validatedDog === undefined || validatedDog === null) {
-      throw new HoundError('validatedDog missing', deleteDog, ERROR_CODES.VALUE.MISSING);
+    if (authDog === undefined || authDog === null) {
+      throw new HoundError('authDog missing', deleteDog, ERROR_CODES.VALUE.MISSING);
     }
 
-    await deleteDogForFamilyIdDogUUID(databaseConnection, validatedFamilyId, validatedDog.validatedDogUUID, validatedUserId);
+    await deleteDogForFamilyIdDogUUID(databaseConnection, authFamilyId, authDog.authDog.dogUUID, authUserId);
 
     return res.houndProperties.sendSuccessResponse('');
   }

@@ -1,6 +1,7 @@
+import type { DogLogLikeRow } from 'src/main/types/rows/DogLogLikeRow.js';
 import { databaseQuery, type Queryable } from '../../../main/database/databaseQuery.js';
 
-async function deleteSpecificLogLike(databaseConnection: Queryable, logUUID: string, userId: string): Promise<void> {
+async function deleteSingleLogLike(databaseConnection: Queryable, logUUID: string, userId: string): Promise<void> {
   await databaseQuery(
     databaseConnection,
     'DELETE FROM dogLogLike WHERE logUUID = ? AND userId = ?',
@@ -8,12 +9,9 @@ async function deleteSpecificLogLike(databaseConnection: Queryable, logUUID: str
   );
 }
 
-async function deleteAllLogLikes(databaseConnection: Queryable, logUUID: string): Promise<void> {
-  await databaseQuery(
-    databaseConnection,
-    'DELETE FROM dogLogLike WHERE logUUID = ?',
-    [logUUID],
-  );
+async function deleteMultipleLogLikes(databaseConnection: Queryable, likes: DogLogLikeRow[]): Promise<void> {
+  const promises = likes.map((like) => deleteSingleLogLike(databaseConnection, like.logUUID, like.userId));
+  await Promise.all(promises);
 }
 
-export { deleteSpecificLogLike, deleteAllLogLikes };
+export { deleteSingleLogLike, deleteMultipleLogLikes };

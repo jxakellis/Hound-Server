@@ -81,22 +81,22 @@ function configureRequestAndResponseExtendedProperties(req: express.Request, res
     requestId: undefined,
     databaseConnection: undefined,
     hasActiveDatabaseTransaction: false,
-    familyActiveSubscription: undefined,
-    validatedVars: {
-      validatedUserId: undefined,
-      validatedUserIdentifier: undefined,
-      validatedFamilyId: undefined,
-      validatedDogs: [],
-      validatedLogs: [],
-      validatedReminders: [],
-      validatedTriggers: [],
+    authenticated: {
+      authUserId: undefined,
+      authUserIdentifier: undefined,
+      authFamilyId: undefined,
+      authFamilyActiveSubscription: undefined,
+      authDogs: [],
+      authLogs: [],
+      authReminders: [],
+      authTriggers: [],
     },
-    unvalidatedVars: {
-      unvalidatedDogsDict: [],
-      unvalidatedLogsDict: [],
-      unvalidatedRemindersDict: [],
-      unvalidatedTriggersDict: [],
-      unvalidatedSurveyFeedbackDict: {},
+    unauthenticated: {
+      unauthDogsDict: [],
+      unauthLogsDict: [],
+      unauthRemindersDict: [],
+      unauthTriggersDict: [],
+      unauthSurveyFeedbackDict: {},
     },
   };
   res.houndProperties = {

@@ -12,17 +12,17 @@ async function attachActiveSubscription(req: express.Request, res: express.Respo
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     const { databaseConnection } = req.houndProperties;
-    const { validatedUserId } = req.houndProperties.validatedVars;
+    const { authUserId } = req.houndProperties.authenticated;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', attachActiveSubscription, ERROR_CODES.VALUE.MISSING);
     }
-    if (validatedUserId === undefined || validatedUserId === null) {
+    if (authUserId === undefined || authUserId === null) {
       throw new HoundError('No user found or invalid permissions', attachActiveSubscription, ERROR_CODES.PERMISSION.NO.USER);
     }
 
-    const familyActiveSubscription = await getActiveTransaction(databaseConnection, validatedUserId);
+    const familyActiveSubscription = await getActiveTransaction(databaseConnection, authUserId);
 
-    req.houndProperties.familyActiveSubscription = familyActiveSubscription;
+    req.houndProperties.authenticated.authFamilyActiveSubscription = familyActiveSubscription;
   }
   catch (error) {
     return res.houndProperties.sendFailureResponse(error);

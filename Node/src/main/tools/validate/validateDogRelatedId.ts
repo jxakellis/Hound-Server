@@ -19,11 +19,11 @@ async function validateDogUUID(req: express.Request, res: express.Response, next
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     const { databaseConnection } = req.houndProperties;
-    const { validatedFamilyId } = req.houndProperties.validatedVars;
+    const { authFamilyId } = req.houndProperties.authenticated;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', validateDogUUID, ERROR_CODES.VALUE.MISSING);
     }
-    if (validatedFamilyId === undefined || validatedFamilyId === null) {
+    if (authFamilyId === undefined || authFamilyId === null) {
       throw new HoundError('No family found or invalid permissions', validateDogUUID, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
 
@@ -42,23 +42,23 @@ async function validateDogUUID(req: express.Request, res: express.Response, next
       return next();
     }
 
-    // 1:1 arrays of unvalidatedDogsDict and getDogForDogUUID promise.
+    // 1:1 arrays of unauthDogsDict and getDogForDogUUID promise.
     const dogPromises: Promise<DogsRow | undefined>[] = [];
     const unvalidatedDogDictsForPromises: StringKeyDict[] = [];
 
     // query for all dogs provided
-    masterUnvalidatedDogsDict.forEach((unvalidatedDogDict) => {
-      const dogUUID = formatUnknownString(unvalidatedDogDict['dogUUID']);
+    masterUnvalidatedDogsDict.forEach((unauthNewDogDict) => {
+      const dogUUID = formatUnknownString(unauthNewDogDict['dogUUID']);
 
       if (dogUUID === undefined || dogUUID === null) {
         // If dogUUID is missing, the dog body wasn't provided
-        req.houndProperties.unvalidatedVars.unvalidatedDogsDict.push(unvalidatedDogDict);
+        req.houndProperties.unauthenticated.unauthDogsDict.push(unauthNewDogDict);
         return;
       }
 
-      // Add these objects to verify to an array. We resolve the promise and use unvalidatedDogDict if the promise resolved to nothing.
+      // Add these objects to verify to an array. We resolve the promise and use unauthNewDogDict if the promise resolved to nothing.
       dogPromises.push(getDogForDogUUID(databaseConnection, dogUUID, true, false, undefined));
-      unvalidatedDogDictsForPromises.push(unvalidatedDogDict);
+      unvalidatedDogDictsForPromises.push(unauthNewDogDict);
     });
 
     const queriedDogs = await Promise.all(dogPromises);
@@ -68,11 +68,11 @@ async function validateDogUUID(req: express.Request, res: express.Response, next
 
       if (queriedDog === undefined || queriedDog === null) {
         // If queriedDog doesn't exist, then a dog corresponding to that dogUUID doesn't exist yet.
-        req.houndProperties.unvalidatedVars.unvalidatedDogsDict.push(unvalidatedDogDictForQueriedDog);
+        req.houndProperties.unauthenticated.unauthDogsDict.push(unvalidatedDogDictForQueriedDog);
         return;
       }
 
-      if (validatedFamilyId !== queriedDog.familyId) {
+      if (authFamilyId !== queriedDog.familyId) {
         throw new HoundError(
           'Dog has invalid permissions',
           validateDogUUID,
@@ -84,12 +84,11 @@ async function validateDogUUID(req: express.Request, res: express.Response, next
         throw new HoundError('Dog has been deleted', validateDogUUID, ERROR_CODES.FAMILY.DELETED.DOG);
       }
 
-      // dogUUID has been validated. Save it to validatedVars
-      req.houndProperties.validatedVars.validatedDogs.push(
+      // dogUUID has been validated. Save it to authenticated
+      req.houndProperties.authenticated.authDogs.push(
         {
-          validatedDogId: queriedDog.dogId,
-          validatedDogUUID: queriedDog.dogUUID,
-          unvalidatedDogDict: unvalidatedDogDictForQueriedDog,
+          authDog: queriedDog,
+          unauthNewDogDict: unvalidatedDogDictForQueriedDog,
         },
       );
     });
@@ -106,12 +105,12 @@ async function validateLogUUID(req: express.Request, res: express.Response, next
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     const { databaseConnection } = req.houndProperties;
-    const { validatedDogs } = req.houndProperties.validatedVars;
+    const { authDogs } = req.houndProperties.authenticated;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', validateLogUUID, ERROR_CODES.VALUE.MISSING);
     }
-    if (validatedDogs === undefined || validatedDogs === null) {
-      throw new HoundError('validatedDogs missing', validateLogUUID, ERROR_CODES.VALUE.MISSING);
+    if (authDogs === undefined || authDogs === null) {
+      throw new HoundError('authDogs missing', validateLogUUID, ERROR_CODES.VALUE.MISSING);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -121,22 +120,22 @@ async function validateLogUUID(req: express.Request, res: express.Response, next
       return next();
     }
 
-    // 1:1 arrays of unvalidatedLogsDict and getLogForLogUUID promise.
+    // 1:1 arrays of unauthLogsDict and getLogForLogUUID promise.
     const logPromises: Promise<DogLogsRow | undefined>[] = [];
     const unvalidatedLogDictsForPromises: StringKeyDict[] = [];
 
     // query for all logs provided
-    masterUnvalidatedLogsDict.forEach((unvalidatedLogDict) => {
-      const logUUID = formatUnknownString(unvalidatedLogDict['logUUID']);
+    masterUnvalidatedLogsDict.forEach((unauthNewLogDict) => {
+      const logUUID = formatUnknownString(unauthNewLogDict['logUUID']);
 
       if (logUUID === undefined || logUUID == null) {
         // If logUUID is missing, the log body wasn't provided
-        req.houndProperties.unvalidatedVars.unvalidatedLogsDict.push(unvalidatedLogDict);
+        req.houndProperties.unauthenticated.unauthLogsDict.push(unauthNewLogDict);
         return;
       }
 
       logPromises.push(getLogForLogUUID(databaseConnection, logUUID, true));
-      unvalidatedLogDictsForPromises.push(unvalidatedLogDict);
+      unvalidatedLogDictsForPromises.push(unauthNewLogDict);
     });
 
     const queriedLogs = await Promise.all(logPromises);
@@ -146,11 +145,11 @@ async function validateLogUUID(req: express.Request, res: express.Response, next
 
       if (queriedLog === undefined || queriedLog === null) {
         // If queriedLog doesn't exist, then a log corresponding to that logUUID doesn't exist yet.
-        req.houndProperties.unvalidatedVars.unvalidatedLogsDict.push(unvalidatedLogDictForQueriedLog);
+        req.houndProperties.unauthenticated.unauthLogsDict.push(unvalidatedLogDictForQueriedLog);
         return;
       }
 
-      if (validatedDogs.findIndex((dog) => dog.validatedDogUUID === queriedLog.dogUUID) === -1) {
+      if (authDogs.findIndex((authDog) => authDog.authDog.dogUUID === queriedLog.dogUUID) === -1) {
         throw new HoundError('Log has invalid permissions', validateLogUUID, ERROR_CODES.PERMISSION.NO.LOG);
       }
 
@@ -158,13 +157,11 @@ async function validateLogUUID(req: express.Request, res: express.Response, next
         throw new HoundError('Log has been deleted', validateLogUUID, ERROR_CODES.FAMILY.DELETED.LOG);
       }
 
-      // logUUID has been validated. Save it to validatedVars
-      req.houndProperties.validatedVars.validatedLogs.push(
+      // logUUID has been validated. Save it to authenticated
+      req.houndProperties.authenticated.authLogs.push(
         {
-          validatedDogUUID: queriedLog.dogUUID,
-          validatedLogId: queriedLog.logId,
-          validatedLogUUID: queriedLog.logUUID,
-          unvalidatedLogDict: unvalidatedLogDictForQueriedLog,
+          authLog: queriedLog,
+          unauthNewLogDict: unvalidatedLogDictForQueriedLog,
         },
       );
     });
@@ -181,12 +178,12 @@ async function validateReminderUUID(req: express.Request, res: express.Response,
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     const { databaseConnection } = req.houndProperties;
-    const { validatedDogs } = req.houndProperties.validatedVars;
+    const { authDogs } = req.houndProperties.authenticated;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', validateReminderUUID, ERROR_CODES.VALUE.MISSING);
     }
-    if (validatedDogs === undefined || validatedDogs === null) {
-      throw new HoundError('validatedDogs missing', validateReminderUUID, ERROR_CODES.VALUE.MISSING);
+    if (authDogs === undefined || authDogs === null) {
+      throw new HoundError('authDogs missing', validateReminderUUID, ERROR_CODES.VALUE.MISSING);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -196,22 +193,22 @@ async function validateReminderUUID(req: express.Request, res: express.Response,
       return next();
     }
 
-    // 1:1 arrays of unvalidatedRemindersDict and getReminderForReminderUUID promise.
+    // 1:1 arrays of unauthRemindersDict and getReminderForReminderUUID promise.
     const reminderPromises: Promise<DogRemindersRow | undefined>[] = [];
     const unvalidatedReminderDictsForPromises: StringKeyDict[] = [];
 
     // query for all reminders provided
-    masterUnvalidatedRemindersDict.forEach((unvalidatedReminderDict) => {
-      const reminderUUID = formatUnknownString(unvalidatedReminderDict['reminderUUID']);
+    masterUnvalidatedRemindersDict.forEach((unauthNewReminderDict) => {
+      const reminderUUID = formatUnknownString(unauthNewReminderDict['reminderUUID']);
 
       if (reminderUUID === undefined || reminderUUID === null) {
         // If reminderUUID is missing, the reminder body wasn't provided
-        req.houndProperties.unvalidatedVars.unvalidatedRemindersDict.push(unvalidatedReminderDict);
+        req.houndProperties.unauthenticated.unauthRemindersDict.push(unauthNewReminderDict);
         return;
       }
 
       reminderPromises.push(getReminderForReminderUUID(databaseConnection, reminderUUID, true));
-      unvalidatedReminderDictsForPromises.push(unvalidatedReminderDict);
+      unvalidatedReminderDictsForPromises.push(unauthNewReminderDict);
     });
 
     const queriedReminders = await Promise.all(reminderPromises);
@@ -221,11 +218,11 @@ async function validateReminderUUID(req: express.Request, res: express.Response,
 
       if (queriedReminder === undefined || queriedReminder === null) {
         // If queriedReminder doesn't exist, then a reminder corresponding to that reminderUUID doesn't exist yet.
-        req.houndProperties.unvalidatedVars.unvalidatedRemindersDict.push(unvalidatedReminderDictForQueriedReminder);
+        req.houndProperties.unauthenticated.unauthRemindersDict.push(unvalidatedReminderDictForQueriedReminder);
         return;
       }
 
-      if (validatedDogs.findIndex((dog) => dog.validatedDogUUID === queriedReminder.dogUUID) <= -1) {
+      if (authDogs.findIndex((authDog) => authDog.authDog.dogUUID === queriedReminder.dogUUID) <= -1) {
         throw new HoundError(
           'Reminder has invalid permissions',
           validateReminderUUID,
@@ -233,7 +230,7 @@ async function validateReminderUUID(req: express.Request, res: express.Response,
           undefined,
           `
           index ${index};
-          validatedDogs.length ${validatedDogs.length}; masterUnvalidatedRemindersDict.length ${masterUnvalidatedRemindersDict.length};
+          authDogs.length ${authDogs.length}; masterUnvalidatedRemindersDict.length ${masterUnvalidatedRemindersDict.length};
           reminderPromises.length ${reminderPromises.length}; unvalidatedReminderDictsForPromises.length ${unvalidatedReminderDictsForPromises};
           unvalidatedReminderDictForQueriedReminder.reminderUUID ${unvalidatedReminderDictForQueriedReminder['reminderUUID']};
           queriedReminder.reminderId ${queriedReminder.reminderId}; queriedReminder.reminderUUID ${queriedReminder.reminderUUID}; queriedReminder.dogUUID ${queriedReminder.dogUUID}
@@ -246,13 +243,11 @@ async function validateReminderUUID(req: express.Request, res: express.Response,
         throw new HoundError('Reminder has been deleted', validateReminderUUID, ERROR_CODES.FAMILY.DELETED.REMINDER);
       }
 
-      // reminderUUID has been validated. Save it to validatedVars
-      req.houndProperties.validatedVars.validatedReminders.push(
+      // reminderUUID has been validated. Save it to authenticated
+      req.houndProperties.authenticated.authReminders.push(
         {
-          validatedDogUUID: queriedReminder.dogUUID,
-          validatedReminderId: queriedReminder.reminderId,
-          validatedReminderUUID: queriedReminder.reminderUUID,
-          unvalidatedReminderDict: unvalidatedReminderDictForQueriedReminder,
+          authReminder: queriedReminder,
+          unauthNewReminderDict: unvalidatedReminderDictForQueriedReminder,
         },
       );
     });
@@ -269,12 +264,12 @@ async function validateTriggerUUID(req: express.Request, res: express.Response, 
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     const { databaseConnection } = req.houndProperties;
-    const { validatedDogs } = req.houndProperties.validatedVars;
+    const { authDogs } = req.houndProperties.authenticated;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', validateTriggerUUID, ERROR_CODES.VALUE.MISSING);
     }
-    if (validatedDogs === undefined || validatedDogs === null) {
-      throw new HoundError('validatedDogs missing', validateTriggerUUID, ERROR_CODES.VALUE.MISSING);
+    if (authDogs === undefined || authDogs === null) {
+      throw new HoundError('authDogs missing', validateTriggerUUID, ERROR_CODES.VALUE.MISSING);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -284,22 +279,22 @@ async function validateTriggerUUID(req: express.Request, res: express.Response, 
       return next();
     }
 
-    // 1:1 arrays of unvalidatedTriggersDict and getTriggerForTriggerUUID promise.
+    // 1:1 arrays of unauthTriggersDict and getTriggerForTriggerUUID promise.
     const triggerPromises: Promise<DogTriggersRow | undefined>[] = [];
     const unvalidatedTriggerDictsForPromises: StringKeyDict[] = [];
 
     // query for all triggers provided
-    masterUnvalidatedTriggersDict.forEach((unvalidatedTriggerDict) => {
-      const triggerUUID = formatUnknownString(unvalidatedTriggerDict['triggerUUID']);
+    masterUnvalidatedTriggersDict.forEach((unauthNewTriggerDict) => {
+      const triggerUUID = formatUnknownString(unauthNewTriggerDict['triggerUUID']);
 
       if (triggerUUID === undefined || triggerUUID === null) {
         // If triggerUUID is missing, the trigger body wasn't provided
-        req.houndProperties.unvalidatedVars.unvalidatedTriggersDict.push(unvalidatedTriggerDict);
+        req.houndProperties.unauthenticated.unauthTriggersDict.push(unauthNewTriggerDict);
         return;
       }
 
       triggerPromises.push(getTriggerForTriggerUUID(databaseConnection, triggerUUID, true));
-      unvalidatedTriggerDictsForPromises.push(unvalidatedTriggerDict);
+      unvalidatedTriggerDictsForPromises.push(unauthNewTriggerDict);
     });
 
     const queriedTriggers = await Promise.all(triggerPromises);
@@ -309,11 +304,11 @@ async function validateTriggerUUID(req: express.Request, res: express.Response, 
 
       if (queriedTrigger === undefined || queriedTrigger === null) {
         // If queriedTrigger doesn't exist, then a trigger corresponding to that triggerUUID doesn't exist yet.
-        req.houndProperties.unvalidatedVars.unvalidatedTriggersDict.push(unvalidatedTriggerDictForQueriedTrigger);
+        req.houndProperties.unauthenticated.unauthTriggersDict.push(unvalidatedTriggerDictForQueriedTrigger);
         return;
       }
 
-      if (validatedDogs.findIndex((dog) => dog.validatedDogUUID === queriedTrigger.dogUUID) <= -1) {
+      if (authDogs.findIndex((authDog) => authDog.authDog.dogUUID === queriedTrigger.dogUUID) <= -1) {
         throw new HoundError(
           'Trigger has invalid permissions',
           validateTriggerUUID,
@@ -321,7 +316,7 @@ async function validateTriggerUUID(req: express.Request, res: express.Response, 
           undefined,
           `
           index ${index};
-          validatedDogs.length ${validatedDogs.length}; masterUnvalidatedTriggersDict.length ${masterUnvalidatedTriggersDict.length};
+          authDogs.length ${authDogs.length}; masterUnvalidatedTriggersDict.length ${masterUnvalidatedTriggersDict.length};
           triggerPromises.length ${triggerPromises.length}; unvalidatedTriggerDictsForPromises.length ${unvalidatedTriggerDictsForPromises};
           unvalidatedTriggerDictForQueriedTrigger.triggerUUID ${unvalidatedTriggerDictForQueriedTrigger['triggerUUID']};
           queriedTrigger.triggerId ${queriedTrigger.triggerId}; queriedTrigger.triggerUUID ${queriedTrigger.triggerUUID}; queriedTrigger.dogUUID ${queriedTrigger.dogUUID}
@@ -334,13 +329,11 @@ async function validateTriggerUUID(req: express.Request, res: express.Response, 
         throw new HoundError('Trigger has been deleted', validateTriggerUUID, ERROR_CODES.FAMILY.DELETED.TRIGGER);
       }
 
-      // triggerUUID has been validated. Save it to validatedVars
-      req.houndProperties.validatedVars.validatedTriggers.push(
+      // triggerUUID has been validated. Save it to authenticated
+      req.houndProperties.authenticated.authTriggers.push(
         {
-          validatedDogUUID: queriedTrigger.dogUUID,
-          validatedTriggerId: queriedTrigger.triggerId,
-          validatedTriggerUUID: queriedTrigger.triggerUUID,
-          unvalidatedTriggerDict: unvalidatedTriggerDictForQueriedTrigger,
+          authTrigger: queriedTrigger,
+          unauthNewTriggerDict: unvalidatedTriggerDictForQueriedTrigger,
         },
       );
     });

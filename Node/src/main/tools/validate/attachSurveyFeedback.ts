@@ -12,8 +12,8 @@ async function attachSurveyFeedback(req: express.Request, res: express.Response,
       return next();
     }
 
-    req.houndProperties.unvalidatedVars.unvalidatedSurveyFeedbackDict = {
-      ...req.houndProperties.unvalidatedVars.unvalidatedSurveyFeedbackDict,
+    req.houndProperties.unauthenticated.unauthSurveyFeedbackDict = {
+      ...req.houndProperties.unauthenticated.unauthSurveyFeedbackDict,
       ...surveyFeedbackDict,
     };
   }

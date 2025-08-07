@@ -92,7 +92,7 @@ async function addFamilyMember(databaseConnection: Queryable, userId: string, fo
     );
   }
 
-  createFamilyMemberJoinNotification(userId, familyForFamilyCode.familyId);
+  await createFamilyMemberJoinNotification(databaseConnection, userId, familyForFamilyCode.familyId);
 }
 
 /**
@@ -107,7 +107,7 @@ async function updateIsLocked(databaseConnection: Queryable, userId: string, fam
     [familyIsLocked, familyId],
   );
 
-  createFamilyLockedNotification(userId, familyId, familyIsLocked);
+  await createFamilyLockedNotification(databaseConnection, userId, familyId, familyIsLocked);
 }
 
 /**

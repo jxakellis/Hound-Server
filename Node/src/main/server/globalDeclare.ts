@@ -1,6 +1,10 @@
 import { type PoolConnection } from 'mysql2';
 import { type TransactionsRow } from '../types/rows/TransactionsRow.js';
 import type { StringKeyDict as HoundDict } from '../types/StringKeyDict.js';
+import type { DogsRow } from '../types/rows/DogsRow.js';
+import type { DogLogsRow } from '../types/rows/DogLogsRow.js';
+import type { DogRemindersRow } from '../types/rows/DogRemindersRow.js';
+import type { DogTriggersRow } from '../types/rows/DogTriggersRow.js';
 
 declare global {
     interface Error {
@@ -14,30 +18,22 @@ declare module 'express-serve-static-core' {
             requestId?: number,
             databaseConnection?: PoolConnection,
             hasActiveDatabaseTransaction: boolean,
-            familyActiveSubscription?: TransactionsRow,
-            // ids that have been verified with correct permission
-            validatedVars: {
-                // userId of the request that has been verified with correct permissions
-                validatedUserId?: string
-                // userIdentifier of the request that has been verified with correct permissions
-                validatedUserIdentifier?: string
-                // familyId of the request that has been verified with correct permissions
-                validatedFamilyId?: string
-                // Each element in validatedDogs has a validatedDogId which corresponds to an existing dog
-                validatedDogs: { validatedDogId: number, validatedDogUUID: string, unvalidatedDogDict: (HoundDict | undefined) }[]
-                // Each element in validatedLogs has a validatedDogId and validatedLogId which corresponds to an existing log
-                validatedLogs: { validatedDogUUID: string, validatedLogId: number, validatedLogUUID: string, unvalidatedLogDict: (HoundDict | undefined) }[]
-                // Each element in validatedReminders has a validatedDogId and validatedReminderId which corresponds to an existing reminder
-                validatedReminders: { validatedDogUUID: string, validatedReminderId: number, validatedReminderUUID: string, unvalidatedReminderDict: (HoundDict | undefined) }[]
-                // Each element in validatedTriggers has a validatedDogId and validatedTriggerId which corresponds to an existing reminder
-                validatedTriggers: { validatedDogUUID: string, validatedTriggerId: number, validatedTriggerUUID: string, unvalidatedTriggerDict: (HoundDict | undefined) }[]
+            authenticated: {
+                authUserId?: string
+                authUserIdentifier?: string
+                authFamilyId?: string
+                authFamilyActiveSubscription?: TransactionsRow,
+                authDogs: { authDog: DogsRow, unauthNewDogDict: (HoundDict | undefined) }[]
+                authLogs: { authLog: DogLogsRow, unauthNewLogDict: (HoundDict | undefined) }[]
+                authReminders: { authReminder: DogRemindersRow, unauthNewReminderDict: (HoundDict | undefined) }[]
+                authTriggers: { authTrigger: DogTriggersRow, unauthNewTriggerDict: (HoundDict | undefined) }[]
             },
-            unvalidatedVars: {
-                unvalidatedDogsDict: HoundDict[]
-                unvalidatedLogsDict: HoundDict[]
-                unvalidatedRemindersDict: HoundDict[]
-                unvalidatedTriggersDict: HoundDict[]
-                unvalidatedSurveyFeedbackDict: HoundDict
+            unauthenticated: {
+                unauthDogsDict: HoundDict[]
+                unauthLogsDict: HoundDict[]
+                unauthRemindersDict: HoundDict[]
+                unauthTriggersDict: HoundDict[]
+                unauthSurveyFeedbackDict: HoundDict
             }
         }
     }

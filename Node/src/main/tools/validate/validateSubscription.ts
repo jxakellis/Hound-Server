@@ -11,18 +11,18 @@ async function validateSubscription(req: express.Request, res: express.Response,
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     const { databaseConnection } = req.houndProperties;
-    const { validatedUserId, validatedFamilyId } = req.houndProperties.validatedVars;
+    const { authUserId, authFamilyId } = req.houndProperties.authenticated;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', validateSubscription, ERROR_CODES.VALUE.MISSING);
     }
-    if (validatedUserId === undefined || validatedUserId === null) {
+    if (authUserId === undefined || authUserId === null) {
       throw new HoundError('No user found or invalid permissions', validateSubscription, ERROR_CODES.PERMISSION.NO.USER);
     }
-    if (validatedFamilyId === undefined || validatedFamilyId === null) {
+    if (authFamilyId === undefined || authFamilyId === null) {
       throw new HoundError('No family found or invalid permissions', validateSubscription, ERROR_CODES.PERMISSION.NO.FAMILY);
     }
 
-    const numberOfFamilyMembers = req.houndProperties.familyActiveSubscription?.numberOfFamilyMembers;
+    const numberOfFamilyMembers = req.houndProperties.authenticated.authFamilyActiveSubscription?.numberOfFamilyMembers;
 
     if (numberOfFamilyMembers === undefined || numberOfFamilyMembers === null) {
       throw new HoundError('numberOfFamilyMembers missing', validateSubscription, ERROR_CODES.VALUE.MISSING);
@@ -34,7 +34,7 @@ async function validateSubscription(req: express.Request, res: express.Response,
       return next();
     }
 
-    const familyMembers = await getFamilyMembersForFamilyId(databaseConnection, validatedFamilyId);
+    const familyMembers = await getFamilyMembersForFamilyId(databaseConnection, authFamilyId);
 
     if (familyMembers.length > numberOfFamilyMembers) {
       throw new HoundError(`Family member limit of ${numberOfFamilyMembers} exceeded`, validateSubscription, ERROR_CODES.FAMILY.LIMIT.FAMILY_MEMBER_EXCEEDED);

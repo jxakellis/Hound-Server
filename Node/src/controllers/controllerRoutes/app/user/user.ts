@@ -13,15 +13,15 @@ async function getUser(req: express.Request, res: express.Response): Promise<voi
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     const { databaseConnection } = req.houndProperties;
-    const { validatedUserIdentifier } = req.houndProperties.validatedVars;
+    const { authUserIdentifier } = req.houndProperties.authenticated;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', getUser, ERROR_CODES.VALUE.MISSING);
     }
-    if (validatedUserIdentifier === undefined || validatedUserIdentifier === null) {
-      throw new HoundError('validatedUserIdentifier missing', getUser, ERROR_CODES.VALUE.MISSING);
+    if (authUserIdentifier === undefined || authUserIdentifier === null) {
+      throw new HoundError('authUserIdentifier missing', getUser, ERROR_CODES.VALUE.MISSING);
     }
 
-    const result = await getPrivateCombinedUsersInformation(databaseConnection, validatedUserIdentifier);
+    const result = await getPrivateCombinedUsersInformation(databaseConnection, authUserIdentifier);
 
     if (result === undefined || result === null) {
       throw new HoundError('No user found or invalid permissions', getUser, ERROR_CODES.PERMISSION.NO.USER);
@@ -39,12 +39,12 @@ async function createUser(req: express.Request, res: express.Response): Promise<
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     const { databaseConnection } = req.houndProperties;
-    const { validatedUserIdentifier } = req.houndProperties.validatedVars;
+    const { authUserIdentifier } = req.houndProperties.authenticated;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', createUser, ERROR_CODES.VALUE.MISSING);
     }
-    if (validatedUserIdentifier === undefined || validatedUserIdentifier === null) {
-      throw new HoundError('validatedUserIdentifier missing', createUser, ERROR_CODES.VALUE.MISSING);
+    if (authUserIdentifier === undefined || authUserIdentifier === null) {
+      throw new HoundError('authUserIdentifier missing', createUser, ERROR_CODES.VALUE.MISSING);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -142,7 +142,7 @@ async function createUser(req: express.Request, res: express.Response): Promise<
 
     const result = await createUserForUserIdentifier(
       databaseConnection,
-      validatedUserIdentifier,
+      authUserIdentifier,
       {
         userConfigurationIsNotificationEnabled,
         userConfigurationIsLoudNotificationEnabled,
@@ -180,11 +180,11 @@ async function updateUser(req: express.Request, res: express.Response): Promise<
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     const { databaseConnection } = req.houndProperties;
-    const { validatedUserId } = req.houndProperties.validatedVars;
+    const { authUserId } = req.houndProperties.authenticated;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', updateUser, ERROR_CODES.VALUE.MISSING);
     }
-    if (validatedUserId === undefined || validatedUserId === null) {
+    if (authUserId === undefined || authUserId === null) {
       throw new HoundError('No user found or invalid permissions', updateUser, ERROR_CODES.PERMISSION.NO.USER);
     }
 
@@ -227,7 +227,7 @@ async function updateUser(req: express.Request, res: express.Response): Promise<
 
     await updateUserForUserId(
       databaseConnection,
-      validatedUserId,
+      authUserId,
       {
         userConfigurationIsNotificationEnabled,
         userConfigurationIsLoudNotificationEnabled,
@@ -262,17 +262,17 @@ async function deleteUser(req: express.Request, res: express.Response): Promise<
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     const { databaseConnection } = req.houndProperties;
-    const { validatedUserId } = req.houndProperties.validatedVars;
+    const { authUserId } = req.houndProperties.authenticated;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', deleteUser, ERROR_CODES.VALUE.MISSING);
     }
-    if (validatedUserId === undefined || validatedUserId === null) {
+    if (authUserId === undefined || authUserId === null) {
       throw new HoundError('No user found or invalid permissions', deleteUser, ERROR_CODES.PERMISSION.NO.USER);
     }
 
     await deleteUserForUserId(
       databaseConnection,
-      validatedUserId,
+      authUserId,
     );
 
     return res.houndProperties.sendSuccessResponse('');

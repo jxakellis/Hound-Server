@@ -42,10 +42,9 @@ type DogLogsRow = {
     logLikedByUserIds: string[]
 };
 
-// create / update routes don't handle logLikedByUserIds, that is independent
 type NotYetCreatedDogLogsRow = Omit<DogLogsRow,
-'logId' | 'logIsDeleted' | 'logCreated' | 'logLastModified' | 'logLastModifiedBy' | 'logLikedByUserIds'>;
-type NotYetUpdatedDogLogsRow = Omit<DogLogsRow, 'logIsDeleted' | 'logCreated' | 'logCreatedBy' | 'logLastModified' | 'logLikedByUserIds'>;
+'logId' | 'logIsDeleted' | 'logCreated' | 'logLastModified' | 'logLastModifiedBy'>;
+type NotYetUpdatedDogLogsRow = Omit<DogLogsRow, 'logIsDeleted' | 'logCreated' | 'logCreatedBy' | 'logLastModified'>;
 
 export {
   type DogLogsRow,

@@ -65,7 +65,7 @@ async function validateUserIdentifier(req: express.Request, res: express.Respons
 
     // Its acceptable for user to be undefined. This is because the request could be creating a user.
 
-    req.houndProperties.validatedVars.validatedUserIdentifier = userIdentifier;
+    req.houndProperties.authenticated.authUserIdentifier = userIdentifier;
   }
   catch (error) {
     // couldn't query database to find userId
@@ -80,12 +80,12 @@ async function validateUserId(req: express.Request, res: express.Response, next:
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     const { databaseConnection } = req.houndProperties;
-    const { validatedUserIdentifier } = req.houndProperties.validatedVars;
+    const { authUserIdentifier } = req.houndProperties.authenticated;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', validateUserId, ERROR_CODES.VALUE.MISSING);
     }
-    if (validatedUserIdentifier === undefined || validatedUserIdentifier === null) {
-      throw new HoundError('validatedUserIdentifier missing', validateUserId, ERROR_CODES.VALUE.MISSING);
+    if (authUserIdentifier === undefined || authUserIdentifier === null) {
+      throw new HoundError('authUserIdentifier missing', validateUserId, ERROR_CODES.VALUE.MISSING);
     }
 
     // we are verifying that a user is able to use the provided userId, and to do so they must know the corresponding secret (the userIdentifier)
@@ -95,7 +95,7 @@ async function validateUserId(req: express.Request, res: express.Response, next:
         FROM users u
         WHERE userIdentifier = ?
         LIMIT 1`,
-      [validatedUserIdentifier],
+      [authUserIdentifier],
     );
 
     const userId = result.safeIndex(0)?.userId;
@@ -105,7 +105,7 @@ async function validateUserId(req: express.Request, res: express.Response, next:
       return next();
     }
 
-    req.houndProperties.validatedVars.validatedUserId = userId;
+    req.houndProperties.authenticated.authUserId = userId;
     const requestId = formatNumber(req.houndProperties.requestId);
     if (requestId !== undefined && requestId !== null) {
       addUserActivityToLatestRequestDate(requestId, userId);
@@ -125,11 +125,11 @@ async function validateFamilyId(req: express.Request, res: express.Response, nex
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     const { databaseConnection } = req.houndProperties;
-    const { validatedUserId } = req.houndProperties.validatedVars;
+    const { authUserId } = req.houndProperties.authenticated;
     if (databaseConnection === undefined || databaseConnection === null) {
       throw new HoundError('databaseConnection missing', validateFamilyId, ERROR_CODES.VALUE.MISSING);
     }
-    if (validatedUserId === undefined || validatedUserId === null) {
+    if (authUserId === undefined || authUserId === null) {
       throw new HoundError('No user found or invalid permissions', validateFamilyId, ERROR_CODES.PERMISSION.NO.USER);
     }
 
@@ -140,7 +140,7 @@ async function validateFamilyId(req: express.Request, res: express.Response, nex
               FROM familyMembers fm
               WHERE userId = ?
               LIMIT 1`,
-      [validatedUserId],
+      [authUserId],
     );
 
     const familyId = result.safeIndex(0)?.familyId;
@@ -150,7 +150,7 @@ async function validateFamilyId(req: express.Request, res: express.Response, nex
       return next();
     }
 
-    req.houndProperties.validatedVars.validatedFamilyId = familyId;
+    req.houndProperties.authenticated.authFamilyId = familyId;
     const requestId = formatNumber(req.houndProperties.requestId);
     if (requestId !== undefined && requestId !== null) {
       addFamilyIdToLogRequest(requestId, familyId);

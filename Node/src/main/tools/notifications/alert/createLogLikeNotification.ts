@@ -1,5 +1,4 @@
 import { alertLogger } from '../../../logging/loggers.js';
-import { DatabasePools, getPoolConnection } from '../../../database/databaseConnections.js';
 
 import { logServerError } from '../../../logging/logServerError.js';
 import { getLogForLogUUID } from '../../../../controllers/get/logs/getLogs.js';
@@ -10,25 +9,22 @@ import { NOTIFICATION } from '../../../server/globalConstants.js';
 import { HoundError } from '../../../server/globalErrors.js';
 import { getAllLogActionTypes } from '../../../../controllers/get/types/getLogActionType.js';
 import { convertActionTypeToFinalReadable } from '../../../../main/format/formatActionType.js';
+import type { Queryable } from '../../../../main/types/Queryable.js';
 
-async function createLogLikeNotification(likerUserId: string, logUUID: string): Promise<void> {
+async function createLogLikeNotification(databaseConnection: Queryable, likerUserId: string, logUUID: string): Promise<void> {
   try {
     alertLogger.debug(`createLogLikeNotification ${likerUserId}, ${logUUID}`);
-    const generalPoolConnection = await getPoolConnection(DatabasePools.general);
 
-    const log = await getLogForLogUUID(generalPoolConnection, logUUID, false);
+    const log = await getLogForLogUUID(databaseConnection, logUUID, false);
 
     if (log === undefined) {
-      generalPoolConnection.release();
       throw new Error(`log ${logUUID} not found`);
     }
 
     const [liker, logActionTypes] = await Promise.all([
-      getPublicUser(generalPoolConnection, likerUserId),
-      getAllLogActionTypes(generalPoolConnection),
-    ]).finally(() => {
-      generalPoolConnection.release();
-    });
+      getPublicUser(databaseConnection, likerUserId),
+      getAllLogActionTypes(databaseConnection),
+    ]);
 
     if (log.logCreatedBy === likerUserId) {
       return;

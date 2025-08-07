@@ -8,12 +8,12 @@ async function createTerminateAlert(req: express.Request, res: express.Response)
     // Confirm that databaseConnection and validatedIds are defined and non-null first.
     // Before diving into any specifics of this function, we want to confirm the very basics 1. connection to database 2. permissions to do functionality
     // For certain paths, its ok for validatedIds to be possibly undefined, e.g. getReminders, if validatedReminderUUIDs is undefined, then we use validatedDogUUID to get all dogs
-    const { validatedUserId } = req.houndProperties.validatedVars;
-    if (validatedUserId === undefined || validatedUserId === null) {
+    const { authUserId } = req.houndProperties.authenticated;
+    if (authUserId === undefined || authUserId === null) {
       throw new HoundError('No user found or invalid permissions', createTerminateAlert, ERROR_CODES.PERMISSION.NO.USER);
     }
 
-    createTerminateNotification(validatedUserId);
+    createTerminateNotification(authUserId);
 
     return res.houndProperties.sendSuccessResponse('');
   }

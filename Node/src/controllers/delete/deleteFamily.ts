@@ -176,9 +176,8 @@ async function kickFamilyMemberForUserIdFamilyId(databaseConnection: Queryable, 
 
   await removeUserFromAllReminderNotifications(databaseConnection, familyId, userId);
 
-  // The alarm notifications retrieve the notification tokens of familyMembers right as they fire, so the user will not be included
-  createFamilyMemberLeaveNotification(kickedUserId, familyId);
-  createUserKickedNotification(kickedUserId);
+  await createFamilyMemberLeaveNotification(databaseConnection, kickedUserId, familyId);
+  await createUserKickedNotification(kickedUserId);
 }
 
 /**
@@ -199,10 +198,7 @@ async function deleteFamilyLeaveFamilyForUserIdFamilyId(databaseConnection: Quer
     await leaveFamily(databaseConnection, userId);
   }
 
-  // If user is family member, we can send a notification to remaining members that they left
-  // If user is the family head, sendNotification will find no userNotificationTokens (as the family has been deleted),
-  // ultimately send no APN.
-  createFamilyMemberLeaveNotification(userId, familyId);
+  await createFamilyMemberLeaveNotification(databaseConnection, userId, familyId);
 }
 
 export { deleteFamilyLeaveFamilyForUserIdFamilyId, kickFamilyMemberForUserIdFamilyId };

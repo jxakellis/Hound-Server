@@ -115,7 +115,7 @@ async function addAppVersionToLogRequest(requestId: number, appVersion: string):
   }
 }
 
-async function addUserActivityToLatestRequestDate(requestId: number, validatedUserId: string): Promise<void> {
+async function addUserActivityToLatestRequestDate(requestId: number, authUserId: string): Promise<void> {
   try {
     // This pool connection is obtained manually here. Therefore we must also release it manually.
     // Therefore, we need to be careful in our usage of this pool connection, as if errors get thrown, then it could escape the block and be unused
@@ -128,7 +128,7 @@ async function addUserActivityToLatestRequestDate(requestId: number, validatedUs
                       WHERE userId = ?`,
       [
         requestId,
-        formatKnownString(validatedUserId, 64),
+        formatKnownString(authUserId, 64),
       ],
     ).finally(() => {
       generalPoolConnection.release();
@@ -146,7 +146,7 @@ async function addUserActivityToLatestRequestDate(requestId: number, validatedUs
   }
 }
 
-async function addUserIdToLogRequest(requestId: number, validatedUserId: string): Promise<void> {
+async function addUserIdToLogRequest(requestId: number, authUserId: string): Promise<void> {
   try {
     // This pool connection is obtained manually here. Therefore we must also release it manually.
     // Therefore, we need to be careful in our usage of this pool connection, as if errors get thrown, then it could escape the block and be unused
@@ -158,7 +158,7 @@ async function addUserIdToLogRequest(requestId: number, validatedUserId: string)
                       SET requestUserId = ?
                       WHERE requestId = ?`,
       [
-        formatKnownString(validatedUserId, 64),
+        formatKnownString(authUserId, 64),
         requestId,
       ],
     ).finally(() => {
@@ -177,7 +177,7 @@ async function addUserIdToLogRequest(requestId: number, validatedUserId: string)
   }
 }
 
-async function addFamilyIdToLogRequest(requestId: number, validatedFamilyId: string): Promise<void> {
+async function addFamilyIdToLogRequest(requestId: number, authFamilyId: string): Promise<void> {
   try {
     // This pool connection is obtained manually here. Therefore we must also release it manually.
     // Therefore, we need to be careful in our usage of this pool connection, as if errors get thrown, then it could escape the block and be unused
@@ -189,7 +189,7 @@ async function addFamilyIdToLogRequest(requestId: number, validatedFamilyId: str
                             SET requestFamilyId = ?
                             WHERE requestId = ?`,
       [
-        formatKnownString(validatedFamilyId, 64),
+        formatKnownString(authFamilyId, 64),
         requestId,
       ],
     ).finally(() => {
