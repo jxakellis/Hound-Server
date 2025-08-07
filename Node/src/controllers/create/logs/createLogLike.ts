@@ -7,7 +7,7 @@ async function createSingleLogLike(
 ): Promise<void> {
   await databaseQuery<ResultSetHeader>(
     databaseConnection,
-    'INSERT INTO dogLogLikes(logUUID, userId) VALUES (?, ?)',
+    'INSERT INTO dogLogLike(logUUID, userId) VALUES (?, ?)',
     [like.logUUID, like.userId],
   );
 }
