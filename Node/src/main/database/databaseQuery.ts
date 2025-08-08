@@ -8,6 +8,11 @@ import { serverLogger } from '../logging/loggers.js';
 type SQLPrimitive = (string | number | boolean | Date | null | undefined);
 export type SQLVariableType = SQLPrimitive | SQLPrimitive[]
 
+type SQLQueryLogEntry = {
+  sql: string;
+  durationMs: number;
+};
+
 /**
  * Queries the database with the given sqlString. If a databaseConnection is provided, then uses that databaseConnection, otherwise uses the databaseConnectionForGeneral.
  * The generic type <T> is mandatory to specify when calling this function to ensure the type of the returned data is known.
@@ -30,10 +35,14 @@ const databaseQuery = <T>(
   });
 
   return new Promise<T>((resolve, reject) => {
+    const startTime = Date.now();
     databaseConnection.query(
       SQLString,
       SQLVars,
       (error, result) => {
+        const durationMs = Date.now() - startTime;
+        const connectionWithLog = databaseConnection as Queryable & { houndQueryLog?: SQLQueryLogEntry[] };
+        connectionWithLog.houndQueryLog?.push({ sql: SQLString, durationMs });
         if (result === undefined || result === null) {
           // error when trying to do query to database
           serverLogger.debug(`Error querying database: ${error}\n\n SQLString: ${SQLString}\n\nSQLVariables: ${JSON.stringify(SQLVars)}`);
@@ -49,5 +58,5 @@ const databaseQuery = <T>(
 };
 
 export {
-  type Queryable, type ResultSetHeader, type RowDataPacket, databaseQuery,
+  type Queryable, type ResultSetHeader, type RowDataPacket, databaseQuery, type SQLQueryLogEntry,
 };

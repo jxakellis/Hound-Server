@@ -3,13 +3,26 @@ import type { PoolConnection } from 'mysql2';
 import { HoundError, ERROR_CODES } from './globalErrors.js';
 import { logResponse } from '../logging/logResponse.js';
 import { logServerError } from '../logging/logServerError.js';
-import { databaseQuery } from '../database/databaseQuery.js';
+import { databaseQuery, type SQLQueryLogEntry } from '../database/databaseQuery.js';
 import { DatabasePools, getPoolConnection } from '../database/databaseConnections.js';
 import { type ResponseBodyType } from '../types/ResponseBodyType.js';
+import { SERVER } from './globalConstants.js';
+import { requestLogger } from '../logging/loggers.js';
 
 function releaseDatabaseConnection(req: express.Request): void {
   if (req.houndProperties.databaseConnection === undefined || req.houndProperties.databaseConnection === null) {
     return;
+  }
+
+  const connectionWithLog = req.houndProperties.databaseConnection as PoolConnection & { houndQueryLog?: SQLQueryLogEntry[] };
+
+  if (SERVER.CONSOLE_LOGGING_ENABLED === true && connectionWithLog.houndQueryLog !== undefined) {
+    const { houndQueryLog } = connectionWithLog;
+    requestLogger.debug(`Request ${req.houndProperties.requestId ?? 'unknown'} executed ${houndQueryLog.length} queries`);
+    houndQueryLog.forEach((entry) => {
+      requestLogger.debug(`\t${entry.durationMs} ms | ${entry.sql.slice(0, 100)}`);
+    });
+    connectionWithLog.houndQueryLog = [];
   }
 
   if (req.houndProperties.hasActiveDatabaseTransaction === true) {
@@ -236,6 +249,9 @@ async function configureRequestAndResponse(req: express.Request, res: express.Re
   let requestPoolConnection: PoolConnection | undefined;
   try {
     requestPoolConnection = await getPoolConnection(DatabasePools.request);
+    if (SERVER.CONSOLE_LOGGING_ENABLED === true) {
+      (requestPoolConnection as PoolConnection & { houndQueryLog: SQLQueryLogEntry[] }).houndQueryLog = [];
+    }
   }
   catch (databaseConnectionError) {
     return res.houndProperties.sendFailureResponse(

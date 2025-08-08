@@ -13,9 +13,7 @@ async function logResponse(req: express.Request, res: express.Response, response
   const responseBody = formatUnknownString(forResponseBody, 500);
 
   responseLogger.debug(`
-  \n RESPONSE FOR ${req.method}
-  \n AT URL ${originalUrl}
-  \n WITH BODY (if error, 'stack' has been omitted for body sent to user, but not for debug message):
+  Response for ${req.method} at ${originalUrl} with body
   \n${responseBody}
   `);
 
