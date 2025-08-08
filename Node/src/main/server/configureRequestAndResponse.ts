@@ -19,8 +19,8 @@ function releaseDatabaseConnection(req: express.Request): void {
   if (SERVER.CONSOLE_LOGGING_ENABLED === true && connectionWithLog.houndQueryLog !== undefined) {
     const { houndQueryLog } = connectionWithLog;
     requestLogger.debug(`Request ${req.houndProperties.requestId ?? 'unknown'} executed ${houndQueryLog.length} queries`);
-    houndQueryLog.forEach((entry) => {
-      requestLogger.debug(`\t${entry.durationMs} ms | ${entry.sql.slice(0, 100)}`);
+    houndQueryLog.forEach((entry, index) => {
+      requestLogger.debug(`\t${index} | ${entry.durationMs} ms | ${entry.sql.slice(0, 100)}`);
     });
     connectionWithLog.houndQueryLog = [];
   }
