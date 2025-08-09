@@ -2,6 +2,7 @@ import { type NotYetUpdatedDogTriggersRow } from '../../../main/types/rows/DogTr
 import { type Queryable, databaseQuery } from '../../../main/database/databaseQuery.js';
 import { updateTriggerLogReactionForTrigger } from './updateTriggerLogReaction.js';
 import { updateTriggerReminderResultForTrigger } from './updateTriggerReminderResult.js';
+import { updateTriggerActivationForTrigger } from './updateTriggerActivation.js';
 
 /**
  *  Queries the database to update a single trigger and its reactions.
@@ -43,6 +44,7 @@ async function updateTriggerForTrigger(
     ),
     updateTriggerLogReactionForTrigger(databaseConnection, trigger),
     updateTriggerReminderResultForTrigger(databaseConnection, trigger),
+    updateTriggerActivationForTrigger(databaseConnection, trigger),
   );
 
   await Promise.all(promises);

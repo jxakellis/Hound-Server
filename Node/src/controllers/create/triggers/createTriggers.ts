@@ -1,4 +1,4 @@
-import { type DogTriggersRow, type NotYetCreatedDogTriggersRow } from '../../../main/types/rows/DogTriggersRow.js';
+import { type NotYetCreatedDogTriggersRow } from '../../../main/types/rows/DogTriggersRow.js';
 
 import { type Queryable, type ResultSetHeader, databaseQuery } from '../../../main/database/databaseQuery.js';
 import { LIMIT } from '../../../main/server/globalConstants.js';
@@ -6,6 +6,7 @@ import { ERROR_CODES, HoundError } from '../../../main/server/globalErrors.js';
 import { getAllTriggersForDogUUID } from '../../../controllers/get/triggers/getTriggers.js';
 import { createTriggerReminderResult } from './createTriggerReminderResult.js';
 import { createSingleTriggerLogReaction } from './createTriggerLogReaction.js';
+import { createSingleTriggerActivation } from './createTriggerActivation.js';
 
 /**
 *  Queries the database to create a single trigger. If the query is successful, then returns the trigger with created triggerId added to it.
@@ -74,6 +75,13 @@ async function createTriggerForTrigger(
     reminderCustomActionName: trigger.triggerReminderResult.reminderCustomActionName,
   }));
 
+  trigger.triggerActivations?.forEach((triggerActivation) => {
+    promises.push(createSingleTriggerActivation(databaseConnection, {
+      triggerUUID: trigger.triggerUUID,
+      activationDate: triggerActivation.activationDate,
+    }));
+  });
+
   await Promise.all(promises);
 
   return result.insertId;
@@ -86,7 +94,7 @@ async function createTriggerForTrigger(
 async function createTriggersForTriggers(
   databaseConnection: Queryable,
   triggers: NotYetCreatedDogTriggersRow[],
-): Promise<DogTriggersRow[]> {
+): Promise<number[]> {
   const promises: Promise<number>[] = [];
   triggers.forEach((trigger) => {
     // retrieve the original provided body AND the created id
@@ -98,18 +106,7 @@ async function createTriggersForTriggers(
 
   const triggerIds = await Promise.all(promises);
 
-  const someTrigger = triggers.safeIndex(0);
-
-  if (someTrigger === undefined || someTrigger === null) {
-    // Only way this happens is if triggers is an empty array
-    return [];
-  }
-
-  const notDeletedTriggers = await getAllTriggersForDogUUID(databaseConnection, someTrigger.dogUUID, false);
-  // Once we have created all of the triggers, we need to return them to the user. Its hard to link the omit and non-omit types, so just use the dogUUID to query the triggers, and only include the ones we just created
-  const notDeletedReturnTriggers = notDeletedTriggers.filter((triggerFromDatabase) => triggerIds.includes(triggerFromDatabase.triggerId));
-
-  return notDeletedReturnTriggers;
+  return triggerIds;
 }
 
 export { createTriggersForTriggers };

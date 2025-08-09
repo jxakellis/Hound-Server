@@ -124,6 +124,22 @@ async function createTrigger(req: express.Request, res: express.Response): Promi
       const triggerFixedTimeMinute = formatNumber(unauthNewTriggerDict['triggerFixedTimeMinute']);
       const triggerManualCondition = formatNumber(unauthNewTriggerDict['triggerManualCondition']);
       const triggerAlarmCreatedCondition = formatNumber(unauthNewTriggerDict['triggerAlarmCreatedCondition']);
+      // TODO FUTURE <= 4.1.0 deprecitate this ?? []
+      const rawActivations = formatArray(unauthNewTriggerDict['triggerActivations']) ?? [];
+      if (rawActivations === undefined) {
+        throw new HoundError('triggerActivations missing', createTrigger, ERROR_CODES.VALUE.MISSING);
+      }
+      const triggerActivations = rawActivations.map((raw) => {
+        const rawTriggerActivation = formatDict(raw);
+        if (rawTriggerActivation === undefined) {
+          throw new HoundError('triggerActivation missing in triggerActivations', createTrigger, ERROR_CODES.VALUE.MISSING);
+        }
+        const activationDate = formatDate(rawTriggerActivation['activationDate']);
+        if (activationDate === undefined) {
+          throw new HoundError('activationDate missing in triggerActivations', createTrigger, ERROR_CODES.VALUE.MISSING);
+        }
+        return { triggerUUID, activationDate };
+      });
 
       if (triggerType === undefined || triggerType === null) {
         throw new HoundError('triggerType missing', createTrigger, ERROR_CODES.VALUE.MISSING);
@@ -164,6 +180,7 @@ async function createTrigger(req: express.Request, res: express.Response): Promi
         triggerManualCondition,
         triggerAlarmCreatedCondition,
         triggerCreatedBy: authUserId,
+        triggerActivations,
       });
     });
 
@@ -244,6 +261,22 @@ async function updateTrigger(req: express.Request, res: express.Response): Promi
       const triggerFixedTimeMinute = formatNumber(authTrigger.unauthNewTriggerDict?.['triggerFixedTimeMinute']);
       const triggerManualCondition = formatNumber(authTrigger.unauthNewTriggerDict?.['triggerManualCondition']);
       const triggerAlarmCreatedCondition = formatNumber(authTrigger.unauthNewTriggerDict?.['triggerAlarmCreatedCondition']);
+      // TODO FUTURE <= 4.1.0 deprecitate this ?? []
+      const rawActivations = formatArray(authTrigger.unauthNewTriggerDict?.['triggerActivations']) ?? [];
+      if (rawActivations === undefined) {
+        throw new HoundError('triggerActivations missing', updateTrigger, ERROR_CODES.VALUE.MISSING);
+      }
+      const triggerActivations = rawActivations.map((raw) => {
+        const rawTriggerActivation = formatDict(raw);
+        if (rawTriggerActivation === undefined) {
+          throw new HoundError('triggerActivation missing in triggerActivations', updateTrigger, ERROR_CODES.VALUE.MISSING);
+        }
+        const activationDate = formatDate(rawTriggerActivation['activationDate']);
+        if (activationDate === undefined) {
+          throw new HoundError('activationDate missing in triggerActivations', updateTrigger, ERROR_CODES.VALUE.MISSING);
+        }
+        return { triggerUUID, activationDate };
+      });
 
       if (triggerType === undefined || triggerType === null) {
         throw new HoundError('triggerType missing', updateTrigger, ERROR_CODES.VALUE.MISSING);
@@ -285,6 +318,7 @@ async function updateTrigger(req: express.Request, res: express.Response): Promi
         triggerManualCondition,
         triggerAlarmCreatedCondition,
         triggerLastModifiedBy: authUserId,
+        triggerActivations,
       });
     });
 

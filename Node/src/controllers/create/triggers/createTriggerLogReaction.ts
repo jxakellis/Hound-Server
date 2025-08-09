@@ -1,6 +1,5 @@
-import { getTriggerLogReactionsForTriggerUUIDs } from '../../../controllers/get/triggers/getTriggerLogReaction.js';
 import { type Queryable, type ResultSetHeader, databaseQuery } from '../../../main/database/databaseQuery.js';
-import type { DogTriggerLogReactionRow, NotYetCreatedDogTriggerLogReactionRow } from '../../../main/types/rows/DogTriggerLogReactionRow.js';
+import type { NotYetCreatedDogTriggerLogReactionRow } from '../../../main/types/rows/DogTriggerLogReactionRow.js';
 
 /**
 *  Queries the database to create a single trigger. If the query is successful, then returns the trigger with created triggerId added to it.
@@ -30,7 +29,7 @@ async function createSingleTriggerLogReaction(
 async function createMultipleTriggerLogReactions(
   databaseConnection: Queryable,
   reactions: NotYetCreatedDogTriggerLogReactionRow[],
-): Promise<DogTriggerLogReactionRow []> {
+): Promise<number[]> {
   const promises: Promise<number>[] = [];
   reactions.forEach((reaction) => {
     // retrieve the original provided body AND the created id
@@ -42,21 +41,7 @@ async function createMultipleTriggerLogReactions(
 
   const reactionIds = await Promise.all(promises);
 
-  const someReaction = reactions.safeIndex(0);
-
-  if (someReaction === undefined || someReaction === null) {
-    // Only way this happens is if reactions is an empty array
-    return [];
-  }
-
-  const uniqueReactionUUIDs = [...new Set(reactions.map((reaction) => reaction.triggerUUID))];
-
-  const notDeletedReactions = await getTriggerLogReactionsForTriggerUUIDs(databaseConnection, uniqueReactionUUIDs);
-
-  // Once we have created all of the reactions, we need to return them to the user. Its hard to link the omit and non-omit types, so just use the triggerUUID to query the triggers, and only include the ones we just created
-  const notDeletedReturnReactions = notDeletedReactions.filter((reactionFromDatabase) => reactionIds.includes(reactionFromDatabase.reactionId));
-
-  return notDeletedReturnReactions;
+  return reactionIds;
 }
 
 export { createSingleTriggerLogReaction, createMultipleTriggerLogReactions };

@@ -1,21 +1,20 @@
 import { type Queryable, type ResultSetHeader, databaseQuery } from '../../../main/database/databaseQuery.js';
-import type { NotYetCreatedDogTriggerReminderResultRow } from '../../../main/types/rows/DogTriggerReminderResultRow.js';
+import type { NotYetCreatedDogTriggerActivationRow } from '../../../main/types/rows/DogTriggerActivationRow.js';
 
 /**
 *  Queries the database to create a single trigger. If the query is successful, then returns the trigger with created triggerId added to it.
 *  If a problem is encountered, creates and throws custom error
 */
-async function createTriggerReminderResult(
+async function createSingleTriggerActivation(
   databaseConnection: Queryable,
-  reaction: NotYetCreatedDogTriggerReminderResultRow,
+  activation: NotYetCreatedDogTriggerActivationRow,
 ): Promise<number> {
   const result = await databaseQuery<ResultSetHeader>(
     databaseConnection,
-    'INSERT INTO dogTriggerReminderResult(triggerUUID, reminderActionTypeId, reminderCustomActionName) VALUES (?, ?, ?)',
+    'INSERT INTO dogTriggerActivation(triggerUUID, activationDate) VALUES (?, ?)',
     [
-      reaction.triggerUUID,
-      reaction.reminderActionTypeId,
-      reaction.reminderCustomActionName,
+      activation.triggerUUID,
+      activation.activationDate,
     ],
   );
 
@@ -26,22 +25,22 @@ async function createTriggerReminderResult(
           * Queries the database to create a multiple triggers. If the query is successful, then returns the triggers with their created triggerIds added to them.
           *  If a problem is encountered, creates and throws custom error
           */
-async function createTriggerReminderResults(
+async function createMultipleTriggerActivations(
   databaseConnection: Queryable,
-  reactions: NotYetCreatedDogTriggerReminderResultRow[],
+  activations: NotYetCreatedDogTriggerActivationRow[],
 ): Promise<number[]> {
   const promises: Promise<number>[] = [];
-  reactions.forEach((reaction) => {
+  activations.forEach((activation) => {
     // retrieve the original provided body AND the created id
-    promises.push(createTriggerReminderResult(
+    promises.push(createSingleTriggerActivation(
       databaseConnection,
-      reaction,
+      activation,
     ));
   });
 
-  const reactionIds = await Promise.all(promises);
+  const activationIds = await Promise.all(promises);
 
-  return reactionIds;
+  return activationIds;
 }
 
-export { createTriggerReminderResult, createTriggerReminderResults };
+export { createSingleTriggerActivation, createMultipleTriggerActivations };
