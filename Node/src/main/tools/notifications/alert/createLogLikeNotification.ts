@@ -44,7 +44,6 @@ async function createLogLikeNotification(databaseConnection: Queryable, likerUse
     const formattedLogAction = convertActionTypeToFinalReadable(logActionType, true, log.logCustomActionName);
     const { dogName } = dog;
 
-    // TODO TEST make sure this notif sends
     // Maximum possible length of message: 3 (raw) + 32 (variable) = 35 ( > ALERT_TITLE_LIMIT )
     const alertTitle = `❤️ ${formattedLogAction}`;
 
