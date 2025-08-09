@@ -212,6 +212,7 @@ async function updateLog(req: express.Request, res: express.Response): Promise<v
       addedLikeUserIds.map((addedLikeUserId) => createLogLikeNotification(
         databaseConnection,
         addedLikeUserId,
+        authLog.authLog.dogUUID,
         authLog.authLog.logUUID,
       )),
     );

@@ -10,15 +10,20 @@ import { HoundError } from '../../../server/globalErrors.js';
 import { getAllLogActionTypes } from '../../../../controllers/get/types/getLogActionType.js';
 import { convertActionTypeToFinalReadable } from '../../../../main/format/formatActionType.js';
 import type { Queryable } from '../../../../main/types/Queryable.js';
+import { getDogForDogUUID } from '../../../../controllers/get/getDogs.js';
 
-async function createLogLikeNotification(databaseConnection: Queryable, likerUserId: string, logUUID: string): Promise<void> {
+async function createLogLikeNotification(databaseConnection: Queryable, likerUserId: string, dogUUID: string, logUUID: string): Promise<void> {
   try {
     alertLogger.debug(`createLogLikeNotification ${likerUserId}, ${logUUID}`);
 
     const log = await getLogForLogUUID(databaseConnection, logUUID, false);
+    const dog = await getDogForDogUUID(databaseConnection, dogUUID, false, false);
 
     if (log === undefined) {
       throw new Error(`log ${logUUID} not found`);
+    }
+    if (dog === undefined) {
+      throw new Error(`dog ${dogUUID} not found`);
     }
 
     const [liker, logActionTypes] = await Promise.all([
@@ -37,14 +42,14 @@ async function createLogLikeNotification(databaseConnection: Queryable, likerUse
 
     const abbreviatedFullName = formatFirstLastName(true, liker?.userFirstName, liker?.userLastName);
     const formattedLogAction = convertActionTypeToFinalReadable(logActionType, true, log.logCustomActionName);
+    const { dogName } = dog;
 
     // TODO TEST make sure this notif sends
-    // TODO TEXT what is a better way to word this?
     // Maximum possible length of message: 3 (raw) + 32 (variable) = 35 ( > ALERT_TITLE_LIMIT )
     const alertTitle = `❤️ ${formattedLogAction}`;
 
     // Maximum possible length of message: 8 (raw) + 34 (variable) = 42 ( <= ALERT_BODY_LIMIT )
-    const alertBody = `${abbreviatedFullName} liked your log`;
+    const alertBody = `${abbreviatedFullName} liked ${dogName}'s log`;
 
     sendNotificationForUser(log.logCreatedBy, NOTIFICATION.CATEGORY.LOG.LIKED, alertTitle, alertBody, {});
   }

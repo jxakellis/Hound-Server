@@ -20,7 +20,7 @@ import { HoundError } from '../../../server/globalErrors.js';
  * Helper method for createAlarmNotificationForFamily, actually queries database to get most updated version of dog and reminder.
  * Physically sends the APN
  */
-async function sendAPNNotificationForFamily(familyId: string, reminderUUID: string): Promise<void> {
+async function sendAPNNotificationForFamilyHelper(familyId: string, reminderUUID: string): Promise<void> {
   try {
     // This pool connection is obtained manually here. Therefore we must also release it manually.
     // Therefore, we need to be careful in our usage of this pool connection, as if errors get thrown, then it could escape the block and be unused
@@ -81,8 +81,8 @@ async function sendAPNNotificationForFamily(familyId: string, reminderUUID: stri
   catch (error) {
     logServerError(
       new HoundError(
-        'sendAPNNotificationForFamily',
-        sendAPNNotificationForFamily,
+        'sendAPNNotificationForFamilyHelper',
+        sendAPNNotificationForFamilyHelper,
         undefined,
         error,
       ),
@@ -113,14 +113,14 @@ async function createAlarmNotificationForFamily(familyId: string, reminderUUID: 
     // reminderExecutionDate is present or in the past, so we should execute immediately
     if (new Date() >= reminderExecutionDate) {
       // do these async, no need to await
-      sendAPNNotificationForFamily(familyId, reminderUUID);
+      sendAPNNotificationForFamilyHelper(familyId, reminderUUID);
     }
     // reminderExecutionDate is in the future
     else {
       alarmLogger.debug(`Scheduling a new job; count will be ${Object.keys(schedule.scheduledJobs).length + 1}`);
       schedule.scheduleJob(`Family${familyId}Reminder${reminderUUID}`, reminderExecutionDate, async () => {
         // do these async, no need to await
-        sendAPNNotificationForFamily(familyId, reminderUUID);
+        sendAPNNotificationForFamilyHelper(familyId, reminderUUID);
       });
     }
   }
@@ -136,7 +136,7 @@ async function createAlarmNotificationForFamily(familyId: string, reminderUUID: 
   }
 }
 
-// Don't export sendAPNNotificationForFamily as they are helper methods
+// Don't export sendAPNNotificationForFamilyHelper as they are helper methods
 export {
   createAlarmNotificationForFamily,
 };
